@@ -102,3 +102,23 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Jest
+coverage/
+
+# Ultra
+.ultra.cache.json
+
+# VSCode
+# .vscode/
+
+# Theia
+.theia/
+
+# Yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
