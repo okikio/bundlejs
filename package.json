@@ -1,0 +1,63 @@
+{
+    "name": "root",
+    "private": true,
+    "license": "MIT",
+    "type": "module",
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "commit": "git cz",
+        "build": "gulp build",
+        "watch": "gulp --watch",
+        "test": "pnpm build",
+        "changelog": "standard-version"
+    },
+    "changelog": {
+        "repo": "bundle",
+        "labels": {
+            "breaking": ":boom: Breaking Change",
+            "enhancement": ":rocket: Enhancement",
+            "bug": ":bug: Bug Fix",
+            "documentation": ":memo: Documentation",
+            "internal": ":house: Internal"
+        },
+        "cacheDir": ".changelog"
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
+        }
+    },
+    "dependencies": {
+        "esbuild-wasm": "^0.11.15"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^12.1.1",
+        "@commitlint/config-conventional": "^12.1.1",
+        "@csstools/postcss-sass": "^4.0.0",
+        "autoprefixer": "^10.2.5",
+        "browser-sync": "^2.26.14",
+        "commitizen": "^4.2.3",
+        "del": "^6.0.0",
+        "esbuild": "^0.11.14",
+        "gulp": "^4.0.2",
+        "gulp-esbuild": "^0.7.4",
+        "gulp-plumber": "^1.2.1",
+        "gulp-postcss": "^9.0.0",
+        "gulp-pug": "^4.0.1",
+        "gulp-rename": "^2.0.0",
+        "gzip-size": "^6.0.0",
+        "husky": "^6.0.0",
+        "pnpm": "^6.2.1",
+        "postcss": "^8.2.12",
+        "postcss-cli": "^8.3.1",
+        "postcss-csso": "^5.0.1",
+        "postcss-scss": "^3.0.5",
+        "pretty-bytes": "^5.6.0",
+        "sass": "^1.32.11",
+        "standard-version": "^9.2.0",
+        "tailwindcss": "^2.1.2",
+        "ultra-runner": "^3.10.5"
+    }
+}
