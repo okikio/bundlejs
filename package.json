@@ -30,12 +30,29 @@
         }
     },
     "dependencies": {
-        "esbuild-wasm": "^0.11.15"
+        "@uupaa/dynamic-import-polyfill": "^1.0.2",
+        "assert": "^2.0.0",
+        "buffer": "^6.0.3",
+        "crypto-browserify": "^3.12.0",
+        "esbuild-wasm": "^0.11.15",
+        "events": "^3.3.0",
+        "memfs": "^3.2.2",
+        "os-browserify": "^0.3.0",
+        "pako": "^2.0.3",
+        "path": "^0.12.7",
+        "path-browserify": "^1.0.1",
+        "pretty-bytes": "^5.6.0",
+        "stream": "^0.0.2",
+        "stream-browserify": "^3.0.0",
+        "tty-browserify": "^0.0.1",
+        "url": "^0.11.0",
+        "vm-browserify": "^1.1.2"
     },
     "devDependencies": {
         "@commitlint/cli": "^12.1.1",
         "@commitlint/config-conventional": "^12.1.1",
         "@csstools/postcss-sass": "^4.0.0",
+        "@types/node": "^15.0.1",
         "autoprefixer": "^10.2.5",
         "browser-sync": "^2.26.14",
         "commitizen": "^4.2.3",
@@ -54,7 +71,6 @@
         "postcss-cli": "^8.3.1",
         "postcss-csso": "^5.0.1",
         "postcss-scss": "^3.0.5",
-        "pretty-bytes": "^5.6.0",
         "sass": "^1.32.11",
         "standard-version": "^9.2.0",
         "tailwindcss": "^2.1.2",
