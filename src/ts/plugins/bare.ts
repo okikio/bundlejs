@@ -1,7 +1,8 @@
 import { Plugin } from 'esbuild';
 import { CDN_NAMESPACE } from './cdn';
-export const UnpkgHost = 'https://unpkg.com/';
 import path from 'path';
+
+export const HOST = 'https://cdn.skypack.dev/';
 export const BARE = (): Plugin => {
     return {
         name: 'bare',
@@ -12,7 +13,7 @@ export const BARE = (): Plugin => {
                         path: args.path,
                         namespace: CDN_NAMESPACE,
                         pluginData: {
-                            parentUrl: UnpkgHost,
+                            parentUrl: HOST,
                         },
                     };
                 }

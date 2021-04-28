@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-    transition: color 0.2s ease-out, background-color 0.2s ease-out;
     @apply bg-white text-black;
     @apply dark:bg-black dark:text-label;
     @apply font-manrope;
@@ -47,9 +46,9 @@ a {
 
 button,
 a {
-    transition: color 0.2s ease-out, box-shadow 0.2s ease-out;
+    transition: box-shadow 0.2s ease-out;
     @apply focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-opacity-50;
-    @apply focus:outline-none focus:rounded-sm;
+@apply rounded-md focus:outline-none;
 
     -webkit-tap-highlight-color: transparent;
 }
@@ -74,14 +73,6 @@ a {
     }
 }
 
-.theme-toggle {
-    @apply rounded-md;
-    @apply w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200;
-    @apply dark:text-blue-400 dark:bg-quaternary;
-    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
-    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
-}
-
 .btn {
     @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
     @apply dark:text-blue-400 dark:hover:bg-quaternary;
@@ -102,7 +93,7 @@ main {
     }
 
     header {
-        @apply py-20 text-center;
+        @apply pt-8 pb-12 text-center;
 
         h1 {
             @apply text-5xl font-bold mb-2;
@@ -115,7 +106,7 @@ main {
 }
 
 .search {
-    transition: background-color ease 0.25s, box-shadow 0.2s ease-out;
+    transition: box-shadow 0.2s ease-out;
     @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
     @apply bg-gray-200 dark:bg-quaternary rounded-lg;
     @apply flex items-center px-4;
@@ -128,7 +119,6 @@ main {
 }
 
 .card {
-    transition: border-color ease 0.25s;
     @apply border border-gray-200 dark:border-quaternary;
     @apply grid gap-6 sm:grid-cols-12;
     @apply my-5 p-5 rounded-lg;
@@ -150,10 +140,7 @@ main {
     }
 }
 
-
-
 footer.footer {
-    transition: color ease 0.25s, background-color ease 0.25s;
     @apply text-gray-500 text-right dark:text-secondary;
 
     .container {
