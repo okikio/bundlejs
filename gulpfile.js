@@ -100,11 +100,13 @@ task("js", async () => {
     const [
         { default: gulpEsBuild, createGulpEsbuild },
         { default: gzipSize },
-        { default: prettyBytes }
+        { default: prettyBytes },
+        { default: solid }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gzip-size"),
-        import("pretty-bytes")
+        import("pretty-bytes"),
+        import('./esbuild-solid.js')
     ]);
 
     const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -114,6 +116,10 @@ task("js", async () => {
         color: true,
     };
 
+    const plugins = [
+        solid()
+    ];
+
     return streamList(
         // Modern js
         stream(`${tsFolder}/main.ts`, {
@@ -122,6 +128,7 @@ task("js", async () => {
                 esbuild({
                     ...esbuildConfig,
                     sourcemap: true,
+                    plugins,
                     format: "esm",
                     target: ["chrome83"],
                     outfile: "modern.min.js"
@@ -144,6 +151,7 @@ task("js", async () => {
                 esbuild({
                     ...esbuildConfig,
                     format: "iife",
+                    plugins,
                     target: ["chrome62"],
                     outfile: "legacy.min.js"
                 }),
@@ -231,7 +239,7 @@ task("watch", async () => {
 
     watch(`${pugFolder}/**/*.pug`, series("html"));
     watch([`${sassFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
-    watch(`${tsFolder}/**/*.ts`,
+    watch([`${tsFolder}/**/*.ts`, `${tsFolder}/**/*.tsx`],
         series("js")
     );
 
