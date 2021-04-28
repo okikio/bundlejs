@@ -3,6 +3,8 @@ const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
 import { watch, task, series, parallel, stream, streamList } from "./util.js";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 // Origin folders (source and destination folders)
 const srcFolder = `src`;
@@ -98,11 +100,11 @@ task("js", async () => {
     const [
         { default: gulpEsBuild, createGulpEsbuild },
         { default: gzipSize },
-        { default: prettyBytes },
+        { default: prettyBytes }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gzip-size"),
-        import("pretty-bytes"),
+        import("pretty-bytes")
     ]);
 
     const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -119,6 +121,7 @@ task("js", async () => {
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
+                    sourcemap: true,
                     format: "esm",
                     target: ["chrome83"],
                     outfile: "modern.min.js"
@@ -129,7 +132,7 @@ task("js", async () => {
                 console.log(
                     `=> \`modern\` Gzip size - ${prettyBytes(
                         await gzipSize.file(`${jsFolder}/modern.min.js`)
-                    )}\n`
+                    )}`
                 );
             },
         }),
@@ -150,9 +153,25 @@ task("js", async () => {
                 console.log(
                     `=> \`legacy\` Gzip size - ${prettyBytes(
                         await gzipSize.file(`${jsFolder}/legacy.min.js`)
-                    )}\n`
+                    )}`
                 );
             },
+        }),
+
+        // Modules js
+        stream(`${tsFolder}/modules/*.ts`, {
+            pipes: [
+                // Bundle Modules
+                esbuild({
+                    ...esbuildConfig,
+                    sourcemap: true,
+                    banner: { js: 'const global = globalThis;' },
+                    inject: ["./shims/node-shim.js"],
+                    format: "esm",
+                    target: ["chrome62"]
+                }),
+            ],
+            dest: jsFolder, // Output
         }),
 
         // Other js
