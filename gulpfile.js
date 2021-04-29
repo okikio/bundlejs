@@ -17,6 +17,7 @@ const destFolder = `docs`;
 const tsFolder = `${srcFolder}/ts`;
 const sassFolder = `${srcFolder}/sass`;
 const pugFolder = `${srcFolder}/pug`;
+const assetsFolder = `${srcFolder}/assets`;
 
 // Destination file folders
 const jsFolder = `${destFolder}/js`;
@@ -204,6 +205,16 @@ task("js", async () => {
     );
 });
 
+// Other assets
+task("assets", () => {
+    return stream(`${assetsFolder}/**/*`, {
+        opts: {
+            base: assetsFolder,
+        },
+        dest: destFolder,
+    });
+});
+
 // Delete destFolder for added performance
 task("clean", async () => {
     const { default: del } = await import("del");
@@ -250,11 +261,16 @@ task("watch", async () => {
         series("js")
     );
 
+    watch(`${assetsFolder}/**/*`, { delay: 500 }, series(`assets`)).on(
+        "change",
+        browserSync.reload
+    );
+
     watch([`${htmlFolder}/**/*.html`, `${jsFolder}/**/*.js`]).on(
         "change",
         browserSync.reload
     );
 });
 
-task("build", series("clean", parallel("html", "css", "js"), "minify-css"));
-task("default", series("clean", parallel("html", "css", "js"), "watch"));
+task("build", series("clean", parallel("html", "css", "js", "assets"), "minify-css"));
+task("default", series("clean", parallel("html", "css", "js", "assets"), "watch"));

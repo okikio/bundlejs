@@ -3,6 +3,7 @@
     "scss.lint.unknownProperties": "ignore",
     "scss.validate": false,
     "conventionalCommits.scopes": [
-        "demo"
+        "demo",
+        "docs"
     ]
 }

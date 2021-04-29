@@ -2,7 +2,7 @@ import { Plugin } from 'esbuild';
 import { CDN_NAMESPACE } from './cdn';
 import path from 'path';
 
-export const HOST = 'https://unpkg.com/';
+export const HOST = 'https://unpkg.com/'; // https://jspm.dev/npm:
 export const BARE = (): Plugin => {
     return {
         name: 'bare',
