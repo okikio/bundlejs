@@ -1,14 +1,14 @@
 import { sanitize } from "dompurify";
 import { importShim } from "./util/dynamic-import";
 import { setState, build } from "./components/SearchResults";
-build();
+import { batch } from "solid-js";
 
 const navbar = document.querySelector(".navbar") as HTMLElement;
 const searchInput = document.querySelector(".search input") as HTMLInputElement;
 const backToTop = document.querySelector(".to-top") as HTMLButtonElement;
 
 let canScroll = true;
-let eventDelay = 500;
+let eventDelay = 300;
 
 backToTop?.addEventListener?.("click", () => {
     window.scroll({
@@ -50,7 +50,7 @@ let parseInput = (input: string) => {
 let results = [];
 (async () => {
     const { default: size } = await importShim("./esbuild.js");
-    searchInput?.addEventListener?.("keyup", () => {
+    searchInput?.addEventListener?.("input", () => {
         let timer: number | void;
 
         // Set a timeout to debounce the keyup event
@@ -69,8 +69,10 @@ let results = [];
                     };
                 });
 
-                setState("objects", results);
-                console.log(results);
+                batch(() => {
+                    setState("objects", results);
+                    setState("index", 0);
+                });
             })();
 
             timer = window.clearTimeout(timer as number);
@@ -79,6 +81,6 @@ let results = [];
 
     let pkg = "@okikio/native"
     console.log(`Test package \'${pkg}\' is ${await size(pkg)}`);
+
+    build();
 })();
-
-

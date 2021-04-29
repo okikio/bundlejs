@@ -48,7 +48,7 @@ button,
 a {
     transition: box-shadow 0.2s ease-out;
     @apply focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-opacity-50;
-@apply rounded-md focus:outline-none;
+    @apply rounded-md focus:outline-none;
 
     -webkit-tap-highlight-color: transparent;
 }
@@ -148,13 +148,47 @@ main {
     animation: spin 1s linear infinite;
 }
 
+.loading-container {
+    @apply m-5 grid justify-center;
+}
+
 .dark .loading {
     border-color: theme("colors.tertiary");
     border-top-color: theme("colors.blue.400");
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.theme-toggle {
+    @apply rounded-md;
+    @apply w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.to-top {
+    transition: opacity ease 0.25s;
+    @apply mr-2 px-3 py-2 rounded-md no-underline hover:bg-gray-200;
+    @apply text-blue-500 dark:text-blue-400 dark:hover:bg-quaternary;
+    @apply opacity-0;
+
+    &.active {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
+    }
+
+    &:hover {
+        @apply bg-opacity-60;
+    }
+}
+
+.navbar.shadow .to-top {
+    @apply opacity-100;
 }
 
 footer.footer {
