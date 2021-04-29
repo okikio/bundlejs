@@ -6,6 +6,9 @@ import { watch, task, series, parallel, stream, streamList } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
+const { dependencies } = require('./package.json');
+const esbuildVer = dependencies["esbuild-wasm"].replace(/\^/, "");
+
 // Origin folders (source and destination folders)
 const srcFolder = `src`;
 const destFolder = `docs`;
@@ -32,6 +35,7 @@ task("html", async () => {
         pipes: [
             plumber(),
             pug({
+                data: { esbuildVer },
                 basedir: pugFolder,
                 self: true,
             }),
@@ -114,6 +118,9 @@ task("js", async () => {
         bundle: true,
         minify: true,
         color: true,
+        define: {
+            "esbuildVer": `\"${esbuildVer}\"`
+        }
     };
 
     const plugins = [
