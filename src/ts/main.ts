@@ -49,7 +49,6 @@ let parseInput = (input: string) => {
 
 let results = [];
 (async () => {
-    const { default: size } = await importShim("./esbuild.js");
     searchInput?.addEventListener?.("input", () => {
         let timer: number | void;
 
@@ -79,8 +78,9 @@ let results = [];
         }, eventDelay);
     });
 
-    let pkg = "@okikio/native"
-    console.log(`Test package \'${pkg}\' is ${await size(pkg)}`);
+    // const { default: size } = await importShim("./esbuild.js");
+    // let pkg = "@okikio/native";
+    // console.log(`Test package \'${pkg}\' is ${await size(pkg)}`);
 
     build();
 })();
