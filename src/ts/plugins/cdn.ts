@@ -8,6 +8,7 @@ export const CDN = (): Plugin => {
         setup(build) {
             build.onLoad({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
                 const pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
+                console.log(pathUrl);
                 let value = cache[pathUrl];
                 if (!value) value = await fetchPkg(pathUrl);
                 cache[pathUrl] = value;

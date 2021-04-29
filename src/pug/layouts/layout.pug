@@ -12,11 +12,17 @@ head
   meta(name='viewport' content='width=device-width, initial-scale=1')
 
   link(rel='preconnect' href='https://fonts.gstatic.com')
+  link(rel="preconnect" href="https://unpkg.com/")
+
   link(rel='stylesheet' href='./css/app.css' async)
   link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Material+Icons&family=Material+Icons+Round&display=swap' rel='stylesheet' async)
 
   script(src='./js/theme.js' type='module' async)
   script(src='https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2016,es2017,es2018,Object.entries,fetch,IntersectionObserver,IntersectionObserverEntry,smoothscroll,matchMedia,localStorage,getComputedStyle,WebAnimations' defer)
+
+  link(rel="prefetch" href="./js/esbuild.js" as="script" type="text/javascript")
+  link(rel="prefetch" href=`https://unpkg.com/esbuild-wasm@${self.esbuildVer}/esbuild.wasm` as="fetch" crossorigin="anonymous")
+  script(src='./js/modern.min.js' type='module' defer)
 
 body
   +navbar
@@ -27,4 +33,3 @@ body
 
   +footer
   script(src='./js/legacy.min.js' nomodule)
-  script(src='./js/modern.min.js' type='module' async)

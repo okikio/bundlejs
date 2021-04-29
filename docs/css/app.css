@@ -782,7 +782,12 @@ video {
 	.card section.file-size {
 		text-align: center;
 	}
-}footer.footer {
+}.loading {
+	display: inline-block;
+	height: 2rem;
+	width: 2rem;
+	border-radius: 9999px;border-width:0.25rem;border-color:#d1d5db;border-top-color:#3b82f6;animation:spin 1s linear infinite;
+}.dark .loading{border-color:#555;border-top-color:#60a5fa}@keyframes spin{to{transform:rotate(360deg)}}footer.footer {
 	text-align: right;
 	--tw-text-opacity: 1;
 	color: rgba(107, 114, 128, var(--tw-text-opacity));
