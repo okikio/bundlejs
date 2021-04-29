@@ -26,7 +26,6 @@ export let result: BuildResult & {
 } | BuildIncremental;
 export default (async (pkg: string) => {
     if (CACHE.has(pkg)) {
-        console.log(pkg);
         return CACHE.get(pkg);
     }
 
