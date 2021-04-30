@@ -12,6 +12,7 @@
         ],
         "sourceMap": true,
         "outDir": "lib",
+        "resolveJsonModule": true,
         "isolatedModules": true,
         "esModuleInterop": true
     },

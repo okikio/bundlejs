@@ -134,7 +134,7 @@ task("js", async () => {
 
     return streamList(
         // Modern js
-        stream(`${tsFolder}/main.ts`, {
+        stream(`${tsFolder}/*.ts`, {
             pipes: [
                 // Bundle Modules
                 esbuild({
@@ -154,21 +154,6 @@ task("js", async () => {
                     )}`
                 );
             },
-        }),
-
-        // Playground js
-        stream(`${tsFolder}/playground.ts`, {
-            pipes: [
-                // Bundle Modules
-                esbuild({
-                    ...esbuildConfig,
-                    ...solidConfig,
-                    format: "esm",
-                    target: ["es2019"],
-                    entryNames: '[name].min',
-                }),
-            ],
-            dest: jsFolder, // Output
         }),
 
         // Esbuild js
