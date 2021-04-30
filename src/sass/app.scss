@@ -105,19 +105,6 @@ main {
     }
 }
 
-.search {
-    transition: box-shadow 0.2s ease-out;
-    @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
-    @apply bg-gray-200 dark:bg-quaternary rounded-lg;
-    @apply flex items-center px-4;
-
-    input#search-input {
-        @apply w-full ml-2 p-2 bg-transparent align-middle focus:outline-none;
-
-        -webkit-tap-highlight-color: transparent;
-    }
-}
-
 .card {
     @apply border border-gray-200 dark:border-quaternary;
     @apply grid gap-6 sm:grid-cols-12;
@@ -155,6 +142,10 @@ main {
 .dark .loading {
     border-color: theme("colors.tertiary");
     border-top-color: theme("colors.blue.400");
+}
+
+#app {
+    height: 500px;
 }
 
 @keyframes spin {

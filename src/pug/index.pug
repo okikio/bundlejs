@@ -6,25 +6,4 @@ block content
       h1 bundle
       p a quick npm package size checker
 
-    .search
-      i.icon search
-      input#search-input(type="text" autocomplete="off" placeholder="Type a package name...")
-
-    .search-results
-      //- .loading-container
-      //-   .loading
-      //-
-        - for (let i = 0; i < 4; i ++) {
-          .card
-            section.content
-              h3.font-semibold.text-lg
-                a(href="./") @okikio/native
-              p A framework who's goal is to make it easier to create complex, light-weight, and performant web applications using modern js apis.
-              p.updated-time Updated January 23, 2021 by
-                a(href="./") @okikio
-                | .
-            section.file-size
-              .self-center
-                h4.font-bold.text-lg 7 KB
-                p.uppercase Minified + Gzipped
-        - }
+    #app
