@@ -1,5 +1,11 @@
 import toArr from "../util/toArr";
 
+export const ThemeChange = new Event('theme-change', {
+    bubbles: true,
+    cancelable: true,
+    composed: false
+});
+
 // Based on [joshwcomeau.com/gatsby/dark-mode/]
 export let getTheme = (): string | null => {
     let theme = window.localStorage.getItem("theme");
@@ -41,6 +47,7 @@ export let themeSet = (theme: string) => {
     html.setAttribute("data-theme", theme);
     html.classList.toggle("dark", theme == "dark");
     setTheme(theme);
+    document.dispatchEvent(ThemeChange);
 };
 
 

@@ -1,6 +1,7 @@
 // @import "../../node_modules/monaco-editor/min/vs/editor/editor.main.css";
 #app {
-    @apply overflow-hidden rounded-lg;
+    @apply border border-gray-200 dark:border-transparent;
+    @apply overflow-hidden rounded-lg shadow-lg;
 }
 
 .monaco-editor {

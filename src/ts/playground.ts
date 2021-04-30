@@ -1,3 +1,3 @@
 
-import * as Editor from "./components/Editor";
-Editor.build();
+import * as App from "./components/App";
+App.build();
