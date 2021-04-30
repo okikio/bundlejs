@@ -52,12 +52,14 @@ task("css", async () => {
         { default: tailwind },
         { default: scss },
         { default: sass },
+        { default: _import },
         { default: rename }
     ] = await Promise.all([
         import("gulp-postcss"),
         import("tailwindcss"),
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
+        import("postcss-import"),
         import("gulp-rename")
     ]);
 
@@ -67,6 +69,7 @@ task("css", async () => {
             postcss([
                 sass({ outputStyle: "compressed" }),
                 tailwind("./tailwind.cjs"),
+                _import()
             ], { syntax: scss }),
 
             rename({ extname: ".css" }),
@@ -121,12 +124,13 @@ task("js", async () => {
         color: true,
         define: {
             "esbuildVer": `\"${esbuildVer}\"`
-        }
+        },
     };
 
-    const plugins = [
-        solid()
-    ];
+    const solidConfig = {
+        loader: { '.ttf': 'file' },
+        plugins: [solid()]
+    };
 
     return streamList(
         // Modern js
@@ -135,73 +139,68 @@ task("js", async () => {
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
+                    ...solidConfig,
                     sourcemap: true,
-                    plugins,
                     format: "esm",
-                    target: ["chrome83"],
-                    outfile: "modern.min.js"
+                    target: ["es2019"],
+                    entryNames: '[name].min',
                 }),
             ],
             dest: jsFolder, // Output
             async end() {
                 console.log(
                     `=> \`modern\` Gzip size - ${prettyBytes(
-                        await gzipSize.file(`${jsFolder}/modern.min.js`)
+                        await gzipSize.file(`${jsFolder}/main.min.js`)
                     )}`
                 );
             },
         }),
 
-        // Legacy js
-        stream(`${tsFolder}/main.ts`, {
+        // Playground js
+        stream(`${tsFolder}/playground.ts`, {
             pipes: [
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
-                    format: "iife",
-                    plugins,
-                    target: ["chrome62"],
-                    outfile: "legacy.min.js"
+                    ...solidConfig,
+                    format: "esm",
+                    target: ["es2019"],
+                    entryNames: '[name].min',
                 }),
             ],
             dest: jsFolder, // Output
-            async end() {
-                console.log(
-                    `=> \`legacy\` Gzip size - ${prettyBytes(
-                        await gzipSize.file(`${jsFolder}/legacy.min.js`)
-                    )}`
-                );
-            },
         }),
 
-        // Modules js
-        stream(`${tsFolder}/modules/*.ts`, {
+        // Esbuild js
+        stream(`${tsFolder}/modules/esbuild.ts`, {
+            opts: { allowEmpty: true },
             pipes: [
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
-                    sourcemap: true,
                     banner: { js: 'const global = globalThis;' },
                     inject: ["./shims/node-shim.js"],
                     format: "esm",
-                    target: ["chrome62"]
+                    target: ["es2017"]
                 }),
             ],
             dest: jsFolder, // Output
         }),
 
-        // Other js
-        stream([`${tsFolder}/*.ts`, `!${tsFolder}/main.ts`], {
+        // Esbuild js
+        stream(`${tsFolder}/workers/*.ts`, {
+            opts: { allowEmpty: true },
             pipes: [
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
                     format: "iife",
-                    target: ["chrome62"]
+                    target: ["es2017"],
+                    entryNames: '[name].min',
                 }),
             ],
             dest: jsFolder, // Output
-        })
+        }),
     );
 });
 
@@ -235,12 +234,12 @@ task("watch", async () => {
                     extensions: ["html"],
                 },
             },
-            serveStatic: [
-                {
-                    route: "/lib",
-                    dir: ["./lib"],
-                },
-            ],
+            // serveStatic: [
+            //     {
+            //         route: "/lib",
+            //         dir: ["./lib"],
+            //     },
+            // ],
             online: true,
             reloadOnRestart: true,
             scrollThrottle: 250
