@@ -1,7 +1,7 @@
 import * as monaco from "monaco-editor";
 import GithubLight from "../util/light.json";
 import GithubDark from "../util/dark.json";
-import { themeGet } from "./theme";
+import { themeGet } from "../theme";
 
 export const build = () => {
     let divEl = document.querySelector("#editor") as HTMLElement;
