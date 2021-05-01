@@ -109,12 +109,10 @@ task("js", async () => {
         { default: gulpEsBuild, createGulpEsbuild },
         { default: gzipSize },
         { default: prettyBytes },
-        { default: solid }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gzip-size"),
-        import("pretty-bytes"),
-        import('./esbuild-solid.js')
+        import("pretty-bytes")
     ]);
 
     const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -127,9 +125,8 @@ task("js", async () => {
         },
     };
 
-    const solidConfig = {
-        loader: { '.ttf': 'file' },
-        plugins: [solid()]
+    const monacoConfig = {
+        loader: { '.ttf': 'file' }
     };
 
     return streamList(
@@ -139,7 +136,7 @@ task("js", async () => {
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
-                    ...solidConfig,
+                    ...monacoConfig,
                     sourcemap: true,
                     format: "esm",
                     target: ["es2019"],
@@ -241,7 +238,7 @@ task("watch", async () => {
 
     watch(`${pugFolder}/**/*.pug`, series("html"));
     watch([`${sassFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
-    watch([`${tsFolder}/**/*.ts`, `${tsFolder}/**/*.tsx`],
+    watch([`${tsFolder}/**/*.ts`, `${tsFolder}/**/*.json`],
         series("js")
     );
 

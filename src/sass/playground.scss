@@ -1,11 +1,18 @@
-// @import "../../node_modules/monaco-editor/min/vs/editor/editor.main.css";
 #app {
     @apply border border-gray-200 dark:border-transparent;
     @apply overflow-hidden rounded-lg shadow-lg;
+    @apply bg-white;
+    padding-top: 15px;
+    height: 500px;
 }
 
-.monaco-editor {
-    padding-top: 15px;
+.dark #app {
+    background-color: #24292e;
+}
+
+#editor {
+    height: 500px;
+    width: 100%;
 }
 
 .current-line {
