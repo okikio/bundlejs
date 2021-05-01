@@ -1,4 +1,4 @@
-import toArr from "../util/toArr";
+import toArr from "./util/toArr";
 
 export const ThemeChange = new Event('theme-change', {
     bubbles: true,
@@ -90,3 +90,5 @@ export let runTheme = () => {
         console.warn("Theming isn't available on this browser.", e);
     }
 };
+
+runTheme();
