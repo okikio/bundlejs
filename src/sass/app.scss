@@ -144,10 +144,6 @@ main {
     border-top-color: theme("colors.blue.400");
 }
 
-#app {
-    height: 500px;
-}
-
 @keyframes spin {
     to {
         transform: rotate(360deg);

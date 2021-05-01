@@ -568,7 +568,7 @@ video {
 	margin: 1.25rem;
 	display: grid;
 	justify-content: center;
-}.dark .loading{border-color:#555;border-top-color:#60a5fa}#app{height:500px}@keyframes spin{to{transform:rotate(360deg)}}.theme-toggle {
+}.dark .loading{border-color:#555;border-top-color:#60a5fa}@keyframes spin{to{transform:rotate(360deg)}}.theme-toggle {
 	border-radius: 0.375rem;
 	height: 2.5rem;
 	width: 2.5rem;
