@@ -3,7 +3,11 @@
     @apply overflow-hidden rounded-lg shadow-lg;
     @apply bg-white;
     padding-top: 15px;
-    height: 500px;
+    height: 400px;
+
+    @screen lt-sm {
+        height: 300px;
+    }
 }
 
 .dark #app {
@@ -11,7 +15,7 @@
 }
 
 #editor {
-    height: 500px;
+    height: 100%;
     width: 100%;
 }
 
