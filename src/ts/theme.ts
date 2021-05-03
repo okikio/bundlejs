@@ -1,5 +1,3 @@
-import toArr from "./util/toArr";
-
 export const ThemeChange = new Event('theme-change', {
     bubbles: true,
     cancelable: true,
@@ -50,33 +48,11 @@ export let themeSet = (theme: string) => {
     document.dispatchEvent(ThemeChange);
 };
 
-
-let handler = (() => {
-    document.removeEventListener("DOMContentLoaded", handler);
-    window.removeEventListener("load", handler);
-
-    try {
-        // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
-        let themeSwitch = toArr(document.querySelectorAll(".theme-toggle"));
-        if (themeSwitch[0]) {
-            for (let el of themeSwitch)
-                el.addEventListener("click", () => {
-                    themeSet(themeGet() === "dark" ? "light" : "dark");
-                });
-        }
-    } catch (e) {
-        console.warn("Theming seems to break on this browser.", e);
-    }
-}).bind(this);
-
 export let runTheme = () => {
     try {
         let theme = getTheme();
         if (theme === null) theme = mediaTheme();
         theme && themeSet(theme);
-
-        document.addEventListener("DOMContentLoaded", handler);
-        window.addEventListener("load", handler);
 
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
             themeSet(e.matches ? "dark" : "light");

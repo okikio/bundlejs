@@ -109,10 +109,12 @@ task("js", async () => {
         { default: gulpEsBuild, createGulpEsbuild },
         { default: gzipSize },
         { default: prettyBytes },
+        { default: changed }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gzip-size"),
-        import("pretty-bytes")
+        import("pretty-bytes"),
+        import("gulp-changed")
     ]);
 
     const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -133,6 +135,7 @@ task("js", async () => {
         // Modern js
         stream(`${tsFolder}/*.ts`, {
             pipes: [
+                changed(jsFolder),
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
@@ -144,19 +147,20 @@ task("js", async () => {
                 }),
             ],
             dest: jsFolder, // Output
-            async end() {
-                console.log(
-                    `=> \`modern\` Gzip size - ${prettyBytes(
-                        await gzipSize.file(`${jsFolder}/main.min.js`)
-                    )}`
-                );
-            },
+            // async end() {
+            //     console.log(
+            //         `=> \`modern\` Gzip size - ${prettyBytes(
+            //             await gzipSize.file(`${jsFolder}/main.min.js`)
+            //         )}`
+            //     );
+            // },
         }),
 
         // Esbuild js
         stream(`${tsFolder}/modules/esbuild.ts`, {
             opts: { allowEmpty: true },
             pipes: [
+                changed(jsFolder),
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
@@ -173,6 +177,7 @@ task("js", async () => {
         stream(`${tsFolder}/workers/*.ts`, {
             opts: { allowEmpty: true },
             pipes: [
+                changed(jsFolder),
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
@@ -238,20 +243,13 @@ task("watch", async () => {
 
     watch(`${pugFolder}/**/*.pug`, series("html"));
     watch([`${sassFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
-    watch([`${tsFolder}/**/*.ts`, `${tsFolder}/**/*.json`],
-        series("js")
-    );
+    watch(`${tsFolder}/**/*.ts`, series("js"));
 
-    watch(`${assetsFolder}/**/*`, { delay: 500 }, series(`assets`)).on(
-        "change",
-        browserSync.reload
-    );
-
-    watch([`${htmlFolder}/**/*.html`, `${jsFolder}/**/*.js`]).on(
-        "change",
-        browserSync.reload
-    );
+    watch(
+        [`${htmlFolder}/**/*.html`, `${jsFolder}/**/*.js`, `${assetsFolder}/**/*`],
+        { delay: 500, queue: false }
+    ).on("change", browserSync.reload);
 });
 
-task("build", series("clean", parallel("html", "css", "js", "assets"), "minify-css"));
-task("default", series("clean", parallel("html", "css", "js", "assets"), "watch"));
+task("build", series("clean", parallel("html", "css", "assets"), "js", "minify-css"));
+task("default", series("clean", parallel("html", "css", "assets"), "js", "watch"));

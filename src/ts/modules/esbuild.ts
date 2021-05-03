@@ -24,9 +24,9 @@ export const CACHE = new Map<string, string>();
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
-export default (async (pkg: string) => {
-    if (CACHE.has(pkg)) {
-        return CACHE.get(pkg);
+export default (async (input: string) => {
+    if (CACHE.has(input)) {
+        return CACHE.get(input);
     }
 
     try {
@@ -40,12 +40,13 @@ export default (async (pkg: string) => {
         }
     } catch (e) {
         console.warn("esbuild initialize error", e);
+        return 0;
     }
 
     let content: string;
     try {
         vol.fromJSON({
-            "input.ts": `export * as pkg from "${pkg}";`
+            "input.ts": `${input}`
         }, '/');
 
         if (result) {
@@ -90,16 +91,18 @@ export default (async (pkg: string) => {
         if (_DEBUG) console.log(content);
     } catch (e) {
         console.warn(`esbuild build error`, e);
+        return 0;
     }
 
     try {
         if (!content) throw `the content of the build is not valid, "${content}"`;
         let { length } = gzip(content, { level: 9 });
         let size = prettyBytes(length);
-        if (_DEBUG) console.log(`\'${pkg}\' is ${size}`);
-        CACHE.set(pkg, size);
+        if (_DEBUG) console.log(`\'${input}\' is ${size}`);
+        CACHE.set(input, size);
         return size;
     } catch (e) {
         console.warn("Error zipping file ", e);
+        return 0;
     }
 });
