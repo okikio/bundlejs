@@ -1,17 +1,25 @@
-import * as monaco from "monaco-editor";
-import GithubLight from "../util/light.json";
-import GithubDark from "../util/dark.json";
+import { importShim } from "../util/dynamic-import";
+import { editor as Editor } from "monaco-editor";
+import GithubLight from "../util/github-light";
+import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
+
+export const debounce = (func: Function, timeout = 300) => {
+    let timer: any;
+    return (...args: any) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+};
 
 export const build = () => {
     let divEl = document.querySelector("#editor") as HTMLElement;
-    let editor: monaco.editor.IStandaloneCodeEditor;
+    let editor: Editor.IStandaloneCodeEditor;
 
     // Since packaging is done by you, you need
     // to instruct the editor how you named the
     // bundles that contain the web workers.
-    // @ts-ignore
-    globalThis.MonacoEnvironment = {
+    (window as any).MonacoEnvironment = {
         getWorkerUrl: function (moduleId, label) {
             if (label === "json") {
                 return "./js/json.min.js";
@@ -31,12 +39,12 @@ export const build = () => {
     };
 
     // @ts-ignore
-    monaco.editor.defineTheme("dark", GithubDark);
+    Editor.defineTheme("dark", GithubDark);
 
     // @ts-ignore
-    monaco.editor.defineTheme("light", GithubLight);
-    
-    editor = monaco.editor.create(divEl, {
+    Editor.defineTheme("light", GithubLight);
+
+    editor = Editor.create(divEl, {
         value: `export {};`,
         minimap: {
             enabled: false,
@@ -47,10 +55,32 @@ export const build = () => {
             vertical: "auto",
         },
         theme: themeGet(),
+        automaticLayout: true,
         language: "typescript",
     });
 
     document.addEventListener("theme-change", () => {
-        monaco.editor.setTheme(themeGet());
+        Editor.setTheme(themeGet());
     });
+
+    try {
+        (async () => {
+            const { default: size } = await importShim("./esbuild.js");
+
+            /**
+             * We need to debounce a bit the compilation because
+             * it takes ~15ms to compile with the web worker...
+             * Also, real time feedback can be stressful
+             */
+            let timer = window.setInterval(() => {
+                (async () => {
+                    console.log("Cool");
+                    console.log(await size(`export * as pkg from "@okikio/native";`));
+                })();
+                window.clearInterval(timer);
+            }, 500);
+        })();
+    } catch (e) {
+        console.warn(`Esbuild has failed to load...`, e);
+    }
 };

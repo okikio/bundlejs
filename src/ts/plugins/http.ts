@@ -1,6 +1,5 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
 import { Plugin } from 'esbuild';
-import { HOST } from './bare';
 
 export async function fetchPkg(url: string) {
     const res = await fetch(url);
@@ -44,7 +43,6 @@ export const HTTP = (): Plugin => {
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 const { content, url } = await fetchPkg(args.path);
-                console.log(url);
 
                 return {
                     contents: content,
