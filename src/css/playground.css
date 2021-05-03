@@ -1,0 +1,25 @@
+#app {
+    @apply border border-gray-200 dark:border-transparent;
+    @apply overflow-hidden rounded-lg shadow-lg;
+    @apply bg-white;
+    padding-top: 15px;
+    height: 400px;
+
+    @screen lt-sm {
+        height: 300px;
+    }
+}
+
+.dark #app {
+    background-color: #24292e;
+}
+
+#editor {
+    height: 100%;
+    width: 100%;
+}
+
+.current-line {
+    width: calc(100% - 20px);
+    border-radius: 4px;
+}

@@ -65,20 +65,20 @@ export const build = () => {
 
     try {
         (async () => {
-            const { default: size } = await importShim("./esbuild.js");
+            // const { default: size } = await importShim("./esbuild.js");
 
             /**
              * We need to debounce a bit the compilation because
              * it takes ~15ms to compile with the web worker...
              * Also, real time feedback can be stressful
              */
-            let timer = window.setInterval(() => {
-                (async () => {
-                    console.log("Cool");
-                    console.log(await size(`export * as pkg from "@okikio/native";`));
-                })();
-                window.clearInterval(timer);
-            }, 500);
+            // let timer = window.setInterval(() => {
+            //     (async () => {
+            //         console.log("Cool");
+            //         console.log(await size(`export * as pkg from "@okikio/native";`));
+            //     })();
+            //     window.clearInterval(timer);
+            // }, 500);
         })();
     } catch (e) {
         console.warn(`Esbuild has failed to load...`, e);
