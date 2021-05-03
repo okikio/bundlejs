@@ -15,7 +15,7 @@ const destFolder = `docs`;
 
 // Source file folders
 const tsFolder = `${srcFolder}/ts`;
-const sassFolder = `${srcFolder}/sass`;
+const cssSrcFolder = `${srcFolder}/css`;
 const pugFolder = `${srcFolder}/pug`;
 const assetsFolder = `${srcFolder}/assets`;
 
@@ -50,29 +50,35 @@ task("css", async () => {
     const [
         { default: postcss },
         { default: tailwind },
+
+        { default: _import },
+
         { default: scss },
         { default: sass },
-        { default: _import },
-        { default: rename }
+
+        { default: autoprefixer },
+        { default: csso },
     ] = await Promise.all([
         import("gulp-postcss"),
         import("tailwindcss"),
+
+        import("postcss-easy-import"),
+
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
-        import("postcss-import"),
-        import("gulp-rename")
+
+        import("autoprefixer"),
+        import("postcss-csso"),
     ]);
 
-    return stream(`${sassFolder}/**/*.scss`, {
+    return stream(`${cssSrcFolder}/*.css`, {
         pipes: [
             // Minify scss to css
             postcss([
-                sass({ outputStyle: "compressed" }),
+                _import(),
                 tailwind("./tailwind.cjs"),
-                _import()
+                sass({ outputStyle: "compressed" }),
             ], { syntax: scss }),
-
-            rename({ extname: ".css" }),
         ],
         dest: cssFolder,
         end: browserSync ? [browserSync.stream()] : null,
@@ -242,7 +248,7 @@ task("watch", async () => {
     );
 
     watch(`${pugFolder}/**/*.pug`, series("html"));
-    watch([`${sassFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
+    watch([`${cssSrcFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
     watch(`${tsFolder}/**/*.ts`, series("js"));
 
     watch(
