@@ -1,6 +1,6 @@
 #app {
     @apply border border-gray-200 dark:border-transparent;
-    @apply overflow-hidden rounded-lg shadow-lg;
+    @apply rounded-lg shadow-lg;
     @apply bg-white;
     padding-top: 15px;
     height: 400px;

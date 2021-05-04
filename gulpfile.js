@@ -55,9 +55,6 @@ task("css", async () => {
 
         { default: scss },
         { default: sass },
-
-        { default: autoprefixer },
-        { default: csso },
     ] = await Promise.all([
         import("gulp-postcss"),
         import("tailwindcss"),
@@ -66,9 +63,6 @@ task("css", async () => {
 
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
-
-        import("autoprefixer"),
-        import("postcss-csso"),
     ]);
 
     return stream(`${cssSrcFolder}/*.css`, {
@@ -76,8 +70,8 @@ task("css", async () => {
             // Minify scss to css
             postcss([
                 _import(),
-                tailwind("./tailwind.cjs"),
                 sass({ outputStyle: "compressed" }),
+                tailwind("./tailwind.cjs"),
             ], { syntax: scss }),
         ],
         dest: cssFolder,
@@ -248,7 +242,7 @@ task("watch", async () => {
     );
 
     watch(`${pugFolder}/**/*.pug`, series("html"));
-    watch([`${cssSrcFolder}/**/*.scss`, `./tailwind.cjs`], series("css"));
+    watch([`${cssSrcFolder}/**/*.css`, `./tailwind.cjs`], series("css"));
     watch(`${tsFolder}/**/*.ts`, series("js"));
 
     watch(

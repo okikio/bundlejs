@@ -1,6 +1,9 @@
 .navbar {
     @apply fixed top-0 left-0 w-full z-50;
-    @apply backdrop-filter backdrop-blur dark:backdrop-blur-md;
+
+    @supports (backdrop-filter: blur(5px)) {
+        @apply backdrop-filter backdrop-blur dark:backdrop-blur-md;
+    }
 
     .container {
         @apply sm:max-w-screen-lg px-5 h-full relative;
@@ -13,6 +16,13 @@
 
     &.shadow .navbar-bg {
         @apply dark:bg-elevated;
+    }
+
+    .navbar-bg,
+    &.shadow .navbar-bg {
+        @supports (backdrop-filter: blur(5px)) {
+            @apply dark:bg-opacity-60;
+        }
     }
 
     .navbar-frame {
@@ -60,12 +70,5 @@
 
     &:hover {
         @apply bg-opacity-60;
-    }
-}
-
-@supports (backdrop-filter: blur(5px)) {
-    .navbar-bg,
-    .navbar.shadow .navbar-bg {
-        @apply dark:bg-opacity-60;
     }
 }
