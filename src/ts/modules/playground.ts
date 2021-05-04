@@ -18,7 +18,7 @@ export const build = () => {
     let editor: Editor.IStandaloneCodeEditor;
 
     // Compiler options
-    languages.typescript.typescriptDefaults.setCompilerOptions({
+    languages.typescript.javascriptDefaults.setCompilerOptions({
         "moduleResolution": languages.typescript.ModuleResolutionKind.NodeJs,
         "target": languages.typescript.ScriptTarget.ES2020,
         "module": languages.typescript.ModuleKind.ES2015,
@@ -75,7 +75,7 @@ export const build = () => {
         },
         theme: themeGet(),
         automaticLayout: true,
-        language: "typescript",
+        language: "javascript",
     });
 
     document.addEventListener("theme-change", () => {
