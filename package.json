@@ -50,7 +50,6 @@
         "@types/node": "^15.0.1",
         "autoprefixer": "^10.2.5",
         "browser-sync": "^2.26.14",
-        "chalk": "^4.1.1",
         "commitizen": "^4.2.3",
         "del": "^6.0.0",
         "esbuild": "^0.11.18",
@@ -64,7 +63,6 @@
         "gzip-size": "^6.0.0",
         "husky": "^6.0.0",
         "lodash-es": "^4.17.21",
-        "plugin-error": "^1.0.1",
         "pnpm": "^6.2.5",
         "postcss": "^8.2.13",
         "postcss-advanced-variables": "^3.0.1",
@@ -73,14 +71,10 @@
         "postcss-easy-import": "^3.0.0",
         "postcss-nested": "^5.0.5",
         "postcss-scss": "^3.0.5",
-        "replace-ext": "^2.0.0",
         "sass": "^1.32.12",
         "standard-version": "^9.2.0",
-        "strip-ansi": "^7.0.0",
         "tailwindcss": "^2.1.2",
-        "through2": "^4.0.2",
         "ultra-runner": "^3.10.5",
-        "vinyl-sourcemaps-apply": "^0.2.1",
         "windicss": "^2.5.14"
     }
 }

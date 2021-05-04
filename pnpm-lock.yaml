@@ -10,7 +10,6 @@ specifiers:
   autoprefixer: ^10.2.5
   browser-sync: ^2.26.14
   buffer: ^6.0.3
-  chalk: ^4.1.1
   commitizen: ^4.2.3
   del: ^6.0.0
   dompurify: ^2.2.8
@@ -31,7 +30,6 @@ specifiers:
   monaco-editor: ^0.23.0
   pako: ^2.0.3
   path: ^0.12.7
-  plugin-error: ^1.0.1
   pnpm: ^6.2.5
   postcss: ^8.2.13
   postcss-advanced-variables: ^3.0.1
@@ -41,15 +39,11 @@ specifiers:
   postcss-nested: ^5.0.5
   postcss-scss: ^3.0.5
   pretty-bytes: ^5.6.0
-  replace-ext: ^2.0.0
   sass: ^1.32.12
   standard-version: ^9.2.0
   stream: ^0.0.2
-  strip-ansi: ^7.0.0
   tailwindcss: ^2.1.2
-  through2: ^4.0.2
   ultra-runner: ^3.10.5
-  vinyl-sourcemaps-apply: ^0.2.1
   windicss: ^2.5.14
 
 dependencies:
@@ -73,7 +67,6 @@ devDependencies:
   '@types/node': 15.0.1
   autoprefixer: 10.2.5_postcss@8.2.13
   browser-sync: 2.26.14
-  chalk: 4.1.1
   commitizen: 4.2.3
   del: 6.0.0
   esbuild: 0.11.18
@@ -87,7 +80,6 @@ devDependencies:
   gzip-size: 6.0.0
   husky: 6.0.0
   lodash-es: 4.17.21
-  plugin-error: 1.0.1
   pnpm: 6.2.5
   postcss: 8.2.13
   postcss-advanced-variables: 3.0.1
@@ -96,14 +88,10 @@ devDependencies:
   postcss-easy-import: 3.0.0
   postcss-nested: 5.0.5_postcss@8.2.13
   postcss-scss: 3.0.5
-  replace-ext: 2.0.0
   sass: 1.32.12
   standard-version: 9.2.0
-  strip-ansi: 7.0.0
   tailwindcss: 2.1.2_941a81a5c9afb5d3c8bce0db60f786b1
-  through2: 4.0.2
   ultra-runner: 3.10.5
-  vinyl-sourcemaps-apply: 0.2.1
   windicss: 2.5.14
 
 packages:
@@ -474,11 +462,6 @@ packages:
   /ansi-regex/5.0.0:
     resolution: {integrity: sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==}
     engines: {node: '>=8'}
-    dev: true
-
-  /ansi-regex/6.0.0:
-    resolution: {integrity: sha512-tAaOSrWCHF+1Ear1Z4wnJCXA9GGox4K6Ic85a5qalES2aeEwQGr7UC93mwef49536PkCYjzkp0zIxfFvexJ6zQ==}
-    engines: {node: '>=12'}
     dev: true
 
   /ansi-split/1.0.1:
@@ -5115,11 +5098,6 @@ packages:
     engines: {node: '>= 0.10'}
     dev: true
 
-  /replace-ext/2.0.0:
-    resolution: {integrity: sha512-UszKE5KVK6JvyD92nzMn9cDapSk6w/CaFZ96CnmDMUqH9oowfxF/ZjRITD25H4DnOQClLA4/j7jLGXXLVKxAug==}
-    engines: {node: '>= 10'}
-    dev: true
-
   /replace-homedir/1.0.0:
     resolution: {integrity: sha1-6H9tUTuSjd6AgmDBK+f+xv9ueYw=}
     engines: {node: '>= 0.10'}
@@ -5739,13 +5717,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       ansi-regex: 5.0.0
-    dev: true
-
-  /strip-ansi/7.0.0:
-    resolution: {integrity: sha512-UhDTSnGF1dc0DRbUqr1aXwNoY3RgVkSWG8BrpnuFIxhP57IqbS7IRta2Gfiavds4yCxc5+fEAVVOgBZWnYkvzg==}
-    engines: {node: '>=12'}
-    dependencies:
-      ansi-regex: 6.0.0
     dev: true
 
   /strip-bom/2.0.0:
