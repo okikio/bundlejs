@@ -1,5 +1,6 @@
 import { importShim } from "../util/dynamic-import";
-import { editor as Editor } from "monaco-editor";
+
+import { editor as Editor, languages } from "monaco-editor";
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
@@ -15,6 +16,24 @@ export const debounce = (func: Function, timeout = 300) => {
 export const build = () => {
     let divEl = document.querySelector("#editor") as HTMLElement;
     let editor: Editor.IStandaloneCodeEditor;
+
+    // Compiler options
+    languages.typescript.typescriptDefaults.setCompilerOptions({
+        "moduleResolution": languages.typescript.ModuleResolutionKind.NodeJs,
+        "target": languages.typescript.ScriptTarget.ES2020,
+        "module": languages.typescript.ModuleKind.ES2015,
+        "lib": [
+            "ES2019",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "allowNonTsExtensions": true,
+        "esModuleInterop": true,
+        "noResolve": true
+    });
+
 
     // Since packaging is done by you, you need
     // to instruct the editor how you named the
@@ -45,7 +64,7 @@ export const build = () => {
     Editor.defineTheme("light", GithubLight);
 
     editor = Editor.create(divEl, {
-        value: `export {};`,
+        value: `// @ts-ignore\nexport * from "rollup";`,
         minimap: {
             enabled: false,
         },
@@ -63,24 +82,4 @@ export const build = () => {
         Editor.setTheme(themeGet());
     });
 
-    try {
-        (async () => {
-            // const { default: size } = await importShim("./esbuild.js");
-
-            /**
-             * We need to debounce a bit the compilation because
-             * it takes ~15ms to compile with the web worker...
-             * Also, real time feedback can be stressful
-             */
-            // let timer = window.setInterval(() => {
-            //     (async () => {
-            //         console.log("Cool");
-            //         console.log(await size(`export * as pkg from "@okikio/native";`));
-            //     })();
-            //     window.clearInterval(timer);
-            // }, 500);
-        })();
-    } catch (e) {
-        console.warn(`Esbuild has failed to load...`, e);
-    }
 };

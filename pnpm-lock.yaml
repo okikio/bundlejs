@@ -33,10 +33,11 @@ specifiers:
   lodash-es: ^4.17.21
   memfs: ^3.2.2
   monaco-editor: ^0.23.0
+  monaco-editor-core: ^0.23.0
   pako: ^2.0.3
   path: ^0.12.7
   plugin-error: ^1.0.1
-  pnpm: ^6.2.3
+  pnpm: ^6.2.5
   postcss: ^8.2.13
   postcss-advanced-variables: ^3.0.1
   postcss-cli: ^8.3.1
@@ -69,6 +70,7 @@ dependencies:
   events: 3.3.0
   memfs: 3.2.2
   monaco-editor: 0.23.0
+  monaco-editor-core: 0.23.0
   pako: 2.0.3
   path: 0.12.7
   pretty-bytes: 5.6.0
@@ -96,7 +98,7 @@ devDependencies:
   husky: 6.0.0
   lodash-es: 4.17.21
   plugin-error: 1.0.1
-  pnpm: 6.2.3
+  pnpm: 6.2.5
   postcss: 8.2.13
   postcss-advanced-variables: 3.0.1
   postcss-cli: 8.3.1_postcss@8.2.13
@@ -4225,6 +4227,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /monaco-editor-core/0.23.0:
+    resolution: {integrity: sha512-1LHVpCHp+FErFdUjwzal1muTe+hUkR5CfXAxzua//eHB31bHdWVe15OJPEPS3/rxmfQtl9wZqJdHi4FcGz2zog==}
+    dev: false
+
   /monaco-editor/0.23.0:
     resolution: {integrity: sha512-q+CP5zMR/aFiMTE9QlIavGyGicKnG2v/H8qVvybLzeFsARM8f6G9fL0sMST2tyVYCwDKkGamZUI6647A0jR/Lg==}
     dev: false
@@ -4781,8 +4787,8 @@ packages:
       extend-shallow: 3.0.2
     dev: true
 
-  /pnpm/6.2.3:
-    resolution: {integrity: sha512-qYRrxYyN14tqeMGu7E3P+INXDiYbGojn5mitVfUxidO9OsSnTGSqT85nkslfKW8YfChlzFVN0XdG+1Tj86tKhA==}
+  /pnpm/6.2.5:
+    resolution: {integrity: sha512-klFrPM3JDo+LFA2f7Ih3wnH296ZDDqfFx5BCc3ADZV6zRQFscEL8XIU8jDqsHFv7EZHLP9Z12fzY/HyHca/duw==}
     engines: {node: '>=12.17'}
     hasBin: true
     dev: true
