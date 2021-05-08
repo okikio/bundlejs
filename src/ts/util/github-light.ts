@@ -1,4 +1,6 @@
-export default {
+import type * as monaco from "monaco-editor";
+const defineConfig = (json: monaco.editor.IStandaloneThemeData) => json;
+export default defineConfig({
   "inherit": false,
   "base": "vs-dark",
   "colors": {
@@ -69,6 +71,8 @@ export default {
     "pickerGroup.foreground": "#2f363d",
     "quickInput.background": "#fafbfc",
     "quickInput.foreground": "#2f363d",
+    "quickInputTitle.background": "#2f363d",
+    "quickInput.list.focusBackground": "#9cc1e5",
     "statusBar.foreground": "#586069",
     "statusBar.background": "#fff",
     "statusBar.border": "#e1e4e8",
@@ -465,4 +469,4 @@ export default {
     }
   ],
   "encodedTokensColors": []
-}
+});

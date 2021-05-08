@@ -207,6 +207,12 @@ task("clean", async () => {
     return del(destFolder);
 });
 
+// BrowserSync
+task("reload", () => {
+    if (browserSync) browserSync.reload();
+    return Promise.resolve();
+});
+
 // Build & Watch Tasks
 task("watch", async () => {
     const { default: bs } = await import("browser-sync");
@@ -241,14 +247,11 @@ task("watch", async () => {
         }
     );
 
-    watch(`${pugFolder}/**/*.pug`, series("html"));
+    watch(`${pugFolder}/**/*.pug`, series("html", "reload"));
     watch([`${cssSrcFolder}/**/*.css`, `./tailwind.cjs`], series("css"));
-    watch(`${tsFolder}/**/*.ts`, series("js"));
+    watch(`${tsFolder}/**/*.ts`, series("js", "reload"));
 
-    watch(
-        [`${htmlFolder}/**/*.html`, `${jsFolder}/**/*.js`, `${assetsFolder}/**/*`],
-        { delay: 500, queue: false }
-    ).on("change", browserSync.reload);
+    watch([`${assetsFolder}/**/*`], { delay: 300, queue: false }, series("reload"));
 });
 
 task("build", series("clean", parallel("html", "css", "assets"), "js", "minify-css"));
