@@ -17,8 +17,14 @@ export const build = () => {
     let divEl = document.querySelector("#editor") as HTMLElement;
     let editor: Editor.IStandaloneCodeEditor;
 
+    languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: true,
+        noSyntaxValidation: true,
+        noSuggestionDiagnostics: true,
+    });
+
     // Compiler options
-    languages.typescript.javascriptDefaults.setCompilerOptions({
+    languages.typescript.typescriptDefaults.setCompilerOptions({
         "moduleResolution": languages.typescript.ModuleResolutionKind.NodeJs,
         "target": languages.typescript.ScriptTarget.ES2020,
         "module": languages.typescript.ModuleKind.ES2015,
@@ -75,7 +81,7 @@ export const build = () => {
         },
         theme: themeGet(),
         automaticLayout: true,
-        language: "javascript",
+        language: "typescript",
     });
 
     document.addEventListener("theme-change", () => {
