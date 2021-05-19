@@ -15,7 +15,6 @@ html.dark
     link(rel="icon", type="image/svg+xml" href="./bundle.svg")
 
     link(rel='preconnect' href='https://fonts.gstatic.com')
-    link(rel='preconnect' href='https://cdn.polyfill.io')
     link(rel="preconnect" href="https://unpkg.com/")
 
     link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Material+Icons&family=Material+Icons+Round&display=swap' rel='stylesheet' async)
@@ -35,9 +34,9 @@ html.dark
 
 
     link(rel="stylesheet", href="./js/monaco.min.css")
-    //- link(rel='modulepreload' href='./js/monaco.min.js')
-    //- link(rel='modulepreload' href='./js/esbuild.min.js')
+    link(rel='modulepreload' href='./js/monaco.min.js')
+    link(rel='modulepreload' href='./js/esbuild.min.js')
 
-    //- link(rel='prefetch' href='./js/editor.min.js')
-    //- link(rel='prefetch' href='./js/typescript.min.js')
+    link(rel='prefetch' href='./js/editor.min.js')
+    link(rel='prefetch' href='./js/typescript.min.js')
     script(src='./js/main.min.js' type='module' defer)
