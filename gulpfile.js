@@ -107,16 +107,22 @@ task("minify-css", async () => {
 task("js", async () => {
     const [
         { default: gulpEsBuild, createGulpEsbuild },
-        { default: gzipSize },
+        { default: size },
         { default: prettyBytes },
-        { default: changed }
+        { default: changed },
+        { default: path }
     ] = await Promise.all([
         import("gulp-esbuild"),
-        import("gzip-size"),
+        import("gulp-size"),
         import("pretty-bytes"),
-        import("gulp-changed")
+        import("gulp-changed"),
+        import("path")
     ]);
 
+    const __dirname = path.resolve();
+    const sizeConfig = {
+        gzip: true
+    };
     const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
     const esbuildConfig = {
         bundle: true,
@@ -125,35 +131,32 @@ task("js", async () => {
         define: {
             "esbuildVer": `\"${esbuildVer}\"`
         },
+        entryNames: '[name].min',
+        target: ["es2017"]
     };
 
     const monacoConfig = {
-        loader: { '.ttf': 'file' }
+        loader: { '.ttf': 'file' },
     };
 
     return streamList(
-        // Modern js
+        // Main.js
         stream(`${tsFolder}/*.ts`, {
             pipes: [
                 changed(jsFolder),
+
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
-                    ...monacoConfig,
                     sourcemap: true,
                     format: "esm",
-                    target: ["es2019"],
-                    entryNames: '[name].min',
+                }),
+                size({
+                    ...sizeConfig,
+                    title: "main.min.js"
                 }),
             ],
             dest: jsFolder, // Output
-            // async end() {
-            //     console.log(
-            //         `=> \`modern\` Gzip size - ${prettyBytes(
-            //             await gzipSize.file(`${jsFolder}/main.min.js`)
-            //         )}`
-            //     );
-            // },
         }),
 
         // Esbuild js
@@ -164,26 +167,64 @@ task("js", async () => {
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
-                    banner: { js: 'const global = globalThis;' },
-                    inject: ["./shims/node-shim.js"],
+                    banner: {
+                        js: 'const global = globalThis;'
+                    },
+                    inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "esm",
-                    target: ["es2017"]
+                }),
+                size({
+                    ...sizeConfig,
+                    title: "esbuild.min.js"
                 }),
             ],
             dest: jsFolder, // Output
         }),
 
-        // Esbuild js
+        // Esbuild Wasm
+        stream(`node_modules/esbuild-wasm/esbuild.wasm`, {
+            opts: { allowEmpty: true },
+            pipes: [
+                changed(jsFolder),
+            ],
+            dest: jsFolder, // Output
+        }),
+
+        // Workers js
         stream(`${tsFolder}/workers/*.ts`, {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
+
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
+                    ...monacoConfig,
                     format: "iife",
-                    target: ["es2017"],
-                    entryNames: '[name].min',
+                }),
+                size({
+                    ...sizeConfig,
+                    title: "workers.min.js"
+                }),
+            ],
+            dest: jsFolder, // Output
+        }),
+
+        // Monaco js
+        stream(`${tsFolder}/modules/monaco.ts`, {
+            opts: { allowEmpty: true },
+            pipes: [
+                changed(jsFolder),
+
+                // Bundle Modules
+                esbuild({
+                    ...esbuildConfig,
+                    ...monacoConfig,
+                    format: "esm",
+                }),
+                size({
+                    ...sizeConfig,
+                    title: "monaco.min.js"
                 }),
             ],
             dest: jsFolder, // Output

@@ -1,4 +1,5 @@
 @import "./components/navbar";
+@import "./components/monaco";
 
 @tailwind base;
 @tailwind components;
@@ -126,29 +127,6 @@ main {
         &.file-size {
             @apply flex sm:text-center sm:col-span-3;
         }
-    }
-}
-
-.loading {
-    @apply inline-block w-8 h-8 rounded-full;
-    border-width: theme("spacing.1");
-    border-color: theme("colors.gray.300");
-    border-top-color: theme("colors.blue.500");
-    animation: spin 1s linear infinite;
-}
-
-.center-container {
-    @apply m-5 grid justify-center;
-}
-
-.dark .loading {
-    border-color: theme("colors.tertiary");
-    border-top-color: theme("colors.blue.400");
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
     }
 }
 

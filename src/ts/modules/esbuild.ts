@@ -2,7 +2,7 @@ import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "es
 import path from "path";
 import { fs, vol } from "memfs";
 
-import { EXTERNAL } from "../plugins/external";
+import { EXTERNAL, ExternalPackages } from "../plugins/external";
 import { ENTRY } from "../plugins/entry";
 import { NODE } from "../plugins/node-polyfill";
 import { BARE } from "../plugins/bare";
@@ -20,20 +20,16 @@ export const _DEBUG = false;
 // `esbuildVer` is defined in the gulpfile, it's the version of esbuild-wasm set in the package.json
 // @ts-ignore
 export const _VERSION = esbuildVer;
-export const CACHE = new Map<string, string>();
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
+// `https://unpkg.com/esbuild-wasm@${_VERSION}/esbuild.wasm`
 export default (async (input: string) => {
-    if (CACHE.has(input)) {
-        return CACHE.get(input);
-    }
-
     try {
         if (!_initialized) {
             await initialize({
                 worker: true,
-                wasmURL: `https://unpkg.com/esbuild-wasm@${_VERSION}/esbuild.wasm`
+                wasmURL: `./js/esbuild.wasm`
             });
 
             _initialized = true;
@@ -62,11 +58,15 @@ export default (async (input: string) => {
                 logLevel: 'error',
                 write: false,
                 outfile: "/bundle.js",
-                external: ['fsevents', `worker_threads`],
+                external: ExternalPackages,
                 platform: "browser",
                 format: "esm",
+                define: {
+                    "__NODE__": `false`,
+                    "process.env.NODE_ENV": `"production"`
+                },
                 plugins: [
-                    NODE(),
+                    // NODE(),
                     EXTERNAL(),
                     ENTRY(`/input.ts`),
                     BARE(),
@@ -99,10 +99,9 @@ export default (async (input: string) => {
         let { length } = gzip(content, { level: 9 });
         let size = prettyBytes(length);
         if (_DEBUG) console.log(`\'${input}\' is ${size}`);
-        CACHE.set(input, size);
         return size;
     } catch (e) {
         console.warn("Error zipping file ", e);
-        return 0;
+        return "Error";
     }
 });
