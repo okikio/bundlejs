@@ -2,36 +2,42 @@ include /components/navbar.pug
 include /components/footer.pug
 
 doctype html
-head
-  meta(charset='utf-8')
-  meta(http-equiv='X-UA-Compatible' content='IE=edge')
-  block title
-    title Homepage
-  meta(name='description' content='')
-  meta(name="color-scheme" content="dark light")
-  meta(name='viewport' content='width=device-width, initial-scale=1')
+html.dark
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    block title
+      title bundle - a quick npm package size checker
+    meta(name='description' content='')
+    meta(name="color-scheme" content="dark light")
+    meta(name='viewport' content='width=device-width, initial-scale=1')
 
-  link(rel="icon", type="image/svg+xml" href="./bundle.svg")
+    link(rel="icon", type="image/svg+xml" href="./bundle.svg")
 
-  link(rel='preconnect' href='https://fonts.gstatic.com')
-  link(rel="preconnect" href="https://unpkg.com/")
+    link(rel='preconnect' href='https://fonts.gstatic.com')
+    link(rel='preconnect' href='https://cdn.polyfill.io')
+    link(rel="preconnect" href="https://unpkg.com/")
 
-  link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Material+Icons&family=Material+Icons+Round&display=swap' rel='stylesheet' async)
-  link(rel='stylesheet' href='./css/app.css' async)
-  script(src='./js/theme.min.js' type='module' async)
+    link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Material+Icons&family=Material+Icons+Round&display=swap' rel='stylesheet' async)
+    link(rel='stylesheet' href='./css/app.css')
+    script(src='./js/theme.min.js' type='module' async)
 
-  link(rel="stylesheet" data-name="vs/editor/editor.main" href="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.css" crossorigin="anonymous" async)
-  link(rel="stylesheet", href="./css/playground.css" async)
+    block script
 
-  script(src='https://cdn.polyfill.io/v3/polyfill.min.js?features=es2017,es2018,Object.entries,smoothscroll,WebAnimations' defer)
-  script(src='./js/main.min.js' type='module' defer)
-  block script
+  body
+    +navbar
 
-body
-  +navbar
+    .navbar-offset
+    main(data-wrapper)
+      block content
 
-  .navbar-offset
-  main(data-wrapper)
-    block content
+    +footer
 
-  +footer
+
+    link(rel="stylesheet", href="./js/monaco.min.css")
+    //- link(rel='modulepreload' href='./js/monaco.min.js')
+    //- link(rel='modulepreload' href='./js/esbuild.min.js')
+
+    //- link(rel='prefetch' href='./js/editor.min.js')
+    //- link(rel='prefetch' href='./js/typescript.min.js')
+    script(src='./js/main.min.js' type='module' defer)
