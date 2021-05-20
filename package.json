@@ -48,7 +48,7 @@
         "@commitlint/cli": "^12.1.4",
         "@commitlint/config-conventional": "^12.1.4",
         "@csstools/postcss-sass": "^4.0.0",
-        "@types/node": "^15.3.0",
+        "@types/node": "^15.3.1",
         "autoprefixer": "^10.2.5",
         "browser-sync": "^2.26.14",
         "commitizen": "^4.2.4",
