@@ -96,7 +96,7 @@ main {
     }
 
     header {
-        @apply pt-8 pb-12 text-center;
+        @apply p-6 text-center;
 
         h1 {
             @apply text-5xl font-bold mb-2;
@@ -138,11 +138,10 @@ main {
     @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
 }
 
-.to-top {
+.btn {
     transition: opacity ease 0.25s;
     @apply mr-2 px-3 py-2 rounded-md no-underline hover:bg-gray-200;
     @apply text-blue-500 dark:text-blue-400 dark:hover:bg-quaternary;
-    @apply opacity-0;
 
     &.active {
         @apply bg-blue-600 text-white hover:bg-blue-700;

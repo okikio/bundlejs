@@ -1,4 +1,4 @@
-import { editor as Editor, languages } from "monaco-editor";
+import { editor as Editor, languages, Range } from "monaco-editor";
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
@@ -12,13 +12,13 @@ export const debounce = (func: Function, timeout = 300) => {
 };
 
 export const build = () => {
-    let divEl = document.querySelector("#editor") as HTMLElement;
-    let editor: Editor.IStandaloneCodeEditor;
+    let inputEl = document.querySelector("#editor") as HTMLElement;
+    let inputEditor: Editor.IStandaloneCodeEditor;
 
     languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
-        noSyntaxValidation: true,
-        noSuggestionDiagnostics: true,
+        noSyntaxValidation: false,
+        noSuggestionDiagnostics: false
     });
 
     // Compiler options
@@ -27,9 +27,9 @@ export const build = () => {
         "target": languages.typescript.ScriptTarget.ES2020,
         "module": languages.typescript.ModuleKind.ES2015,
         "lib": [
-            "ES2019",
-            "DOM",
-            "DOM.Iterable"
+            "es2019",
+            "dom",
+            "node"
         ],
         "exclude": ["node_modules"],
         "resolveJsonModule": true,
@@ -38,6 +38,20 @@ export const build = () => {
         "esModuleInterop": true,
         "noResolve": true
     });
+
+    // languages.registerHoverProvider('typescript', {
+    //     provideHover: function (model, position) {
+    //         // return xhr('../playground.html').then(function (res) {
+    //         //     return {
+    //         //         range: new Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
+    //         //         contents: [
+    //         //             { value: '**SOURCE**' },
+    //         //             { value: '```html\n' + res.responseText.substring(0, 200) + '\n```' }
+    //         //         ]
+    //         //     }
+    //         // });
+    //     }
+    // });
 
 
     // Since packaging is done by you, you need
@@ -68,8 +82,8 @@ export const build = () => {
     // @ts-ignore
     Editor.defineTheme("light", GithubLight);
 
-    editor = Editor.create(divEl, {
-        value: `// @ts-ignore\nexport * from "rollup";`,
+    inputEditor = Editor.create(inputEl, {
+        value: `export * from "@okikio/native";`,
         minimap: {
             enabled: false,
         },
@@ -78,6 +92,9 @@ export const build = () => {
             useShadows: false,
             vertical: "auto",
         },
+        "roundedSelection": true,
+        "scrollBeyondLastLine": false,
+        smoothScrolling: true,
         theme: themeGet(),
         automaticLayout: true,
         language: "typescript",
@@ -86,4 +103,6 @@ export const build = () => {
     document.addEventListener("theme-change", () => {
         Editor.setTheme(themeGet());
     });
+
+    return inputEditor;
 };

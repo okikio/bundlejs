@@ -19,6 +19,7 @@ module.exports = defineConfig({
         "secondary": "#bbb",
         "tertiary": "#555",
         "quaternary": "#333",
+        "center-container-dark": "#121212"
       },
       screens: {
         'lt-2xl': { 'max': '1535px' },

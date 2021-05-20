@@ -2,7 +2,7 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream, streamList } from "./util.js";
+import { watch, task, series, parallel, stream, streamList, tasks, parallelFn, seriesFn } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
@@ -103,45 +103,40 @@ task("minify-css", async () => {
     });
 });
 
+
+const sizeConfig = {
+    gzip: true
+};
+const esbuildConfig = {
+    bundle: true,
+    minify: true,
+    color: true,
+    define: {
+        "esbuildVer": `\"${esbuildVer}\"`
+    },
+    entryNames: '[name].min',
+    target: ["es2017"]
+};
+
+const monacoConfig = {
+    loader: { '.ttf': 'file' },
+};
+
 // JS Tasks
-task("js", async () => {
-    const [
-        { default: gulpEsBuild, createGulpEsbuild },
-        { default: size },
-        { default: prettyBytes },
-        { default: changed },
-        { default: path }
-    ] = await Promise.all([
-        import("gulp-esbuild"),
-        import("gulp-size"),
-        import("pretty-bytes"),
-        import("gulp-changed"),
-        import("path")
-    ]);
+tasks({
+    "main-js": async () => {
+        const [
+            { default: gulpEsBuild, createGulpEsbuild },
+            { default: size },
+            { default: changed }
+        ] = await Promise.all([
+            import("gulp-esbuild"),
+            import("gulp-size"),
+            import("gulp-changed"),
+        ]);
 
-    const __dirname = path.resolve();
-    const sizeConfig = {
-        gzip: true
-    };
-    const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
-    const esbuildConfig = {
-        bundle: true,
-        minify: true,
-        color: true,
-        define: {
-            "esbuildVer": `\"${esbuildVer}\"`
-        },
-        entryNames: '[name].min',
-        target: ["es2017"]
-    };
-
-    const monacoConfig = {
-        loader: { '.ttf': 'file' },
-    };
-
-    return streamList(
-        // Main.js
-        stream(`${tsFolder}/*.ts`, {
+        const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
+        return stream(`${tsFolder}/*.ts`, {
             pipes: [
                 changed(jsFolder),
 
@@ -157,10 +152,24 @@ task("js", async () => {
                 }),
             ],
             dest: jsFolder, // Output
-        }),
+        });
+    },
+    "esbuild-js": async () => {
+        const [
+            { default: gulpEsBuild, createGulpEsbuild },
+            { default: size },
+            { default: changed },
+            { default: path }
+        ] = await Promise.all([
+            import("gulp-esbuild"),
+            import("gulp-size"),
+            import("gulp-changed"),
+            import("path")
+        ]);
 
-        // Esbuild js
-        stream(`${tsFolder}/modules/esbuild.ts`, {
+        const __dirname = path.resolve();
+        const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
+        return stream(`${tsFolder}/modules/esbuild.ts`, {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
@@ -179,19 +188,36 @@ task("js", async () => {
                 }),
             ],
             dest: jsFolder, // Output
-        }),
+        });
+    },
+    "esbuild-wasm": async () => {
+        const [
+            { default: changed },
+        ] = await Promise.all([
+            import("gulp-changed"),
+        ]);
 
-        // Esbuild Wasm
-        stream(`node_modules/esbuild-wasm/esbuild.wasm`, {
+        return stream(`node_modules/esbuild-wasm/esbuild.wasm`, {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
             ],
             dest: jsFolder, // Output
-        }),
+        });
+    },
+    "workers-js": async () => {
+        const [
+            { default: gulpEsBuild, createGulpEsbuild },
+            { default: size },
+            { default: changed },
+        ] = await Promise.all([
+            import("gulp-esbuild"),
+            import("gulp-size"),
+            import("gulp-changed"),
+        ]);
 
-        // Workers js
-        stream(`${tsFolder}/workers/*.ts`, {
+        const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
+        return stream(`${tsFolder}/workers/*.ts`, {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
@@ -202,16 +228,28 @@ task("js", async () => {
                     ...monacoConfig,
                     format: "iife",
                 }),
+
                 size({
                     ...sizeConfig,
                     title: "workers.min.js"
                 }),
             ],
             dest: jsFolder, // Output
-        }),
+        });
+    },
+    "monaco-js": async () => {
+        const [
+            { default: gulpEsBuild, createGulpEsbuild },
+            { default: size },
+            { default: changed },
+        ] = await Promise.all([
+            import("gulp-esbuild"),
+            import("gulp-size"),
+            import("gulp-changed"),
+        ]);
 
-        // Monaco js
-        stream(`${tsFolder}/modules/monaco.ts`, {
+        const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
+        return stream(`${tsFolder}/modules/monaco.ts`, {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
@@ -222,14 +260,16 @@ task("js", async () => {
                     ...monacoConfig,
                     format: "esm",
                 }),
+
                 size({
                     ...sizeConfig,
                     title: "monaco.min.js"
                 }),
             ],
             dest: jsFolder, // Output
-        }),
-    );
+        });
+    },
+    "js": parallelFn("main-js", "esbuild-js", "esbuild-wasm", "workers-js", "monaco-js")
 });
 
 // Other assets
@@ -288,12 +328,24 @@ task("watch", async () => {
         }
     );
 
-    watch(`${pugFolder}/**/*.pug`, series("html", "reload"));
-    watch([`${cssSrcFolder}/**/*.css`, `./tailwind.cjs`], series("css"));
-    watch(`${tsFolder}/**/*.ts`, series("js", "reload"));
+    watch(`${pugFolder}/**/*.pug`, { delay: 250 }, series("html", "reload"));
+    watch([`${cssSrcFolder}/**/*.css`, `./tailwind.cjs`], { delay: 250 }, series("css"));
 
-    watch([`${assetsFolder}/**/*`], { delay: 300, queue: false }, series("reload"));
+    watch([
+        `${tsFolder}/**/*.ts`,
+        `!${tsFolder}/modules/esbuild.ts`,
+        `!node_modules/esbuild-wasm/esbuild.wasm`,
+        `!${tsFolder}/workers/*.ts`,
+        `!${tsFolder}/modules/monaco.ts`
+    ], { delay: 250 }, series("main-js", "reload"));
+
+    watch(`${tsFolder}/modules/esbuild.ts`, { delay: 250 }, series("esbuild-js", "reload"));
+    watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
+    watch(`${tsFolder}/workers/*.ts`, { delay: 250 }, series("workers-js", "reload"));
+    watch(`${tsFolder}/modules/monaco.ts`, { delay: 250 }, series("monaco-js", "reload"));
+
+    watch([`${assetsFolder}/**/*`], { delay: 300 }, series("reload"));
 });
 
-task("build", series("clean", parallel("html", "css", "assets"), "js", "minify-css"));
-task("default", series("clean", parallel("html", "css", "assets"), "js", "watch"));
+task("build", series("clean", parallel("html", "css", "assets", "js"), "minify-css"));
+task("default", series("clean", parallel("html", "css", "assets", "js"), "watch"));
