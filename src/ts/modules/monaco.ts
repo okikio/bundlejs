@@ -1,9 +1,9 @@
-import { editor as Editor, languages, Range } from "monaco-editor";
+import { editor as Editor, languages } from "monaco-editor";
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
-export const initialValue = `export * from "@okikio/native";`;
+export const initialValue = `export * from "@okikio/animate";`;
 
 export const debounce = (func: Function, timeout = 300) => {
     let timer: any;

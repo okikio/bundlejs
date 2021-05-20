@@ -15,10 +15,7 @@ import { WASM } from "../plugins/wasm";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
-
 export let _initialized = false;
-export const _DEBUG = false;
-
 let currentlyBuilding = false;
 let count = 0;
 
@@ -77,18 +74,18 @@ export const size = async (input: string) => {
         await fs.promises.writeFile("input.ts", `${input}`);
 
         // Stop builiding if another input is coming down the pipeline
-        // if (currentlyBuilding) result?.stop?.();
+        if (currentlyBuilding) result?.stop?.();
         currentlyBuilding = true;
 
-        // if (result) {
-        //     result = await result.rebuild();
-        // } else {
+        if (result) {
+            result = await result.rebuild();
+        } else {
             result = await build({
                 entryPoints: ['<stdin>'],
                 bundle: true,
                 minify: true,
                 color: true,
-                incremental: false,
+                incremental: true,
                 target: ["es2020"],
                 logLevel: 'error',
                 write: false,
@@ -105,6 +102,7 @@ export const size = async (input: string) => {
                     EXTERNAL(),
                     ENTRY(`/input.ts`),
                     JSON_PLUGIN(),
+                    
                     BARE(),
                     HTTP(),
                     CDN(),
@@ -113,7 +111,7 @@ export const size = async (input: string) => {
                 ],
                 globalName: 'bundler',
             });
-        // }
+        }
 
         currentlyBuilding = false;
         result?.outputFiles?.forEach((x) => {
@@ -124,27 +122,32 @@ export const size = async (input: string) => {
             fs.writeFileSync(x.path, x.text);
         });
 
+        result?.stop?.();
         content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
-        await fs.promises.writeFile("./bundle.js", ""); // Erase bundle file
-        if (_DEBUG) console.log(content);
+        content = content?.trim?.(); // Remove unesscary space
+        await fs.promises.unlink("./bundle.js"); // Delete bundle file
     } catch (e) {
         console.warn(`esbuild build error`, e);
         return "Error";
     }
 
     try {
-        if (!content) throw `the content of the build is not valid, "${content}"`;
         let { length } = gzip(content, { level: 9 });
         let size = prettyBytes(length);
 
         if (count > 10) console.clear();
-        console.groupCollapsed(input, size);
-        console.log(content);
+        let splitInput = input.split("\n");
+        console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+            console.groupCollapsed("Input Code: ");
+                console.log(input);
+            console.groupEnd();
+            console.groupCollapsed("Bundled Code: ");
+                console.log(content);
+            console.groupEnd();
         console.groupEnd();
 
+        content = null;
         count++;
-
-        if (_DEBUG) console.log(`\'${input}\' is ${size}`);
         return size;
     } catch (e) {
         console.warn("Error zipping file ", e);

@@ -33,6 +33,7 @@
         "@okikio/animate": "^2.0.4",
         "@uupaa/dynamic-import-polyfill": "^1.0.2",
         "assert": "^2.0.0",
+        "browser-builtins": "^3.3.1",
         "buffer": "^6.0.3",
         "dompurify": "^2.2.8",
         "esbuild-wasm": "^0.12.1",
