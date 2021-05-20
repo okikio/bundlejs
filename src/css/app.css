@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+    scroll-behavior: smooth;
+}
+
 body {
     @apply bg-white text-black;
     @apply dark:bg-black dark:text-label;
@@ -104,6 +109,22 @@ main {
 
         p {
             @apply text-lg font-medium;
+        }
+    }
+
+    #about {
+        @apply px-5 pt-24;
+
+        h2 {
+            @apply text-5xl text-center font-bold mb-8;
+        }
+
+        p {
+            @apply text-lg;
+        }
+
+        strong {
+            @apply font-extrabold dark:font-medium dark:underline;
         }
     }
 }

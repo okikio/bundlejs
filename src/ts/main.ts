@@ -9,6 +9,7 @@ Default.build();
 let loadingContainerEl = document.querySelector(".center-container");
 let fileSizeEl = document.querySelector(".file-size");
 let RunBtn = document.querySelector("#run");
+let bundleTime = document.querySelector("#bundle-time");
 let Fade = animate({
     target: loadingContainerEl,
     opacity: [1, 0],
@@ -36,24 +37,30 @@ let editor: Editor.IStandaloneCodeEditor;
     Fade = null;
 })();
 
-// Esbuild Bundler
+// esbuild Bundler
+let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
+
 (async () => {
     let { init, size } = await importShim("./esbuild.min.js");
     await init();
-    
     RunBtn.addEventListener("click", () => {
         let value = `` + editor?.getValue();
         if (value) {
             (async () => {
                 fileSizeEl.innerHTML = `<div class="loading"></div>`;
+                try {
+                bundleTime.textContent = ``;
 
+                let start = Date.now();
                 let fileSize = await size(value);
-                fileSizeEl.textContent = `` + fileSize;
+
+                    bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
+                    fileSizeEl.textContent = `` + fileSize;
+                } catch (e) {
+                    console.warn(e);
+                    fileSizeEl.textContent = `Error`;
+                }
             })();
         }
     });
 })();
-
-
-
-// console.log()

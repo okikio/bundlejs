@@ -103,10 +103,10 @@ task("minify-css", async () => {
     });
 });
 
-
 const sizeConfig = {
     gzip: true
 };
+
 const esbuildConfig = {
     bundle: true,
     minify: true,
@@ -159,17 +159,19 @@ tasks({
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: changed },
-            { default: path }
+            { default: path },
+            { NODE }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("gulp-changed"),
-            import("path")
+            import("path"),
+            import("./shims/builtins-plugin.js")
         ]);
 
         const __dirname = path.resolve();
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
-        return stream(`${tsFolder}/modules/esbuild.ts`, {
+        return stream([`${tsFolder}/modules/esbuild.ts`, `${tsFolder}/modules/rollup.ts`], {
             opts: { allowEmpty: true },
             pipes: [
                 changed(jsFolder),
@@ -179,6 +181,7 @@ tasks({
                     banner: {
                         js: 'const global = globalThis;'
                     },
+                    plugins: [NODE()],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "esm",
                 }),
@@ -334,6 +337,7 @@ task("watch", async () => {
     watch([
         `${tsFolder}/**/*.ts`,
         `!${tsFolder}/modules/esbuild.ts`,
+        `!${tsFolder}/modules/rollup.ts`,
         `!${tsFolder}/plugins/*.ts`,
         `!node_modules/esbuild-wasm/esbuild.wasm`,
         `!${tsFolder}/workers/*.ts`,
@@ -342,6 +346,7 @@ task("watch", async () => {
 
     watch([
         `${tsFolder}/modules/esbuild.ts`,
+        `${tsFolder}/modules/rollup.ts`,
         `${tsFolder}/plugins/*.ts`,
     ], { delay: 250 }, series("esbuild-js", "reload"));
     watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));

@@ -1,7 +1,7 @@
 #app {
     @apply border border-gray-200 dark:border-transparent;
     @apply rounded-lg shadow-lg;
-    @apply bg-white relative block mb-4;
+    @apply bg-white relative block mb-12;
     padding-top: 15px;
     padding-bottom: 15px;
     height: 400px - 56px;
@@ -77,6 +77,10 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+#bundle-time {
+    @apply flex items-center;
 }
 
 #editor {
