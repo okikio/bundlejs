@@ -334,12 +334,16 @@ task("watch", async () => {
     watch([
         `${tsFolder}/**/*.ts`,
         `!${tsFolder}/modules/esbuild.ts`,
+        `!${tsFolder}/plugins/*.ts`,
         `!node_modules/esbuild-wasm/esbuild.wasm`,
         `!${tsFolder}/workers/*.ts`,
         `!${tsFolder}/modules/monaco.ts`
     ], { delay: 250 }, series("main-js", "reload"));
 
-    watch(`${tsFolder}/modules/esbuild.ts`, { delay: 250 }, series("esbuild-js", "reload"));
+    watch([
+        `${tsFolder}/modules/esbuild.ts`,
+        `${tsFolder}/plugins/*.ts`,
+    ], { delay: 250 }, series("esbuild-js", "reload"));
     watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
     watch(`${tsFolder}/workers/*.ts`, { delay: 250 }, series("workers-js", "reload"));
     watch(`${tsFolder}/modules/monaco.ts`, { delay: 250 }, series("monaco-js", "reload"));

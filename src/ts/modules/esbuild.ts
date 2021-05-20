@@ -4,6 +4,7 @@ import { fs, vol } from "memfs";
 
 import { EXTERNAL, ExternalPackages } from "../plugins/external";
 import { ENTRY } from "../plugins/entry";
+import { JSON_PLUGIN } from "../plugins/json";
 import { NODE } from "../plugins/node-polyfill";
 import { BARE } from "../plugins/bare";
 import { HTTP } from "../plugins/http";
@@ -14,16 +15,44 @@ import { WASM } from "../plugins/wasm";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
+
 export let _initialized = false;
 export const _DEBUG = false;
 
 let currentlyBuilding = false;
 let count = 0;
 
+const tsconfig = {
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "ES2020",
+        "module": "ES2020",
+        "lib": [
+            "ES2020",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "sourceMap": true,
+        "outDir": "lib",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+};
+
+vol.fromJSON({
+    "tsconfig.json": JSON.stringify(tsconfig),
+    "input.ts": ``
+}, '/');
+
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
-export default (async (input: string) => {
+
+export const init = async () => {
     try {
         if (!_initialized) {
             await initialize({
@@ -37,26 +66,29 @@ export default (async (input: string) => {
         console.warn("esbuild initialize error", e);
         return "Error";
     }
+}
 
+export const size = async (input: string) => {
     let content: string;
+    input = `${input}`; // Ensure input is string
+    if (!_initialized) return "Error";
+
     try {
+        await fs.promises.writeFile("input.ts", `${input}`);
+
         // Stop builiding if another input is coming down the pipeline
-        if (currentlyBuilding) result?.stop?.();
+        // if (currentlyBuilding) result?.stop?.();
         currentlyBuilding = true;
 
-        vol.fromJSON({
-            "input.ts": `${input}`
-        }, '/');
-
-        if (result) {
-            result = await result.rebuild();
-        } else {
+        // if (result) {
+        //     result = await result.rebuild();
+        // } else {
             result = await build({
                 entryPoints: ['<stdin>'],
                 bundle: true,
                 minify: true,
                 color: true,
-                incremental: true,
+                incremental: false,
                 target: ["es2020"],
                 logLevel: 'error',
                 write: false,
@@ -72,6 +104,7 @@ export default (async (input: string) => {
                     // NODE(),
                     EXTERNAL(),
                     ENTRY(`/input.ts`),
+                    JSON_PLUGIN(),
                     BARE(),
                     HTTP(),
                     CDN(),
@@ -80,9 +113,9 @@ export default (async (input: string) => {
                 ],
                 globalName: 'bundler',
             });
-        }
-        currentlyBuilding = false;
+        // }
 
+        currentlyBuilding = false;
         result?.outputFiles?.forEach((x) => {
             if (!fs.existsSync(path.dirname(x.path))) {
                 fs.mkdirSync(path.dirname(x.path));
@@ -92,6 +125,7 @@ export default (async (input: string) => {
         });
 
         content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
+        await fs.promises.writeFile("./bundle.js", ""); // Erase bundle file
         if (_DEBUG) console.log(content);
     } catch (e) {
         console.warn(`esbuild build error`, e);
@@ -104,11 +138,9 @@ export default (async (input: string) => {
         let size = prettyBytes(length);
 
         if (count > 10) console.clear();
-        console.log({
-            input,
-            size,
-            result: content,
-        });
+        console.groupCollapsed(input, size);
+        console.log(content);
+        console.groupEnd();
 
         count++;
 
@@ -118,4 +150,4 @@ export default (async (input: string) => {
         console.warn("Error zipping file ", e);
         return "Error";
     }
-});
+};
