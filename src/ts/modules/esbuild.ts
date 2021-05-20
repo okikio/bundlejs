@@ -17,13 +17,12 @@ import { gzip } from "pako";
 export let _initialized = false;
 export const _DEBUG = false;
 
-// `esbuildVer` is defined in the gulpfile, it's the version of esbuild-wasm set in the package.json
-// @ts-ignore
-export const _VERSION = esbuildVer;
+let currentlyBuilding = false;
+let count = 0;
+
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
-// `https://unpkg.com/esbuild-wasm@${_VERSION}/esbuild.wasm`
 export default (async (input: string) => {
     try {
         if (!_initialized) {
@@ -36,11 +35,15 @@ export default (async (input: string) => {
         }
     } catch (e) {
         console.warn("esbuild initialize error", e);
-        return 0;
+        return "Error";
     }
 
     let content: string;
     try {
+        // Stop builiding if another input is coming down the pipeline
+        if (currentlyBuilding) result?.stop?.();
+        currentlyBuilding = true;
+
         vol.fromJSON({
             "input.ts": `${input}`
         }, '/');
@@ -78,6 +81,7 @@ export default (async (input: string) => {
                 globalName: 'bundler',
             });
         }
+        currentlyBuilding = false;
 
         result?.outputFiles?.forEach((x) => {
             if (!fs.existsSync(path.dirname(x.path))) {
@@ -91,13 +95,23 @@ export default (async (input: string) => {
         if (_DEBUG) console.log(content);
     } catch (e) {
         console.warn(`esbuild build error`, e);
-        return 0;
+        return "Error";
     }
 
     try {
         if (!content) throw `the content of the build is not valid, "${content}"`;
         let { length } = gzip(content, { level: 9 });
         let size = prettyBytes(length);
+
+        if (count > 10) console.clear();
+        console.log({
+            input,
+            size,
+            result: content,
+        });
+
+        count++;
+
         if (_DEBUG) console.log(`\'${input}\' is ${size}`);
         return size;
     } catch (e) {
