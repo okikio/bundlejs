@@ -38,7 +38,9 @@ let editor: Editor.IStandaloneCodeEditor;
 
 // Esbuild Bundler
 (async () => {
-    let { default: size } = await importShim("./esbuild.min.js");
+    let { init, size } = await importShim("./esbuild.min.js");
+    await init();
+    
     RunBtn.addEventListener("click", () => {
         let value = `` + editor?.getValue();
         if (value) {

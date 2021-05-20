@@ -3,6 +3,8 @@ import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
+export const initialValue = `export * from "@okikio/native";`;
+
 export const debounce = (func: Function, timeout = 300) => {
     let timer: any;
     return (...args: any) => {
@@ -83,7 +85,7 @@ export const build = () => {
     Editor.defineTheme("light", GithubLight);
 
     inputEditor = Editor.create(inputEl, {
-        value: `export * from "@okikio/native";`,
+        value: initialValue,
         minimap: {
             enabled: false,
         },

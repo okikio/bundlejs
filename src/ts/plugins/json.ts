@@ -1,14 +1,17 @@
+// Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
 import { Plugin } from 'esbuild';
+import { CDN_NAMESPACE } from './cdn';
 import { fetchPkg } from './http';
-export const CDN_NAMESPACE = 'cdn';
-export const CDN = (): Plugin => {
+
+export const HOST = 'https://unpkg.com/'; // https://jspm.dev/npm:
+export const JSON_NAMESPACE = 'json-file';
+export const JSON_PLUGIN = (): Plugin => {
     const cache = new Map();
     return {
-        name: CDN_NAMESPACE,
+        name: 'json',
         setup(build) {
-            build.onLoad({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
+            build.onLoad({ namespace: CDN_NAMESPACE, filter: /\.json$/ }, async (args) => {
                 const pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
-
                 let value = cache.get(pathUrl);
                 if (!value) value = await fetchPkg(pathUrl);
                 cache.set(pathUrl, value);
@@ -19,20 +22,14 @@ export const CDN = (): Plugin => {
                     cache.delete(keys[size - 1]);
 
                 return {
-                    contents: value.content,
+                    contents: `
+                    export const value = ${value.content};
+                    export default value;`,
                     pluginData: {
                         parentUrl: value.url,
                     },
                 };
             });
-
-            build.onResolve({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
-                return {
-                    namespace: CDN_NAMESPACE,
-                    path: args.path,
-                    pluginData: args.pluginData,
-                };
-            });
-        },
+        }
     };
 };
