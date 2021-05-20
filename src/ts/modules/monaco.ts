@@ -15,14 +15,14 @@ export const build = () => {
     let inputEl = document.querySelector("#editor") as HTMLElement;
     let inputEditor: Editor.IStandaloneCodeEditor;
 
-    languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    languages.typescript.javascriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
         noSyntaxValidation: false,
         noSuggestionDiagnostics: false
     });
 
     // Compiler options
-    languages.typescript.typescriptDefaults.setCompilerOptions({
+    languages.typescript.javascriptDefaults.setCompilerOptions({
         "moduleResolution": languages.typescript.ModuleResolutionKind.NodeJs,
         "target": languages.typescript.ScriptTarget.ES2020,
         "module": languages.typescript.ModuleKind.ES2015,
@@ -97,7 +97,7 @@ export const build = () => {
         smoothScrolling: true,
         theme: themeGet(),
         automaticLayout: true,
-        language: "typescript",
+        language: "javascript",
     });
 
     document.addEventListener("theme-change", () => {
