@@ -35,7 +35,7 @@ export const VIRTUAL_FS = (): Plugin => {
                 });
                 if (!resolvePath) throw new Error('not found');
                 realPath = resolvePath;
-                
+
                 const content = (await fs.promises.readFile(realPath)).toString();
                 return {
                     contents: content,

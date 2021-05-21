@@ -3,7 +3,7 @@ import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
-export const initialValue = `export * from "@okikio/animate";`;
+export const initialValue = `export * from "@babel/core";`;
 
 export const debounce = (func: Function, timeout = 300) => {
     let timer: any;
@@ -17,6 +17,8 @@ export const build = () => {
     let inputEl = document.querySelector("#editor") as HTMLElement;
     let inputEditor: Editor.IStandaloneCodeEditor;
 
+    // languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    languages.typescript.javascriptDefaults.setMaximumWorkerIdleTime(-1);
     languages.typescript.javascriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
         noSyntaxValidation: false,
@@ -28,8 +30,9 @@ export const build = () => {
         "moduleResolution": languages.typescript.ModuleResolutionKind.NodeJs,
         "target": languages.typescript.ScriptTarget.ES2020,
         "module": languages.typescript.ModuleKind.ES2015,
+        "noEmit": true,
         "lib": [
-            "es2019",
+            "esnext",
             "dom",
             "node"
         ],
@@ -54,7 +57,6 @@ export const build = () => {
     //         // });
     //     }
     // });
-
 
     // Since packaging is done by you, you need
     // to instruct the editor how you named the

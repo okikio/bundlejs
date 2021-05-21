@@ -146,6 +146,7 @@ tasks({
                     sourcemap: true,
                     format: "esm",
                 }),
+
                 size({
                     ...sizeConfig,
                     title: "main.min.js"
@@ -174,14 +175,14 @@ tasks({
         return stream([`${tsFolder}/modules/esbuild.ts`, `${tsFolder}/modules/rollup.ts`], {
             opts: { allowEmpty: true },
             pipes: [
-                changed(jsFolder),
+                // changed(jsFolder),
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
                     banner: {
                         js: 'const global = globalThis;'
                     },
-                    plugins: [NODE()],
+                    // plugins: [ NODE() ],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "esm",
                 }),
@@ -223,7 +224,7 @@ tasks({
         return stream(`${tsFolder}/workers/*.ts`, {
             opts: { allowEmpty: true },
             pipes: [
-                changed(jsFolder),
+                // changed(jsFolder),
 
                 // Bundle Modules
                 esbuild({
