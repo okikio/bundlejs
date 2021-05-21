@@ -12,7 +12,7 @@ This project was greatly influenced by [hardfists neo-tools](https://github.com/
 
 **bundle** is a quick and easy way to bundle your projects and see the gzip size, it's similar to [bundlephobia](https://bundlephobia.com) but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good.
 
-The project isn't perfect, and I am still working on the high memory usage of **esbuild** and **monaco** as well as some edge case packages, e.g. **@babel/core**.
+The project isn't perfect, and I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of **esbuild** and **monaco** as well as some edge case packages, e.g. **@babel/core**.
 
 If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at [okikio/bundle](https://github.com/okikio/bundle).
 
