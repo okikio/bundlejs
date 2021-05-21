@@ -7,7 +7,8 @@ export const CDN = (): Plugin => {
         name: CDN_NAMESPACE,
         setup(build) {
             build.onLoad({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
-                const pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
+                let pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
+                pathUrl = pathUrl.replace(/\/$/, "/index"); // Some packages use "../../" which this is supposed to fix
 
                 let value = cache.get(pathUrl);
                 if (!value) value = await fetchPkg(pathUrl);
@@ -27,6 +28,7 @@ export const CDN = (): Plugin => {
             });
 
             build.onResolve({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
+                // console.log(args.path);
                 return {
                     namespace: CDN_NAMESPACE,
                     path: args.path,

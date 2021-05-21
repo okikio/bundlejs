@@ -2,15 +2,19 @@ import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "es
 import path from "path";
 import { fs, vol } from "memfs";
 
-import { EXTERNAL, ExternalPackages } from "../plugins/external";
+import { EXTERNAL } from "../plugins/external";
 import { ENTRY } from "../plugins/entry";
 import { JSON_PLUGIN } from "../plugins/json";
-import { NODE } from "../plugins/node-polyfill";
 import { BARE } from "../plugins/bare";
 import { HTTP } from "../plugins/http";
 import { CDN } from "../plugins/cdn";
 import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
+
+import { createBrowserPlugin } from "../plugins/velcro";
+import { FsStrategy } from "@velcro/strategy-fs";
+
+import  { codeFrameColumns } from "@babel/code-frame";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
@@ -19,31 +23,7 @@ export let _initialized = false;
 let currentlyBuilding = false;
 let count = 0;
 
-const tsconfig = {
-    "compilerOptions": {
-        "moduleResolution": "node",
-        "target": "ES2020",
-        "module": "ES2020",
-        "lib": [
-            "ES2020",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "sourceMap": true,
-        "outDir": "lib",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "esModuleInterop": true
-    },
-    "exclude": [
-        "node_modules"
-    ]
-};
-
-vol.fromJSON({
-    "tsconfig.json": JSON.stringify(tsconfig),
-    "input.ts": ``
-}, '/');
+export let Terser = new Worker("./js/terser.min.js");
 
 export let result: BuildResult & {
     outputFiles: OutputFile[];
@@ -64,6 +44,16 @@ export const init = async () => {
         return "Error";
     }
 }
+
+vol.fromJSON({
+    "./package.json": JSON.stringify({
+        "dependencies": {
+            "@babel/core": "*",
+            "@okikio/animate": "*",
+            "typescript": "*",
+        }
+    })
+}, "/")
 
 export const size = async (input: string) => {
     let content: string;
@@ -87,10 +77,9 @@ export const size = async (input: string) => {
                 color: true,
                 incremental: true,
                 target: ["es2020"],
-                logLevel: 'error',
+                logLevel: 'info',
                 write: false,
                 outfile: "/bundle.js",
-                external: ExternalPackages,
                 platform: "browser",
                 format: "esm",
                 define: {
@@ -98,16 +87,20 @@ export const size = async (input: string) => {
                     "process.env.NODE_ENV": `"production"`
                 },
                 plugins: [
-                    // NODE(),
                     EXTERNAL(),
                     ENTRY(`/input.ts`),
                     JSON_PLUGIN(),
-                    
-                    BARE(),
+
                     HTTP(),
+                    BARE(),
                     CDN(),
                     VIRTUAL_FS(),
-                    WASM()
+                    WASM(),
+
+                    createBrowserPlugin({
+                        cwd: "/",
+                        fs: fs as FsStrategy.FsInterface
+                    }),
                 ],
                 globalName: 'bundler',
             });
@@ -122,13 +115,31 @@ export const size = async (input: string) => {
             fs.writeFileSync(x.path, x.text);
         });
 
-        result?.stop?.();
         content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
         content = content?.trim?.(); // Remove unesscary space
-        await fs.promises.unlink("./bundle.js"); // Delete bundle file
+
+        // Reset memfs
+        vol.reset();
     } catch (e) {
         console.warn(`esbuild build error`, e);
         return "Error";
+    }
+
+    try {
+        Terser.postMessage(content);
+        let data = await new Promise<string>((resolve, reject) => {
+            Terser.onmessage = ({ data }) => {
+                if (typeof data == "string") resolve(data);
+                else reject(data.error);
+            };
+        });
+
+        content = data;
+    } catch (err) {
+        const { message, line, col: column } = err;
+        console.warn("Terser minify error",
+            codeFrameColumns(content, { start: { line, column } }, { message })
+        );
     }
 
     try {
@@ -138,12 +149,12 @@ export const size = async (input: string) => {
         if (count > 10) console.clear();
         let splitInput = input.split("\n");
         console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
-            console.groupCollapsed("Input Code: ");
-                console.log(input);
-            console.groupEnd();
-            console.groupCollapsed("Bundled Code: ");
-                console.log(content);
-            console.groupEnd();
+        console.groupCollapsed("Input Code: ");
+        console.log(input);
+        console.groupEnd();
+        console.groupCollapsed("Bundled Code: ");
+        console.log(content);
+        console.groupEnd();
         console.groupEnd();
 
         content = null;
