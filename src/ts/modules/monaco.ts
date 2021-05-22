@@ -20,9 +20,9 @@ export const build = () => {
     // languages.typescript.javascriptDefaults.setEagerModelSync(true);
     // languages.typescript.javascriptDefaults.setMaximumWorkerIdleTime(-1);
     languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false, // true,
-        noSyntaxValidation: false,
-        noSuggestionDiagnostics: false
+        noSemanticValidation: true,
+        noSyntaxValidation: true,
+        noSuggestionDiagnostics: true
     });
 
     // Compiler options
