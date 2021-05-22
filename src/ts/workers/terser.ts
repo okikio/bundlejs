@@ -2,9 +2,9 @@ importScripts("https://unpkg.com/source-map@0.7.3/dist/source-map.js");
 importScripts("https://unpkg.com/terser/dist/bundle.min.js");
 
 export const options = {
-	toplevel: true,
-	ecma: 2020,
-	module: true
+	// toplevel: true,
+	// ecma: 2020,
+	// module: true,
 };
 
 self.onmessage = ({ data }) => {

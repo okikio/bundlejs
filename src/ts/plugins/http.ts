@@ -43,7 +43,6 @@ export const HTTP = (): Plugin => {
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 const { content, url } = await fetchPkg(args.path);
-
                 return {
                     contents: content,
                     loader: 'ts',

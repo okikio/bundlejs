@@ -1,4 +1,12 @@
-import * as PolyfillMap from "browser-builtins";
+import * as browserBuiltins from "browser-builtins";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+// browserBuiltins["fs"] = require.resolve("memfs");
+
+let PolyfillMap = {
+    ...browserBuiltins,
+    "fs": require.resolve("memfs")
+};
 
 export const NODE = () => {
     return {

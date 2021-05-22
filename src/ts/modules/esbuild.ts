@@ -14,16 +14,16 @@ import { WASM } from "../plugins/wasm";
 import { createBrowserPlugin } from "../plugins/velcro";
 import { FsStrategy } from "@velcro/strategy-fs";
 
-import  { codeFrameColumns } from "@babel/code-frame";
+export const GZIP = new Worker("./js/gzip.min.js", {
+    type: "module"
+})
 
-import prettyBytes from "pretty-bytes";
-import { gzip } from "pako";
+// import { codeFrameColumns } from "@babel/code-frame"
+// export let Terser = new Worker("./js/terser.min.js");
 
 export let _initialized = false;
 let currentlyBuilding = false;
 let count = 0;
-
-export let Terser = new Worker("./js/terser.min.js");
 
 export let result: BuildResult & {
     outputFiles: OutputFile[];
@@ -76,7 +76,7 @@ export const size = async (input: string) => {
                 minify: true,
                 color: true,
                 incremental: true,
-                target: ["es2020"],
+                target: ["esnext"],
                 logLevel: 'info',
                 write: false,
                 outfile: "/bundle.js",
@@ -91,8 +91,8 @@ export const size = async (input: string) => {
                     ENTRY(`/input.ts`),
                     JSON_PLUGIN(),
 
-                    HTTP(),
                     BARE(),
+                    HTTP(),
                     CDN(),
                     VIRTUAL_FS(),
                     WASM(),
@@ -125,27 +125,40 @@ export const size = async (input: string) => {
         return "Error";
     }
 
+    // try {
+    //     Terser.postMessage(content);
+    //     let data = await new Promise<string>((resolve, reject) => {
+    //         Terser.onmessage = ({ data }) => {
+    //             if (typeof data == "string") resolve(data);
+    //             else reject(data.error);
+    //         };
+    //     });
+
+    //     content = data;
+    // } catch (err) {
+    //     const { message, line, col: column } = err;
+    //     console.warn("Terser minify error",
+    //         codeFrameColumns(content, { start: { line, column } }, { message })
+    //     );
+    // }
+
+    let size = "Error zipping file";
+
     try {
-        Terser.postMessage(content);
+        GZIP.postMessage(content);
         let data = await new Promise<string>((resolve, reject) => {
-            Terser.onmessage = ({ data }) => {
+            GZIP.onmessage = ({ data }) => {
                 if (typeof data == "string") resolve(data);
                 else reject(data.error);
             };
         });
 
-        content = data;
-    } catch (err) {
-        const { message, line, col: column } = err;
-        console.warn("Terser minify error",
-            codeFrameColumns(content, { start: { line, column } }, { message })
-        );
-    }
-
-    try {
-        let { length } = gzip(content, { level: 9 });
-        let size = prettyBytes(length);
-
+        size = data;
+        return size;
+    } catch (e) {
+        console.warn("Error zipping file ", e);
+        return "Error";
+    } finally {
         if (count > 10) console.clear();
         let splitInput = input.split("\n");
         console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
@@ -159,9 +172,6 @@ export const size = async (input: string) => {
 
         content = null;
         count++;
-        return size;
-    } catch (e) {
-        console.warn("Error zipping file ", e);
-        return "Error";
+
     }
 };

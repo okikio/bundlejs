@@ -44,6 +44,10 @@ export const build = () => {
         "noResolve": true
     });
 
+    // Read this on adding autocomplete to monaco:
+    // https://blog.expo.io/building-a-code-editor-with-monaco-f84b3a06deaf
+    // and
+    // https://mono.software/2017/04/11/custom-intellisense-with-monaco-editor/
     // languages.registerHoverProvider('typescript', {
     //     provideHover: function (model, position) {
     //         // return xhr('../playground.html').then(function (res) {
