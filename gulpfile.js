@@ -284,7 +284,7 @@ tasks({
 
 // Other assets
 task("assets", () => {
-    return stream(`${assetsFolder}/**/*`, {
+    return stream([`${assetsFolder}/**/*`, `${assetsFolder}/CNAME`], {
         opts: {
             base: assetsFolder,
         },
