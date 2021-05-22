@@ -18,7 +18,7 @@ export const build = () => {
     let inputEditor: Editor.IStandaloneCodeEditor;
 
     // languages.typescript.javascriptDefaults.setEagerModelSync(true);
-    languages.typescript.javascriptDefaults.setMaximumWorkerIdleTime(-1);
+    // languages.typescript.javascriptDefaults.setMaximumWorkerIdleTime(-1);
     languages.typescript.javascriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: false, // true,
         noSyntaxValidation: false,
