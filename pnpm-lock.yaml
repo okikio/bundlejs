@@ -5,6 +5,7 @@ specifiers:
   '@commitlint/cli': ^12.1.4
   '@commitlint/config-conventional': ^12.1.4
   '@csstools/postcss-sass': ^4.0.0
+  '@gfx/zopfli': ^1.0.15
   '@okikio/animate': ^2.0.4
   '@types/node': ^15.6.0
   '@uupaa/dynamic-import-polyfill': ^1.0.2
@@ -20,12 +21,10 @@ specifiers:
   buffer: ^6.0.3
   commitizen: ^4.2.4
   del: ^6.0.0
-  dompurify: ^2.2.8
   esbuild: ^0.12.1
   esbuild-plugin-velcro: ^0.1.1
   esbuild-wasm: ^0.12.1
   events: ^3.3.0
-  got: ^11.8.2
   gulp: ^4.0.2
   gulp-changed: ^4.0.2
   gulp-esbuild: ^0.8.0
@@ -58,6 +57,7 @@ specifiers:
 
 dependencies:
   '@babel/code-frame': 7.12.13
+  '@gfx/zopfli': 1.0.15
   '@okikio/animate': 2.0.4
   '@uupaa/dynamic-import-polyfill': 1.0.2
   '@velcro/common': 0.56.2
@@ -68,11 +68,9 @@ dependencies:
   assert: 2.0.0
   browser-builtins: 3.3.1
   buffer: 6.0.3
-  dompurify: 2.2.8
   esbuild-plugin-velcro: 0.1.1_esbuild@0.12.1
   esbuild-wasm: 0.12.1
   events: 3.3.0
-  got: 11.8.2
   memfs: 3.2.2
   monaco-editor: 0.24.0
   pako: 2.0.3
@@ -289,6 +287,13 @@ packages:
     dependencies:
       purgecss: 3.1.3
     dev: true
+
+  /@gfx/zopfli/1.0.15:
+    resolution: {integrity: sha512-7mBgpi7UD82fsff5ThQKet0uBTl4BYerQuc+/qA1ELTwWEiIedRTcD3JgiUu9wwZ2kytW8JOb165rSdAt8PfcQ==}
+    engines: {node: '>= 8'}
+    dependencies:
+      base64-js: 1.5.1
+    dev: false
 
   /@nodelib/fs.scandir/2.1.4:
     resolution: {integrity: sha512-33g3pMJk3bg5nXbL/+CY6I2eJDzZAni49PfJnL5fghPTggPvBd/pFNSgJsdAgWptuFu7qq/ERvOYFlhvsLTCKA==}
@@ -633,7 +638,7 @@ packages:
     engines: {node: '>= 8'}
     dependencies:
       normalize-path: 3.0.0
-      picomatch: 2.2.3
+      picomatch: 2.3.0
     dev: true
 
   /append-buffer/1.0.2:
@@ -2372,10 +2377,6 @@ packages:
     engines: {node: '>=0.4', npm: '>=1.2'}
     dev: false
 
-  /dompurify/2.2.8:
-    resolution: {integrity: sha512-9H0UL59EkDLgY3dUFjLV6IEUaHm5qp3mxSqWw7Yyx4Zhk2Jn2cmLe+CNPP3xy13zl8Bqg+0NehQzkdMoVhGRww==}
-    dev: false
-
   /dot-prop/5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
@@ -2783,7 +2784,7 @@ packages:
       glob-parent: 5.1.2
       merge2: 1.4.1
       micromatch: 4.0.4
-      picomatch: 2.2.3
+      picomatch: 2.3.0
     dev: true
 
   /fast-levenshtein/1.1.4:
@@ -4627,7 +4628,7 @@ packages:
     engines: {node: '>=8.6'}
     dependencies:
       braces: 3.0.2
-      picomatch: 2.2.3
+      picomatch: 2.3.0
     dev: true
 
   /miller-rabin/2.0.1:
@@ -5327,8 +5328,8 @@ packages:
       sha.js: 2.4.11
     dev: false
 
-  /picomatch/2.2.3:
-    resolution: {integrity: sha512-KpELjfwcCDUb9PeigTs2mBJzXUPzAuP2oPcA989He8Rte0+YUAjw1JVedDhuTKPkHjSYzMN3npC9luThGYEKdg==}
+  /picomatch/2.3.0:
+    resolution: {integrity: sha512-lY1Q/PiJGC2zOv/z391WOTD+Z02bCgsFfvxoXXf6h7kv9o+WmsmzYqrAwY63sNgOxE4xEdq0WyUnXfKeBrSvYw==}
     engines: {node: '>=8.6'}
     dev: true
 
@@ -5917,7 +5918,7 @@ packages:
     resolution: {integrity: sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==}
     engines: {node: '>=8.10.0'}
     dependencies:
-      picomatch: 2.2.3
+      picomatch: 2.3.0
     dev: true
 
   /rechoir/0.6.2:
@@ -6459,7 +6460,7 @@ packages:
     resolution: {integrity: sha512-cOYcUWwhCuHCXi49RhFRCyJEK3iPj1Ziz9DpViV3tbZOwXD49QzIN3MpOLJNxh2qwq2lJJZaKMVw9qNi4jTC0w==}
     dependencies:
       spdx-expression-parse: 3.0.1
-      spdx-license-ids: 3.0.8
+      spdx-license-ids: 3.0.9
     dev: true
 
   /spdx-exceptions/2.3.0:
@@ -6470,11 +6471,11 @@ packages:
     resolution: {integrity: sha512-cbqHunsQWnJNE6KhVSMsMeH5H/L9EpymbzqTQ3uLwNCLZ1Q481oWaofqH7nO6V07xlXwY6PhQdQ2IedWx/ZK4Q==}
     dependencies:
       spdx-exceptions: 2.3.0
-      spdx-license-ids: 3.0.8
+      spdx-license-ids: 3.0.9
     dev: true
 
-  /spdx-license-ids/3.0.8:
-    resolution: {integrity: sha512-NDgA96EnaLSvtbM7trJj+t1LUR3pirkDCcz9nOUlPb5DMBGsH7oES6C3hs3j7R9oHEa1EMvReS/BUAIT5Tcr0g==}
+  /spdx-license-ids/3.0.9:
+    resolution: {integrity: sha512-Ki212dKK4ogX+xDo4CtOZBVIwhsKBEfsEEcwmJfLQzirgc2jIWdzg40Unxz/HzEUqM1WFzVlQSMF9kZZ2HboLQ==}
     dev: true
 
   /split-string/3.1.0:

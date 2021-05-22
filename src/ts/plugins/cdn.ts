@@ -1,5 +1,6 @@
 import { Plugin } from 'esbuild';
 import { fetchPkg } from './http';
+
 export const CDN_NAMESPACE = 'cdn';
 export const CDN = (): Plugin => {
     const cache = new Map();
@@ -28,7 +29,6 @@ export const CDN = (): Plugin => {
             });
 
             build.onResolve({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
-                // console.log(args.path);
                 return {
                     namespace: CDN_NAMESPACE,
                     path: args.path,

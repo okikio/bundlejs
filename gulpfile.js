@@ -115,7 +115,7 @@ const esbuildConfig = {
         "esbuildVer": `\"${esbuildVer}\"`
     },
     entryNames: '[name].min',
-    target: ["es2017"]
+    target: ["es2018"]
 };
 
 const monacoConfig = {
@@ -138,7 +138,7 @@ tasks({
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
         return stream(`${tsFolder}/*.ts`, {
             pipes: [
-                changed(jsFolder),
+                // changed(jsFolder),
 
                 // Bundle Modules
                 esbuild({
@@ -159,15 +159,15 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: changed },
             { default: path },
-            { NODE }
+            { NODE },
+            { WASM }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-changed"),
             import("path"),
-            import("./shims/builtins-plugin.js")
+            import("./plugins/builtins.js"),
+            import("./plugins/wasm.js")
         ]);
 
         const __dirname = path.resolve();
@@ -182,7 +182,10 @@ tasks({
                     banner: {
                         js: 'const global = globalThis;'
                     },
-                    // plugins: [ NODE() ],
+                    plugins: [
+                        // NODE(),
+                        WASM()
+                    ],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "esm",
                 }),
@@ -214,10 +217,12 @@ tasks({
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: changed },
+            { NODE },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("gulp-changed"),
+            import("./plugins/builtins.js"),
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -230,6 +235,7 @@ tasks({
                 esbuild({
                     ...esbuildConfig,
                     ...monacoConfig,
+                    plugins: [ NODE() ],
                     format: "iife",
                 }),
 
@@ -256,7 +262,7 @@ tasks({
         return stream(`${tsFolder}/modules/monaco.ts`, {
             opts: { allowEmpty: true },
             pipes: [
-                changed(jsFolder),
+                // changed(jsFolder),
 
                 // Bundle Modules
                 esbuild({
@@ -350,6 +356,7 @@ task("watch", async () => {
         `${tsFolder}/modules/rollup.ts`,
         `${tsFolder}/plugins/*.ts`,
     ], { delay: 250 }, series("esbuild-js", "reload"));
+
     watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
     watch(`${tsFolder}/workers/*.ts`, { delay: 250 }, series("workers-js", "reload"));
     watch(`${tsFolder}/modules/monaco.ts`, { delay: 250 }, series("monaco-js", "reload"));
