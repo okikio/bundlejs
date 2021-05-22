@@ -7,7 +7,7 @@ block content
       p a quick npm package size checker
 
     .push-to-side
-      #bundle-time 
+      #bundle-time
       .flex.flex-1
       button.btn#run(type='button') Run
       .file-size ...
@@ -17,11 +17,27 @@ block content
       #editor
     p * Check the console for error messages and bundled code.
     p * Every 10 results the console will be cleared.
-    
+    br
+    p.relative
+      span="* If an error occurs try using a different CDN, by default "
+      strong bundle
+      |  uses
+      a(href="https://unpkg.com" target="_blank" rel="noopener")  unpkg
+      |  but you can use others, here is a list of CDN's that I know of:
+      ul.list-disc.list-inside.pt-5
+        li
+          a(href="https://skypack.dev" target="_blank" rel="noopener") skypack.dev
+        li
+          a(href="https://cdn.jsdelivr.net" target="_blank" rel="noopener") jsdelivr.net
+        li
+          a(href="https://esm.sh" target="_blank" rel="noopener") esm.sh
+        li
+          a(href="https://jspm.dev" target="_blank" rel="noopener") jspm.dev
+
     #about.container.max-w-screen-lg
       h2 about
-      p 
-        | I used 
+      p
+        | I used
         a(href="https://github.com/microsoft/monaco-editor" target="_blank" rel="noopener")  monaco-editor
         |  for the code-editor,
         a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild
@@ -29,37 +45,37 @@ block content
         a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
         |  as a js port of the zlib and gzip libraries, and
         a(href="https://github.com/sindresorhus/pretty-bytes" target="_blank" rel="noopener")  pretty-bytes
-        |  to convert the gzip size to human readable values. 
+        |  to convert the gzip size to human readable values.
         br
         br
-        | This project was greatly influenced by 
-        a(href="https://github.com/hardfist/neo-tools" target="_blank" rel="noopener") hardfists neo-tools
+        | This project was greatly influenced by
+        a(href="https://github.com/hardfist/neo-tools" target="_blank" rel="noopener")  hardfists neo-tools
         |  project.
         br
         br
-        strong bundle 
-        | is a quick and easy way to bundle your projects and see the gzip size, it's similar to 
-        a(href="https://bundlephobia.com" target="_blank" rel="noopener") bundlephobia
-        |  but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good. 
+        strong bundle
+        |  is a quick and easy way to bundle your projects and see the minified and gzip size, it's similar to
+        a(href="https://bundlephobia.com" target="_blank" rel="noopener")  bundlephobia
+        |  but does all the work locally on you computer and can treeshake multiple packages (both commonjs and esm) into a bundle, it currently doesn't support JSX, but packages without JSX are good.
         br
         br
-        |  The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of 
-        strong  esbuild
-        |  and
-        strong  monaco 
-        |  as well as some edge case packages, e.g. 
-        strong  @babel/core.
+        span= "The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of "
+        strong esbuild
+        span= " and "
+        strong monaco
+        span= " as well as some edge case packages, e.g. "
+        strong fastify.
         br
         br
-        | If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at 
-        a(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") okikio/bundle.
+        | If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at
+        a(href="https://github.com/okikio/bundle" target="_blank" rel="noopener")  okikio/bundle.
         br
         br
         strong bundle
-        |  uses 
+        |  uses
         a(href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank" rel="noopener")  Conventional Commits
-        |  as the style of commit, and the 
-        a(href="http://commitizen.github.io/cz-cli/" target="_blank" rel="noopener") Commitizen CLI
+        |  as the style of commit, and the
+        a(href="http://commitizen.github.io/cz-cli/" target="_blank" rel="noopener")  Commitizen CLI
         |  to make commits easier.
         br
         br

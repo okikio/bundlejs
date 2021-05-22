@@ -100,6 +100,10 @@ main {
         @apply px-5 py-2 sm:max-w-screen-md;
     }
 
+    strong {
+        @apply font-extrabold dark:font-medium dark:underline;
+    }
+
     header {
         @apply p-6 text-center;
 
@@ -121,10 +125,6 @@ main {
 
         p {
             @apply text-lg;
-        }
-
-        strong {
-            @apply font-extrabold dark:font-medium dark:underline;
         }
     }
 }

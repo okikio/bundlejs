@@ -39,7 +39,7 @@ export const HTTP = (): Plugin => {
 
             // When a URL is loaded, we want to actually download the content
             // from the internet. This has just enough logic to be able to
-            // handle the example import from unpkg.com/ but in reality this
+            // handle the example import from https://cdn.esm.sh/ but in reality this
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 const { content, url } = await fetchPkg(args.path);

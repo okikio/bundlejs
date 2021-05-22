@@ -183,11 +183,11 @@ tasks({
                         js: 'const global = globalThis;'
                     },
                     plugins: [
-                        // NODE(),
-                        WASM()
+                        NODE(),
+                        // WASM()
                     ],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
-                    format: "esm",
+                    format: "iife",
                 }),
                 size({
                     ...sizeConfig,
@@ -235,7 +235,7 @@ tasks({
                 esbuild({
                     ...esbuildConfig,
                     ...monacoConfig,
-                    plugins: [ NODE() ],
+                    // plugins: [ NODE() ],
                     format: "iife",
                 }),
 
@@ -279,7 +279,7 @@ tasks({
             dest: jsFolder, // Output
         });
     },
-    "js": parallelFn("main-js", "esbuild-js", "esbuild-wasm", "workers-js", "monaco-js")
+    "js": parallelFn("main-js", "esbuild-wasm", "esbuild-js", "workers-js", "monaco-js")
 });
 
 // Other assets
