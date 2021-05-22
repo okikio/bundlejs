@@ -40,24 +40,49 @@ let editor: Editor.IStandaloneCodeEditor;
 // esbuild Bundler
 let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
 
+// @ts-ignore
+export const Esbuild = new Worker("./js/esbuild.min.js");
+
 (async () => {
-    let { init, size } = await importShim("./esbuild.min.js");
-    await init();
+    let count = 0;
+
     RunBtn.addEventListener("click", () => {
         let value = `` + editor?.getValue();
         if (value) {
             (async () => {
                 fileSizeEl.innerHTML = `<div class="loading"></div>`;
-                try {
-                bundleTime.textContent = ``;
 
-                let start = Date.now();
-                let fileSize = await size(value);
+                try {
+                    let start = Date.now();
+                    bundleTime.textContent = ``;
+                    Esbuild.postMessage(value);
+                    let { size, content } = await new Promise<{ content: string, size: string }>((resolve, reject) => {
+                        Esbuild.onmessage = ({ data }) => {
+                            if (data.error) reject(data.error);
+                            else resolve(data);
+                        };
+                    });
+
+                    if (count > 10) {
+                        console.clear();
+                        count = 0;
+                    }
+
+                    let splitInput = value.split("\n");
+                    console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+                    console.groupCollapsed("Input Code: ");
+                    console.log(value);
+                    console.groupEnd();
+                    console.groupCollapsed("Bundled Code: ");
+                    console.log(content);
+                    console.groupEnd();
+                    console.groupEnd();
+                    count++;
 
                     bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
-                    fileSizeEl.textContent = `` + fileSize;
-                } catch (e) {
-                    console.warn(e);
+                    fileSizeEl.textContent = `` + size;
+                } catch (error) {
+                    console.warn(error);
                     fileSizeEl.textContent = `Error`;
                 }
             })();

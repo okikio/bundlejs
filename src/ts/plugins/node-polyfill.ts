@@ -1,7 +1,8 @@
 import type { Plugin } from 'esbuild';
 import { HTTP_NAMESPACE } from './http';
+import { HOST } from "./bare";
 export const resolve = (id: string) => {
-    return `https://unpkg.com/${id}`
+    return `${HOST}/${id}`
 };
 
 // load core modules from builtin dir

@@ -3,7 +3,6 @@ import { Plugin } from 'esbuild';
 import { CDN_NAMESPACE } from './cdn';
 import { fetchPkg } from './http';
 
-export const HOST = 'https://unpkg.com/'; // https://jspm.dev/npm:
 export const JSON_NAMESPACE = 'json-file';
 export const JSON_PLUGIN = (): Plugin => {
     const cache = new Map();

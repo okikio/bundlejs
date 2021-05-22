@@ -3,7 +3,7 @@ import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
-export const initialValue = `export * from "@babel/core";`;
+export const initialValue = `// Click Run for the Bundled + Minified + Gzipped package size\nexport * from "@okikio/animate";`;
 
 export const debounce = (func: Function, timeout = 300) => {
     let timer: any;
@@ -100,6 +100,7 @@ export const build = () => {
             useShadows: false,
             vertical: "auto",
         },
+        wordWrap: "on",
         "roundedSelection": true,
         "scrollBeyondLastLine": false,
         smoothScrolling: true,
