@@ -17,8 +17,8 @@ import { FsStrategy } from "@velcro/strategy-fs";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
-import { codeFrameColumns } from "@babel/code-frame";
-import { minify } from "terser";
+// import { codeFrameColumns } from "@babel/code-frame";
+// import { minify } from "terser";
 
 // import { gzip, zlib, deflate } from "@gfx/zopfli";
 // export let Terser = new Worker("./js/terser.min.js");
@@ -77,6 +77,14 @@ self.onmessage = ({ data }) => {
             } else {
                 result = await build({
                     entryPoints: ['<stdin>'],
+                    // stdin: {
+                    //     contents: input,
+
+                    //     // These are all optional:
+                    //     // resolveDir: require('path').join(__dirname, 'src'),
+                    //     sourcefile: '/input.ts',
+                    //     loader: 'ts',
+                    // },
                     bundle: true,
                     minify: true,
                     color: true,
@@ -87,6 +95,11 @@ self.onmessage = ({ data }) => {
                     outfile: "/bundle.js",
                     platform: "browser",
                     format: "esm",
+                    loader: {
+                        '.ts': 'ts',
+                        '.png': 'dataurl',
+                        '.svg': 'text',
+                    },
                     define: {
                         "__NODE__": `false`,
                         "process.env.NODE_ENV": `"production"`
@@ -101,6 +114,7 @@ self.onmessage = ({ data }) => {
                         CDN(),
                         VIRTUAL_FS(),
                         WASM(),
+
 
                         createBrowserPlugin({
                             cwd: "/",
@@ -148,8 +162,8 @@ self.onmessage = ({ data }) => {
         // }
 
         try {
-			// @ts-ignore
-            let { length } = await gzip(content, { level: 9, memLevel: 9 });
+            // @ts-ignore
+            let { length } = await gzip(content, { level: 9 });
             self.postMessage({ content, size: prettyBytes(length) });
         } catch (error) {
             self.postMessage({

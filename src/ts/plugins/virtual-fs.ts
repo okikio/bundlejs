@@ -33,6 +33,7 @@ export const VIRTUAL_FS = (): Plugin => {
                     id: args.path,
                     importer: args.pluginData.importer
                 });
+                
                 if (!resolvePath) throw new Error('not found');
                 realPath = resolvePath;
 
@@ -42,7 +43,7 @@ export const VIRTUAL_FS = (): Plugin => {
                     pluginData: {
                         importer: realPath,
                     },
-                    loader: path.extname(realPath).slice(1) as 'js',
+                    loader: path.extname(realPath).slice(1) as 'ts',
                 };
             });
         },
