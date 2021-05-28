@@ -18,6 +18,8 @@ block content
     p * Check the console for error messages and bundled code.
     p * Every 10 results the console will be cleared.
     br
+    p * Note: Treeshaking is available, but since esbuild doesn't have access to each packages package.json, it assumes that there are sideEffects.
+    br
     p.relative
       span="* If an error occurs try using a different CDN, by default "
       strong bundle

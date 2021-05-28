@@ -17,8 +17,8 @@ import { FsStrategy } from "@velcro/strategy-fs";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
-// import { codeFrameColumns } from "@babel/code-frame";
-// import { minify } from "terser";
+import { codeFrameColumns } from "@babel/code-frame";
+import { minify } from "terser";
 
 // import { gzip, zlib, deflate } from "@gfx/zopfli";
 // export let Terser = new Worker("./js/terser.min.js");
@@ -148,9 +148,9 @@ self.onmessage = ({ data }) => {
 
         // try {
         //     let { code } = await minify(content, {
-        //         // toplevel: true,
-        //         // ecma: 2020,
-        //         // module: true,
+        //         ecma: 2020,
+        //         mangle: true,
+        //         compress: true,
         //     });
 
         //     content = code;
