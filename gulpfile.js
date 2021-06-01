@@ -104,7 +104,9 @@ task("minify-css", async () => {
 });
 
 const sizeConfig = {
-    gzip: true
+    gzip: true,
+    showFiles: true,
+    showTotal: false
 };
 
 const esbuildConfig = {
@@ -147,10 +149,7 @@ tasks({
                     format: "esm",
                 }),
 
-                size({
-                    ...sizeConfig,
-                    title: "main.min.js"
-                }),
+                size(sizeConfig),
             ],
             dest: jsFolder, // Output
         });
@@ -160,14 +159,12 @@ tasks({
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: path },
-            { NODE },
-            { WASM }
+            { NODE }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("path"),
-            import("./plugins/builtins.js"),
-            import("./plugins/wasm.js")
+            import("./plugins/builtins.js")
         ]);
 
         const __dirname = path.resolve();
@@ -175,7 +172,6 @@ tasks({
         return stream([`${tsFolder}/modules/esbuild.ts`, `${tsFolder}/modules/rollup.ts`], {
             opts: { allowEmpty: true },
             pipes: [
-                // changed(jsFolder),
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
@@ -183,16 +179,12 @@ tasks({
                         js: 'const global = globalThis;'
                     },
                     plugins: [
-                        NODE(),
-                        // WASM()
+                        NODE()
                     ],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "iife",
                 }),
-                size({
-                    ...sizeConfig,
-                    title: "esbuild.min.js"
-                }),
+                size(sizeConfig),
             ],
             dest: jsFolder, // Output
         });
@@ -216,31 +208,24 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: changed },
-            { NODE },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-changed"),
-            import("./plugins/builtins.js"),
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
         return stream(`${tsFolder}/workers/*.ts`, {
             opts: { allowEmpty: true },
             pipes: [
-                // changed(jsFolder),
-
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
                     ...monacoConfig,
-                    // plugins: [ NODE() ],
                     format: "iife",
                 }),
 
                 size({
-                    ...sizeConfig,
+                    gzip: true,
                     title: "workers.min.js"
                 }),
             ],
@@ -251,19 +236,15 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: changed },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-changed"),
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
         return stream(`${tsFolder}/modules/monaco.ts`, {
             opts: { allowEmpty: true },
             pipes: [
-                // changed(jsFolder),
-
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
@@ -271,10 +252,7 @@ tasks({
                     format: "esm",
                 }),
 
-                size({
-                    ...sizeConfig,
-                    title: "monaco.min.js"
-                }),
+                size(sizeConfig),
             ],
             dest: jsFolder, // Output
         });
@@ -318,12 +296,9 @@ task("watch", async () => {
                     extensions: ["html"],
                 },
             },
-            // serveStatic: [
-            //     {
-            //         route: "/lib",
-            //         dir: ["./lib"],
-            //     },
-            // ],
+
+            // I use Chrome canary for development
+            browser: "chrome",
             online: true,
             reloadOnRestart: true,
             scrollThrottle: 250

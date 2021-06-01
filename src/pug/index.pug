@@ -18,13 +18,13 @@ block content
     p * Check the console for error messages and bundled code.
     p * Every 10 results the console will be cleared.
     br
-    p * Note: Treeshaking is available, but since esbuild doesn't have access to each packages package.json, it assumes that there are sideEffects.
+    p * Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.
     br
     p.relative
       span="* If an error occurs try using a different CDN, by default "
       strong bundle
       |  uses
-      a(href="https://unpkg.com" target="_blank" rel="noopener")  unpkg
+      a(href="https://esm.sh" target="_blank" rel="noopener")  esm.sh
       |  but you can use others, here is a list of CDN's that I know of:
       ul.list-disc.list-inside.pt-5
         li
@@ -34,15 +34,20 @@ block content
         li
           a(href="https://esm.sh" target="_blank" rel="noopener") esm.sh
         li
+          a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com
+        li
           a(href="https://jspm.dev" target="_blank" rel="noopener") jspm.dev
 
     #about.container.max-w-screen-lg
       h2 about
+      p * All text with cross through lines, are no longer true
       p
         | I used
         a(href="https://github.com/microsoft/monaco-editor" target="_blank" rel="noopener")  monaco-editor
         |  for the code-editor,
-        a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild
+        span.line-through
+          a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild
+        a(href="https://github.com/rollup/rollup" target="_blank" rel="noopener")  rollup
         |  as a bundler,
         a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
         |  as a js port of the zlib and gzip libraries, and
@@ -51,7 +56,10 @@ block content
         br
         br
         | This project was greatly influenced by
-        a(href="https://github.com/hardfist/neo-tools" target="_blank" rel="noopener")  hardfists neo-tools
+        |  hardfists
+        a(href="https://github.com/hardfist/neo-tools" target="_blank" rel="noopener")  neo-tools
+        |  and mizchi's
+        a(href="https://github.com/mizchi/uniroll" target="_blank" rel="noopener")  uniroll
         |  project.
         br
         br
@@ -62,11 +70,12 @@ block content
         br
         br
         span= "The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of "
-        strong esbuild
-        span= " and "
+        span.line-through
+          strong esbuild
+          span= " and "
         strong monaco
         span= " as well as some edge case packages, e.g. "
-        strong fastify.
+        strong.line-through fastify.
         br
         br
         | If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at
