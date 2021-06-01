@@ -11,34 +11,17 @@ import { CDN } from "../plugins/cdn";
 import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
-import { createBrowserPlugin } from "../plugins/velcro";
-import { FsStrategy } from "@velcro/strategy-fs";
-
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
-import { codeFrameColumns } from "@babel/code-frame";
-import { minify } from "terser";
-
-// import { gzip, zlib, deflate } from "@gfx/zopfli";
-// export let Terser = new Worker("./js/terser.min.js");
-
-export let _initialized = false;
+let _initialized = false;
 let currentlyBuilding = false;
 
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
 
-vol.fromJSON({
-    "./package.json": JSON.stringify({
-        "dependencies": {
-            "@babel/core": "*",
-            "@okikio/animate": "*",
-            "typescript": "*",
-        }
-    })
-}, "/");
+vol.fromJSON({}, "/");
 
 (async () => {
     try {
@@ -63,7 +46,12 @@ self.onmessage = ({ data }) => {
 
     (async () => {
         let content: string;
-        if (!_initialized) return "Error";
+        if (!_initialized) {
+            self.postMessage({
+                type: `esbuild not initialized error`,
+                error: new Error('Initialize Error')
+            });
+        }
 
         try {
             await fs.promises.writeFile("input.ts", `${input}`);
@@ -114,12 +102,6 @@ self.onmessage = ({ data }) => {
                         CDN(),
                         VIRTUAL_FS(),
                         WASM(),
-
-
-                        createBrowserPlugin({
-                            cwd: "/",
-                            fs: fs as FsStrategy.FsInterface
-                        }),
                     ],
                     globalName: 'bundler',
                 });
@@ -146,25 +128,12 @@ self.onmessage = ({ data }) => {
             });
         }
 
-        // try {
-        //     let { code } = await minify(content, {
-        //         ecma: 2020,
-        //         mangle: true,
-        //         compress: true,
-        //     });
-
-        //     content = code;
-        // } catch (err) {
-        //     const { message, line, col: column } = err;
-        //     console.warn("Terser minify error",
-        //         codeFrameColumns(content, { start: { line, column } }, { message })
-        //     );
-        // }
-
         try {
             // @ts-ignore
             let { length } = await gzip(content, { level: 9 });
-            self.postMessage({ content, size: prettyBytes(length) });
+            self.postMessage({
+                value: { content, size: prettyBytes(length) }
+            });
         } catch (error) {
             self.postMessage({
                 type: `gzip error`,

@@ -41,51 +41,46 @@ let editor: Editor.IStandaloneCodeEditor;
 let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
 
 // @ts-ignore
-export const Esbuild = new Worker("./js/esbuild.min.js");
+let Esbuild = new Worker("./js/rollup.min.js");
+let count = 0;
+let value = "";
+let start = Date.now();
 
-(async () => {
-    let count = 0;
+RunBtn.addEventListener("click", () => {
+    value = `` + editor?.getValue();
 
-    RunBtn.addEventListener("click", () => {
-        let value = `` + editor?.getValue();
-        if (value) {
-            (async () => {
-                fileSizeEl.innerHTML = `<div class="loading"></div>`;
+    fileSizeEl.innerHTML = `<div class="loading"></div>`;
+    bundleTime.textContent = ``;
 
-                try {
-                    let start = Date.now();
-                    bundleTime.textContent = ``;
-                    Esbuild.postMessage(value);
-                    let { size, content } = await new Promise<{ content: string, size: string }>((resolve, reject) => {
-                        Esbuild.onmessage = ({ data }) => {
-                            if (data.error) reject(data.error);
-                            else resolve(data);
-                        };
-                    });
+    start = Date.now();
+    Esbuild.postMessage(value);
+});
 
-                    if (count > 10) {
-                        console.clear();
-                        count = 0;
-                    }
+Esbuild.onmessage = ({ data }) => {
+    if (data.error) {
+        console.warn(data.type + "\n", data.error);
+        fileSizeEl.textContent = `Error`;
+        return;
+    }
 
-                    let splitInput = value.split("\n");
-                    console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
-                    console.groupCollapsed("Input Code: ");
-                    console.log(value);
-                    console.groupEnd();
-                    console.groupCollapsed("Bundled Code: ");
-                    console.log(content);
-                    console.groupEnd();
-                    console.groupEnd();
-                    count++;
+    let { size, content } = data.value;
 
-                    bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
-                    fileSizeEl.textContent = `` + size;
-                } catch (error) {
-                    console.warn(error);
-                    fileSizeEl.textContent = `Error`;
-                }
-            })();
-        }
-    });
-})();
+    if (count > 10) {
+        console.clear();
+        count = 0;
+    }
+
+    let splitInput = value.split("\n");
+    console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+    console.groupCollapsed("Input Code: ");
+    console.log(value);
+    console.groupEnd();
+    console.groupCollapsed("Bundled Code: ");
+    console.log(content);
+    console.groupEnd();
+    console.groupEnd();
+    count++;
+
+    bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
+    fileSizeEl.textContent = `` + size;
+};
