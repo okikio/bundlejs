@@ -140,8 +140,6 @@ tasks({
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
         return stream(`${tsFolder}/*.ts`, {
             pipes: [
-                // changed(jsFolder),
-
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,

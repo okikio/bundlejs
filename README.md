@@ -4,7 +4,7 @@
 
 A small online tool for checking the gzipped and minified size of npm packages.
 
-I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, ~~[esbuild](https://github.com/evanw/esbuild)~~ [rollup](https://github.com/rollup/rollup) as a bundler, [pako](https://github.com/nodeca/pako) as a js port of the zlib and gzip libraries, and [pretty-bytes](https://github.com/sindresorhus/pretty-bytes) to convert the gzip size to human readable values.
+I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, ~~[esbuild](https://github.com/evanw/esbuild)~~ [rollup](https://github.com/rollup/rollup) as a bundler, [pako](https://github.com/nodeca/pako) as a js port of the zlib and gzip libraries, [pretty-bytes](https://github.com/sindresorhus/pretty-bytes) to convert the gzip size to human readable values, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.
 
 This project was greatly influenced by hardfists [neo-tools](https://github.com/hardfist/neo-tools) and mizchi's [uniroll](https://github.com/mizchi/uniroll) project.
 
