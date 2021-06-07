@@ -4,7 +4,10 @@ block content
   .container
     header
       h1 bundle
-      p a quick npm package size checker
+      p 
+        | a quick npm package size checker (
+        strong#visit-counter Visit Counter
+        | )
 
     .push-to-side
       #bundle-time
@@ -50,9 +53,11 @@ block content
         a(href="https://github.com/rollup/rollup" target="_blank" rel="noopener")  rollup
         |  as a bundler,
         a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
-        |  as a js port of the zlib and gzip libraries, and
+        |  as a js port of the zlib and gzip libraries, 
         a(href="https://github.com/sindresorhus/pretty-bytes" target="_blank" rel="noopener")  pretty-bytes
-        |  to convert the gzip size to human readable values.
+        |  to convert the gzip size to human readable values, and 
+        a(href="https://github.com/mlomb/countapi-js" target="_blank" rel="noopener")  countapi-js
+        |  to keep track of the number of page visits, in a private and secure way.
         br
         br
         | This project was greatly influenced by

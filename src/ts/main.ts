@@ -2,6 +2,17 @@ import { importShim } from "./util/dynamic-import";
 import * as Default from "./modules/default";
 import { animate } from "@okikio/animate";
 import { editor as Editor } from "monaco-editor";
+import { hit } from "countapi-js";
+
+(async () => {
+    try {
+        let { value } = await hit('bundle.js.org', 'visits');
+        let visitCounterEl = document.querySelector("#visit-counter");
+        if (visitCounterEl) visitCounterEl.textContent = `${value} Page Visits`;
+    } catch (err) {
+        console.warn("Visit Counter Error (please create a new issue in the repo)", err);
+    }
+})();
 
 // The default navbar, etc... that is needed
 Default.build();
@@ -58,7 +69,7 @@ RunBtn.addEventListener("click", () => {
 
 Esbuild.onmessage = ({ data }) => {
     if (data.error) {
-        console.warn(data.type + "\n", data.error);
+        console.warn(data.type + " (please create a new issue in the repo)\n", data.error);
         fileSizeEl.textContent = `Error`;
         return;
     }
