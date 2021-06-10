@@ -11,18 +11,19 @@ import { terser } from "../plugins/terser";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
+const cache = new Map();
 self.onmessage = ({ data }) => {
     let input: string = `${data}`; // Ensure input is a string
-
     (async () => {
         let content: string;
         try {
+            // Clear Cache
             const build = await rollup({
                 input: "/input.js",
                 plugins: [
                     json(),
                     httpResolve({
-                        cache: new Map(),
+                        cache,
                         resolveIdFallback: (id, importer) => {
                             if (importer == null) return;
                             if (id.startsWith(".")) return;
@@ -38,7 +39,7 @@ self.onmessage = ({ data }) => {
                             '/input.js': input,
                         }
                     }),
-                    // terser()
+                    terser()
                 ]
             });
 
@@ -53,6 +54,8 @@ self.onmessage = ({ data }) => {
         }
 
         try {
+            cache.clear();
+            
             // @ts-ignore
             let { length } = await gzip(content, { level: 9 });
             self.postMessage({
