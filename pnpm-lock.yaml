@@ -24,11 +24,13 @@ specifiers:
   gulp: ^4.0.2
   gulp-changed: ^4.0.2
   gulp-esbuild: ^0.8.1
+  gulp-if: ^3.0.0
   gulp-plumber: ^1.2.1
   gulp-postcss: ^9.0.0
   gulp-pug: ^5.0.0
   gulp-rename: ^2.0.0
   gulp-size: ^4.0.1
+  gulp-terser: ^2.0.1
   husky: ^6.0.0
   lodash-es: ^4.17.21
   memfs: ^3.2.2
@@ -95,11 +97,13 @@ devDependencies:
   gulp: 4.0.2
   gulp-changed: 4.0.2_gulp@4.0.2
   gulp-esbuild: 0.8.1
+  gulp-if: 3.0.0
   gulp-plumber: 1.2.1
   gulp-postcss: 9.0.0_postcss@8.3.2
   gulp-pug: 5.0.0
   gulp-rename: 2.0.0
   gulp-size: 4.0.1_gulp@4.0.2
+  gulp-terser: 2.0.1
   husky: 6.0.0
   lodash-es: 4.17.21
   pnpm: 6.7.6
@@ -2127,6 +2131,15 @@ packages:
       stream-shift: 1.0.1
     dev: true
 
+  /duplexify/4.1.1:
+    resolution: {integrity: sha512-DY3xVEmVHTv1wSzKNbwoU6nVjzI369Y6sPoqfYr0/xlx3IdX2n94xIszTcjPO8W8ZIv0Wb0PXNcjuZyT4wiICA==}
+    dependencies:
+      end-of-stream: 1.4.4
+      inherits: 2.0.4
+      readable-stream: 3.6.0
+      stream-shift: 1.0.1
+    dev: true
+
   /each-props/1.3.2:
     resolution: {integrity: sha512-vV0Hem3zAGkJAyU7JSjixeU66rwdynTAa1vofCrSA5fEln+m67Az9CcnkVD776/fsN/UjIWmBDoNRS6t6G9RfA==}
     dependencies:
@@ -2652,6 +2665,10 @@ packages:
     resolution: {integrity: sha1-C+4AUBiusmDQo6865ljdATbsG5k=}
     dev: false
 
+  /fork-stream/0.0.4:
+    resolution: {integrity: sha1-24Sfznf2cIpfjzhq5TOgkHtUrnA=}
+    dev: true
+
   /fraction.js/4.1.1:
     resolution: {integrity: sha512-MHOhvvxHTfRFpF1geTK9czMIZ6xclsEor2wkIGYYq+PxcQqT7vStJqjhe6S1TenZrMZzo+wlqOufBDVepUEgPg==}
     dev: true
@@ -3009,6 +3026,20 @@ packages:
       vinyl: 2.2.1
     dev: true
 
+  /gulp-if/3.0.0:
+    resolution: {integrity: sha512-fCUEngzNiEZEK2YuPm+sdMpO6ukb8+/qzbGfJBXyNOXz85bCG7yBI+pPSl+N90d7gnLvMsarthsAImx0qy7BAw==}
+    dependencies:
+      gulp-match: 1.1.0
+      ternary-stream: 3.0.0
+      through2: 3.0.2
+    dev: true
+
+  /gulp-match/1.1.0:
+    resolution: {integrity: sha512-DlyVxa1Gj24DitY2OjEsS+X6tDpretuxD6wTfhXE/Rw2hweqc1f6D/XtsJmoiCwLWfXgR87W9ozEityPCVzGtQ==}
+    dependencies:
+      minimatch: 3.0.4
+    dev: true
+
   /gulp-plumber/1.2.1:
     resolution: {integrity: sha512-mctAi9msEAG7XzW5ytDVZ9PxWMzzi1pS2rBH7lA095DhMa6KEXjm+St0GOCc567pJKJ/oCvosVAZEpAey0q2eQ==}
     engines: {node: '>=0.10', npm: '>=1.2.10'}
@@ -3067,6 +3098,16 @@ packages:
       pretty-bytes: 5.6.0
       stream-counter: 1.0.0
       through2: 4.0.2
+    dev: true
+
+  /gulp-terser/2.0.1:
+    resolution: {integrity: sha512-XCrnCXP8ovNpgLK9McJIXlgm0j3W2TsiWu7K9y3m+Sn5XZgUzi6U8MPHtS3NdLMic9poCj695N0ARJ2B6atypw==}
+    engines: {node: '>=10'}
+    dependencies:
+      plugin-error: 1.0.1
+      terser: 5.4.0
+      through2: 4.0.2
+      vinyl-sourcemaps-apply: 0.2.1
     dev: true
 
   /gulp/4.0.2:
@@ -4178,6 +4219,10 @@ packages:
       trim-newlines: 3.0.1
       type-fest: 0.18.1
       yargs-parser: 20.2.7
+    dev: true
+
+  /merge-stream/2.0.0:
+    resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
     dev: true
 
   /merge/2.1.1:
@@ -5894,7 +5939,6 @@ packages:
     dependencies:
       buffer-from: 1.1.1
       source-map: 0.6.1
-    dev: false
 
   /source-map-url/0.4.1:
     resolution: {integrity: sha512-cPiFOTLUKvJFIg4SKVScy4ilPPW6rFgMgfuZJPNoDuMs3nC1HbMUycBoJw77xFIp6z1UJQJOfx6C9GMH80DiTw==}
@@ -6251,6 +6295,25 @@ packages:
       defined: 0.0.0
       jsonify: 0.0.0
     dev: false
+
+  /ternary-stream/3.0.0:
+    resolution: {integrity: sha512-oIzdi+UL/JdktkT+7KU5tSIQjj8pbShj3OASuvDEhm0NT5lppsm7aXWAmAq4/QMaBIyfuEcNLbAQA+HpaISobQ==}
+    dependencies:
+      duplexify: 4.1.1
+      fork-stream: 0.0.4
+      merge-stream: 2.0.0
+      through2: 3.0.2
+    dev: true
+
+  /terser/5.4.0:
+    resolution: {integrity: sha512-3dZunFLbCJis9TAF2VnX+VrQLctRUmt1p3W2kCsJuZE4ZgWqh//+1MZ62EanewrqKoUf4zIaDGZAvml4UDc0OQ==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      commander: 2.20.3
+      source-map: 0.7.3
+      source-map-support: 0.5.19
+    dev: true
 
   /terser/5.7.0:
     resolution: {integrity: sha512-HP5/9hp2UaZt5fYkuhNBR8YyRcT8juw8+uFbAme53iN9hblvKnLUTKkmwJG6ocWpIKf8UK4DoeWG4ty0J6S6/g==}

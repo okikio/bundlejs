@@ -8,7 +8,7 @@ html.dark
     meta(http-equiv='X-UA-Compatible' content='IE=edge')
     block title
       title bundle - a quick npm package size checker
-    meta(name='description' content='')
+    meta(name='description' content='bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good.')
     meta(name="color-scheme" content="dark light")
     meta(name='viewport' content='width=device-width, initial-scale=1')
 
@@ -16,7 +16,6 @@ html.dark
 
     link(rel='preconnect' href='https://fonts.gstatic.com')
     link(rel='stylesheet' href='./css/app.css')
-
 
     //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
@@ -39,13 +38,12 @@ html.dark
     script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl" async)
 
     link(rel="preload" href="./js/webanimation.min.js" as="script")
-    script(src="./js/webanimation-polyfill.min.js" type='module')
+    script(src="./js/webanimation-polyfill.min.js" type='module' async)
 
     link(rel='modulepreload' href='./js/monaco.min.js')
-    link(rel='modulepreload' href='./js/rollup.min.js')
-    
-    link(rel='modulepreload' href='./js/editor.min.js')
-    link(rel='modulepreload' href='./js/typescript.min.js')
+    //- link(rel='modulepreload' href='./js/rollup.min.js')
+    //- link(rel='modulepreload' href='./js/editor.min.js')
+    //- link(rel='modulepreload' href='./js/typescript.min.js')
 
     script(src='./js/main.min.js' type='module' defer)
 
