@@ -36,12 +36,16 @@ html.dark
     +footer
 
     link(rel="stylesheet", href="./js/monaco.min.css")
-
+    
     link(rel="preconnect" href="https://esm.sh")
+    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl" async)
+
     link(rel='modulepreload' href='./js/monaco.min.js')
     link(rel='modulepreload' href='./js/rollup.min.js')
     
-    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl.RelativeTimeFormat,Intl.RelativeTimeFormat.~locale.en" async)
+    link(rel='modulepreload' href='./js/editor.min.js')
+    link(rel='modulepreload' href='./js/typescript.min.js')
+
     script(src='./js/main.min.js' type='module' defer)
 
     //- link(rel='prefetch' href='./js/editor.min.js')
