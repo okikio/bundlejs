@@ -130,14 +130,16 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: changed }
+            { default: terser },
+            { default: gulpif }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-changed"),
+            import("gulp-terser"),
+            import("gulp-if")
         ]);
 
-        const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
+        const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
         return stream(`${tsFolder}/*.ts`, {
             pipes: [
                 // Bundle Modules
@@ -147,7 +149,17 @@ tasks({
                     format: "esm",
                 }),
 
-                size(sizeConfig),
+                // Filter out the sourcemap
+                // I don't need to know the size of the sourcemap
+                gulpif(
+                    (file) => !/\.map$/.test(file.path),
+                    terser()
+                ),
+
+                gulpif(
+                    (file) => !/\.map$/.test(file.path),
+                    size(sizeConfig)
+                ),
             ],
             dest: jsFolder, // Output
         });
@@ -157,12 +169,14 @@ tasks({
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: path },
-            { NODE }
+            { NODE },
+            { default: terser }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("path"),
-            import("./plugins/builtins.js")
+            import("./plugins/builtins.js"),
+            import("gulp-terser")
         ]);
 
         const __dirname = path.resolve();
@@ -182,6 +196,7 @@ tasks({
                     inject: [path.join(__dirname, './shims/node-shim.js')],
                     format: "iife",
                 }),
+                // terser(),
                 size(sizeConfig),
             ],
             dest: jsFolder, // Output
@@ -206,9 +221,11 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
+            { default: terser },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
+            import("gulp-terser")
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -221,7 +238,7 @@ tasks({
                     ...monacoConfig,
                     format: "iife",
                 }),
-
+                // terser(),
                 size({
                     gzip: true,
                     title: "workers.min.js"
@@ -234,9 +251,13 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
+            { default: terser },
+            { default: gulpif }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
+            import("gulp-terser"),
+            import("gulp-if")
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -250,6 +271,11 @@ tasks({
                     format: "esm",
                 }),
 
+                // Filter out the .css, and .ttf files
+                // gulpif(
+                //     (file) => /\.js$/.test(file.path),
+                //     terser()
+                // ),
                 size(sizeConfig),
             ],
             dest: jsFolder, // Output

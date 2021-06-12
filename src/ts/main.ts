@@ -6,9 +6,9 @@ import { hit } from "countapi-js";
 
 (async () => {
     try {
-        let { value } = await hit('bundle.js.org', 'visits');
-        let visitCounterEl = document.querySelector("#visit-counter");
-        if (visitCounterEl) visitCounterEl.textContent = `${value} Page Visits`;
+        // let { value } = await hit('bundle.js.org', 'visits');
+        // let visitCounterEl = document.querySelector("#visit-counter");
+        // if (visitCounterEl) visitCounterEl.textContent = `${value} Page Visits`;
     } catch (err) {
         console.warn("Visit Counter Error (please create a new issue in the repo)", err);
     }

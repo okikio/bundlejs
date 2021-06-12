@@ -8,7 +8,7 @@ I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-
 
 This project was greatly influenced by hardfists [neo-tools](https://github.com/hardfist/neo-tools) and mizchi's [uniroll](https://github.com/mizchi/uniroll) project.
 
-**bundle** is a quick and easy way to bundle your projects and see the gzip size, it's similar to [bundlephobia](https://bundlephobia.com) but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good.
+**bundle** is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to [bundlephobia](https://bundlephobia.com) but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good.
 
 The project isn't perfect, and I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of ~~**esbuild** and~~ **monaco** as well as some edge case packages, e.g. **fastify**.
 
