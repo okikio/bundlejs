@@ -15,13 +15,14 @@ html.dark
     link(rel="icon", type="image/svg+xml" href="./bundle.svg")
 
     link(rel='preconnect' href='https://fonts.gstatic.com')
-    link(rel="preconnect" href="https://unpkg.com")
-
-    link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
-    link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
-    script(src='./js/theme.min.js' type='module' async)
-
     link(rel='stylesheet' href='./css/app.css')
+
+    link(rel="preload" href="./js/webanimation.min.js" as="script")
+
+    //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
+    //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
+    script(src='./js/theme.min.js' type='module' async)
+    script(src="./js/webanimation-polyfill.min.js" type='module')
 
     block script
 
@@ -35,9 +36,13 @@ html.dark
     +footer
 
     link(rel="stylesheet", href="./js/monaco.min.css")
+
+    link(rel="preconnect" href="https://esm.sh")
     link(rel='modulepreload' href='./js/monaco.min.js')
-    link(rel='modulepreload' href='./js/esbuild.min.js')
+    link(rel='modulepreload' href='./js/rollup.min.js')
+    
+    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl.RelativeTimeFormat,Intl.RelativeTimeFormat.~locale.en" async)
+    script(src='./js/main.min.js' type='module' defer)
 
     //- link(rel='prefetch' href='./js/editor.min.js')
     //- link(rel='prefetch' href='./js/typescript.min.js')
-    script(src='./js/main.min.js' type='module' defer)

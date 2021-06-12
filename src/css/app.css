@@ -1,5 +1,6 @@
 @import "./components/navbar";
 @import "./components/monaco";
+@import "./components/fonts";
 
 @tailwind base;
 @tailwind components;
