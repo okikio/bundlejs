@@ -28,8 +28,9 @@ self.onmessage = ({ data }) => {
                             if (importer == null) return;
                             if (id.startsWith(".")) return;
                             if (id.startsWith("https://")) return id;
-
-                            return `https://esm.sh/${id}`;
+                            
+                            // Use cdn.skypack.dev instead of esm.sh
+                            return `https://cdn.skypack.dev/${id}`;
 
                         }
                     }),
