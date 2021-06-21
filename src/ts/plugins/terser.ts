@@ -9,7 +9,7 @@ export const terser = (options: MinifyOptions = { module: true }) => {
         name: "terser",
         async transform(code) {
             try {
-                return await minify(code,);
+                return await minify(code, options);
             } catch (error) {
                 const { message, line, col: column } = error;
                 console.error(

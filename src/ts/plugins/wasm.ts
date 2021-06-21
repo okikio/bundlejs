@@ -34,6 +34,7 @@ export const WASM = (): Plugin => {
                 return {
                     path: path.isAbsolute(args.path) ? args.path : path.join(args.resolveDir, args.path),
                     namespace: WASM_STUB_NAMESPACE,
+                    sideEffects: false,
                 }
             })
 

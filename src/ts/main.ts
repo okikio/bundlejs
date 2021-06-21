@@ -48,11 +48,10 @@ let editor: Editor.IStandaloneCodeEditor;
     Fade = null;
 })();
 
-// esbuild Bundler
 let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
 
 // @ts-ignore
-let Esbuild = new Worker("./js/rollup.min.js");
+let BundleWorker = new Worker("./js/rollup.min.js");
 let count = 0;
 let value = "";
 let start = Date.now();
@@ -64,12 +63,18 @@ RunBtn.addEventListener("click", () => {
     bundleTime.textContent = ``;
 
     start = Date.now();
-    Esbuild.postMessage(value);
+    BundleWorker.postMessage(value);
 });
 
-Esbuild.onmessage = ({ data }) => {
+BundleWorker.onmessage = ({ data }) => {
+    if (data.warn) {
+        console.warn(data.type + " \n", data.warn);
+        fileSizeEl.textContent = `Try Again`;
+        return;
+    }
+
     if (data.error) {
-        console.warn(data.type + " (please create a new issue in the repo)\n", data.error);
+        console.error(data.type + " (please create a new issue in the repo)\n", data.error);
         fileSizeEl.textContent = `Error`;
         return;
     }
