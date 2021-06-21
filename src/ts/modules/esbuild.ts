@@ -22,6 +22,7 @@ export let result: BuildResult & {
 } | BuildIncremental;
 
 vol.fromJSON({}, "/");
+const cache = new Map();
 
 (async () => {
     try {
@@ -48,9 +49,11 @@ self.onmessage = ({ data }) => {
         let content: string;
         if (!_initialized) {
             self.postMessage({
-                type: `esbuild not initialized error`,
-                error: new Error('Initialize Error')
+                type: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before calling this`,
+                warn: ' '
             });
+
+            return;
         }
 
         try {
@@ -99,7 +102,7 @@ self.onmessage = ({ data }) => {
 
                         BARE(),
                         HTTP(),
-                        CDN(),
+                        CDN(cache),
                         VIRTUAL_FS(),
                         WASM(),
                     ],
@@ -121,11 +124,16 @@ self.onmessage = ({ data }) => {
 
             // Reset memfs
             vol.reset();
+
+            if (cache.size >= 10)
+                cache.clear();
         } catch (error) {
             self.postMessage({
                 type: `esbuild build error`,
                 error
             });
+
+            return;
         }
 
         try {

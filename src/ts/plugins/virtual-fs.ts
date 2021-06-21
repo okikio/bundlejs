@@ -23,7 +23,7 @@ export const VIRTUAL_FS = (): Plugin => {
                 return {
                     path: args.path,
                     pluginData: args.pluginData,
-                    namespace: VIRTUAL_FS_NAMESPACE,
+                    namespace: VIRTUAL_FS_NAMESPACE
                 };
             });
 
