@@ -27,7 +27,7 @@ self.onmessage = ({ data }) => {
         let content: string;
 
         // await memfs.writeFile("input.js", `${input}`);
-        
+
         try {
             // Clear Cache
             const build = await rollup({
@@ -41,7 +41,7 @@ self.onmessage = ({ data }) => {
                             console.log(importer)
                             if (id.startsWith(".")) return;
                             if (id.startsWith("https://")) return id;
-                            
+
                             // Use cdn.skypack.dev instead of esm.sh
                             return `https://cdn.skypack.dev/${id}`;
 
