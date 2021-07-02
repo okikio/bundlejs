@@ -4,15 +4,15 @@ import { animate } from "@okikio/animate";
 import { editor as Editor } from "monaco-editor";
 import { hit } from "countapi-js";
 
-// (async () => {
-//     try {
-//         let { value } = await hit('bundle.js.org', 'visits');
-//         let visitCounterEl = document.querySelector("#visit-counter");
-//         if (visitCounterEl) visitCounterEl.textContent = `${value} Page Visits`;
-//     } catch (err) {
-//         console.warn("Visit Counter Error (please create a new issue in the repo)", err);
-//     }
-// })();
+(async () => {
+    try {
+        let { value } = await hit('bundle.js.org', 'visits');
+        let visitCounterEl = document.querySelector("#visit-counter");
+        if (visitCounterEl) visitCounterEl.textContent = `${value} Page Visits`;
+    } catch (err) {
+        console.warn("Visit Counter Error (please create a new issue in the repo)", err);
+    }
+})();
 
 // The default navbar, etc... that is needed
 Default.build();
