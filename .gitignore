@@ -122,3 +122,9 @@ coverage/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# dependencies
+.snowpack/
+
+# macOS-specific files
+.DS_Store
