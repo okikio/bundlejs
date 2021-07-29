@@ -22,8 +22,6 @@ html.dark(lang="en")
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
     script(src='./js/theme.min.js' type='module' async)
 
-    block script
-
   body
     +navbar
 
@@ -31,21 +29,13 @@ html.dark(lang="en")
     main(data-wrapper)
       block content
 
-    +footer
+    block footer
+      +footer
 
     link(rel="stylesheet", href="./js/monaco.min.css")
 
     script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl" async)
-
-    link(rel="preload" href="./js/webanimation.min.js" as="script")
+    
     script(src="./js/webanimation-polyfill.min.js" type='module' async)
 
-    link(rel='modulepreload' href='./js/monaco.min.js')
-    //- link(rel='modulepreload' href='./js/rollup.min.js')
-    //- link(rel='modulepreload' href='./js/editor.min.js')
-    //- link(rel='modulepreload' href='./js/typescript.min.js')
-
-    script(src='./js/main.min.js' type='module' defer)
-
-    //- link(rel='prefetch' href='./js/editor.min.js')
-    //- link(rel='prefetch' href='./js/typescript.min.js')
+    block script
