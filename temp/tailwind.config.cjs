@@ -32,9 +32,9 @@ module.exports = {
         'lt-sm': { 'max': '639px' },
         // => @media (max-width: 639px) { ... }
       },
-      container: {
-        center: 'true',
-      },
+    },
+    container: {
+      center: 'true',
     },
   },
   /* ... */

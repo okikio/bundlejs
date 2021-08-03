@@ -3,8 +3,8 @@ import { Plugin, rollup } from "rollup";
 import { virtualFs } from "rollup-plugin-virtual-fs";
 import { httpResolve } from "rollup-plugin-http-resolve";
 
-import json from "@rollup/plugin-json";
-import commonjs from "@rollup/plugin-commonjs";
+// import json from "@rollup/plugin-json";
+// import commonjs from "@rollup/plugin-commonjs";
 
 import { terser } from "../plugins/terser";
 
@@ -33,7 +33,7 @@ self.onmessage = ({ data }) => {
             const build = await rollup({
                 input: "/input.js",
                 plugins: [
-                    json() as Plugin,
+                    // json() as Plugin,
                     httpResolve({
                         cache,
                         resolveIdFallback: (id, importer) => {
@@ -47,7 +47,7 @@ self.onmessage = ({ data }) => {
 
                         }
                     }),
-                    commonjs() as Plugin,
+                    // commonjs() as Plugin,
                     // memfsPlugin(memfs),
                     virtualFs({
                         files: {

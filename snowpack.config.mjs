@@ -6,9 +6,6 @@ export default {
         bundle: true,
         minify: true,
         color: true,
-        define: {
-            esbuildVer: `\"${esbuildVer}\"`,
-        },
         entryNames: "[name].min",
         target: "es2018",
         loader: { ".ttf": "file" },

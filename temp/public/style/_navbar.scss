@@ -1,0 +1,74 @@
+.navbar {
+    @apply fixed top-0 left-0 w-full z-50;
+
+    @supports (backdrop-filter: blur(5px)) {
+        @apply backdrop-filter backdrop-blur dark:backdrop-blur-md;
+    }
+
+    .container {
+        @apply sm:max-w-screen-lg px-5 h-full relative;
+    }
+
+    .navbar-bg {
+        @apply absolute top-0 left-0 w-full h-full px-5;
+        @apply bg-white dark:bg-black;
+    }
+
+    &.shadow .navbar-bg {
+        @apply dark:bg-elevated;
+    }
+
+    .navbar-bg,
+    &.shadow .navbar-bg {
+        @supports (backdrop-filter: blur(5px)) {
+            @apply dark:bg-opacity-60;
+        }
+    }
+
+    .navbar-frame {
+        @apply flex flex-wrap items-center justify-between relative;
+        @apply w-full py-2;
+    }
+
+    .navbar-shadow {
+        transition: opacity ease 0.25s;
+        box-shadow: 0 4px 15px rgb(0 0 50 / 8%);
+        @apply absolute top-0 left-0 w-full h-full;
+        @apply opacity-0;
+    }
+
+    &.shadow .navbar-shadow {
+        @apply opacity-100;
+    }
+
+    .navbar-border {
+        @apply absolute top-0 left-0 w-full h-full;
+        @apply border-b border-gray-200;
+        @apply dark:border-elevated;
+    }
+
+    &.shadow .navbar-border {
+        @apply border-gray-300;
+        @apply dark:border-tertiary;
+    }
+}
+
+.navbar-offset {
+    @apply mt-16;
+}
+
+.navbar-logo {
+    @apply dark:hover:text-blue-500;
+    @apply text-xl font-bold no-underline;
+    @apply px-3 py-2 rounded-md hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:hover:bg-quaternary;
+
+    &.active {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
+    }
+
+    &:hover {
+        @apply bg-opacity-60;
+    }
+}
