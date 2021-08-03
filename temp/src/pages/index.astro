@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout {...{
+    title: 'bundle - a quick npm package size checker',
+    description: "bundle is a quick and easy way to bundle, minify and gzip your projects and check said gzipped size. It's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+    publishDate: 'Tuesday, June 8 2021',
+    author: 'fred',
+    alt: 'Astro'
+}}>
+  <div class="container">
+    <header>
+      <h1>bundle</h1>
+      <p>
+          a quick npm package size checker <strong id="visit-counter"> </strong>
+      </p>
+    </header>
+
+
+    <div class="push-to-side">
+      <div id="bundle-time"></div>
+      <div class="flex flex-1"></div><button class="btn" id="run" type="button">Run</button>
+      <div class="file-size">...</div>
+    </div>
+
+    <div id="app">
+      <div class="center-container">
+          <div class="loading"></div>
+      </div>
+      <div id="editor"></div>
+    </div>
+
+    <a class="place-content-center" id="product-hunt" href="https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&amp;utm_medium=badge&amp;utm_souce=badge-bundle-6" target="_blank">
+      <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&amp;theme=dark" alt="bundle - An online npm package bundle size checker | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
+    </a>
+
+
+    <p>* Check the console for error messages and bundled code.</p>
+    <p>* Every 10 results the console will be cleared.</p>  
+
+    <br>
+    <p>* Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.</p> 
+
+    <br>
+    <p>* If an error occurs try using a different CDN, by default <span class="underline">bundle</span> uses <a href="https://cdn.skypack.dev" target="_blank" rel="noopener">cdn.skypack.dev</a> but you can use others, here is a list of CDN's that I know of:</p>
+
+    <ul class="list-disc list-inside pt-5">
+      <li><a href="https://skypack.dev" target="_blank" rel="noopener">skypack.dev</a></li>
+      <li><a href="https://cdn.jsdelivr.net" target="_blank" rel="noopener">jsdelivr.net</a></li>
+      <li><a href="https://esm.sh" target="_blank" rel="noopener">esm.sh</a></li>
+      <li><a href="https://unpkg.com" target="_blank" rel="noopener">unpkg.com</a></li>
+      <li><a href="https://jspm.dev" target="_blank" rel="noopener">jspm.dev</a></li>
+    </ul>
+  </div>
+
+  <script slot="script" src="/js/main.js" type="module" defer="defer"></script>
+</Layout>

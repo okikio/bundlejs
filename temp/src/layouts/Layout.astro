@@ -1,0 +1,39 @@
+---
+import { Markdown } from 'astro/components';
+import Metadata from '../components/Metadata.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+let {content} = Astro.props;
+content = content ?? Astro.props;
+
+const {title, description, publishDate, author, permalink, alt} = content;
+---
+<html lang={ content.lang || 'en' }>
+  <head>
+    <Metadata title={title} description={description} permalink={permalink} />
+    <link rel="stylesheet" href="/style/global.css" />
+
+    <meta name="color-scheme" content="dark light" />
+    <script src="/js/theme.js" type="module" async></script> 
+  </head>
+
+  <body>
+    <Navbar />
+
+    <main data-wrapper>
+      <slot />
+    </main>
+
+    <slot name="footer">
+        <Footer />
+    </slot>
+
+    <!-- <link rel="stylesheet" href="/js/monaco.min.css"> -->
+    <script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl" async></script>
+    <script src="/js/webanimation-polyfill.js" type="module" async></script> 
+    
+    <slot name="script" />
+  </body>
+</html>
+
