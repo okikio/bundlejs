@@ -1,0 +1,94 @@
+#app {
+    @apply border border-gray-200 dark:border-transparent;
+    @apply rounded-lg shadow-lg;
+    @apply bg-white relative block mb-12;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    height: 400px - 56px;
+
+    @screen lt-md {
+        height: 300px - 56px;
+    }
+}
+
+.push-to-side {
+    @apply flex align-middle py-2 justify-end;
+}
+
+.file-size {
+    @apply inline-block px-4 py-2 rounded-md mx-2;
+    @apply text-center flex justify-center items-center;
+    @apply bg-gray-200 dark:bg-quaternary;
+    @apply text-gray-500 dark:text-secondary;
+    min-width: theme("spacing.24");
+    min-height: theme("spacing.12")
+}
+
+#editor {
+    height: 400px - 30px - 56px;
+
+    @screen lt-md {
+        height: 300px - 30px - 56px;
+    }
+}
+
+.loading {
+    @apply block mx-auto w-8 h-8 rounded-full;
+    border-width: theme("spacing.1");
+    border-color: theme("colors.gray.300");
+    border-top-color: theme("colors.blue.500");
+    animation: spin 1s linear infinite;
+}
+
+.dark #app {
+    background-color: #24292e;
+}
+
+.dark .center-container {
+    background-color: #121212;
+
+    @supports (backdrop-filter: blur(8px)) {
+        @apply bg-center-container-dark bg-opacity-20;
+    }
+}
+
+.dark .loading {
+    border-color: theme("colors.tertiary");
+    border-top-color: theme("colors.blue.400");
+}
+
+.center-container {
+    @apply absolute top-0 left-0 w-full h-full;
+    @apply grid justify-center content-center;
+    @apply z-10;
+    background-color: #f8f8f8;
+
+    @supports (backdrop-filter: blur(8px)) {
+        @apply bg-white;
+        @apply backdrop-filter backdrop-blur bg-opacity-20;
+    }
+
+    p {
+        @apply mt-2;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#bundle-time {
+    @apply flex items-center;
+}
+
+#editor {
+    /* height: 100%; */
+    width: 100%;
+}
+
+.current-line {
+    width: calc(100% - 20px);
+    border-radius: 4px;
+}

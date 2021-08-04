@@ -2,7 +2,7 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream, streamList, tasks, parallelFn, seriesFn } from "./util.js";
+import { watch, task, series, parallel, stream, tasks, parallelFn } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
@@ -48,6 +48,8 @@ task("html", async () => {
 // CSS Tasks
 task("css", async () => {
     const [
+        { default: fiber },
+
         { default: postcss },
         { default: tailwind },
 
@@ -55,7 +57,11 @@ task("css", async () => {
 
         { default: scss },
         { default: sass },
+
+        { default: rename }
     ] = await Promise.all([
+        import("fibers"),
+
         import("gulp-postcss"),
         import("tailwindcss"),
 
@@ -63,16 +69,19 @@ task("css", async () => {
 
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
+
+        import("gulp-rename")
     ]);
 
-    return stream(`${cssSrcFolder}/*.css`, {
+    return stream(`${cssSrcFolder}/*.scss`, {
         pipes: [
             // Minify scss to css
             postcss([
-                _import(),
+                // _import(),
                 sass({ outputStyle: "compressed" }),
-                tailwind("./tailwind.cjs"),
+                tailwind("./tailwind.config.cjs"),
             ], { syntax: scss }),
+            rename({ extname: ".css", suffix: ".min"})
         ],
         dest: cssFolder,
         end: browserSync ? [browserSync.stream()] : null,
@@ -286,7 +295,7 @@ tasks({
 
 // Other assets
 task("assets", () => {
-    return stream([`${assetsFolder}/**/*`, `${assetsFolder}/CNAME`], {
+    return stream([`${assetsFolder}/**/*`], {
         opts: {
             base: assetsFolder,
         },
@@ -338,7 +347,7 @@ task("watch", async () => {
     );
 
     watch(`${pugFolder}/**/*.pug`, { delay: 250 }, series("html", "reload"));
-    watch([`${cssSrcFolder}/**/*.css`, `./tailwind.cjs`], { delay: 250 }, series("css"));
+    watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 250 }, series("css"));
 
     watch([
         `${tsFolder}/**/*.ts`,

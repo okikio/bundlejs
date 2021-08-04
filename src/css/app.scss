@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./components/_navbar";
+@import "./components/_monaco";
+@import "./components/_fonts";
+
+html,
+body {
+    scroll-behavior: smooth;
+}
+
+body {
+    @apply bg-white text-black;
+    @apply dark:bg-black dark:text-label;
+    @apply font-manrope;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.no-overflow-x {
+    overflow-x: hidden;
+}
+
+.icon {
+    -webkit-font-feature-settings: "liga" off, "dlig";
+    -moz-font-feature-settings: "liga=0, dlig=1";
+    font-feature-settings: "liga", "dlig";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: "Material Icons Round", "Material Icons";
+    vertical-align: middle;
+    letter-spacing: normal;
+    display: inline-block;
+    text-decoration: none;
+    text-transform: none;
+    white-space: nowrap;
+    font-weight: normal;
+    position: relative;
+    font-style: normal;
+    word-wrap: normal;
+    font-size: 24px;
+    line-height: 1;
+    direction: ltr;
+    height: 1em;
+    width: 1em;
+}
+
+a {
+    @apply text-blue-500 hover:text-blue-700 no-underline;
+    @apply dark:text-blue-400 dark:hover:text-blue-200;
+}
+
+button,
+a {
+    transition: box-shadow 0.2s ease-out;
+    @apply focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-opacity-50;
+    @apply rounded-md focus:outline-none;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+@screen sm {
+    .desktop {
+        display: block;
+    }
+
+    .mobile {
+        display: none;
+    }
+}
+
+@screen lt-sm {
+    .mobile {
+        display: block;
+    }
+
+    .desktop {
+        display: none;
+    }
+}
+
+.btn {
+    @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:hover:bg-quaternary;
+
+    &.active {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
+    }
+
+    &:hover {
+        @apply bg-opacity-60;
+    }
+}
+
+main {
+    .container {
+        @apply px-5 py-2 sm:max-w-screen-md;
+    }
+
+    strong {
+        @apply font-extrabold dark:font-medium dark:underline;
+    }
+
+    header {
+        @apply p-6 text-center;
+
+        h1 {
+            @apply text-5xl font-bold mb-2;
+        }
+
+        p {
+            @apply text-lg font-medium;
+        }
+    }
+
+    #about,
+    #faq {
+        @apply px-5 pt-24;
+    }
+
+    h2 {
+        @apply text-5xl font-bold mb-8;
+    }
+
+    h4 {
+        @apply text-2xl font-bold mb-2;
+    }
+
+    p {
+        @apply text-lg;
+    }
+}
+
+.card {
+    @apply border border-gray-200 dark:border-quaternary;
+    @apply grid gap-6 sm:grid-cols-12;
+    @apply my-5 p-5 rounded-lg;
+
+    section {
+        @apply col-span-12;
+
+        &.content {
+            @apply sm:col-span-9;
+        }
+
+        .updated-time {
+            @apply text-gray-500 mt-2;
+        }
+
+        &.file-size {
+            @apply flex sm:text-center sm:col-span-3;
+        }
+    }
+}
+
+.theme-toggle {
+    @apply rounded-md;
+    @apply w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.btn {
+    transition: opacity ease 0.25s;
+    @apply mr-2 px-3 py-2 rounded-md no-underline hover:bg-gray-200;
+    @apply text-blue-500 dark:text-blue-400 dark:hover:bg-quaternary;
+
+    &.active {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
+    }
+
+    &:hover {
+        @apply bg-opacity-60;
+    }
+}
+
+.navbar.shadow .to-top {
+    @apply opacity-100;
+}
+
+#product-hunt {
+    @apply flex mb-6;
+}
+
+footer.footer {
+    @apply text-gray-500 text-right dark:text-secondary;
+
+    .container {
+        @apply p-5 align-middle sm:max-w-screen-md;
+    }
+}
