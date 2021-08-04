@@ -1,6 +1,8 @@
 module.exports = {
   darkMode: 'class',
-  purge: ['./public/**/*.html', './src/**/*.{astro,js,jsx,svelte,ts,tsx,vue,md}'],
+  purge: [
+    './src/pug/**/*.pug'
+  ],
   mode: "jit",
   theme: {
     extend: {
