@@ -5,21 +5,6 @@ import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
 export const initialValue = `\
-/**
- You can add custom protocols to the module path to use different CDN's:
-
- esm.run:module   =>   https://esm.run/module
- esm.sh:module    =>   https://cdn.esm.sh/module
- esm:module       =>   https://cdn.esm.sh/module
- skypack:module   =>   https://cdn.skypack.dev/module
- unpkg:module     =>   https://unpkg.com/module
- jsdelivr:module  =>   https://cdn.jsdelivr.net/npm/module
- 
- e.g.
- import { toStr } from "skypack:@okikio/animate";
- export * from "esm:@okikio/animate"; 
-*/
-
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
 
