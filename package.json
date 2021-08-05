@@ -60,7 +60,6 @@
         "@commitlint/cli": "^13.1.0",
         "@commitlint/config-conventional": "^13.1.0",
         "@csstools/postcss-sass": "^4.0.0",
-        "@types/node": "^16.4.12",
         "autoprefixer": "^10.3.1",
         "browser-sync": "^2.27.5",
         "commitizen": "^4.2.4",
@@ -79,17 +78,11 @@
         "gulp-terser": "^2.0.1",
         "husky": "^7.0.1",
         "jstransformer-markdown-it": "^2.1.0",
-        "lodash-es": "^4.17.21",
-        "pnpm": "^6.11.5",
         "postcss": "^8.3.6",
-        "postcss-advanced-variables": "^3.0.1",
-        "postcss-cli": "^8.3.1",
         "postcss-csso": "^5.0.1",
-        "postcss-easy-import": "^3.0.0",
         "postcss-scss": "^4.0.0",
         "sass": "^1.37.5",
         "standard-version": "^9.3.1",
-        "tailwindcss": "^2.2.7",
-        "ultra-runner": "^3.10.5"
+        "tailwindcss": "^2.2.7"
     }
 }

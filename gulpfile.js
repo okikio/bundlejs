@@ -52,9 +52,6 @@ task("css", async () => {
 
         { default: postcss },
         { default: tailwind },
-
-        { default: _import },
-
         { default: scss },
         { default: sass },
 
@@ -64,8 +61,6 @@ task("css", async () => {
 
         import("gulp-postcss"),
         import("tailwindcss"),
-
-        import("postcss-easy-import"),
 
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
@@ -77,8 +72,7 @@ task("css", async () => {
         pipes: [
             // Minify scss to css
             postcss([
-                // _import(),
-                sass({ outputStyle: "compressed" }),
+                sass({ outputStyle: "compressed", fiber }),
                 tailwind("./tailwind.config.cjs"),
             ], { syntax: scss }),
             rename({ extname: ".css", suffix: ".min" })
