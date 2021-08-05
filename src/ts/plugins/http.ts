@@ -1,5 +1,5 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
-import { Plugin } from 'esbuild';
+import type { Plugin } from 'esbuild';
 
 export async function fetchPkg(url: string) {
     const res = await fetch(url);

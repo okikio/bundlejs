@@ -1,5 +1,6 @@
-import type { Plugin } from 'esbuild';
 import { VIRTUAL_FS_NAMESPACE } from "./virtual-fs";
+import type { Plugin } from 'esbuild';
+
 export const ENTRY = (input: string): Plugin => {
     return {
         name: 'virtual-entry',

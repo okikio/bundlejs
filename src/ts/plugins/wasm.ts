@@ -1,6 +1,7 @@
-import { Plugin } from 'esbuild';
 import path from 'path';
 import { fs } from "memfs";
+
+import type { Plugin } from 'esbuild';
 
 export const WASM_STUB_NAMESPACE = 'wasm-stub';
 export const WASM_BINARY_NAMESPACE = 'wasm-binary';
@@ -33,8 +34,7 @@ export const WASM = (): Plugin => {
                 
                 return {
                     path: path.isAbsolute(args.path) ? args.path : path.join(args.resolveDir, args.path),
-                    namespace: WASM_STUB_NAMESPACE,
-                    sideEffects: false,
+                    namespace: WASM_STUB_NAMESPACE
                 }
             })
 

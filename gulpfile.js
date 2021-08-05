@@ -134,12 +134,16 @@ tasks({
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: terser },
-            { default: gulpif }
+            { default: gulpif },
+
+            { solidPlugin: solid },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("gulp-terser"),
-            import("gulp-if")
+            import("gulp-if"),
+
+            import("esbuild-plugin-solid"),
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
@@ -150,6 +154,9 @@ tasks({
                     ...esbuildConfig,
                     sourcemap: true,
                     format: "esm",
+                    plugins: [
+                        solid()
+                    ]
                 }),
 
                 // Filter out the sourcemap
@@ -346,6 +353,7 @@ task("watch", async () => {
     watch([
         `${tsFolder}/**/*.ts`,
         `${tsFolder}/modules/default.ts`,
+        `${tsFolder}/components/*`,
         `!${tsFolder}/modules/*.ts`,
         `!${tsFolder}/plugins/*.ts`,
         `!node_modules/esbuild-wasm/esbuild.wasm`,

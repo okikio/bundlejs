@@ -1,6 +1,7 @@
-import { Plugin } from 'esbuild';
 import { CDN_NAMESPACE } from './cdn';
 import path from 'path';
+
+import type { Plugin } from 'esbuild';
 
 export const HOST = 'https://cdn.skypack.dev/';
 export const BARE = (): Plugin => {

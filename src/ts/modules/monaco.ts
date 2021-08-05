@@ -69,31 +69,31 @@ export const build = () => {
     (window as any).MonacoEnvironment = {
         getWorker: function (moduleId, label) {
             if (label === "json") {
-                return new Worker("/js/json.min.js", {
+                return new Worker("./js/json.min.js", {
                     name: `${label}-worker`,
                     type: 'module'
                 });
             }
             if (label === "css" || label === "scss" || label === "less") {
-                return new Worker("/js/css.min.js", {
+                return new Worker("./js/css.min.js", {
                     name: `${label}-worker`,
                     type: 'module'
                 });
             }
             if (label === "html" || label === "handlebars" || label === "razor") {
-                return new Worker("/js/html.min.js", {
+                return new Worker("./js/html.min.js", {
                     name: `${label}-worker`,
                     type: 'module'
                 });
             }
             if (label === "typescript" || label === "javascript") {
-                return new Worker("/js/typescript.min.js", {
+                return new Worker("./js/typescript.min.js", {
                     name: `${label}-worker`,
                     type: 'module'
                 });
             }
 
-            return new Worker("/js/editor.min.js", {
+            return new Worker("./js/editor.min.js", {
                 name: "editor-worker",
                 type: 'module'
             });

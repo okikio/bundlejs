@@ -24,7 +24,6 @@ import { WASM } from "../plugins/wasm";
 let _initialized = false;
 
 vol.fromJSON({}, "/");
-const cache = new Map();
 
 (async () => {
     try {
@@ -95,14 +94,13 @@ self.onmessage = ({ data }) => {
 
                     BARE(),
                     HTTP(),
-                    CDN(cache),
+                    CDN(),
                     VIRTUAL_FS(),
                     WASM(),
                 ],
                 globalName: 'bundler',
             });
 
-            // currentlyBuilding = false;
             result?.outputFiles?.forEach((x) => {
                 if (!fs.existsSync(path.dirname(x.path))) {
                     fs.mkdirSync(path.dirname(x.path));
@@ -121,16 +119,18 @@ self.onmessage = ({ data }) => {
                 type: `esbuild build error`,
                 error
             });
+
             return;
-        } finally {
-            cache.clear();
         }
-        
-        // Rollup for treeshaking files
-        // esbuild doesn't treeshake files very well
+
+        // esbuild doesn't treeshake files very well, so, 
+        // I choose to use rollup for treeshaking files. 
         try {
             const { generate } = await rollup({
                 input: "/input.js",
+                treeshake: true,
+                experimentalCacheExpiry: 1,
+                perf: false,
                 plugins: [
                     virtualFs({
                         files: {
@@ -140,7 +140,12 @@ self.onmessage = ({ data }) => {
                 ]
             });
 
-            const { output } = await generate({ format: "esm" });
+            const { output } = await generate({
+                format: "esm",
+                sourcemap: false,
+                minifyInternalExports: false,
+            });
+
             content = output[0].code;
             content = content?.trim?.(); // Remove unesscary space
         } catch (error) {
@@ -150,8 +155,6 @@ self.onmessage = ({ data }) => {
             });
 
             return;
-        } finally {
-            cache.clear();
         }
 
         // try {
@@ -170,6 +173,7 @@ self.onmessage = ({ data }) => {
         try {
             // @ts-ignore
             let { length } = await gzip(content, { level: 9 });
+
             self.postMessage({
                 value: { content, size: prettyBytes(length) }
             });
