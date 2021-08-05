@@ -9,6 +9,28 @@ block content
         strong#visit-counter 
 
 
+    .search
+      i.icon search
+      input#search-input(type="text" autocomplete="off" placeholder="Type a package name...")
+
+    .search-results
+      .card
+        section.content
+          h3.font-semibold.text-lg
+            a(href='....href' target='_blank')
+              | @okikio/animate
+          p An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.
+          p.updated-time
+            | Updated 2 days ago by 
+            a(href='..._authorHref' target='_blank')
+              | @okikio
+            | .
+        //- section.file-size
+          .self-center.uppercase
+            .loading
+            p Minified + Gzipped
+
+
     .push-to-side
       #bundle-time
       .flex.flex-1

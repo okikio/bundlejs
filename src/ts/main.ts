@@ -17,6 +17,57 @@ import { hit } from "countapi-js";
 // The default navbar, etc... that is needed
 Default.build();
 
+(() => {
+    let results = [];
+    const searchInput = document.querySelector(".search input") as HTMLInputElement;
+    const host = "https://registry.npmjs.com/";
+    let parseInput = (input: string) => {
+        let value = input; // sanitize
+        let exec = /([\S]+)@([\S]+)/g.exec(value);
+        let search = `${value}`.replace(/^@/, "");
+        let urlScheme = `${host}/-/v1/search?text=${search}&size=10&boost-exact=false`;
+        let version = "";
+    
+        if (exec) {
+            let [, pkg, ver] = exec;
+            version = ver;
+            urlScheme = `${host}/-/v1/search?text=${pkg}&size=10&boost-exact=false`;
+        }
+    
+        return { url: urlScheme, version }
+    };
+
+    searchInput?.addEventListener?.("input", () => {
+        let timer: number | void;
+
+        // Set a timeout to debounce the keyup event
+        timer = window.setTimeout(() => {
+            let { value } = searchInput;
+            let { url, version } = parseInput(value);
+            (async () => {
+                let response = await fetch(url);
+                let result = await response.json();
+                results = result.objects.map(obj => {
+                    const { name, description, date, publisher } = obj.package;
+                    return {
+                        name, description,
+                        date, version,
+                        author: publisher.username
+                    };
+                });
+
+                console.log(results);
+                // batch(() => {
+                //     setState("objects", results);
+                //     setState("index", 0);
+                // });
+            })();
+
+            timer = window.clearTimeout(timer as number);
+        }, 300);
+    });
+})();
+
 let loadingContainerEl = document.querySelector(".center-container");
 let fileSizeEl = document.querySelector(".file-size");
 let RunBtn = document.querySelector("#run");
