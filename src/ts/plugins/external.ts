@@ -1,4 +1,6 @@
 import type { Plugin } from 'esbuild';
+import { CDN_NAMESPACE } from './cdn';
+import { HTTP_NAMESPACE } from './http';
 import { PolyfillMap } from './node-polyfill';
 
 // Must not start with "/" or "./" or "../"
@@ -11,42 +13,33 @@ export const EXTERNAL = (): Plugin => {
     return {
         name: 'external-globals',
         setup(build) {
-            build.onResolve({ filter: NON_NODE_MODULE_RE }, (args) => ({
-                path: args.path,
-                external: true,
-            }))
+            build.onResolve({ filter: /^node\:.*/ }, (args) => {
+                return {
+                    path: args.path,
+                    namespace: 'external',
+                    external: true
+                };
+            });
+            
+            build.onResolve({ filter: /.*/ }, (args) => {
+                let path = args.path.replace(/^node\:/, "");
+                if (ExternalPackages.includes(path)) {
+                    return {
+                        path,
+                        namespace: 'external',
+                        external: true
+                    };
+                }
+            });
 
-            // if (!patterns || patterns.length === 0) return
+            build.onLoad({ filter: /.*/, namespace: 'external' }, (args) => {
+                if (args.path === 'node-fetch')
+                    return { contents: 'export default fetch' };
 
-            // build.onResolve({ filter: /.*/ }, (args) => {
-            //   const external = patterns.some((p) => {
-            //     if (p instanceof RegExp) {
-            //       return p.test(args.path)
-            //     }
-            //     return args.path === p
-            //   })
-
-            //   if (external) {
-            //     return { path: args.path, external }
-            //   }
-            // })
-            // build.onResolve({ filter: /.*/ }, (args) => {
-            //     if (ExternalPackages.includes(args.path)) {
-            //         return {
-            //             path: args.path,
-            //             namespace: 'external',
-            //         };
-            //     }
-            // });
-
-            // build.onLoad({ filter: /.*/, namespace: 'external' }, (args) => {
-            //     if (args.path === 'node-fetch')
-            //         return { contents: 'export default fetch' };
-
-            //     return {
-            //         contents: `module.exports = ${args.path}`,
-            //     };
-            // });
+                return {
+                    contents: `export default {}`,
+                };
+            });
         },
     };
 };

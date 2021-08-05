@@ -1,19 +1,16 @@
-// Based on [uniroll](https://github.com/mizchi/uniroll) by [mizchi](https://github.com/mizchi)
-import { Plugin, rollup } from "rollup";
+import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "esbuild-wasm/esm/browser";
+
+import path from "path";
+import { fs, vol } from "memfs";
+
+import { rollup } from "rollup";
 import { virtualFs } from "rollup-plugin-virtual-fs";
-import { httpResolve } from "rollup-plugin-http-resolve";
 
-// import json from "@rollup/plugin-json";
-// import commonjs from "@rollup/plugin-commonjs";
-
-import { terser } from "../plugins/terser";
+// import { minify } from "terser";
+// import { codeFrameColumns } from "@babel/code-frame";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
-
-import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "esbuild-wasm/esm/browser";
-import path from "path";
-import { fs, vol } from "memfs";
 
 import { EXTERNAL } from "../plugins/external";
 import { ENTRY } from "../plugins/entry";
@@ -25,14 +22,9 @@ import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
 let _initialized = false;
-let currentlyBuilding = false;
-
-export let result: BuildResult & {
-    outputFiles: OutputFile[];
-} | BuildIncremental;
-
 
 vol.fromJSON({}, "/");
+const cache = new Map();
 
 (async () => {
     try {
@@ -52,8 +44,10 @@ vol.fromJSON({}, "/");
     }
 })();
 
+export let result: BuildResult & {
+    outputFiles: OutputFile[];
+} | BuildIncremental;
 
-const cache = new Map();
 self.onmessage = ({ data }) => {
     let input: string = `${data}`; // Ensure input is a string
 
@@ -71,50 +65,109 @@ self.onmessage = ({ data }) => {
         try {
             await fs.promises.writeFile("input.ts", `${input}`);
 
-            // Clear Cache
-            const build = await rollup({
+            result = await build({
+                entryPoints: ['<stdin>'],
+                bundle: true,
+                minify: true,
+                color: true,
+                incremental: false,
+                target: ["esnext"],
+                logLevel: 'info',
+                write: false,
+                outfile: "/bundle.js",
+                platform: "browser",
+                format: "esm",
+                loader: {
+                    '.ts': 'ts',
+                    '.png': 'dataurl',
+                    '.svg': 'text',
+                    '.ttf': 'file',
+                    '.css': 'css'
+                },
+                define: {
+                    "__NODE__": `false`,
+                    "process.env.NODE_ENV": `"production"`
+                },
+                plugins: [
+                    EXTERNAL(),
+                    ENTRY(`/input.ts`),
+                    JSON_PLUGIN(),
+
+                    BARE(),
+                    HTTP(),
+                    CDN(cache),
+                    VIRTUAL_FS(),
+                    WASM(),
+                ],
+                globalName: 'bundler',
+            });
+
+            // currentlyBuilding = false;
+            result?.outputFiles?.forEach((x) => {
+                if (!fs.existsSync(path.dirname(x.path))) {
+                    fs.mkdirSync(path.dirname(x.path));
+                }
+
+                fs.writeFileSync(x.path, x.text);
+            });
+
+            content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
+            content = content?.trim?.(); // Remove unesscary space
+
+            // Reset memfs
+            vol.reset();
+        } catch (error) {
+            self.postMessage({
+                type: `esbuild build error`,
+                error
+            });
+            return;
+        } finally {
+            cache.clear();
+        }
+        
+        // Rollup for treeshaking files
+        // esbuild doesn't treeshake files very well
+        try {
+            const { generate } = await rollup({
                 input: "/input.js",
                 plugins: [
-                    // json() as Plugin,
-                    httpResolve({
-                        cache,
-                        resolveIdFallback: (id, importer) => {
-                            if (importer == null) return;
-                            console.log(importer)
-                            if (id.startsWith(".")) return;
-                            if (id.startsWith("https://")) return id;
-
-                            // Use cdn.skypack.dev instead of esm.sh
-                            return `https://cdn.skypack.dev/${id}`;
-
-                        }
-                    }),
-                    // commonjs() as Plugin,
-                    // memfsPlugin(memfs),
                     virtualFs({
                         files: {
-                            '/input.js': input,
+                            '/input.js': content,
                         }
-                    }),
-                    terser()
+                    })
                 ]
             });
 
-            const { output } = await build.generate({ format: "esm" });
+            const { output } = await generate({ format: "esm" });
             content = output[0].code;
             content = content?.trim?.(); // Remove unesscary space
         } catch (error) {
             self.postMessage({
-                type: `rollup build error`,
+                type: `rollup treeshaking error`,
                 error
             });
 
             return;
+        } finally {
+            cache.clear();
         }
 
-        try {
-            cache.clear();
+        // try {
+        //     content = (await minify(content)).code;
+        // } catch (error) {
+        //     const { message, line, col: column } = error;
 
+        //     self.postMessage({
+        //         type: `terser minify error`,
+        //         error: codeFrameColumns(content, { start: { line, column } }, { message })
+        //     });
+
+        //     return;
+        // }
+
+        try {
             // @ts-ignore
             let { length } = await gzip(content, { level: 9 });
             self.postMessage({

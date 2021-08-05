@@ -51,9 +51,7 @@ let editor: Editor.IStandaloneCodeEditor;
 let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
 
 // @ts-ignore
-let BundleWorker = new Worker("./js/rollup.min.js", {
-    
-});
+let BundleWorker = new Worker("./js/bundle.min.js", { name: "esbuild-worker" });
 let count = 0;
 let value = "";
 let start = Date.now();

@@ -15,8 +15,6 @@ import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
 let _initialized = false;
-let currentlyBuilding = false;
-
 export let result: BuildResult & {
     outputFiles: OutputFile[];
 } | BuildIncremental;
@@ -60,57 +58,55 @@ self.onmessage = ({ data }) => {
             await fs.promises.writeFile("input.ts", `${input}`);
 
             // Stop builiding if another input is coming down the pipeline
-            if (currentlyBuilding) result?.stop?.();
-            currentlyBuilding = true;
+            // if (currentlyBuilding) result?.stop?.();
+            // currentlyBuilding = true;
 
-            if (result) {
-                result = await result.rebuild();
-            } else {
-                result = await build({
-                    entryPoints: ['<stdin>'],
-                    // stdin: {
-                    //     contents: input,
+            result = await build({
+                entryPoints: ['<stdin>'],
+                // stdin: {
+                //     contents: input,
 
-                    //     // These are all optional:
-                    //     // resolveDir: require('path').join(__dirname, 'src'),
-                    //     sourcefile: '/input.ts',
-                    //     loader: 'ts',
-                    // },
-                    bundle: true,
-                    minify: true,
-                    color: true,
-                    incremental: true,
-                    target: ["esnext"],
-                    logLevel: 'info',
-                    write: false,
-                    outfile: "/bundle.js",
-                    platform: "browser",
-                    format: "esm",
-                    loader: {
-                        '.ts': 'ts',
-                        '.png': 'dataurl',
-                        '.svg': 'text',
-                    },
-                    define: {
-                        "__NODE__": `false`,
-                        "process.env.NODE_ENV": `"production"`
-                    },
-                    plugins: [
-                        EXTERNAL(),
-                        ENTRY(`/input.ts`),
-                        JSON_PLUGIN(),
+                //     // These are all optional:
+                //     // resolveDir: require('path').join(__dirname, 'src'),
+                //     sourcefile: '/input.ts',
+                //     loader: 'ts',
+                // },
+                bundle: true,
+                minify: true,
+                color: true,
+                incremental: false,
+                target: ["esnext"],
+                logLevel: 'info',
+                write: false,
+                outfile: "/bundle.js",
+                platform: "browser",
+                format: "esm",
+                loader: {
+                    '.ts': 'ts',
+                    '.png': 'dataurl',
+                    '.svg': 'text',
+                    '.ttf': 'file',
+                    '.css': 'css'
+                },
+                define: {
+                    "__NODE__": `false`,
+                    "process.env.NODE_ENV": `"production"`
+                },
+                plugins: [
+                    EXTERNAL(),
+                    ENTRY(`/input.ts`),
+                    JSON_PLUGIN(),
 
-                        BARE(),
-                        HTTP(),
-                        CDN(cache),
-                        VIRTUAL_FS(),
-                        WASM(),
-                    ],
-                    globalName: 'bundler',
-                });
-            }
+                    BARE(),
+                    HTTP(),
+                    CDN(cache),
+                    VIRTUAL_FS(),
+                    WASM(),
+                ],
+                globalName: 'bundler',
+            });
 
-            currentlyBuilding = false;
+            // currentlyBuilding = false;
             result?.outputFiles?.forEach((x) => {
                 if (!fs.existsSync(path.dirname(x.path))) {
                     fs.mkdirSync(path.dirname(x.path));
@@ -124,16 +120,14 @@ self.onmessage = ({ data }) => {
 
             // Reset memfs
             vol.reset();
-
-            if (cache.size >= 10)
-                cache.clear();
         } catch (error) {
             self.postMessage({
                 type: `esbuild build error`,
                 error
             });
-
             return;
+        } finally {
+            cache.clear();
         }
 
         try {
