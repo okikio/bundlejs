@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./components/_fonts";
 @import "./components/_navbar";
 @import "./components/_monaco";
-@import "./components/_fonts";
+@import "./components/_search";
 
 html,
 body {
@@ -132,28 +133,6 @@ main {
 
     p {
         @apply text-lg;
-    }
-}
-
-.card {
-    @apply border border-gray-200 dark:border-quaternary;
-    @apply grid gap-6 sm:grid-cols-12;
-    @apply my-5 p-5 rounded-lg;
-
-    section {
-        @apply col-span-12;
-
-        &.content {
-            @apply sm:col-span-9;
-        }
-
-        .updated-time {
-            @apply text-gray-500 mt-2;
-        }
-
-        &.file-size {
-            @apply flex sm:text-center sm:col-span-3;
-        }
     }
 }
 
