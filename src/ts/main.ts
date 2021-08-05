@@ -1,8 +1,12 @@
 import { importShim } from "./util/dynamic-import";
 import * as Default from "./modules/default";
+
+import { renderComponent, setState, Emitter } from "./components/SearchResults";
+
 import { animate } from "@okikio/animate";
-import { editor as Editor } from "monaco-editor";
 import { hit } from "countapi-js";
+
+import type { editor as Editor } from "monaco-editor";
 
 // (async () => {
 //     try {
@@ -18,53 +22,60 @@ import { hit } from "countapi-js";
 Default.build();
 
 (() => {
-    let results = [];
     const searchInput = document.querySelector(".search input") as HTMLInputElement;
     const host = "https://registry.npmjs.com/";
-    let parseInput = (input: string) => {
+    const parseInput = (input: string) => {
         let value = input; // sanitize
         let exec = /([\S]+)@([\S]+)/g.exec(value);
         let search = `${value}`.replace(/^@/, "");
         let urlScheme = `${host}/-/v1/search?text=${search}&size=10&boost-exact=false`;
         let version = "";
-    
+
         if (exec) {
             let [, pkg, ver] = exec;
             version = ver;
             urlScheme = `${host}/-/v1/search?text=${pkg}&size=10&boost-exact=false`;
         }
-    
+
         return { url: urlScheme, version }
     };
 
+    let canSearch = true;
     searchInput?.addEventListener?.("input", () => {
-        let timer: number | void;
+        if (canSearch) {
+            canSearch = false;
 
-        // Set a timeout to debounce the keyup event
-        timer = window.setTimeout(() => {
-            let { value } = searchInput;
-            let { url, version } = parseInput(value);
-            (async () => {
-                let response = await fetch(url);
-                let result = await response.json();
-                results = result.objects.map(obj => {
-                    const { name, description, date, publisher } = obj.package;
-                    return {
-                        name, description,
-                        date, version,
-                        author: publisher.username
-                    };
-                });
+            // Set a timeout to debounce the keyup event
+            requestAnimationFrame(() => {
+                let { value } = searchInput;
+                let { url, version } = parseInput(value);
 
-                console.log(results);
-                // batch(() => {
-                //     setState("objects", results);
-                //     setState("index", 0);
-                // });
-            })();
+                (async () => {
+                    let response = await fetch(url);
+                    let result = await response.json();
+                    setState(
+                        result.objects.map(obj => {
+                            const { name, description, date, publisher } = obj.package;
+                            return {
+                                name, description,
+                                date, version,
+                                author: publisher.username
+                            };
+                        })
+                    );
+                })();
 
-            timer = window.clearTimeout(timer as number);
-        }, 300);
+                canSearch = true;
+            });
+        }
+    });
+    
+    renderComponent(document.querySelector(".search-results-container"));
+
+    let clearBtn = document.querySelector(".search .clear");
+    clearBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        setState([]);
     });
 })();
 
@@ -87,6 +98,10 @@ let editor: Editor.IStandaloneCodeEditor;
 (async () => {
     let Monaco = await importShim("./monaco.min.js");
     editor = Monaco.build();
+    Emitter.on("add-module", (v) => {
+        let value = `` + editor?.getValue();
+        editor.setValue(value + "\n" + v);
+    });
 
     // Fade away the loading screen
     Fade.play();

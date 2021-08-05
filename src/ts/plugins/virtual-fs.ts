@@ -1,6 +1,7 @@
-import { Plugin } from 'esbuild';
 import path from 'path';
 import { fs } from "memfs";
+
+import type { Plugin } from 'esbuild';
 
 export const VIRTUAL_FS_NAMESPACE = 'virtualfs';
 export const resolve = ({ id, importer }: { id: string; importer: string }) => {

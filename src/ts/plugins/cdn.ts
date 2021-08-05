@@ -5,7 +5,7 @@ import type { Plugin } from 'esbuild';
 import type { OnLoadArgs, OnLoadResult } from "esbuild-wasm";
 
 export const CDN_NAMESPACE = 'cdn';
-export const CDN = (cache: Map<any, any>): Plugin => {
+export const CDN = (): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
@@ -30,16 +30,11 @@ export const CDN = (cache: Map<any, any>): Plugin => {
                     pathUrl += parentFileExtention;
                 }
         
-                let value;
-                if (!cache.has(pathUrl)) {
-                    value = await fetchPkg(pathUrl);
-                    cache.set(pathUrl, value);
-                } else value = cache.get(pathUrl);
-        
+                const { content, url } = await fetchPkg(pathUrl);
                 return Object.assign({
-                    contents: value.content,
+                    contents: content,
                     pluginData: {
-                        parentUrl: value.url,
+                        parentUrl: url,
                     },
                 }, pathIsTS || parentPathIsTS ? { loader: "ts" } : null) as OnLoadResult;
             });
