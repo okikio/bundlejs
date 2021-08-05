@@ -5,6 +5,21 @@ import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
 export const initialValue = `\
+/**
+ You can add custom protocols to the module path to use different CDN's:
+
+ esm.run:module   =>   https://esm.run/module
+ esm.sh:module    =>   https://cdn.esm.sh/module
+ esm:module       =>   https://cdn.esm.sh/module
+ skypack:module   =>   https://cdn.skypack.dev/module
+ unpkg:module     =>   https://unpkg.com/module
+ jsdelivr:module  =>   https://cdn.jsdelivr.net/npm/module
+ 
+ e.g.
+ import { toStr } from "skypack:@okikio/animate";
+ export * from "esm:@okikio/animate"; 
+*/
+
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
 
@@ -20,12 +35,10 @@ export const build = () => {
     let inputEl = document.querySelector("#editor") as HTMLElement;
     let inputEditor: Editor.IStandaloneCodeEditor;
 
-    // languages.typescript.typescriptDefaults.setEagerModelSync(true);
-    // languages.typescript.typescriptDefaults.setMaximumWorkerIdleTime(-1);
     languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
-        noSyntaxValidation: true,
-        noSuggestionDiagnostics: true
+        noSyntaxValidation: false,
+        noSuggestionDiagnostics: false
     });
 
     // Compiler options
@@ -69,21 +82,36 @@ export const build = () => {
     // to instruct the editor how you named the
     // bundles that contain the web workers.
     (window as any).MonacoEnvironment = {
-        getWorkerUrl: function (moduleId, label) {
+        getWorker: function (moduleId, label) {
             if (label === "json") {
-                return "/js/json.min.js";
+                return new Worker("/js/json.min.js", {
+                    name: `${label}-worker`,
+                    type: 'module'
+                });
             }
             if (label === "css" || label === "scss" || label === "less") {
-                return "/js/css.min.js";
+                return new Worker("/js/css.min.js", {
+                    name: `${label}-worker`,
+                    type: 'module'
+                });
             }
             if (label === "html" || label === "handlebars" || label === "razor") {
-                return "/js/html.min.js";
+                return new Worker("/js/html.min.js", {
+                    name: `${label}-worker`,
+                    type: 'module'
+                });
             }
             if (label === "typescript" || label === "javascript") {
-                return "/js/typescript.min.js";
+                return new Worker("/js/typescript.min.js", {
+                    name: `${label}-worker`,
+                    type: 'module'
+                });
             }
 
-            return "/js/editor.min.js";
+            return new Worker("/js/editor.min.js", {
+                name: "editor-worker",
+                type: 'module'
+            });
         },
     };
 

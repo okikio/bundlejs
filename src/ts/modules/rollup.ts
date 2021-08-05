@@ -26,8 +26,6 @@ self.onmessage = ({ data }) => {
     (async () => {
         let content: string;
 
-        // await memfs.writeFile("input.js", `${input}`);
-
         try {
             // Clear Cache
             const build = await rollup({
@@ -68,10 +66,11 @@ self.onmessage = ({ data }) => {
             });
 
             return;
+        } finally {
+            cache.clear();
         }
 
         try {
-            cache.clear();
             
             // @ts-ignore
             let { length } = await gzip(content, { level: 9 });

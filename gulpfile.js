@@ -81,7 +81,7 @@ task("css", async () => {
                 sass({ outputStyle: "compressed" }),
                 tailwind("./tailwind.config.cjs"),
             ], { syntax: scss }),
-            rename({ extname: ".css", suffix: ".min"})
+            rename({ extname: ".css", suffix: ".min" })
         ],
         dest: cssFolder,
         end: browserSync ? [browserSync.stream()] : null,
@@ -190,7 +190,7 @@ tasks({
 
         const __dirname = path.resolve();
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
-        return stream([`${tsFolder}/modules/esbuild.ts`, `${tsFolder}/modules/rollup.ts`], {
+        return stream([`${tsFolder}/modules/*.ts`, `!${tsFolder}/modules/default.ts`, `!${tsFolder}/modules/monaco.ts`], {
             opts: { allowEmpty: true },
             pipes: [
                 // Bundle Modules
@@ -351,18 +351,18 @@ task("watch", async () => {
 
     watch([
         `${tsFolder}/**/*.ts`,
-        `!${tsFolder}/modules/esbuild.ts`,
-        `!${tsFolder}/modules/rollup.ts`,
+        `${tsFolder}/modules/default.ts`,
+        `!${tsFolder}/modules/*.ts`,
         `!${tsFolder}/plugins/*.ts`,
         `!node_modules/esbuild-wasm/esbuild.wasm`,
-        `!${tsFolder}/workers/*.ts`,
-        `!${tsFolder}/modules/monaco.ts`
+        `!${tsFolder}/workers/*.ts`
     ], { delay: 250 }, series("main-js", "reload"));
 
     watch([
-        `${tsFolder}/modules/esbuild.ts`,
-        `${tsFolder}/modules/rollup.ts`,
-        `${tsFolder}/plugins/*.ts`,
+        `${tsFolder}/modules/*.ts`,
+        `!${tsFolder}/modules/monaco.ts`,
+        `!${tsFolder}/modules/default.ts`,
+        `${tsFolder}/plugins/*.ts`
     ], { delay: 250 }, series("esbuild-js", "reload"));
 
     watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
