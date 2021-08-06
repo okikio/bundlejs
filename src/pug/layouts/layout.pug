@@ -15,13 +15,12 @@ html.dark(lang="en")
 
     link(rel='preconnect' href='https://fonts.gstatic.com')
     link(rel='stylesheet' href='./css/app.min.css')
-    
-    link(rel="preconnect" href="https://cdn.skypack.dev")
 
     //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
     script(src='./js/theme.min.js' type='module' async)
 
+    block preload
   body
     +navbar
 
@@ -32,10 +31,7 @@ html.dark(lang="en")
     block footer
       +footer
 
-    link(rel="stylesheet", href="./js/monaco.min.css")
-
     script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Map,Set,Promise,Intl" async)
-    
-    script(src="./js/webanimation-polyfill.min.js" type='module' async)
+    script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
 
     block script

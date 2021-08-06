@@ -6,9 +6,6 @@ import { watch, task, series, parallel, stream, tasks, parallelFn } from "./util
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-const { dependencies } = require('./package.json');
-const esbuildVer = dependencies["esbuild-wasm"].replace(/\^/, "");
-
 // Origin folders (source and destination folders)
 const srcFolder = `src`;
 const destFolder = `docs`;
@@ -36,7 +33,6 @@ task("html", async () => {
         pipes: [
             plumber(),
             pug({
-                data: { esbuildVer },
                 basedir: pugFolder,
                 self: true,
             }),
@@ -116,15 +112,16 @@ const esbuildConfig = {
     bundle: true,
     minify: true,
     color: true,
-    define: {
-        "esbuildVer": `\"${esbuildVer}\"`
-    },
     entryNames: '[name].min',
-    target: ["es2018"]
+    target: ["es2018"],
 };
 
 const monacoConfig = {
-    loader: { '.ttf': 'file' },
+    loader: {
+        // ".css": "file",
+        '.ttf': 'file',
+        ".wasm": "file"
+    },
 };
 
 // JS Tasks
@@ -133,60 +130,92 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: terser },
             { default: gulpif },
 
+            { default: path },
+            { NODE },
+
+            { WEB_WORKER },
             { solidPlugin: solid },
+            { default: rename }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-terser"),
             import("gulp-if"),
 
+            import("path"),
+            import("./plugins/builtins.js"),
+
+            import("./plugins/web-worker.js"),
             import("esbuild-plugin-solid"),
+            import("gulp-rename")
         ]);
 
+        const __dirname = path.resolve();
         const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
-        return stream(`${tsFolder}/*.ts`, {
+        return stream([`${tsFolder}/*.ts`, `node_modules/esbuild-wasm/esbuild.wasm`], {
             pipes: [
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
+                    ...monacoConfig,
                     sourcemap: true,
                     format: "esm",
+                    splitting: true,
+                    assetNames: "[name]",
                     plugins: [
-                        solid()
-                    ]
+                        WEB_WORKER(),
+                        solid(),
+                            // NODE()
+                    ],
+                    banner: {
+                        js: 'const global = globalThis;'
+                    },
+                    inject: [path.join(__dirname, './shims/node-shim.js')],
                 }),
 
-                // Filter out the sourcemap
-                // I don't need to know the size of the sourcemap
                 gulpif(
-                    (file) => !/\.map$/.test(file.path),
-                    terser()
-                ),
-
-                gulpif(
-                    (file) => !/\.map$/.test(file.path),
+                    (file) => /\.js$/.test(file.path),
                     size(sizeConfig)
                 ),
+                
+                gulpif(
+                    (file) => /monaco(.*)\.css/.test(file.path),
+                    rename("monaco.min.css")
+                )
             ],
             dest: jsFolder, // Output
         });
     },
+    // "esbuild-wasm": async () => {
+    //     const [
+    //         { default: changed },
+    //     ] = await Promise.all([
+    //         import("gulp-changed"),
+    //     ]);
+
+    //     return stream(`node_modules/esbuild-wasm/esbuild.wasm`, {
+    //         opts: { allowEmpty: true },
+    //         pipes: [
+    //             changed(jsFolder),
+    //         ],
+    //         dest: jsFolder, // Output
+    //     });
+    // },
+    /*
     "esbuild-js": async () => {
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
             { default: path },
             { NODE },
-            { default: terser }
+            { default: gulpif },
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
             import("path"),
             import("./plugins/builtins.js"),
-            import("gulp-terser")
+            import("gulp-if"),
         ]);
 
         const __dirname = path.resolve();
@@ -197,45 +226,34 @@ tasks({
                 // Bundle Modules
                 esbuild({
                     ...esbuildConfig,
+                    ...monacoConfig,
+                    sourcemap: true,
+                    splitting: true,
                     banner: {
                         js: 'const global = globalThis;'
                     },
-                    plugins: [
-                        NODE()
-                    ],
+                    // plugins: [
+                    //     NODE()
+                    // ],
                     inject: [path.join(__dirname, './shims/node-shim.js')],
-                    format: "iife",
+                    format: "esm",
                 }),
-                // terser(),
-                size(sizeConfig),
-            ],
-            dest: jsFolder, // Output
-        });
-    },
-    "esbuild-wasm": async () => {
-        const [
-            { default: changed },
-        ] = await Promise.all([
-            import("gulp-changed"),
-        ]);
 
-        return stream(`node_modules/esbuild-wasm/esbuild.wasm`, {
-            opts: { allowEmpty: true },
-            pipes: [
-                changed(jsFolder),
+                gulpif(
+                    (file) => /\.js$/.test(file.path),
+                    size(sizeConfig)
+                ),
             ],
             dest: jsFolder, // Output
         });
-    },
+    },*//*
     "workers-js": async () => {
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: terser },
         ] = await Promise.all([
             import("gulp-esbuild"),
-            import("gulp-size"),
-            import("gulp-terser")
+            import("gulp-size")
         ]);
 
         const esbuild = mode == "watch" ? createGulpEsbuild() : gulpEsBuild;
@@ -248,7 +266,6 @@ tasks({
                     ...monacoConfig,
                     format: "iife",
                 }),
-                // terser(),
                 size({
                     gzip: true,
                     title: "workers.min.js"
@@ -261,12 +278,10 @@ tasks({
         const [
             { default: gulpEsBuild, createGulpEsbuild },
             { default: size },
-            { default: terser },
             { default: gulpif }
         ] = await Promise.all([
             import("gulp-esbuild"),
             import("gulp-size"),
-            import("gulp-terser"),
             import("gulp-if")
         ]);
 
@@ -278,20 +293,20 @@ tasks({
                 esbuild({
                     ...esbuildConfig,
                     ...monacoConfig,
+                    splitting: true,
                     format: "esm",
                 }),
 
-                // Filter out the .css, and .ttf files
-                // gulpif(
-                //     (file) => /\.js$/.test(file.path),
-                //     terser()
-                // ),
-                size(sizeConfig),
+                gulpif(
+                    (file) => /\.js$/.test(file.path),
+                    size(sizeConfig)
+                ),
             ],
             dest: jsFolder, // Output
         });
     },
-    "js": parallelFn("main-js", "esbuild-wasm", "esbuild-js", "workers-js", "monaco-js")
+    "js": parallelFn("main-js", "esbuild-wasm", "esbuild-js", "workers-js", "monaco-js")*/
+    "js": parallelFn("main-js") // , "esbuild-wasm"
 });
 
 // Other assets
@@ -351,25 +366,31 @@ task("watch", async () => {
     watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 250 }, series("css"));
 
     watch([
-        `${tsFolder}/**/*.ts`,
-        `${tsFolder}/modules/default.ts`,
-        `${tsFolder}/components/*`,
-        `!${tsFolder}/modules/*.ts`,
-        `!${tsFolder}/plugins/*.ts`,
-        `!node_modules/esbuild-wasm/esbuild.wasm`,
-        `!${tsFolder}/workers/*.ts`
+        `${tsFolder}/**/*.ts`
     ], { delay: 250 }, series("main-js", "reload"));
 
-    watch([
-        `${tsFolder}/modules/*.ts`,
-        `!${tsFolder}/modules/monaco.ts`,
-        `!${tsFolder}/modules/default.ts`,
-        `${tsFolder}/plugins/*.ts`
-    ], { delay: 250 }, series("esbuild-js", "reload"));
+    // watch([
+    //     `${tsFolder}/**/*.ts`,
+    //     `${tsFolder}/components/*`,
+    //     `${tsFolder}/modules/default.ts`,
 
-    watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
-    watch(`${tsFolder}/workers/*.ts`, { delay: 250 }, series("workers-js", "reload"));
-    watch(`${tsFolder}/modules/monaco.ts`, { delay: 250 }, series("monaco-js", "reload"));
+    //     `!${tsFolder}/modules/*.ts`,
+    //     `!${tsFolder}/plugins/*.ts`,
+    //     `!node_modules/esbuild-wasm/esbuild.wasm`,
+    //     `!${tsFolder}/workers/*.ts`
+    // ], { delay: 250 }, series("main-js", "reload"));
+
+    // watch([
+    //     `${tsFolder}/modules/*.ts`,
+    //     `${tsFolder}/plugins/*.ts`,
+
+    //     `!${tsFolder}/modules/monaco.ts`,
+    //     `!${tsFolder}/modules/default.ts`
+    // ], { delay: 250 }, series("esbuild-js", "reload"));
+
+    // watch(`node_modules/esbuild-wasm/esbuild.wasm`, { delay: 250 }, series("esbuild-wasm", "reload"));
+    // watch(`${tsFolder}/workers/*.ts`, { delay: 250 }, series("workers-js", "reload"));
+    // watch(`${tsFolder}/modules/monaco.ts`, { delay: 250 }, series("monaco-js", "reload"));
 
     watch([`${assetsFolder}/**/*`], { delay: 300 }, series("reload"));
 });
