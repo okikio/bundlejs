@@ -1,5 +1,8 @@
 // import path from "path";
 import { fs } from "memfs";
+import path from "path";
+console.log(path.isAbsolute("worker:/workspaces/bundle/repl.js"))
+console.log(path.join("js", "worker:/workspaces/bundle/repl.js"))
 // import { createRequire } from 'module';
 // const require = createRequire(import.meta.url);
 // import resolve from "resolve";

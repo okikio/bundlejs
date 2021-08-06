@@ -1,13 +1,30 @@
 import { importShim } from "./util/dynamic-import";
 import * as Default from "./modules/default";
 
-import { renderComponent, setState, Emitter } from "./components/SearchResults";
-
 import { animate } from "@okikio/animate";
 import { hit } from "countapi-js";
 
 import type { editor as Editor } from "monaco-editor";
 
+let loadingContainerEl = document.querySelector(".center-container");
+let fileSizeEl = document.querySelector(".file-size");
+let RunBtn = document.querySelector("#run");
+let bundleTime = document.querySelector("#bundle-time");
+let Fade = animate({
+    target: loadingContainerEl,
+    opacity: [1, 0],
+    delay: 1000,
+    easing: "ease-in",
+    duration: 500,
+    autoplay: false
+});
+
+let editor: Editor.IStandaloneCodeEditor;
+
+// The default navbar, etc... that is needed
+Default.build();
+
+// countapi-js hit counter. It counts the number of time the website is loaded
 // (async () => {
 //     try {
 //         let { value } = await hit('bundle.js.org', 'visits');
@@ -18,10 +35,24 @@ import type { editor as Editor } from "monaco-editor";
 //     }
 // })();
 
-// The default navbar, etc... that is needed
-Default.build();
+// Monaco Code Editor
+(async () => {
+    let Monaco = await import("./modules/monaco");
+    editor = Monaco.build();
 
-(() => {
+    // Fade away the loading screen
+    Fade.play();
+    await Fade;
+
+    loadingContainerEl?.remove();
+    Fade.stop();
+
+    loadingContainerEl = null;
+    Fade = null;
+})();
+
+// SarchResults solidjs component
+(async () => {
     const searchInput = document.querySelector(".search input") as HTMLInputElement;
     const host = "https://registry.npmjs.com/";
     const parseInput = (input: string) => {
@@ -69,8 +100,14 @@ Default.build();
             });
         }
     });
-    
+
+    const { renderComponent, setState, Emitter } = await import("./components/SearchResults");
     renderComponent(document.querySelector(".search-results-container"));
+
+    Emitter.on("add-module", (v) => {
+        let value = `` + editor?.getValue();
+        editor.setValue(value + "\n" + v);
+    });
 
     let clearBtn = document.querySelector(".search .clear");
     clearBtn.addEventListener("click", () => {
@@ -79,90 +116,70 @@ Default.build();
     });
 })();
 
-let loadingContainerEl = document.querySelector(".center-container");
-let fileSizeEl = document.querySelector(".file-size");
-let RunBtn = document.querySelector("#run");
-let bundleTime = document.querySelector("#bundle-time");
-let Fade = animate({
-    target: loadingContainerEl,
-    opacity: [1, 0],
-    delay: 1000,
-    easing: "ease-in",
-    duration: 500,
-    autoplay: false
-});
-
-let editor: Editor.IStandaloneCodeEditor;
-
-// Monaco Code Editor
+// highlight.js for code highlighting
 (async () => {
-    let Monaco = await importShim("./monaco.min.js");
-    editor = Monaco.build();
-    Emitter.on("add-module", (v) => {
-        let value = `` + editor?.getValue();
-        editor.setValue(value + "\n" + v);
-    });
-
-    // Fade away the loading screen
-    Fade.play();
-    await Fade;
-
-    loadingContainerEl?.remove();
-    Fade.stop();
-
-    loadingContainerEl = null;
-    Fade = null;
+    let { hljs } = await import("./modules/highlightjs");
+    hljs.highlightAll();
 })();
 
-let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
+// esbuild bundler worker
+import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 
-// @ts-ignore
-let BundleWorker = new Worker("./js/bundle.min.js", { name: "esbuild-worker" });
-let count = 0;
-let value = "";
-let start = Date.now();
+(() => {
+    let timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
 
-RunBtn.addEventListener("click", () => {
-    value = `` + editor?.getValue();
+    // @ts-ignore
+    let BundleWorker = new Worker(ESBUILD_WORKER_URL, {
+        name: "esbuild-worker",
+        type: "module"
+    });
 
-    fileSizeEl.innerHTML = `<div class="loading"></div>`;
-    bundleTime.textContent = ``;
+    let count = 0;
+    let value = "";
+    let start = Date.now();
 
-    start = Date.now();
-    BundleWorker.postMessage(value);
-});
+    RunBtn.addEventListener("click", () => {
+        value = `` + editor?.getValue();
 
-BundleWorker.onmessage = ({ data }) => {
-    if (data.warn) {
-        console.warn(data.type + " \n", data.warn);
-        fileSizeEl.textContent = `Try Again`;
-        return;
-    }
+        fileSizeEl.innerHTML = `<div class="loading"></div>`;
+        bundleTime.textContent = ``;
 
-    if (data.error) {
-        console.error(data.type + " (please create a new issue in the repo)\n", data.error);
-        fileSizeEl.textContent = `Error`;
-        return;
-    }
+        start = Date.now();
+        BundleWorker.postMessage(value);
+    });
 
-    let { size, content } = data.value;
+    BundleWorker.onmessage = ({ data }) => {
+        if (data.warn) {
+            console.warn(data.type + " \n", data.warn);
+            fileSizeEl.textContent = `Try Again`;
+            return;
+        }
 
-    if (count > 10) {
-        console.clear();
-        count = 0;
-    }
+        if (data.error) {
+            console.error(data.type + " (please create a new issue in the repo)\n", data.error);
+            fileSizeEl.textContent = `Error`;
+            return;
+        }
 
-    let splitInput = value.split("\n");
-    console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
-    console.groupCollapsed("Input Code: ");
-    console.log(value);
-    console.groupEnd();
-    console.groupCollapsed("Bundled Code: ");
-    console.log(content);
-    console.groupEnd();
-    console.groupEnd();
-    count++;
+        let { size, content } = data.value;
 
-    bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
-    fileSizeEl.textContent = `` + size;
-};
+        if (count > 10) {
+            console.clear();
+            count = 0;
+        }
+
+        let splitInput = value.split("\n");
+        console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+        console.groupCollapsed("Input Code: ");
+        console.log(value);
+        console.groupEnd();
+        console.groupCollapsed("Bundled Code: ");
+        console.log(content);
+        console.groupEnd();
+        console.groupEnd();
+        count++;
+
+        bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
+        fileSizeEl.textContent = `` + size;
+    };
+})();

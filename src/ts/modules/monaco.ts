@@ -4,6 +4,9 @@ import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import { themeGet } from "../theme";
 
+import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
+import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
+
 export const initialValue = `\
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
@@ -68,32 +71,14 @@ export const build = () => {
     // bundles that contain the web workers.
     (window as any).MonacoEnvironment = {
         getWorker: function (moduleId, label) {
-            if (label === "json") {
-                return new Worker("./js/json.min.js", {
-                    name: `${label}-worker`,
-                    type: 'module'
-                });
-            }
-            if (label === "css" || label === "scss" || label === "less") {
-                return new Worker("./js/css.min.js", {
-                    name: `${label}-worker`,
-                    type: 'module'
-                });
-            }
-            if (label === "html" || label === "handlebars" || label === "razor") {
-                return new Worker("./js/html.min.js", {
-                    name: `${label}-worker`,
-                    type: 'module'
-                });
-            }
             if (label === "typescript" || label === "javascript") {
-                return new Worker("./js/typescript.min.js", {
+                return new Worker(TYPESCRIPT_WORKER_URL, {
                     name: `${label}-worker`,
                     type: 'module'
                 });
             }
 
-            return new Worker("./js/editor.min.js", {
+            return new Worker(EDITOR_WORKER_URL, {
                 name: "editor-worker",
                 type: 'module'
             });
