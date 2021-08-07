@@ -19,38 +19,18 @@ block content
           i.icon clear
 
       .search-results-container
-        //- .search-results
-        //- .card
-        //-   section.content
-        //-     h3.font-semibold.text-lg
-        //-       a(href='....href' target='_blank')
-        //-         | @okikio/animate
-        //-     p An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.
-        //-     p.updated-time
-        //-       | Updated 2 days ago by 
-        //-       a(href='..._authorHref' target='_blank')
-        //-         | @okikio
-        //-       | .
-          //- section.file-size
-            .self-center.uppercase
-              .loading
-              p Minified + Gzipped
-
 
     .push-to-side
       #bundle-time
       .flex.flex-1
       button.btn#run(type='button') Run
-      .file-size ...
+      .file-size Wait...
     #app
       .center-container
         .loading
       #editor
       
-    a#product-hunt.place-content-center(href='https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-bundle-6', target='_blank' rel="noopener")
-      picture
-        img.dark(src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&theme=dark' alt='bundle - An online npm package bundle size checker | Product Hunt', style='width: 250px; height: 54px;', width='250', height='54' loading="lazy")
-        img(src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&theme=light' alt='bundle - An online npm package bundle size checker | Product Hunt', style='width: 250px; height: 54px;', width='250', height='54' loading="lazy")
+    +product-hunt.place-content-center
         
     p * Check the console for error messages and bundled code.
     p * Every 10 results the console will be cleared.
@@ -87,28 +67,20 @@ block content
       |  uses
       a(href="https://cdn.skypack.dev" target="_blank" rel="noopener")  cdn.skypack.dev
       |  but you can use the others.
-      //- ul.list-disc.list-inside.pt-5
-        li
-          a(href="https://skypack.dev" target="_blank" rel="noopener") skypack.dev
-        li
-          a(href="https://cdn.jsdelivr.net" target="_blank" rel="noopener") jsdelivr.net
-        li
-          a(href="https://esm.sh" target="_blank" rel="noopener") esm.sh
-        li
-          a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com
-        li
-          a(href="https://jspm.dev" target="_blank" rel="noopener") jspm.dev
         
 
 block script
+  script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
+
   link(rel="preload" href="./js/codicon.ttf" as="font" type="font/ttf" crossorigin)
   link(rel="stylesheet", href="./js/monaco.min.css")
 
-  //- link(rel='modulepreload' href='./js/esbuild.worker.js')
-    
   link(rel="preconnect" href="https://cdn.skypack.dev")
 
-  script(src='./js/main.min.js' type='module' defer)
+  //- link(rel="prefetch" href="./js/esbuild.wasm")
+  link(rel='modulepreload' href='./js/esbuild.worker.js')
+
+  script(src='./js/index.min.js' type='module' defer)
 
   //- link(rel='modulepreload' href='./js/rollup.min.js')
   //- link(rel='modulepreload' href='./js/editor.min.js')

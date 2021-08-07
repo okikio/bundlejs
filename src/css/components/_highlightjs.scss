@@ -2,6 +2,24 @@ code {
     @apply rounded-lg border border-gray-200 dark:border-transparent;
     // shadow-lg 
 }
+
+code {
+    color: #24292e;
+    background: #fff;
+    border-radius: 0.3rem;
+    
+    @apply px-1 py-0.5;  
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: normal;
+    font-size: 14px;
+    font-feature-settings: "liga" 0, "calt" 0;
+    line-height: 19px;
+}
+
+.dark code {
+    color: #adbac7;
+    background: #22272e;
+}
 pre {
     padding-top: 15px;
 }
@@ -11,12 +29,6 @@ pre code.hljs {
     padding: 15px;
 }
 code.hljs {
-    padding: 3px 5px;    
-    font-family: Consolas, "Courier New", monospace;
-    font-weight: normal;
-    font-size: 14px;
-    font-feature-settings: "liga" 0, "calt" 0;
-    line-height: 19px;
 }
 
 /*!

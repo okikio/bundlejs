@@ -11,7 +11,7 @@ export const Card = ({
     description = "Lorem Ipsium...",
     date = "2021-01-23T07:29:32.575Z",
     author = "okikio",
-    version,
+    version
 }) => {
     let _date = new Date(date).toLocaleDateString(undefined, {
         year: "numeric",
@@ -57,22 +57,25 @@ export const Card = ({
                             await animate({
                                 target: btnTextEl,
                                 opacity: [0, 1],
-                                duration: 300
-                            });
-
-                            await animate({
-                                target: btnTextEl,
-                                opacity: [1, 0],
-                                duration: 300
+                                duration: 400
                             });
 
                             btnTextEl.innerText = text;
 
                             await animate({
                                 target: btnTextEl,
+                                opacity: [1, 0],
+                                delay: 2000,
+                                duration: 400
+                            });
+
+                            await animate({
+                                target: btnTextEl,
                                 opacity: [0, 1],
                                 duration: 300
                             });
+
+                            Emitter.emit("complete");
                         })();
                     }}>
                     <span class="btn-text" ref={btnTextEl}>Add Module</span>
@@ -103,5 +106,5 @@ export const SearchResults = () => {
 };
 
 export const renderComponent = (parentEl: Element) => {
-   return render(() => <SearchResults />, parentEl);
+    return render(() => <SearchResults />, parentEl);
 }
