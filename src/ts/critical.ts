@@ -54,12 +54,12 @@ import { debounce } from "./util/debounce";
     const npms = "https://api.npms.io"
     const parseInput = (input: string) => {
         let value = input;
-        let exec = /([\S]+)@([\S]+)/g.exec(value);
-        let search = `${value}`.replace(/^@/, "");
+        // let search = `${value}`.replace(/^@/, "");
         // let urlScheme = `${host}/-/v1/search?text=${search}&size=10&boost-exact=false`;
-        let urlScheme = `${npms}/v2/search?q=${encodeURIComponent(search)}&size=10`;
+        let urlScheme = `${npms}/v2/search?q=${encodeURIComponent(value)}&size=10`;
         let version = "";
 
+        let exec = /([\S]+)@([\S]+)/g.exec(value);
         if (exec) {
             let [, pkg, ver] = exec;
             version = ver;

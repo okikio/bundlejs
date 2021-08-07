@@ -17,10 +17,10 @@ block content
       | I used
       a(href="https://github.com/microsoft/monaco-editor" target="_blank" rel="noopener")  monaco-editor
       |  for the code-editor,
-      span.line-through
-        a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild
+      a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild 
+      |  and
       a(href="https://github.com/rollup/rollup" target="_blank" rel="noopener")  rollup
-      |  as a bundler,
+      |  as bundler and treeshaker respectively,
       a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
       |  as a js port of the zlib and gzip libraries, 
       a(href="https://github.com/sindresorhus/pretty-bytes" target="_blank" rel="noopener")  pretty-bytes
@@ -39,12 +39,11 @@ block content
       br
       br
       span= "The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of "
-      span.line-through
-        strong esbuild
-        span= " and "
+      strong esbuild
+      span= " and "
       strong monaco
       span= " as well as some edge case packages, e.g. "
-      strong.line-through fastify.
+      strong monaco-editor.
       br
       br
       | If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at
@@ -64,4 +63,3 @@ block content
       | .
 
     br
-    p * All text with cross through lines, are no longer true

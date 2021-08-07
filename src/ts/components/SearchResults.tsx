@@ -11,7 +11,7 @@ export const Card = ({
     description = "Lorem Ipsium...",
     date = "2021-01-23T07:29:32.575Z",
     author = "okikio",
-    version
+    version,
 }) => {
     let _date = new Date(date).toLocaleDateString(undefined, {
         year: "numeric",
@@ -41,23 +41,27 @@ export const Card = ({
                 </p>
             </section>
             <section class="add">
-                <button class="btn"
+                <button
+                    class="btn"
                     onmousedown={() => {
                         let text = btnTextEl.innerText;
                         (async () => {
                             await animate({
                                 target: btnTextEl,
                                 opacity: [1, 0],
-                                duration: 300
-                            })
+                                duration: 300,
+                            });
 
-                            Emitter.emit("add-module", `export * from "${name}";`);
+                            Emitter.emit(
+                                "add-module",
+                                `export * from "${_package}";`
+                            );
                             btnTextEl.innerText = "Added!";
 
                             await animate({
                                 target: btnTextEl,
                                 opacity: [0, 1],
-                                duration: 400
+                                duration: 400,
                             });
 
                             btnTextEl.innerText = text;
@@ -66,19 +70,22 @@ export const Card = ({
                                 target: btnTextEl,
                                 opacity: [1, 0],
                                 delay: 2000,
-                                duration: 400
+                                duration: 400,
                             });
 
                             await animate({
                                 target: btnTextEl,
                                 opacity: [0, 1],
-                                duration: 300
+                                duration: 300,
                             });
 
                             Emitter.emit("complete");
                         })();
-                    }}>
-                    <span class="btn-text" ref={btnTextEl}>Add Module</span>
+                    }}
+                >
+                    <span class="btn-text" ref={btnTextEl}>
+                        Add Module
+                    </span>
                 </button>
             </section>
         </div>
@@ -107,4 +114,4 @@ export const SearchResults = () => {
 
 export const renderComponent = (parentEl: Element) => {
     return render(() => <SearchResults />, parentEl);
-}
+};

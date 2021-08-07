@@ -77,11 +77,12 @@ self.onmessage = ({ data }) => {
                 platform: "browser",
                 format: "esm",
                 loader: {
-                    '.ts': 'ts',
-                    '.png': 'dataurl',
-                    '.svg': 'text',
+                    '.png': 'file',
+                    '.jpeg': 'file',
                     '.ttf': 'file',
-                    '.css': 'css'
+                    '.svg': 'text',
+                    '.html': 'text',
+                    '.scss': 'css'
                 },
                 define: {
                     "__NODE__": `false`,
