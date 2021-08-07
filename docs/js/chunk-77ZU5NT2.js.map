@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["node_modules/.pnpm/monaco-editor@0.26.1/node_modules/monaco-editor/esm/vs/language/json/fillers/monaco-editor-core.js"],
-  "sourcesContent": ["/*---------------------------------------------------------------------------------------------\n *  Copyright (c) Microsoft Corporation. All rights reserved.\n *  Licensed under the MIT License. See License.txt in the project root for license information.\n *--------------------------------------------------------------------------------------------*/\nexport * from '../../../editor/editor.api.js';\n"],
-  "mappings": ";wCAAA",
-  "names": []
-}

@@ -35,7 +35,6 @@
         "@okikio/emitter": "^2.1.7",
         "@rollup/plugin-commonjs": "^20.0.0",
         "@rollup/plugin-json": "^4.1.0",
-        "@uupaa/dynamic-import-polyfill": "^1.0.2",
         "assert": "^2.0.0",
         "browser-builtins": "^3.3.1",
         "buffer": "^6.0.3",

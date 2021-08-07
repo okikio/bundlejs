@@ -3,8 +3,7 @@ extends /layouts/layout.pug
 block content
   #about.container.max-w-screen-lg
     h2.text-center about
-    a#product-hunt(href='https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-bundle-6', target='_blank')
-      img(src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&theme=dark', alt='bundle - An online npm package bundle size checker | Product Hunt', style='width: 250px; height: 54px;', width='250', height='54')
+    +product-hunt
       
     p 
       strong bundle

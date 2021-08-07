@@ -6,9 +6,6 @@ import { fs, vol } from "memfs";
 import { rollup } from "rollup";
 import { virtualFs } from "rollup-plugin-virtual-fs";
 
-// import { minify } from "terser";
-// import { codeFrameColumns } from "@babel/code-frame";
-
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
@@ -34,6 +31,9 @@ vol.fromJSON({}, "/");
             });
 
             _initialized = true;
+            self.postMessage({
+                ready: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before trying to bundle`,
+            });
         }
     } catch (error) {
         self.postMessage({
@@ -54,8 +54,7 @@ self.onmessage = ({ data }) => {
         let content: string;
         if (!_initialized) {
             self.postMessage({
-                type: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before trying to bundle`,
-                warn: ' '
+                warn: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before trying to bundle`
             });
 
             return;

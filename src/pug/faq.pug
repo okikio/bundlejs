@@ -14,64 +14,29 @@ block content
     br
     h4 
       | What do you mean wasn't reliable enough? 
-    p It can treeshake bundles accurately. Right now bundlephobia, is a bit hit or miss when it comes to treeshaking,
-    p 
-      strong bundle
-      |  is a quick and easy way to bundle your projects and see the minified and gzip size, it's similar to
-      a(href="https://bundlephobia.com" target="_blank" rel="noopener")  bundlephobia
-      |  but does all the work locally on you computer and can treeshake multiple packages (both commonjs and esm) into a bundle, it currently doesn't support Typescript, but I plan to build support for it at a later date.
+    p It can treeshake bundles accurately. Right now bundlephobia, is a bit hit or miss when it comes to treeshaking.
       br
       br
+      :markdown-it(linkify langPrefix='language-')
+        For example, try treeshaking the `Event` class from `@okikio/emitter` using [bundlephobia](https://bundlephobia.com/package/@okikio/emitter) [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@okikio/emitter?style=flat-square)](https://bundlephobia.com/package/@okikio/emitter) and try pasting this, 
+        ```ts
+        export { Event } from "@okikio/emitter";
+        ``` 
+      br
+      :markdown-it(linkify langPrefix='language-')
+        into [bundle.js.org](https://bundle.js.org). You will notice a major package size disparity. This is only one example and I am sure others exist, I hope the above example illustrates my point. 
+      br
+      :markdown-it(linkify langPrefix='language-')
+        Another problem with `bundlephobia` is the lack of good error reporting if for (whatever reason) `bundlephobia` isn't able to bundle your package, it logs this to the console,
+        ```ts 
+        {
+            "code": "BuildError",
+            "message": "Failed to build this package.",
+            "details": {
+                "name": "BuildError"
+            }
+        }
+        ```
 
-    p
-      | I used
-      a(href="https://github.com/microsoft/monaco-editor" target="_blank" rel="noopener")  monaco-editor
-      |  for the code-editor,
-      span.line-through
-        a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild
-      a(href="https://github.com/rollup/rollup" target="_blank" rel="noopener")  rollup
-      |  as a bundler,
-      a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
-      |  as a js port of the zlib and gzip libraries, 
-      a(href="https://github.com/sindresorhus/pretty-bytes" target="_blank" rel="noopener")  pretty-bytes
-      |  to convert the gzip size to human readable values, and 
-      a(href="https://github.com/mlomb/countapi-js" target="_blank" rel="noopener")  countapi-js
-      |  to keep track of the number of page visits, in a private and secure way.
-      br
-      br
-      | This project was greatly influenced by 
-      a(href="https://github.com/hardfist" target="_blank" rel="noopener") @hardfists
-      a(href="https://github.com/hardfist/neo-tools" target="_blank" rel="noopener")  neo-tools
-      |  and 
-      a(href="https://github.com/mizchi" target="_blank" rel="noopener") @mizchi's
-      a(href="https://github.com/mizchi/uniroll" target="_blank" rel="noopener")  uniroll
-      |  project.
-      br
-      br
-      span= "The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of "
-      span.line-through
-        strong esbuild
-        span= " and "
-      strong monaco
-      span= " as well as some edge case packages, e.g. "
-      strong.line-through fastify.
-      br
-      br
-      | If there is something I missed, a mistake, or a feature you would like added please create an issue or a pull request and I'll try to get to it. You can contribute to this project at
-      a(href="https://github.com/okikio/bundle" target="_blank" rel="noopener")  okikio/bundle.
-      br
-      br
-      strong bundle
-      |  uses
-      a(href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank" rel="noopener")  Conventional Commits
-      |  as the style of commit, and the
-      a(href="http://commitizen.github.io/cz-cli/" target="_blank" rel="noopener")  Commitizen CLI
-      |  to make commits easier.
-      br
-      br
-      | You can join the discussion on
-      a(href="https://github.com/okikio/bundle/discussions" target="_blank" rel="noopener")  github discussions
-      | .
+        this just isn't very useful for debugging. `bundle.js.org` run locally  
 
-    br
-    p * All text with cross through lines, are no longer true
