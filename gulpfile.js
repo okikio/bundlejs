@@ -89,7 +89,7 @@ task("minify-css", async () => {
         import("postcss-csso"),
     ]);
 
-    return stream(`${cssFolder}/**/*.css`, {
+    return stream(`${destFolder}/**/*.css`, {
         pipes: [
             // Minify scss to css
             postcss([
@@ -114,6 +114,7 @@ const esbuildConfig = {
     color: true,
     entryNames: '[name].min',
     target: ["es2018"],
+    platform: "browser"
 };
 
 const monacoConfig = {
@@ -131,9 +132,6 @@ task("js", async () => {
         { default: size },
         { default: gulpif },
 
-        { default: path },
-        { NODE },
-
         { WEB_WORKER },
         { solidPlugin: solid },
         { default: rename }
@@ -142,15 +140,11 @@ task("js", async () => {
         import("gulp-size"),
         import("gulp-if"),
 
-        import("path"),
-        import("./plugins/builtins.js"),
-
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
         import("gulp-rename")
     ]);
 
-    const __dirname = path.resolve();
     const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
     return stream([
         `${tsFolder}/*.ts`,
@@ -169,13 +163,8 @@ task("js", async () => {
                 assetNames: "[name]",
                 plugins: [
                     WEB_WORKER(),
-                    solid(),
-                    // NODE()
-                ],
-                banner: {
-                    js: 'const global = globalThis;'
-                },
-                inject: [path.join(__dirname, './shims/node-shim.js')],
+                    solid()
+                ]
             }),
 
             gulpif(
@@ -184,7 +173,7 @@ task("js", async () => {
             ),
 
             gulpif(
-                (file) => /monaco(.*)\.css/.test(file.path),
+                (file) => /monaco(.*)\.css$/.test(file.path),
                 rename("monaco.min.css")
             )
         ],
@@ -249,7 +238,7 @@ task("watch", async () => {
     watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 250 }, series("css"));
 
     watch([
-        `${tsFolder}/**/*.ts`,
+        `${tsFolder}/**/*.{tsx,ts}`,
         `!${tsFolder}/**/*.d.ts`
     ], { delay: 250 }, series("js", "reload"));
 

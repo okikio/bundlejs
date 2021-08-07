@@ -1,4 +1,5 @@
 import type { Plugin } from 'esbuild';
+
 import { HTTP_NAMESPACE } from './http';
 import { HOST } from "./bare";
 export const resolve = (id: string) => {

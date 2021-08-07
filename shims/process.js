@@ -11,10 +11,10 @@ function defaultClearTimeout() {
 }
 var cachedSetTimeout = defaultSetTimout;
 var cachedClearTimeout = defaultClearTimeout;
-if (typeof global.setTimeout === 'function') {
+if (typeof globalThis.setTimeout === 'function') {
     cachedSetTimeout = setTimeout;
 }
-if (typeof global.clearTimeout === 'function') {
+if (typeof globalThis.clearTimeout === 'function') {
     cachedClearTimeout = clearTimeout;
 }
 
@@ -163,7 +163,7 @@ function umask() {
 }
 
 // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
-var performance = global.performance || {};
+var performance = globalThis.performance || {};
 var performanceNow =
     performance.now ||
     performance.mozNow ||

@@ -21,6 +21,11 @@ export const BARE = (): Plugin => {
                     } else if (/^(jsdelivr|esm\.run)\:/.test(args.path)) {
                         host = `https://cdn.jsdelivr.net/npm/`;
                     }
+                    
+                    // typescript will only work on esm.sh
+                    else if (/^typecript/.test(args.path)) {
+                        host = `https://cdn.esm.sh/`;
+                    }
 
                     return {
                         path: argPath,
