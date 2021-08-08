@@ -70,16 +70,15 @@ block content
         
 
 block script
-  script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
-
   link(rel="preload" href="./js/codicon.ttf" as="font" type="font/ttf" crossorigin)
   link(rel="stylesheet", href="./js/monaco.min.css")
 
   link(rel="preconnect" href="https://cdn.skypack.dev")
 
   //- link(rel="prefetch" href="./js/esbuild.wasm")
-  link(rel='modulepreload' href='./js/esbuild.worker.js')
+  link(rel='modulepreload' href='./js/monaco-5VRG7CDM.js')
 
+  script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
   script(src='./js/index.min.js' type='module' defer)
 
   //- link(rel='modulepreload' href='./js/rollup.min.js')

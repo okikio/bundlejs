@@ -2,7 +2,7 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream, tasks, parallelFn } from "./util.js";
+import { watch, task, series, parallel, stream } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
@@ -25,7 +25,10 @@ let browserSync;
 
 // HTML Tasks
 task("html", async () => {
-    const [{ default: pug }, { default: plumber }] = await Promise.all([
+    const [
+        { default: pug },
+        { default: plumber }
+    ] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
     ]);
@@ -97,33 +100,10 @@ task("minify-css", async () => {
                 autoprefixer(),
             ])
         ],
-        dest: cssFolder,
+        dest: destFolder,
         end: browserSync ? [browserSync.stream()] : null,
     });
 });
-
-const sizeConfig = {
-    gzip: true,
-    showFiles: true,
-    showTotal: false
-};
-
-const esbuildConfig = {
-    bundle: true,
-    minify: true,
-    color: true,
-    entryNames: '[name].min',
-    target: ["es2018"],
-    platform: "browser"
-};
-
-const monacoConfig = {
-    loader: {
-        // ".css": "file",
-        '.ttf': 'file',
-        ".wasm": "file"
-    },
-};
 
 // JS Tasks
 task("js", async () => {
@@ -155,12 +135,24 @@ task("js", async () => {
         pipes: [
             // Bundle Modules
             esbuild({
-                ...esbuildConfig,
-                ...monacoConfig,
-                sourcemap: true,
-                format: "esm",
-                splitting: true,
+                target: ["es2018"],
+                platform: "browser",
+
                 assetNames: "[name]",
+                entryNames: '[name].min',
+
+                bundle: true,
+                minify: true,
+                color: true,
+                format: "esm",
+                sourcemap: true,
+                splitting: true,
+
+                loader: {
+                    '.ttf': 'file',
+                    ".wasm": "file"
+                },
+
                 plugins: [
                     WEB_WORKER(),
                     solid()
@@ -169,7 +161,11 @@ task("js", async () => {
 
             gulpif(
                 (file) => /\.js$/.test(file.path),
-                size(sizeConfig)
+                size({
+                    gzip: true,
+                    showFiles: true,
+                    showTotal: false
+                })
             ),
 
             gulpif(
@@ -222,7 +218,7 @@ task("watch", async () => {
             browser: "chrome",
             online: true,
             reloadOnRestart: true,
-            scrollThrottle: 250
+            scrollThrottle: 350
         },
         (_err, bs) => {
             bs.addMiddleware("*", (_req, res) => {
@@ -234,15 +230,15 @@ task("watch", async () => {
         }
     );
 
-    watch(`${pugFolder}/**/*.pug`, { delay: 250 }, series("html", "reload"));
-    watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 250 }, series("css"));
+    watch(`${pugFolder}/**/*.pug`, { delay: 350 }, series("html", "reload"));
+    watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 350 }, series("css"));
 
     watch([
         `${tsFolder}/**/*.{tsx,ts}`,
         `!${tsFolder}/**/*.d.ts`
-    ], { delay: 250 }, series("js", "reload"));
+    ], { delay: 350 }, series("js", "reload"));
 
-    watch([`${assetsFolder}/**/*`], { delay: 300 }, series("reload"));
+    watch([`${assetsFolder}/**/*`], { delay: 350 }, series("reload"));
 });
 
 task("build", series("clean", parallel("html", "css", "assets", "js"), "minify-css"));
