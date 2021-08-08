@@ -2,7 +2,7 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream } from "./util.js";
+import { watch, task, series, parallel, stream, parallelFn } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
@@ -187,6 +187,33 @@ task("assets", () => {
     });
 });
 
+task("sitemap", async () => {
+    let [
+        { default: sitemap },
+    ] = await Promise.all([
+        import("gulp-sitemap"),
+    ]);
+
+    return stream(`${htmlFolder}/**/*.html`, {
+        pipes: [
+            sitemap({
+                siteUrl: "https://bundle.js.org",
+                mappings: [
+                    {
+                        pages: ["**/*"],
+                        changefreq: "monthly",
+                        getLoc(siteUrl, loc, entry) {
+                            // Removes the file extension if it exists
+                            return loc.replace(/\.\w+$/, "");
+                        },
+                    },
+                ],
+            }),
+        ],
+        dest: htmlFolder,
+    });
+});
+
 // Delete destFolder for added performance
 task("clean", async () => {
     const { default: del } = await import("del");
@@ -238,8 +265,8 @@ task("watch", async () => {
         `!${tsFolder}/**/*.d.ts`
     ], { delay: 350 }, series("js", "reload"));
 
-    watch([`${assetsFolder}/**/*`], { delay: 350 }, series("reload"));
+    watch([`${assetsFolder}/**/*`], { delay: 250 }, series("assets", "reload"));
 });
 
-task("build", series("clean", parallel("html", "css", "assets", "js"), "minify-css"));
+task("build", series("clean", parallel("html", "css", "assets", "js"), parallelFn("minify-css", "sitemap")));
 task("default", series("clean", parallel("html", "css", "assets", "js"), "watch"));

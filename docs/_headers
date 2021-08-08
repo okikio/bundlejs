@@ -1,0 +1,46 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Cache-Control: max-age=60, stale-while-revalidate=120, public
+  Accept-CH: DPR, Viewport-Width, Width
+  X-UA-Compatible: IE=edge
+  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com; script-src 'self' https://cdn.polyfill.io; connect-src 'self' https://api.countapi.xyz; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com/; form-action 'self'; frame-ancestors 'self' https:;
+  Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
+  Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin
+  Link: </css/app.min.css>; rel=preload; as=style
+  Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+  Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+  Link: </js/theme.min.js>; rel=modulepreload
+  Link: </js/critical.min.js>; rel=modulepreload
+  Link: <https://cdn.polyfill.io>; rel=preconnect; crossorigin
+
+/
+  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous
+  Link: </js/monaco.min.css>; rel=preload; as=style
+  Link: </js/index.min.js>; rel=modulepreload
+  Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
+
+/**/*.css
+  Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
+  Content-Type: text/css
+
+/js/*.js
+  Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
+  Content-Type: text/javascript
+
+/js/theme.min.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/manifest.json
+  Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
+  Content-Type: application/manifest+json
+
+/favicon/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/bundle.svg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/svg+xml

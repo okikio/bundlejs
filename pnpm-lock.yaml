@@ -30,6 +30,7 @@ specifiers:
   gulp-postcss: ^9.0.0
   gulp-pug: ^5.0.0
   gulp-rename: ^2.0.0
+  gulp-sitemap: ^8.0.0
   gulp-size: ^4.0.1
   highlight.js: ^11.2.0
   husky: ^7.0.1
@@ -93,6 +94,7 @@ devDependencies:
   gulp-postcss: 9.0.0_postcss@8.3.6
   gulp-pug: 5.0.0
   gulp-rename: 2.0.0
+  gulp-sitemap: 8.0.0
   gulp-size: 4.0.1_gulp@4.0.2
   husky: 7.0.1
   jstransformer-markdown-it: 2.1.0
@@ -638,6 +640,10 @@ packages:
     resolution: {integrity: sha512-C6N5s2ZFtuZRj54k2/zyRhNDjJwwcViAM3Nbm8zjBpbqAdZ00mr0CFxvSKeO8Y/e03WVFLpQMdHYVfUd6SB+Hw==}
     dev: false
 
+  /@types/minimatch/3.0.5:
+    resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
+    dev: true
+
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: true
@@ -868,6 +874,11 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /array-differ/3.0.0:
+    resolution: {integrity: sha512-THtfYS6KtME/yIAhKjZ2ul7XI96lQGHRputJQHO80LAWQnuGP4iCIN8vdMRboGbIEYBwU33q8Tch1os2+X0kMg==}
+    engines: {node: '>=8'}
+    dev: true
+
   /array-each/1.0.1:
     resolution: {integrity: sha1-p5SvDAWrF1KEbudTofIRoFugxE8=}
     engines: {node: '>=0.10.0'}
@@ -928,6 +939,11 @@ packages:
   /arrify/1.0.1:
     resolution: {integrity: sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /arrify/2.0.1:
+    resolution: {integrity: sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==}
+    engines: {node: '>=8'}
     dev: true
 
   /asap/2.0.6:
@@ -3332,6 +3348,20 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /gulp-sitemap/8.0.0:
+    resolution: {integrity: sha512-rXvje8NxCAXxis1aqwUEhDU8iWnLcda2Ky/Cn4g2iWjWzaKahZ6lXbVy+HzjtfMslmVY9ownKVFe4ADTINM+Jw==}
+    engines: {node: '>=10'}
+    dependencies:
+      chalk: 2.4.2
+      fancy-log: 1.3.3
+      lodash: 4.17.21
+      multimatch: 4.0.0
+      plugin-error: 1.0.1
+      slash: 3.0.0
+      through2: 3.0.2
+      vinyl: 2.2.1
+    dev: true
+
   /gulp-size/4.0.1_gulp@4.0.2:
     resolution: {integrity: sha512-yNf5uGUKe2YAMZwHDFgnkp2o9fLp3WLUMZ+Gd23IIbav0TAVsr5Ek6So8gwjlSimPwR2p05Gg7zsjASYXZtt3g==}
     engines: {node: '>=12'}
@@ -4623,6 +4653,17 @@ packages:
 
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+    dev: true
+
+  /multimatch/4.0.0:
+    resolution: {integrity: sha512-lDmx79y1z6i7RNx0ZGCPq1bzJ6ZoDDKbvh7jxr9SJcWLkShMzXrHbYVpTdnhNM5MXpDUxCQ4DgqVttVXlBgiBQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@types/minimatch': 3.0.5
+      array-differ: 3.0.0
+      array-union: 2.1.0
+      arrify: 2.0.1
+      minimatch: 3.0.4
     dev: true
 
   /mute-stdout/1.0.1:

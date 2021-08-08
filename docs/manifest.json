@@ -1,0 +1,14 @@
+{
+    "name": "bundle",
+    "short_name": "bundle",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000",
+    "theme_color": "#3B82F6",
+    "description": "a quick npm package size checker",
+    "icons": [],
+    "lang": "en",
+    "screenshots": [],
+    "orientation": "any",
+    "scope": "/"
+}
