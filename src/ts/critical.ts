@@ -1,7 +1,6 @@
 import { themeSet, themeGet, runTheme } from "./modules/theme";
 
 import { hit } from "countapi-js";
-import { debounce } from "./util/debounce";
 
 // countapi-js hit counter. It counts the number of time the website is loaded
 // (async () => {
@@ -45,73 +44,4 @@ import { debounce } from "./util/debounce";
     } catch (e) {
         console.warn("Theming seems to break on this browser.", e);
     }
-})();
-
-// SarchResults solidjs component
-(async () => {
-    const searchInput = document.querySelector(".search input") as HTMLInputElement;
-    // const host = "https://registry.npmjs.com/";
-    const npms = "https://api.npms.io"
-    const parseInput = (input: string) => {
-        let value = input;
-        // let search = `${value}`.replace(/^@/, "");
-        // let urlScheme = `${host}/-/v1/search?text=${search}&size=10&boost-exact=false`;
-        let urlScheme = `${npms}/v2/search?q=${encodeURIComponent(value)}&size=10`;
-        let version = "";
-
-        let exec = /([\S]+)@([\S]+)/g.exec(value);
-        if (exec) {
-            let [, pkg, ver] = exec;
-            version = ver;
-            // urlScheme = `${host}/-/v1/search?text=${pkg}&size=10&boost-exact=false`;
-            urlScheme = `${npms}/v2/search?q=${encodeURIComponent(pkg)}&size=10`;
-        }
-
-        return { url: urlScheme, version }
-    };
-
-    let keydownFn = debounce(() => {
-        let { value } = searchInput;
-        if (value.length <= 0) return;
-
-        let { url, version } = parseInput(value);
-
-        (async () => {
-            let response = await fetch(url);
-            let result = await response.json();
-            setState(
-                // result.objects
-                result?.results.map(obj => {
-                    const { name, description, date, publisher } = obj.package;
-                    return {
-                        name, description,
-                        date, version,
-                        author: publisher.username
-                    };
-                }) ?? []
-            );
-        })();
-    }, 125);
-
-    searchInput?.addEventListener?.("keydown", keydownFn);
-
-    const { renderComponent, setState, Emitter } = await import("./components/SearchResults");
-    const SearchContainerEl = document.querySelector(".search-results-container") as HTMLElement;
-    if (SearchContainerEl) renderComponent(SearchContainerEl);
-
-    // Emitter.on("complete", () => {
-    //     SearchContainerEl.blur()
-    // })
-
-    let clearBtn = document.querySelector(".search .clear");
-    clearBtn?.addEventListener("click", () => {
-        searchInput.value = "";
-        setState([]);
-    });
-})();
-
-// highlight.js for code highlighting
-(async () => {
-    let { hljs } = await import("./modules/highlightjs");
-    hljs.highlightAll();
 })();
