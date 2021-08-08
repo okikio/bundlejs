@@ -18,12 +18,6 @@ const parseInput = (value: string) => {
     return { url: urlScheme, version }
 };
 
-// highlight.js for code highlighting
-(async () => {
-    let { hljs } = await import("./modules/highlightjs");
-    hljs.highlightAll();
-})();
-
 // SarchResults solidjs component
 (async () => {
     const searchInput = document.querySelector(".search input") as HTMLInputElement;

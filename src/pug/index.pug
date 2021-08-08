@@ -74,27 +74,17 @@ block script
   link(rel="stylesheet", href="./js/monaco.min.css")
 
   link(rel="preconnect" href="https://cdn.skypack.dev")
-
-  //- link(rel="prefetch" href="./js/esbuild.wasm")
-  link(rel='modulepreload' href='./js/monaco-5VRG7CDM.js')
+  //- link(rel='modulepreload' href='./js/esbuild.worker.js')
 
   script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
   script(src='./js/index.min.js' type='module' defer)
 
+  //- link(rel="prefetch" href="./js/esbuild.wasm")
+  //- link(rel='modulepreload' href='./js/monaco-5VRG7CDM.js')
+
   //- link(rel='modulepreload' href='./js/rollup.min.js')
   //- link(rel='modulepreload' href='./js/editor.min.js')
   //- link(rel='modulepreload' href='./js/typescript.min.js')
-
-  //- link(href="https://unpkg.com/prism-themes@1.8.0/themes/prism-shades-of-purple.css" rel="stylesheet")
-  //- script(src="https://unpkg.com/prismjs@1.24.1/components/prism-core.min.js" async)
-  //- script(src="https://unpkg.com/prismjs@1.24.1/plugins/autoloader/prism-autoloader.min.js" async)
-
-  //- link(rel='stylesheet', href='https://unpkg.com/@highlightjs/cdn-assets@11.2.0/styles/github-dark-dimmed.min.css')
-  //- script(src='https://unpkg.com/@highlightjs/cdn-assets@11.2.0/highlight.min.js' async)
-  //- // and it's easy to individually load additional languages
-  //- script(src='https://unpkg.com/@highlightjs/cdn-assets@11.2.0/languages/typescript.min.js' async)
-  //- script(defer).
-  //-   hljs.highlightAll();
 
   //- link(rel='prefetch' href='./js/editor.min.js')
   //- link(rel='prefetch' href='./js/typescript.min.js')

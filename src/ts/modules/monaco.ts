@@ -74,7 +74,7 @@ import { editor as Editor, languages } from '../../../node_modules/monaco-editor
 
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
-import { themeGet } from "./theme";
+import { themeGet } from "../scripts/theme";
 
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";

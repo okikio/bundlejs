@@ -1,1 +1,3 @@
+Sitemap: https://bundle.js.org/sitemap.xml
 User-agent: *
+Allow: /
