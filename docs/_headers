@@ -18,7 +18,6 @@
 
 /
   Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
-  Link: </css/codicon.min.css>; rel=preload; as=style
   Link: </js/monaco.min.css>; rel=preload; as=style
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
 
