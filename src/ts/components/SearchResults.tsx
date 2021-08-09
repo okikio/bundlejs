@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { For, render } from "solid-js/web";
 import { EventEmitter } from "@okikio/emitter";
-import { animate } from "@okikio/animate";
+import { animate, timeline } from "@okikio/animate";
 
 export const Emitter = new EventEmitter();
 export const [getState, setState] = createSignal([]);
@@ -45,42 +45,47 @@ export const Card = ({
                     class="btn"
                     onmousedown={() => {
                         let text = btnTextEl.innerText;
-                        (async () => {
-                            await animate({
+                        
+                        timeline()
+                            .add({
                                 target: btnTextEl,
                                 opacity: [1, 0],
-                                duration: 300,
-                            });
+                                duration: 400,
+                                fillMode: "forwards",
+                                onfinish() {
+                                    Emitter.emit(
+                                        "add-module",
+                                        `export * from "${_package}";`
+                                    );
 
-                            Emitter.emit(
-                                "add-module",
-                                `export * from "${_package}";`
-                            );
-                            btnTextEl.innerText = "Added!";
-
-                            await animate({
+                                    btnTextEl.innerText = "Added!";
+                                }
+                            })
+                            .add({
                                 target: btnTextEl,
                                 opacity: [0, 1],
                                 duration: 400,
-                            });
-
-                            btnTextEl.innerText = text;
-
-                            await animate({
+                                fillMode: "forwards",
+                            })
+                            .add({
                                 target: btnTextEl,
                                 opacity: [1, 0],
-                                delay: 2000,
                                 duration: 400,
-                            });
-
-                            await animate({
+                                fillMode: "forwards",
+                                onfinish() {
+                                    btnTextEl.innerText = text;
+                                }
+                            })
+                            .add({
                                 target: btnTextEl,
                                 opacity: [0, 1],
-                                duration: 300,
+                                duration: 400,
+                                fillMode: "forwards",
+                                onfinish() {
+                                    Emitter.emit("complete");
+                                }
                             });
 
-                            Emitter.emit("complete");
-                        })();
                     }}
                 >
                     <span class="btn-text" ref={btnTextEl}>

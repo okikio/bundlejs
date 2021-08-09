@@ -4,7 +4,7 @@ specifiers:
   '@commitlint/cli': ^13.1.0
   '@commitlint/config-conventional': ^13.1.0
   '@csstools/postcss-sass': ^4.0.0
-  '@okikio/animate': ^2.3.1
+  '@okikio/animate': ^2.4.0
   '@okikio/emitter': ^2.1.7
   '@rollup/plugin-commonjs': ^20.0.0
   '@rollup/plugin-json': ^4.1.0
@@ -46,14 +46,15 @@ specifiers:
   rollup: ^2.56.1
   rollup-plugin-virtual-fs: ^4.0.1-alpha.0
   sass: ^1.37.5
-  solid-js: ^1.0.7
+  solid-js: ^1.1.0
   standard-version: ^9.3.1
   stream: ^0.0.2
   tailwindcss: ^2.2.7
+  typescript: ^4.4.0-insiders.20210805
   web-animations-js: ^2.3.2
 
 dependencies:
-  '@okikio/animate': 2.3.1
+  '@okikio/animate': 2.4.0
   '@okikio/emitter': 2.1.7
   '@rollup/plugin-commonjs': 20.0.0_rollup@2.56.1
   '@rollup/plugin-json': 4.1.0_rollup@2.56.1
@@ -70,8 +71,9 @@ dependencies:
   path: 0.12.7
   pretty-bytes: 5.6.0
   rollup-plugin-virtual-fs: 4.0.1-alpha.0
-  solid-js: 1.0.7
+  solid-js: 1.1.0
   stream: 0.0.2
+  typescript: 4.4.0-insiders.20210805
   web-animations-js: 2.3.2
 
 devDependencies:
@@ -578,11 +580,11 @@ packages:
       fastq: 1.11.1
     dev: true
 
-  /@okikio/animate/2.3.1:
-    resolution: {integrity: sha512-+O4jsFr/bNI9u3TAiOeWW12E8FkyDuPzSHfWgEtZ2RAfGZ/AbQlbXiNCfdJssM8xcU8iAgRvMyxFQywtIsiNRA==}
+  /@okikio/animate/2.4.0:
+    resolution: {integrity: sha512-W0wcSvENxkdyGoyjHgRwBk1zZ6ryt3/DT+6yMB1r8AtE6ZcdiET4sILXkDwuMluTG/zvsaM4o6mzpwUKF8VS9A==}
     dependencies:
-      '@okikio/emitter': 2.1.7
-      '@okikio/manager': 2.1.7
+      '@okikio/emitter': 2.1.8
+      '@okikio/manager': 2.2.0
     dev: false
 
   /@okikio/emitter/2.1.7:
@@ -591,8 +593,18 @@ packages:
       '@okikio/manager': 2.1.7
     dev: false
 
+  /@okikio/emitter/2.1.8:
+    resolution: {integrity: sha512-W5o/mrIao61EPJSyUAR1+LRNcEAIr/n27R3GhVNjJpbii2eRvItxtZ9SRs+Ed8tblepK2/TSiNBwwhS6KkjiPQ==}
+    dependencies:
+      '@okikio/manager': 2.2.0
+    dev: false
+
   /@okikio/manager/2.1.7:
     resolution: {integrity: sha512-fle8woS2vX4Im8wPekQOxYT00ITA5lABqEGoE12Tj7Mb6HdMsQBVxujMLVJ7OobMTmZHdT949A4yc35MC/uTEA==}
+    dev: false
+
+  /@okikio/manager/2.2.0:
+    resolution: {integrity: sha512-vsYL25Jcai57Ytvdlu9Hmi/3ru+7FENhZnTLF8hVdaSzRF+kONqRsqr89Gz3olN2MHmvw31fRU2Xh+ze2beHZg==}
     dev: false
 
   /@rollup/plugin-commonjs/20.0.0_rollup@2.56.1:
@@ -1057,8 +1069,8 @@ packages:
       - '@babel/core'
     dev: true
 
-  /babel-preset-solid/1.0.6_@babel+core@7.15.0:
-    resolution: {integrity: sha512-D+VLpF8WCif5IQmojypImyhlarxcjCD/lBOd4DBEDStXGMGNdlFBgsuVkKFiJ1yQA2KsHLljpbqrv9GsZYrZ3w==}
+  /babel-preset-solid/1.1.0_@babel+core@7.15.0:
+    resolution: {integrity: sha512-prnjopf52Q+JDM8CZzl36d4mXZV8d1Ytxrnw9bAvztVuiMWrPkqhZf9QD+koNu2pz51znuQd6CwyYz7D3yAiYQ==}
     dependencies:
       babel-plugin-jsx-dom-expressions: 0.29.11_@babel+core@7.15.0
     transitivePeerDependencies:
@@ -2569,9 +2581,9 @@ packages:
     dependencies:
       '@babel/core': 7.15.0
       '@babel/preset-typescript': 7.15.0_@babel+core@7.15.0
-      babel-preset-solid: 1.0.6_@babel+core@7.15.0
+      babel-preset-solid: 1.1.0_@babel+core@7.15.0
       esbuild: 0.12.19
-      solid-js: 1.0.7
+      solid-js: 1.1.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6094,8 +6106,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solid-js/1.0.7:
-    resolution: {integrity: sha512-2jHCXLwp/B7P4kh5tl0ospRaC2F++BU0uWwtfgK/8Zc/MROOyCmmkjHpLAQC2u2NWYVGnIclDIJ2FGDXJ0wcYg==}
+  /solid-js/1.1.0:
+    resolution: {integrity: sha512-QcYxp0AnJW3luQKRF/vOhEC5G0ao/f5OqkRuY4JOEmSjWcl4fh8UGiaEOYnri+uJmfGo7KehTKC/+Se40Qh+Lg==}
 
   /source-map-js/0.6.2:
     resolution: {integrity: sha512-/3GptzWzu0+0MBQFrDKzw/DvvMTUORvgY6k6jd/VS6iCR4RDTKWH6v6WPwQoUO8667uQEf9Oe38DxAYWY5F/Ug==}
@@ -6144,7 +6156,7 @@ packages:
     resolution: {integrity: sha512-cOYcUWwhCuHCXi49RhFRCyJEK3iPj1Ziz9DpViV3tbZOwXD49QzIN3MpOLJNxh2qwq2lJJZaKMVw9qNi4jTC0w==}
     dependencies:
       spdx-expression-parse: 3.0.1
-      spdx-license-ids: 3.0.9
+      spdx-license-ids: 3.0.10
     dev: true
 
   /spdx-exceptions/2.3.0:
@@ -6155,11 +6167,11 @@ packages:
     resolution: {integrity: sha512-cbqHunsQWnJNE6KhVSMsMeH5H/L9EpymbzqTQ3uLwNCLZ1Q481oWaofqH7nO6V07xlXwY6PhQdQ2IedWx/ZK4Q==}
     dependencies:
       spdx-exceptions: 2.3.0
-      spdx-license-ids: 3.0.9
+      spdx-license-ids: 3.0.10
     dev: true
 
-  /spdx-license-ids/3.0.9:
-    resolution: {integrity: sha512-Ki212dKK4ogX+xDo4CtOZBVIwhsKBEfsEEcwmJfLQzirgc2jIWdzg40Unxz/HzEUqM1WFzVlQSMF9kZZ2HboLQ==}
+  /spdx-license-ids/3.0.10:
+    resolution: {integrity: sha512-oie3/+gKf7QtpitB0LYLETe+k8SifzsX4KixvpOsbI6S0kRiRQ5MKOio8eMSAKQ17N06+wdEOXRiId+zOxo0hA==}
     dev: true
 
   /split-string/3.1.0:
@@ -6666,6 +6678,12 @@ packages:
   /typedarray/0.0.6:
     resolution: {integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=}
     dev: true
+
+  /typescript/4.4.0-insiders.20210805:
+    resolution: {integrity: sha512-pNeBoduMJYUs6Oatyew8OFNWunGXdatQHqUQJX3vy+kYwm39P+5QjiSVTXJhzc+PHnUCJGoJ9BN2bkdY4N9/4A==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false
 
   /ua-parser-js/0.7.28:
     resolution: {integrity: sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==}
