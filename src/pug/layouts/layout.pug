@@ -1,47 +1,161 @@
 include /components/navbar.pug
 include /components/footer.pug
 include /components/product-hunt.pug
+include /components/seo.pug
 
 doctype html
 html.dark(lang="en")
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible' content='IE=edge')
-    block title
-      title bundle - a quick npm package size checker
-    meta(name='description' content=`bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together, it currently doesn't support JSX, but packages without JSX are good.`)
-    
+
     meta(name='viewport' content='width=device-width, initial-scale=1')
     link(rel="icon", type="image/svg+xml" href="./bundle.svg")
     link(rel="manifest", href="./manifest.json")
 
-    link(rel='preconnect' href='https://fonts.gstatic.com')
+    meta(name="web-author" content="Okiki Ojo")
+    meta(name="robots" content="index, follow")
+
+    //- link(rel='preconnect' href='https://fonts.gstatic.com')
     link(rel="preload" href='https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2' as="font" type="font/woff2" crossorigin)
     link(rel="preload" href="https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2" as="font" type="font/woff2" crossorigin)
     link(rel='stylesheet' href='./css/app.min.css')
 
-    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async)
+    //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
+    //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
 
-    //- link(rel="modulepreload" href="./js/highlightjs-SZ3SUMO3.js")
-    //- link(rel="modulepreload" href="./js/critical.min.js")
+    -
+      let defaults = {
+        url: "/",
+        websiteURL: "https://bundle.js.org",
+        title: "bundle - a quick npm package size checker",
+        description: "bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+        keywords: "bundle, rollup, esbuild, gzip, minify, es2020, monaco-editor, typescript"
+      };
+    block pageInfo
+      - let page = {};
+
+    -
+      page = Object.assign({}, defaults, page, {
+        keywords: ("keywords" in page) ? page.keywords : defaults.keywords
+      });
+
+    block seo
+      +seo(page)
 
     block preload
   body
     +navbar
 
     .navbar-offset
-    main(data-wrapper)
+    main#main(data-wrapper)
       block content
 
     block footer
       +footer
 
-    //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
-    //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
-
-    //- link(rel="preload" href="./js/codicon.ttf" as="font" type="font/woff2" crossorigin)
-
+    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async)
     script(src='./js/theme.min.js' type='module' async)
     script(src='./js/critical.min.js' type='module' async)
 
     block script
+
+    script(type="application/ld+json").
+      {
+        "@context":"https://schema.org",
+        "@graph":[
+          {
+            "@type":"Organization",
+            "@id":"#{defaults.websiteURL}/#organization",
+            "name":"bundle",
+            "url":"#{defaults.websiteURL}",
+            "sameAs":[
+              "https://www.producthunt.com/posts/bundle-6",
+              "https://bundle.js.org",
+              "https://github.com/okikio/bundle",
+              "https://okikio.github.io/bundle",
+              "https://bestofjs.org/projects/bundle"
+            ],
+            "description":"#{defaults.description}",
+            "logo":{
+              "name":"bundle",
+              "@type":"ImageObject",
+              "@id":"#{defaults.websiteURL}/#logo",
+              "url":"#{defaults.websiteURL}/bundle.svg",
+              "width":512,
+              "height":512,
+              "caption":"bundle's logo"
+            },
+            "contactPoint":[
+              {
+                "@type":"ContactPoint",
+                "url":"#{defaults.websiteURL}",
+                "email":"mailto:hey@okikio.dev",
+                "contactType":"customer service"
+              }
+            ]
+          },
+          {
+            "@type":"WebSite",
+            "@id":"#{defaults.websiteURL}/#website",
+            "url":"#{defaults.websiteURL}",
+            "description":"#{defaults.description}",
+            "logo":{
+              "name":"bundle",
+              "@type":"ImageObject",
+              "@id":"#{defaults.websiteURL}/#logo",
+              "url":"#{defaults.websiteURL}/bundle.svg",
+              "width":512,
+              "height":512,
+              "caption":"bundle's logo"
+            },
+            "contactPoint":[
+              {
+                "@type":"ContactPoint",
+                "url":"#{defaults.websiteURL}",
+                "email":"mailto:hey@okikio.dev",
+                "contactType":"customer service"
+              }
+            ],
+            "sameAs":[
+              "https://www.producthunt.com/posts/bundle-6",
+              "https://bundle.js.org",
+              "https://github.com/okikio/bundle",
+              "https://okikio.github.io/bundle",
+              "https://bestofjs.org/projects/bundle"
+            ],
+            "mainEntityOfPage":{
+              "@type":"WebPage",
+              "@id":"#{defaults.websiteURL}/index.html#main",
+              "lastReviewed":"Mon August 09 2021 16:00:00 GMT-0400"
+            },
+            "about":{
+              "@id":"#{defaults.websiteURL}/about.html"
+            },
+            "name":"bundle",
+            "publisher":{
+              "@id":"https://github.com/okikio"
+            },
+            "copyrightYear":"2021",
+            "copyrightHolder":[
+              {
+                "@id":"https://github.com/okikio"
+              }
+            ]
+          },
+          {
+            "@type":"WebPage",
+            "@id":"#{page.websiteURL + page.url}#webpage",
+            "url":"#{page.websiteURL + page.url}",
+            "description":"#{page.description}",
+            "inLanguage":"en",
+            "name":"#{page.title}",
+            "isPartOf":{
+              "@id":"#{defaults.websiteURL}/#website"
+            },
+            "about":{
+              "@id":"#{defaults.websiteURL}/about.html"
+            }
+          }
+        ]
+      }

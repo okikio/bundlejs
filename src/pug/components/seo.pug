@@ -1,0 +1,28 @@
+mixin seo(page)
+  - let { title, url, description, websiteURL, keywords } = page;
+  meta(name="og:locale" content="en_Us")
+  meta(property="og:type" content="website")
+  meta(name="keywords", content=keywords)
+
+  meta(property='og:image' content='/favicon/android-chrome-512x512.png')
+
+  block title
+    title= title
+  meta(name='title' content=title)
+  meta(itemprop='name' content=title)
+  meta(property='og:title' content=title)
+  meta(name='twitter:title' content=title)
+  meta(name="apple-mobile-web-app-title", content=title)
+
+  link(rel="home", href=`/`)
+  link(rel="relative-url", href=`${url}`)
+  link(rel="canonical" href=`${websiteURL}${url}`)
+  meta(itemprop='url' content=`${websiteURL}${url}`)
+  meta(name="shortlink" content=`${websiteURL}${url}`)
+  meta(property='og:url' content=`${websiteURL}${url}`)
+  meta(name='twitter:url' content=`${websiteURL}${url}`)
+
+  meta(name='description' content=description)
+  meta(property='og:description' content=description)
+  meta(property='twitter:description' content=description)
+  meta(itemprop='description' content=description)
