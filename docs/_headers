@@ -20,7 +20,11 @@
 /
   Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous
   Link: </js/monaco.min.css>; rel=preload; as=style
+  Link: </js/load-webanimation-polyfill.min.js>; rel=modulepreload
   Link: </js/index.min.js>; rel=modulepreload
+  Link: </js/highlightjs-76CQHST2.js>; rel=modulepreload
+  Link: </js/monaco-ANBL6IAW.js>; rel=modulepreload
+  Link: </js/SearchResults-FBNCRZI7.js>; rel=modulepreload
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
 
 /**/*.css
