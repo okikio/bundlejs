@@ -1,20 +1,7 @@
 extends /layouts/layout.pug
 
 block preload
-  //- link(rel="preload" href="./js/codicon.ttf" as="font" type="font/ttf" crossorigin)
-  link(rel="stylesheet", href="./css/codicon.min.css")
   link(rel="stylesheet", href="./js/monaco.min.css")
-  //- link(rel='modulepreload' href="./js/load-webanimation-polyfill.min.js")
-
-  //- link(rel="preconnect" href="https://cdn.skypack.dev")
-
-  //- link(rel='modulepreload' href="./js/monaco-Q36HBCYX.js")
-  //- link(rel='modulepreload' href='./js/SearchResults-VGORUEDH.js')
-
-  //- link(rel='modulepreload' href='./js/typescript-E2QPSUGS.js')
-  //- link(rel='modulepreload' href='./js/tsMode-B6E6JGTU.js')
-
-  //- link(rel='modulepreload' href='./js/index.min.js')
 
 block content
   .container
@@ -84,21 +71,10 @@ block content
         
 
 block script  
-  //- link(rel='modulepreload' href='./js/esbuild.worker.js')
-
-  //- link(rel="prefetch" href="./js/esbuild.worker.js")
-  //- link(rel="prefetch" href="./js/typescript.worker.js")
-  //- link(rel="prefetch" href="./js/editor.worker.js")
 
   script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
   script(src='./js/index.min.js' type='module' async)
 
-  //- link(rel="prefetch" href="./js/esbuild.wasm")
-  //- link(rel='modulepreload' href='./js/monaco-5VRG7CDM.js')
-
-  //- link(rel='modulepreload' href='./js/rollup.min.js')
-  //- link(rel='modulepreload' href='./js/editor.min.js')
-  //- link(rel='modulepreload' href='./js/typescript.min.js')
-
-  //- link(rel='prefetch' href='./js/editor.min.js')
-  //- link(rel='prefetch' href='./js/typescript.min.js')
+  //- link(rel='modulepreload' href='./js/esbuild.worker.js')
+  //- link(rel="prefetch" href="./js/esbuild.worker.js")
+  
