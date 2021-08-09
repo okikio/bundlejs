@@ -17,7 +17,7 @@
   Link: <https://cdn.polyfill.io>; rel=preconnect; crossorigin
 
 /
-  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous
+  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: </js/monaco.min.css>; rel=preload; as=style
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
 
