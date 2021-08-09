@@ -25,6 +25,8 @@
   Link: </js/highlightjs-76CQHST2.js>; rel=modulepreload
   Link: </js/monaco-ANBL6IAW.js>; rel=modulepreload
   Link: </js/SearchResults-FBNCRZI7.js>; rel=modulepreload
+  Link: </js/esbuild.worker.js>; rel=prefetch
+  Link: </js/esbuild.wasm>; rel=prefetch
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
 
 /**/*.css
