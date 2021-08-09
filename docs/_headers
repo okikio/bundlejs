@@ -7,7 +7,7 @@
   Cache-Control: max-age=60, stale-while-revalidate=120, public
   Accept-CH: DPR, Viewport-Width, Width
   X-UA-Compatible: IE=edge
-  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com; script-src 'self' https://cdn.polyfill.io; connect-src 'self' https://api.countapi.xyz; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com/; form-action 'self'; frame-ancestors 'self' https:;
+  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com; script-src 'self' https://cdn.polyfill.io 'unsafe-eval'; connect-src 'self' https://api.countapi.xyz; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com/; form-action 'self'; frame-ancestors 'self' https:;
   Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
   Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin
   Link: </css/app.min.css>; rel=preload; as=style
