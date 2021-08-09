@@ -1,12 +1,9 @@
 extends /layouts/layout.pug
 
 block preload
-  link(rel="preload" href="./js/codicon.ttf" as="font" type="font/ttf" crossorigin)
-  link(rel="stylesheet", href="./js/monaco.min.css")
-
   //- link(rel='modulepreload' href="./js/load-webanimation-polyfill.min.js")
 
-  link(rel="preconnect" href="https://cdn.skypack.dev")
+  //- link(rel="preconnect" href="https://cdn.skypack.dev")
 
   //- link(rel='modulepreload' href="./js/monaco-Q36HBCYX.js")
   //- link(rel='modulepreload' href='./js/SearchResults-VGORUEDH.js')
@@ -84,6 +81,8 @@ block content
         
 
 block script
+  link(rel="preload" href="./js/codicon.ttf" as="font" type="font/ttf" crossorigin)
+  link(rel="stylesheet", href="./js/monaco.min.css")
   
   //- link(rel='modulepreload' href='./js/esbuild.worker.js')
 
