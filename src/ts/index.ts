@@ -45,8 +45,9 @@ const parseInput = (value: string) => {
     }, 125));
 
     const { renderComponent, setState } = await import("./components/SearchResults");
-    const SearchContainerEl = document.querySelector(".search-results-container") as HTMLElement;
-    if (SearchContainerEl) renderComponent(SearchContainerEl);
+    const SearchContainerEl = document.querySelector(".search-container") as HTMLElement;
+    const SearchResultContainerEl = SearchContainerEl.querySelector(".search-results-container") as HTMLElement;
+    if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
 
     const clearBtn = document.querySelector(".search .clear");
     clearBtn?.addEventListener("click", () => {

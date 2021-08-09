@@ -24,6 +24,7 @@
 
 .search-container,
 .search-results-container {
+    transform-origin: center top;
     // .search-results:active,
     &:focus-within .search-results {
         @apply scale-100 opacity-100 pointer-events-auto;
