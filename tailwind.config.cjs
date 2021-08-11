@@ -19,20 +19,20 @@ module.exports = {
         "center-container-dark": "#121212"
       },
       screens: {
-        'lt-2xl': { 'max': '1535px' },
-        // => @media (max-width: 1535px) { ... }
+        'lt-2xl': { 'max': '1536px' },
+        // => @media (max-width: 1536px) { ... }
 
-        'lt-xl': { 'max': '1279px' },
-        // => @media (max-width: 1279px) { ... }
+        'lt-xl': { 'max': '1280px' },
+        // => @media (max-width: 1280px) { ... }
 
-        'lt-lg': { 'max': '1023px' },
-        // => @media (max-width: 1023px) { ... }
+        'lt-lg': { 'max': '1024px' },
+        // => @media (max-width: 1024px) { ... }
 
-        'lt-md': { 'max': '767px' },
-        // => @media (max-width: 767px) { ... }
+        'lt-md': { 'max': '768px' },
+        // => @media (max-width: 768px) { ... }
 
-        'lt-sm': { 'max': '639px' },
-        // => @media (max-width: 639px) { ... }
+        'lt-sm': { 'max': '640px' },
+        // => @media (max-width: 640px) { ... }
       },
       container: {
         center: 'true',

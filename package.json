@@ -33,6 +33,7 @@
     "dependencies": {
         "@okikio/animate": "^2.4.0",
         "@okikio/emitter": "^2.1.7",
+        "@okikio/native": "^3.0.1",
         "@rollup/plugin-commonjs": "^20.0.0",
         "@rollup/plugin-json": "^4.1.0",
         "assert": "^2.0.0",
@@ -57,7 +58,7 @@
         "@commitlint/cli": "^13.1.0",
         "@commitlint/config-conventional": "^13.1.0",
         "@csstools/postcss-sass": "^4.0.0",
-        "@types/node": "^16.4.13",
+        "@types/node": "^16.4.14",
         "autoprefixer": "^10.3.1",
         "browser-sync": "^2.27.5",
         "commitizen": "^4.2.4",
@@ -80,7 +81,7 @@
         "postcss": "^8.3.6",
         "postcss-csso": "^5.0.1",
         "postcss-scss": "^4.0.0",
-        "rollup": "^2.56.1",
+        "rollup": "^2.56.2",
         "sass": "^1.37.5",
         "standard-version": "^9.3.1",
         "tailwindcss": "^2.2.7"
