@@ -13,8 +13,13 @@ body {
     scroll-behavior: smooth;
 }
 
+html {
+    accent-color: theme("colors.blue.500");
+}
+
 html.dark {
     color-scheme: dark light;
+    accent-color: theme("colors.blue.400")
 }
 
 body {
@@ -92,20 +97,6 @@ a {
     }
 }
 
-.btn {
-    @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
-    @apply dark:text-blue-400 dark:hover:bg-quaternary;
-
-    &.active {
-        @apply bg-blue-600 text-white hover:bg-blue-700;
-        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
-    }
-
-    &:hover {
-        @apply bg-opacity-60;
-    }
-}
-
 main {
     .container {
         @apply px-5 py-2 sm:max-w-screen-md;
@@ -147,33 +138,6 @@ main {
     h4 {
         @apply text-2xl font-bold mb-2;
     }
-}
-
-.theme-toggle {
-    @apply rounded-md;
-    @apply w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200;
-    @apply dark:text-blue-400 dark:bg-quaternary;
-    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
-    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
-}
-
-.btn {
-    transition: opacity ease 0.25s;
-    @apply mr-2 px-3 py-2 rounded-md no-underline hover:bg-gray-200;
-    @apply text-blue-600 dark:text-blue-400 dark:hover:bg-quaternary;
-
-    &.active {
-        @apply bg-blue-700 text-white hover:bg-blue-500;
-        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
-    }
-
-    &:hover {
-        @apply bg-opacity-60;
-    }
-}
-
-.navbar.shadow .to-top {
-    @apply opacity-100;
 }
 
 #product-hunt {

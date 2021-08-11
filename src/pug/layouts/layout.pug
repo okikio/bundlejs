@@ -10,13 +10,26 @@ html.dark(lang="en")
     meta(http-equiv='X-UA-Compatible' content='IE=edge')
 
     meta(name='viewport' content='width=device-width, initial-scale=1')
-    link(rel="icon", type="image/svg+xml" href="./bundle.svg")
+
+    link(rel='apple-touch-icon', sizes='180x180', href='./favicon/apple-touch-icon.png')
+    link(rel='icon', type='image/png', sizes='32x32', href='./favicon/favicon-32x32.png')
+    link(rel='icon', type='image/png', sizes='16x16', href='./favicon/favicon-16x16.png')
+    link(rel='mask-icon', href='./favicon/safari-pinned-tab.svg', color='#3b82f6')
+    link(rel='shortcut icon', href='./favicon/favicon.ico')
+
+    meta(name='msapplication-TileColor', content='#3b82f6')
+    meta(name='msapplication-config', content='./favicon/browserconfig.xml')
+
+    meta(name='theme-color', content='#ffffff' media="(prefers-color-scheme: light)")
+    meta(name='theme-color', content='#000000' media="(prefers-color-scheme: dark)")
+
+    link(rel="icon", type="image/svg+xml" href="./favicon/favicon.svg")
     link(rel="manifest", href="./manifest.json")
 
     meta(name="web-author" content="Okiki Ojo")
     meta(name="robots" content="index, follow")
 
-    //- link(rel='preconnect' href='https://fonts.gstatic.com')
+    link(rel='preconnect' href='https://fonts.gstatic.com')
     link(rel="preload" href='https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2' as="font" type="font/woff2" crossorigin)
     link(rel="preload" href="https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2" as="font" type="font/woff2" crossorigin)
     link(rel='stylesheet' href='./css/app.min.css')
@@ -81,7 +94,7 @@ html.dark(lang="en")
               "name":"bundle",
               "@type":"ImageObject",
               "@id":"#{defaults.websiteURL}/#logo",
-              "url":"#{defaults.websiteURL}/bundle.svg",
+              "url":"#{defaults.websiteURL}/favicon/favicon.svg",
               "width":512,
               "height":512,
               "caption":"bundle's logo"
@@ -104,7 +117,7 @@ html.dark(lang="en")
               "name":"bundle",
               "@type":"ImageObject",
               "@id":"#{defaults.websiteURL}/#logo",
-              "url":"#{defaults.websiteURL}/bundle.svg",
+              "url":"#{defaults.websiteURL}/favicon/favicon.svg",
               "width":512,
               "height":512,
               "caption":"bundle's logo"

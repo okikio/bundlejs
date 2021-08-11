@@ -1,6 +1,7 @@
 import { animate } from "@okikio/animate";
 import { debounce } from "./util/debounce";
 
+import type { editor } from "monaco-editor";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 
 const parseInput = (value: string) => {
@@ -58,6 +59,7 @@ const parseInput = (value: string) => {
 
 // @ts-ignore
 window.requestIdleCallback(() => {
+    let editor: editor.IStandaloneCodeEditor;
     (async () => {
         let loadingContainerEl = document.querySelector(".center-container");
         let Fade = animate({
@@ -71,7 +73,7 @@ window.requestIdleCallback(() => {
 
         // Monaco Code Editor
         let Monaco = await import("./modules/monaco");
-        let editor = Monaco.build();
+        editor = Monaco.build();
 
         // Fade away the loading screen
         Fade.play();
@@ -88,71 +90,71 @@ window.requestIdleCallback(() => {
             let value = `` + editor?.getValue();
             editor.setValue(value + "\n" + v);
         });
-
-        // esbuild bundler worker
-        const timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
-
-        let fileSizeEl = document.querySelector(".file-size");
-        let RunBtn = document.querySelector("#run");
-        let bundleTime = document.querySelector("#bundle-time");
-
-        // @ts-ignore
-        const BundleWorker = new Worker(ESBUILD_WORKER_URL, {
-            name: "esbuild-worker",
-            type: "module"
-        });
-
-        let count = 0;
-        let value = "";
-        let start = Date.now();
-
-        RunBtn.addEventListener("click", () => {
-            value = `` + editor?.getValue();
-
-            fileSizeEl.innerHTML = `<div class="loading"></div>`;
-            bundleTime.textContent = ``;
-
-            start = Date.now();
-            BundleWorker.postMessage(value);
-        });
-
-        BundleWorker.onmessage = ({ data }) => {
-            if (data.warn) {
-                console.warn(data.warn + " \n");
-                return;
-            }
-
-            if (data.ready) {
-                fileSizeEl.textContent = `...`;
-                return;
-            }
-
-            if (data.error) {
-                console.error(data.type + " (please create a new issue in the repo)\n", data.error);
-                fileSizeEl.textContent = `Error`;
-                return;
-            }
-
-            let { size, content } = data.value;
-            if (count > 10) {
-                console.clear();
-                count = 0;
-            }
-
-            let splitInput = value.split("\n");
-            console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
-            console.groupCollapsed("Input Code: ");
-            console.log(value);
-            console.groupEnd();
-            console.groupCollapsed("Bundled Code: ");
-            console.log(content);
-            console.groupEnd();
-            console.groupEnd();
-            count++;
-
-            bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
-            fileSizeEl.textContent = `` + size;
-        };
     })();
+
+    // esbuild bundler worker
+    const timeFormatter = new Intl.RelativeTimeFormat('en', { style: 'narrow', numeric: 'auto' });
+
+    let fileSizeEl = document.querySelector(".file-size");
+    let RunBtn = document.querySelector("#run");
+    let bundleTime = document.querySelector("#bundle-time");
+
+    // @ts-ignore
+    const BundleWorker = new Worker(ESBUILD_WORKER_URL, {
+        name: "esbuild-worker",
+        type: "module"
+    });
+
+    let count = 0;
+    let value = "";
+    let start = Date.now();
+
+    RunBtn.addEventListener("click", () => {
+        value = `` + editor?.getValue();
+
+        fileSizeEl.innerHTML = `<div class="loading"></div>`;
+        bundleTime.textContent = ``;
+
+        start = Date.now();
+        BundleWorker.postMessage(value);
+    });
+
+    BundleWorker.onmessage = ({ data }) => {
+        if (data.warn) {
+            console.warn(data.warn + " \n");
+            return;
+        }
+
+        if (data.ready) {
+            fileSizeEl.textContent = `...`;
+            return;
+        }
+
+        if (data.error) {
+            console.error(data.type + " (please create a new issue in the repo)\n", data.error);
+            fileSizeEl.textContent = `Error`;
+            return;
+        }
+
+        let { size, content } = data.value;
+        if (count > 10) {
+            console.clear();
+            count = 0;
+        }
+
+        let splitInput = value.split("\n");
+        console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+        console.groupCollapsed("Input Code: ");
+        console.log(value);
+        console.groupEnd();
+        console.groupCollapsed("Bundled Code: ");
+        console.log(content);
+        console.groupEnd();
+        console.groupEnd();
+        count++;
+
+        bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
+        fileSizeEl.textContent = `` + size;
+    };
 });
 

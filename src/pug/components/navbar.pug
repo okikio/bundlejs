@@ -1,3 +1,9 @@
+mixin nav-list
+  ul.navbar-list
+    a(href='./about' data-path='/about(.html)?') About
+    a(href='./faq.html' data-path='/faq(.html)?') FAQ
+    block
+
 mixin navbar
   nav.navbar
     .navbar-bg
@@ -9,9 +15,17 @@ mixin navbar
     .container
       .navbar-frame
         a.navbar-logo(href='./') bundle
-        section
-          a.btn.mr-2(href="./about") About
-          a.btn.mr-2(href="./faq") FAQ
-          a.btn.mr-2(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") Github
+        .mobile
+          a.btn.btn-highlight(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") Github
           button.theme-toggle(type='button')
             span.icon dark_mode
+          button.navbar-toggle(type='button')
+            span.icon menu
+        .navbar-collapse.collapse.mobile
+          +nav-list
+        .desktop
+          .navbar-collapse
+            +nav-list
+              a.btn.btn-highlight(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") Github
+              button.theme-toggle(type='button')
+                span.icon dark_mode
