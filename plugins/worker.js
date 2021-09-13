@@ -45,7 +45,9 @@ export const WEB_WORKER = () => {
 
                         sourcemap: true,
                         assetNames: "[name]",
-                        format: "esm",
+                        // fix(#4): Firefox/Safari (below v15) do not support ESM workers
+                        // This works around that by bundling everything to an iife!
+                        format: "iife",
 
                         minify: true,
                         bundle: true,
