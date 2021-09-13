@@ -146,13 +146,13 @@ export const build = () => {
             if (label === "typescript" || label === "javascript") {
                 return new Worker(TYPESCRIPT_WORKER_URL, {
                     name: `${label}-worker`,
-                    type: 'module'
+                    // type: 'module'
                 });
             }
 
             return new Worker(EDITOR_WORKER_URL, {
                 name: "editor-worker",
-                type: 'module'
+                // type: 'module'
             });
         },
     };
