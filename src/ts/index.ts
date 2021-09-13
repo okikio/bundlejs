@@ -67,7 +67,7 @@ let bundleTime = document.querySelector("#bundle-time");
 // @ts-ignore
 const BundleWorker = new Worker(ESBUILD_WORKER_URL, {
     name: "esbuild-worker",
-    type: "module"
+    // type: "module"
 });
    
 let count = 0; 
