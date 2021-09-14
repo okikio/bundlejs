@@ -73,6 +73,7 @@ const BundleWorker = new Worker(ESBUILD_WORKER_URL, {
 let count = 0; 
 let value = "";
 let start = Date.now();
+
 BundleWorker.onmessage = ({ data }) => {
     if (data.warn) {
         console.warn(data.warn + " \n");
@@ -152,5 +153,17 @@ let editor: Editor.IStandaloneCodeEditor;
         let value = `` + editor?.getValue();
         editor.setValue(value + "\n" + v);
     });
-})();
 
+
+    if (location.search) {
+        setTimeout(() => {
+            value = `` + editor?.getValue();
+            fileSizeEl.innerHTML = `<div class="loading"></div>`;
+            bundleTime.textContent = ``;
+            
+            start = Date.now();
+            BundleWorker.postMessage(value);
+        }, 100);
+    }
+
+})();

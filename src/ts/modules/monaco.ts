@@ -79,7 +79,24 @@ import { themeGet } from "../scripts/theme";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 
-export const initialValue = `\
+const parseSearchQuery = () => {
+    let code = "";
+    let exports = "";
+    let from = "";
+    try {
+        const searchParams = (new URL(String(document.location))).searchParams;
+        exports = searchParams.get("exports");
+        from = searchParams.get("from");
+        code = searchParams.get("code");
+    } catch(e) {
+    }
+    if (exports && from) {
+        return `export { ${exports} } from ${JSON.stringify(from)};\n`;
+    }
+    return code;
+ }
+
+export const initialValue = parseSearchQuery() || `\
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
 
