@@ -17,3 +17,15 @@ If there is something I missed, a mistake, or a feature you would like added ple
 **bundle** uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) as the style of commit, and the [Commitizen CLI](http://commitizen.github.io/cz-cli/) to make commits easier.
 
 You can join the discussion on [github discussions](https://github.com/okikio/bundle/discussions).
+
+---
+
+You can now use search queries in **bundle**, all you need to do is add this to the url  
+`?q={packages}&treeshake={methods to treeshake}`  
+
+e.g.  
+You want `react`, `react-dom`, `vue`, and `@okikio/animate`, but only want the `Animate` and `toStr` methods exported from `@okikio/animate`.  
+
+You would add this to the url [bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]](https://bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr])  
+
+If you only want a couple packages and don't care to treeshake, then all you need is something like this, [bundle.js.org?q=react,react-dom,vue,@okikio/animate](https://bundle.js.org/?q=react,react-dom,vue,@okikio/animate)
