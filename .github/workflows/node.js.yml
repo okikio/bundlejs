@@ -44,7 +44,6 @@ jobs:
       run: pnpm build
       
     - name: Add docs to Git
-      if: ${{ github.ref == 'refs/heads/master' }}
       run: |
         git add --force docs/
         
@@ -53,6 +52,7 @@ jobs:
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git commit -m "chore(gh-bot): :rocket: deploy to github pages" -a
+        
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
