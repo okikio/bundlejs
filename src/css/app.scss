@@ -166,6 +166,10 @@ html.dark #product-hunt img:not(.dark) {
     @apply hidden;
 }
 
+html.dark hr {
+    border-top-color: theme("colors.quaternary");
+}
+
 footer.footer {
     @apply text-gray-600 text-right dark:text-secondary;
 

@@ -1,4 +1,5 @@
 import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "esbuild-wasm/esm/browser";
+import { EventEmitter } from "@okikio/emitter";
 
 import path from "path";
 import { fs, vol } from "memfs";
@@ -18,8 +19,8 @@ import { CDN } from "../plugins/cdn";
 import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
+const InitEvent = new EventEmitter();
 let _initialized = false;
-
 vol.fromJSON({}, "/");
 
 (async () => {
@@ -30,146 +31,196 @@ vol.fromJSON({}, "/");
                 wasmURL: `./esbuild.wasm`
             });
 
-            _initialized = true;
-            self.postMessage({
-                ready: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before trying to bundle`,
+            InitEvent.emit("init", {
+                event: "init",
+                details: {},
             });
+            _initialized = true;
         }
     } catch (error) {
-        self.postMessage({
-            type: `initialize esbuild error`,
-            error
-        });
+        InitEvent.emit("init", {
+            event: "error",
+            details: {
+                type: `initialize esbuild error`,
+                error,
+            }
+        })
     }
 })();
 
-export let result: BuildResult & {
-    outputFiles: OutputFile[];
-} | BuildIncremental;
+const encoder = new TextEncoder();
+const start = (port) => {
+    if (_initialized) {
+        port.postMessage({
+            event: "ready",
+            details: {}
+        });
+    }
 
-self.onmessage = ({ data }) => {
-    let input: string = `${data}`; // Ensure input is a string
+    InitEvent.on("init", (data) => {
+        port.postMessage(data);
 
-    (async () => {
-        let content: string;
-        if (!_initialized) {
-            self.postMessage({
-                warn: `esbuild has not initialized. \nYou need to wait for the promise returned from "initialize" to be resolved before trying to bundle`
+        if (data.event == "init" && !_initialized)
+            port.postMessage({
+                event: "ready",
+                details: {}
             });
+    })
 
-            return;
-        }
+    let result: BuildResult & {
+        outputFiles: OutputFile[];
+    } | BuildIncremental;
 
-        // use esbuild to bundle files
-        try {
-            await fs.promises.writeFile("input.ts", `${input}`);
+    port.onmessage = ({ data }) => {
+        let input: string = `${data}`; // Ensure input is a string
 
-            result = await build({
-                entryPoints: ['<stdin>'],
-                bundle: true,
-                minify: true,
-                color: true,
-                incremental: false,
-                target: ["esnext"],
-                logLevel: 'info',
-                write: false,
-                outfile: "/bundle.js",
-                platform: "browser",
-                format: "esm",
-                loader: {
-                    '.png': 'file',
-                    '.jpeg': 'file',
-                    '.ttf': 'file',
-                    '.svg': 'text',
-                    '.html': 'text',
-                    '.scss': 'css'
-                },
-                define: {
-                    "__NODE__": `false`,
-                    "process.env.NODE_ENV": `"production"`
-                },
-                plugins: [
-                    EXTERNAL(),
-                    ENTRY(`/input.ts`),
-                    JSON_PLUGIN(),
+        (async () => {
+            let content: string;
+            if (!_initialized) {
+                port.postMessage({
+                    event: "warn",
+                    details: {
+                        type: `esbuild not initialized`,
+                        message: `You need to wait for the promise returned from "initialize" to be resolved before trying to bundle`
+                    }
+                });
 
-                    BARE(),
-                    HTTP(),
-                    CDN(),
-                    VIRTUAL_FS(),
-                    WASM(),
-                ],
-                globalName: 'bundler',
-            });
+                return;
+            }
 
-            result?.outputFiles?.forEach((x) => {
-                if (!fs.existsSync(path.dirname(x.path))) {
-                    fs.mkdirSync(path.dirname(x.path));
-                }
+            // use esbuild to bundle files
+            try {
+                await fs.promises.writeFile("input.ts", `${input}`);
 
-                fs.writeFileSync(x.path, x.text);
-            });
+                result = await build({
+                    entryPoints: ['<stdin>'],
+                    bundle: true,
+                    minify: true,
+                    color: true,
+                    incremental: false,
+                    target: ["esnext"],
+                    logLevel: 'info',
+                    write: false,
+                    outfile: "/bundle.js",
+                    platform: "browser",
+                    format: "esm",
+                    loader: {
+                        '.png': 'file',
+                        '.jpeg': 'file',
+                        '.ttf': 'file',
+                        '.svg': 'text',
+                        '.html': 'text',
+                        '.scss': 'css'
+                    },
+                    define: {
+                        "__NODE__": `false`,
+                        "process.env.NODE_ENV": `"production"`
+                    },
+                    plugins: [
+                        EXTERNAL(),
+                        ENTRY(`/input.ts`),
+                        JSON_PLUGIN(),
 
-            content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
-            content = content?.trim?.(); // Remove unesscary space
+                        BARE(),
+                        HTTP(),
+                        CDN(),
+                        VIRTUAL_FS(),
+                        WASM(),
+                    ],
+                    globalName: 'bundler',
+                });
 
-            // Reset memfs
-            vol.reset();
-        } catch (error) {
-            self.postMessage({
-                type: `esbuild build error`,
-                error
-            });
+                result?.outputFiles?.forEach((x) => {
+                    if (!fs.existsSync(path.dirname(x.path))) {
+                        fs.mkdirSync(path.dirname(x.path));
+                    }
 
-            return;
-        }
+                    fs.writeFileSync(x.path, x.text);
+                });
 
-        // esbuild doesn't treeshake files very well, so, I choose to use rollup for treeshaking files. 
-        try {
-            const { generate } = await rollup({
-                input: "/input.js",
-                treeshake: true,
-                experimentalCacheExpiry: 1,
-                perf: false,
-                plugins: [
-                    virtualFs({
-                        files: {
-                            '/input.js': content,
-                        }
-                    })
-                ]
-            });
+                content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
+                content = content?.trim?.(); // Remove unesscary space
 
-            const { output } = await generate({
-                format: "esm",
-                sourcemap: false,
-                minifyInternalExports: false,
-            });
+                // Reset memfs
+                vol.reset();
+            } catch (error) {
+                port.postMessage({
+                    event: "error",
+                    details: {
+                        type: `esbuild build error`,
+                        error
+                    }
+                });
 
-            content = output[0].code;
-            content = content?.trim?.(); // Remove unesscary space
-        } catch (error) {
-            self.postMessage({
-                type: `rollup treeshaking error`,
-                error
-            });
+                return;
+            }
 
-            return;
-        }
+            // esbuild doesn't treeshake files very well, so, I choose to use rollup for treeshaking files. 
+            try {
+                const { generate } = await rollup({
+                    input: "/input.js",
+                    treeshake: true,
+                    experimentalCacheExpiry: 1,
+                    cache: false,
+                    plugins: [
+                        virtualFs({
+                            files: {
+                                '/input.js': content,
+                            }
+                        })
+                    ]
+                });
 
-        // use pako & pretty-bytes for gzipping
-        try {
-            // @ts-ignore
-            let { length } = await gzip(content, { level: 9 });
+                const { output } = await generate({
+                    format: "esm",
+                    sourcemap: false,
+                    minifyInternalExports: false,
+                });
 
-            self.postMessage({
-                value: { content, size: prettyBytes(length) }
-            });
-        } catch (error) {
-            self.postMessage({
-                type: `gzip error`,
-                error
-            });
-        }
-    })();
-};
+                content = output[0].code;
+                content = content?.trim?.(); // Remove unesscary space
+            } catch (error) {
+                port.postMessage({
+                    event: "error",
+                    details: {
+                        type: `rollup treeshaking error`,
+                        error
+                    }
+                });
+
+                return;
+            }
+
+            // use pako & pretty-bytes for gzipping
+            try {
+                // @ts-ignore
+                let { byteLength } = encoder.encode(content);
+                let { length } = await gzip(content, { level: 9 });
+
+                port.postMessage({
+                    event: "result",
+                    details: { content, size: prettyBytes(byteLength) + " -> " + prettyBytes(length) }
+                });
+            } catch (error) {
+                port.postMessage({
+                    event: "error",
+                    details: {
+                        type: `gzip error`,
+                        error
+                    }
+                });
+            }
+        })();
+    };
+}
+
+// @ts-ignore
+self.onconnect = (e) => {
+    let [port] = e.ports;
+    start(port)
+}
+
+if (!("SharedWorkerGlobalScope" in self)) {
+    start(self);
+}
+

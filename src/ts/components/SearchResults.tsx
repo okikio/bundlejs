@@ -3,7 +3,7 @@ import { For, render } from "solid-js/web";
 import { EventEmitter } from "@okikio/emitter";
 import { animate, timeline } from "@okikio/animate";
 
-export const Emitter = new EventEmitter();
+export const ResultEvents = new EventEmitter();
 export const [getState, setState] = createSignal([]);
 
 export const Card = ({
@@ -53,7 +53,7 @@ export const Card = ({
                                 duration: 400,
                                 fillMode: "forwards",
                                 onfinish() {
-                                    Emitter.emit(
+                                    ResultEvents.emit(
                                         "add-module",
                                         `export * from "${_package}";`
                                     );
@@ -82,7 +82,7 @@ export const Card = ({
                                 duration: 400,
                                 fillMode: "forwards",
                                 onfinish() {
-                                    Emitter.emit("complete");
+                                    ResultEvents.emit("complete");
                                 }
                             });
 
