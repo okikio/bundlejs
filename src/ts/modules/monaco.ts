@@ -123,8 +123,11 @@ export const debounce = (func: Function, timeout = 300) => {
 };
 
 export const build = () => {
-    let inputEl = document.querySelector("#editor") as HTMLElement;
+    let inputEl = document.querySelector(".app #editor") as HTMLElement;
+    let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
+
     let inputEditor: Editor.IStandaloneCodeEditor;
+    let outputEditor: Editor.IStandaloneCodeEditor;
 
     languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
@@ -139,9 +142,12 @@ export const build = () => {
         "module": languages.typescript.ModuleKind.ES2015,
         "noEmit": true,
         "lib": [
-            "esnext",
-            "dom",
-            "node"
+            "ES2021",
+            "DOM",
+            "DOM.Iterable",
+            "WebWorker",
+            "ESNEXT",
+            "NODE"
         ],
         "exclude": ["node_modules"],
         "resolveJsonModule": true,
@@ -192,7 +198,7 @@ export const build = () => {
     // @ts-ignore
     Editor.defineTheme("light", GithubLight);
 
-    inputEditor = Editor.create(inputEl, {
+    let editorOpts = {
         value: initialValue,
         minimap: {
             enabled: false,
@@ -211,11 +217,16 @@ export const build = () => {
         language: "typescript",
 
         lineNumbers: "on"
-    });
+    };
+
+    inputEditor = Editor.create(inputEl, editorOpts as Editor.IStandaloneEditorConstructionOptions);
+    outputEditor = Editor.create(outputEl, Object.assign({}, editorOpts, {
+        value: `// Output`
+    }, ) as Editor.IStandaloneEditorConstructionOptions);
 
     document.addEventListener("theme-change", () => {
         Editor.setTheme(themeGet());
     });
 
-    return inputEditor;
+    return [inputEditor, outputEditor];
 };

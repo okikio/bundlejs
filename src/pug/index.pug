@@ -4,6 +4,8 @@ block preload
   link(rel="stylesheet", href="./js/monaco.min.css")
 
 block content
+  input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
+
   .container
     header
       h1 bundle
@@ -20,24 +22,29 @@ block content
           i.icon clear
 
       .search-results-container
-
-    .push-to-side
-      #bundle-time
-      .flex.flex-1
-      button.btn#run(type='button') Run
-      button.btn.btn-share#share(type='button') Share
-      input(type="text" id="btn-share-input" tabindex="-1" aria-hidden="true")
-      .file-size Wait...
-    #app
+    .push-to-side-overflow
+      .push-to-side
+        #bundle-time
+        .flex.flex-1
+        button.btn#run(type='button') Run
+        button.btn.btn-share#share(type='button') Share
+        .file-size Wait...
+  .flex-wrapper
+    .app
       .center-container
         .loading
       #editor
-      
+    
+    .app#output
+      .center-container
+        .loading
+      #editor
+  .container  
     +product-hunt.place-content-center
         
-    p * Check the console for error messages and bundled code.
-    p * Every 10 results the console will be cleared.
-    br
+    //- p * Check the console for error messages and bundled code.
+    //- p * Every 10 results the console will be cleared.
+    //- br
     p * Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.
     br
 

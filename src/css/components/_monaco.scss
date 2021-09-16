@@ -1,21 +1,44 @@
-#app {
-    @apply border border-gray-200 dark:border-transparent;
-    @apply rounded-lg shadow-lg;
-    @apply bg-white relative block mb-8;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    height: 400px - 56px;
-
+.flex-wrapper {
+    @apply gap-3 w-full relative pb-2 mb-8 container max-w-screen-xl;
+    display: grid;
+    grid-template-columns: auto;
+    grid-auto-flow: column;
+    grid-auto-rows: 1fr;
+    min-height: 400px - 56px;
     resize: vertical;
     overflow: hidden;
 
     @screen lt-md {
-        height: 350px - 56px;
+        min-height: 350px - 56px;
     }
 }
 
+.app {
+    @apply border border-gray-200 dark:border-transparent;
+    @apply rounded-lg shadow-lg;
+    @apply bg-white relative block;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    height: 100%;
+
+    resize: horizontal;
+    overflow: hidden;
+}
+
+.app#output {
+    // resize: vertical;
+    // height: 100%;
+}
+
 .push-to-side {
-    @apply flex align-middle py-2 justify-end;
+    @apply flex align-middle py-2 justify-end flex-1;
+    flex-wrap: nowrap;
+}
+
+.push-to-side-overflow {
+    overflow-x: auto;
+    position: relative;
+    display: flex;
 }
 
 .file-size {
@@ -23,7 +46,7 @@
     @apply text-center flex justify-center items-center;
     @apply bg-gray-200 dark:bg-quaternary;
     @apply text-gray-500 dark:text-secondary;
-    min-width: theme("spacing.48");
+    min-width: theme("spacing.40");
     min-height: theme("spacing.12")
 }
 
@@ -45,7 +68,7 @@
     animation: spin 1s linear infinite;
 }
 
-.dark #app {
+.dark .app {
     background-color: #24292e;
 }
 

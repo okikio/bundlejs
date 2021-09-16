@@ -177,3 +177,74 @@ footer.footer {
         @apply p-5 align-middle sm:max-w-screen-md;
     }
 }
+
+#copy-input {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    opacity: 0;
+    // width: 1px;
+    // visibility: hidden;
+}
+
+.navbar-toggle,
+.theme-toggle,
+.btn-icon {
+    @apply rounded-md;
+    @apply mr-1 w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200 active:bg-blue-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.btn-icon {
+    @apply bg-white hover:bg-gray-100 active:bg-blue-200;
+    @apply dark:text-blue-400 dark:bg-tertiary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.btn-highlight {
+    @apply rounded-md mr-1 inline-block;
+    @apply text-blue-500 bg-gray-100 hover:bg-gray-200 active:bg-blue-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.btn {
+    transition: opacity ease 0.25s;
+    @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
+    @apply text-blue-600 dark:text-blue-400 dark:hover:bg-quaternary;
+
+    &.active {
+        @apply bg-blue-700 text-white hover:bg-blue-500;
+        @apply dark:bg-blue-400 dark:text-black dark:hover:bg-blue-500;
+    }
+
+    &:hover {
+        @apply bg-opacity-60;
+    }
+}
+
+.btn-share {
+    @apply rounded-md ml-2;
+    @apply text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.btn,
+.navbar-toggle,
+.theme-toggle {
+    @apply mr-1;
+}
+
+.theme-toggle {
+    @apply rounded-md;
+    @apply w-10 h-10 text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}

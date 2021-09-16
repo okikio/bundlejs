@@ -56,8 +56,9 @@ let bundleFromUrl = () => {
 }
 
 let editor: Editor.IStandaloneCodeEditor;
+let output: Editor.IStandaloneCodeEditor;
 (async () => {
-    let loadingContainerEl = document.querySelector(".center-container");
+    let loadingContainerEl = Array.from(document.querySelectorAll(".center-container"));
     let Fade = animate({
         target: loadingContainerEl,
         opacity: [1, 0],
@@ -69,13 +70,13 @@ let editor: Editor.IStandaloneCodeEditor;
 
     // Monaco Code Editor
     let Monaco = await import("./modules/monaco");
-    editor = Monaco.build();
+    [editor, output] = Monaco.build();
 
     // Fade away the loading screen
     Fade.play();
     await Fade;
 
-    loadingContainerEl?.remove();
+    loadingContainerEl.forEach(x => x?.remove());
     Fade.stop();
 
     loadingContainerEl = null;
@@ -93,10 +94,10 @@ let editor: Editor.IStandaloneCodeEditor;
 
     editor.onDidChangeModelContent(debounce((e) => {
         window.history.replaceState({}, '', generateShareLink());
-    }, 300))
+    }, 300));
 
     const shareBtn = document.querySelector(".btn-share#share") as HTMLButtonElement;
-    const shareInput = document.querySelector("#btn-share-input") as HTMLInputElement;
+    const shareInput = document.querySelector("#copy-input") as HTMLInputElement;
     shareBtn?.addEventListener("click", () => {
         shareInput.value = generateShareLink();
         shareInput.select();
@@ -200,16 +201,17 @@ BundleEvents.on({
             count = 0;
         }
 
-        let splitInput = value.split("\n");
-        console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
-        console.groupCollapsed("Input Code: ");
-        console.log(value);
-        console.groupEnd();
-        console.groupCollapsed("Bundled Code: ");
-        console.log(content);
-        console.groupEnd();
-        console.groupEnd();
-        count++;
+        // let splitInput = value.split("\n");
+        // console.groupCollapsed(`${size} =>`, `${splitInput[0]}${splitInput.length > 1 ? "\n..." : ""}`);
+        // console.groupCollapsed("Input Code: ");
+        // console.log(value);
+        // console.groupEnd();
+        // console.groupCollapsed("Bundled Code: ");
+        // console.log(content);
+        // console.groupEnd();
+        // console.groupEnd();
+        // count++;
+        output?.setValue?.(content);
 
         bundleTime.textContent = `Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
         fileSizeEl.textContent = `` + size;
