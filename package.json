@@ -12,7 +12,7 @@
         "build": "gulp build",
         "watch": "gulp --watch",
         "test": "pnpm build",
-        "changelog": "standard-version"
+        "release": "standard-version && git add -A && git commit -m 'chore(release): :rocket:'"
     },
     "changelog": {
         "repo": "bundle",
