@@ -1,5 +1,6 @@
 {
-    "name": "root",
+    "name": "bundle",
+    "version": "0.0.0",
     "private": true,
     "license": "MIT",
     "type": "module",
@@ -34,8 +35,6 @@
         "@okikio/animate": "^2.4.0",
         "@okikio/emitter": "^2.1.7",
         "@okikio/native": "^3.0.1",
-        "@rollup/plugin-commonjs": "^20.0.0",
-        "@rollup/plugin-json": "^4.1.0",
         "assert": "^2.0.0",
         "browser-builtins": "^3.3.1",
         "buffer": "^6.0.3",
