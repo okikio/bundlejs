@@ -25,6 +25,8 @@ block content
       #bundle-time
       .flex.flex-1
       button.btn#run(type='button') Run
+      button.btn.btn-share#share(type='button') Share
+      input(type="text" id="btn-share-input" tabindex="-1" aria-hidden="true")
       .file-size Wait...
     #app
       .center-container
@@ -60,6 +62,8 @@ block content
       import { toStr } from "skypack:@okikio/animate";
       // or
       export * from "esm:@okikio/animate"; 
+      // or 
+      export { animate } from "https://cdn.skypack.dev/@okikio/animate";
       ```
     br
     p.relative
@@ -68,6 +72,22 @@ block content
       |  uses
       a(href="https://cdn.skypack.dev" target="_blank" rel="noopener")  cdn.skypack.dev
       |  but you can use the others.
+    br
+    hr
+    br
+    p
+      | You can now use search queries in #[strong bundle], all you need to do is add this to the url #[br]
+      | #[code="?q={packages}&treeshake={methods to treeshake}"] #[br] #[br] 
+      | e.g. #[br]
+      | You want #[code react], #[code react-dom], #[code vue], and #[code @okikio/animate], but only want the #[code Animate] and #[code toStr] methods exported from #[code @okikio/animate].
+      | #[br] #[br] You would add this to the url 
+      a(href="/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]" rel="noopener")
+        | ?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]
+      br 
+      br
+      | If you only want a couple packages and don't care to treeshake, then all you need is something like this,
+      a(href="/?q=react,react-dom,vue,@okikio/animate" rel="noopener")
+        | ?q=react,react-dom,vue,@okikio/animate
         
 
 block script  

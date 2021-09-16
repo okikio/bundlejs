@@ -79,7 +79,36 @@ import { themeGet } from "../scripts/theme";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 
-export const initialValue = `\
+import { compressToURL, decompressFromURL } from '@amoutonbrady/lz-string';
+
+/** 
+ * Treeshake exports allow for specifing multiple exports per package, through this syntax
+ * ```ts
+ * "[x,y,z],[a,b,c]"
+ * ```
+ * where the brackets represent seperate packages
+*/
+export const parseTreeshakeExports = (str: string) => (str ?? "").split(/\],/).map(str => str.replace(/\[|\]/g, ""));
+export const parseSearchQuery = () => {
+    try {
+        const searchParams = (new URL(String(document.location))).searchParams;
+        let share = searchParams.get("share");
+        if (share) return decompressFromURL(share);
+
+        let query = searchParams.get("query") || searchParams.get("q");
+        let treeshake = searchParams.get("treeshake");
+        if (query) {
+            let queryArr = query.split(",");
+            let treeshakeArr = parseTreeshakeExports(treeshake);
+            return "// Click Run for the Bundled + Minified + Gzipped package size\n" + queryArr.map((q, i) => { 
+                let treeshakeExports = treeshakeArr[i] && (treeshakeArr[i].trim() !== "*") ? `{ ${treeshakeArr[i].trim().split(",").join(", ")} }` : '*';
+                return `export ${treeshakeExports} from ${JSON.stringify(q)};`;
+            }).join("\n");
+        }
+    } catch (e) { }
+}
+
+export const initialValue = parseSearchQuery() || `\
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
 
@@ -144,16 +173,14 @@ export const build = () => {
     (window as any).MonacoEnvironment = {
         getWorker: function (moduleId, label) {
             if (label === "typescript" || label === "javascript") {
-                return new Worker(TYPESCRIPT_WORKER_URL, {
-                    name: `${label}-worker`,
-                    // type: 'module'
-                });
+                let WorkerArgs = { name: `${label}-worker` };
+                let AdvancedWorker = ("SharedWorker" in globalThis) && new SharedWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
+                return AdvancedWorker?.port || new Worker(TYPESCRIPT_WORKER_URL, WorkerArgs);
             }
 
-            return new Worker(EDITOR_WORKER_URL, {
-                name: "editor-worker",
-                // type: 'module'
-            });
+            let WorkerArgs = { name: `editor-worker`,};
+            let AdvancedWorker = ("SharedWorker" in globalThis) && new SharedWorker(EDITOR_WORKER_URL, WorkerArgs);
+            return AdvancedWorker?.port || new Worker(EDITOR_WORKER_URL, WorkerArgs);
         },
     };
 

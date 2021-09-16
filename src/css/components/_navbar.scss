@@ -161,6 +161,22 @@
     }
 }
 
+.btn-share {
+    @apply rounded-md ml-2;
+    @apply text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply dark:text-blue-400 dark:bg-quaternary;
+    @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
+    @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+#btn-share-input {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    // width: 1px;
+    // visibility: hidden;
+}
+
 .btn,
 .navbar-toggle,
 .theme-toggle {

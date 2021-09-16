@@ -6,7 +6,7 @@
     padding-bottom: 15px;
     height: 400px - 56px;
 
-    resize: block;
+    resize: vertical;
     overflow: hidden;
 
     @screen lt-md {
@@ -23,7 +23,7 @@
     @apply text-center flex justify-center items-center;
     @apply bg-gray-200 dark:bg-quaternary;
     @apply text-gray-500 dark:text-secondary;
-    min-width: theme("spacing.24");
+    min-width: theme("spacing.48");
     min-height: theme("spacing.12")
 }
 
