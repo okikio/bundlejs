@@ -89,6 +89,8 @@ import { compressToURL, decompressFromURL } from '@amoutonbrady/lz-string';
  * where the brackets represent seperate packages
 */
 export const parseTreeshakeExports = (str: string) => (str ?? "").split(/\],/).map(str => str.replace(/\[|\]/g, ""));
+
+// Inspired by https://github.com/solidjs/solid-playground
 export const parseSearchQuery = () => {
     try {
         const searchParams = (new URL(String(document.location))).searchParams;
