@@ -7,7 +7,6 @@
         "packages/*"
     ],
     "scripts": {
-        "astro": "astro",
         "commit": "git cz",
         "build": "gulp build",
         "watch": "gulp --watch",
@@ -31,6 +30,7 @@
         }
     },
     "dependencies": {
+        "@amoutonbrady/lz-string": "^0.0.1",
         "@okikio/animate": "^2.4.0",
         "@okikio/emitter": "^2.1.7",
         "@okikio/native": "^3.0.1",
@@ -40,7 +40,7 @@
         "browser-builtins": "^3.3.1",
         "buffer": "^6.0.3",
         "countapi-js": "^1.0.2",
-        "esbuild-wasm": "^0.12.27",
+        "esbuild-wasm": "^0.12.28",
         "events": "^3.3.0",
         "highlight.js": "^11.2.0",
         "memfs": "^3.2.4",
@@ -63,7 +63,7 @@
         "browser-sync": "^2.27.5",
         "commitizen": "^4.2.4",
         "del": "^6.0.0",
-        "esbuild": "^0.12.27",
+        "esbuild": "^0.12.28",
         "esbuild-plugin-solid": "^0.4.0",
         "fibers": "^5.0.0",
         "gulp": "^4.0.2",
@@ -82,7 +82,7 @@
         "postcss-csso": "^5.0.1",
         "postcss-scss": "^4.0.0",
         "rollup": "^2.56.3",
-        "sass": "^1.39.2",
+        "sass": "^1.41.0",
         "standard-version": "^9.3.1",
         "tailwindcss": "^2.2.15"
     }
