@@ -1,0 +1,108 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png"><link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#3b82f6"><link rel="shortcut icon" href="./favicon/favicon.ico"><meta name="msapplication-TileColor" content="#3b82f6"><meta name="msapplication-config" content="./favicon/browserconfig.xml"><meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)"><link rel="search" href="https://bundle.js.org/open-search.xml" type="application/opensearchdescription+xml" title="bundle"><link rel="icon" type="image/svg+xml" href="./favicon/favicon.svg"><link rel="manifest" href="./manifest.json"><meta name="web-author" content="Okiki Ojo"><meta name="robots" content="index, follow"><link rel="preconnect" href="https://fonts.gstatic.com"><link rel="preload" href="https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="./css/app.min.css"><meta name="og:locale" content="en_Us"/><meta property="og:type" content="website"/><meta name="keywords" content="bundle, rollup, esbuild, gzip, minify, es2020, monaco-editor, typescript"/><meta property="og:image" content="/favicon/android-chrome-512x512.png"/><title>bundle - a quick npm package size checker</title><meta name="title" content="bundle - a quick npm package size checker"/><meta itemprop="name" content="bundle - a quick npm package size checker"/><meta property="og:title" content="bundle - a quick npm package size checker"/><meta name="twitter:title" content="bundle - a quick npm package size checker"/><meta name="apple-mobile-web-app-title" content="bundle - a quick npm package size checker"/><link rel="home" href="/"/><link rel="relative-url" href="/"/><link rel="canonical" href="https://bundle.js.org/"/><meta itemprop="url" content="https://bundle.js.org/"/><meta name="shortlink" content="https://bundle.js.org/"/><meta property="og:url" content="https://bundle.js.org/"/><meta name="twitter:url" content="https://bundle.js.org/"/><meta name="description" content="bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together."/><meta property="og:description" content="bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together."/><meta property="twitter:description" content="bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together."/><meta itemprop="description" content="bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together."/><link rel="stylesheet" href="./js/monaco.min.css"></head><body><nav class="navbar"><div class="navbar-bg"><div class="container"><div class="navbar-shadow"></div></div></div><div class="navbar-bg"><div class="container"><div class="navbar-border"></div></div></div><div class="container"><div class="navbar-frame"><a class="navbar-logo" href="./">bundle</a><div class="mobile"><a class="btn btn-highlight" href="https://github.com/okikio/bundle" target="_blank" rel="noopener">GitHub</a><button class="theme-toggle" type="button"><span class="icon">dark_mode</span></button><button class="navbar-toggle" type="button"><span class="icon">menu</span></button></div><div class="navbar-collapse collapse mobile"><div class="navbar-list"><a href="./about" data-path="/about(.html)?">About</a><a href="./faq.html" data-path="/faq(.html)?">FAQ</a></div></div><div class="desktop"><div class="navbar-collapse"><div class="navbar-list"><a href="./about" data-path="/about(.html)?">About</a><a href="./faq.html" data-path="/faq(.html)?">FAQ</a><a class="btn btn-highlight" href="https://github.com/okikio/bundle" target="_blank" rel="noopener">GitHub</a><button class="theme-toggle" type="button"><span class="icon">dark_mode</span></button></div></div></div></div></div></nav><div class="navbar-offset"></div><main id="main" data-wrapper><div class="container"><header><h1>bundle</h1><p> a quick npm package size checker <strong id="visit-counter"> </strong></p></header><div class="search-container"><div class="search"><i class="icon">search</i><input id="search-input" type="text" autocomplete="off" placeholder="Type a package name..."><button class="btn clear"><i class="icon">clear</i></button></div><div class="search-results-container"></div></div><div class="push-to-side"><div id="bundle-time"></div><div class="flex flex-1"></div><button class="btn" id="run" type="button">Run</button><button class="btn btn-share" id="share" type="button">Share</button><input type="text" id="btn-share-input" tabindex="-1" aria-hidden="true"><div class="file-size">Wait...</div></div><div id="app"><div class="center-container"><div class="loading"></div></div><div id="editor"></div></div><a class="place-content-center" id="product-hunt" href="https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&amp;utm_medium=badge&amp;utm_souce=badge-bundle-6" target="_blank" rel="noopener"><figure width="250" height="54"><img class="dark" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&amp;theme=dark" alt="" loading="eager"/><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&amp;theme=light" alt="" loading="eager"/><figcaption>A link to bundle.js.org's Product Hunt page; a small public display of what bundle.js.org is all about</figcaption></figure></a><p>* Check the console for error messages and bundled code.</p><p>* Every 10 results the console will be cleared.</p><br><p>* Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.</p><br><p>You can use custom protocols to specify which CDN the module should come from.</p><br><p>* esm.run:react   ->   <a href="https://esm.run/react" target="_blank" rel="noopener">https://esm.run/react</a> <br>* esm.sh:react    ->   <a href="https://cdn.esm.sh/react" target="_blank" rel="noopener">https://cdn.esm.sh/react</a> <br>* esm:react       ->   <a href="https://cdn.esm.sh/react" target="_blank" rel="noopener">https://cdn.esm.sh/react</a> <br>* skypack:react   ->   <a href="https://cdn.skypack.dev/react" target="_blank" rel="noopener">https://cdn.skypack.dev/react</a> <br>* unpkg:react     ->   <a href="https://unpkg.com/react" target="_blank" rel="noopener">https://unpkg.com/react</a> <br>* jsdelivr:react  ->   <a href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener">https://cdn.jsdelivr.net/npm/react</a> </p><br><p>e.g.</p><pre><code class="language-typescript">import { toStr } from &quot;skypack:@okikio/animate&quot;;
+// or
+export * from &quot;esm:@okikio/animate&quot;; 
+// or 
+export { animate } from &quot;https://cdn.skypack.dev/@okikio/animate&quot;;
+</code></pre>
+<br><p class="relative"><span>* If an error occurs try using a different CDN, by default </span><strong>bundle</strong> uses<a href="https://cdn.skypack.dev" target="_blank" rel="noopener"> cdn.skypack.dev</a> but you can use the others.</p><br><hr><br><p>You can now use search queries in <strong>bundle</strong>, all you need to do is add this to the url <br>
+<code>?q={packages}&amp;treeshake={methods to treeshake}</code> <br> <br> 
+e.g. <br>
+You want <code>react</code>, <code>react-dom</code>, <code>vue</code>, and <code>@okikio/animate</code>, but only want the <code>Animate</code> and <code>toStr</code> methods exported from <code>@okikio/animate</code>.
+<br> <br> You would add this to the url <a href="/?q=react,react-dom,vue,@okikio/animate&amp;treeshake=[*],[*],[*],[Animate,toStr]" rel="noopener">?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]</a><br><br>If you only want a couple packages and don't care to treeshake, then all you need is something like this,<a href="/?q=react,react-dom,vue,@okikio/animate" rel="noopener">?q=react,react-dom,vue,@okikio/animate</a></p></div></main><footer class="footer my-6"><div class="container space-x-2"><p class="bg-gray-200 dark:bg-quaternary inline-block px-4 py-2 rounded-md"><span>  Made by </span><a href="https://github.com/okikio" target="_blank" rel="noopener">Okiki Ojo</a>.</p></div></footer><script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async></script><script src="./js/theme.min.js" type="module" async></script><script src="./js/critical.min.js" type="module" async></script><script src="./js/load-webanimation-polyfill.min.js" type="module" async></script><script src="./js/index.min.js" type="module" async></script><script type="application/ld+json">{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"Organization",
+      "@id":"https://bundle.js.org/#organization",
+      "name":"bundle",
+      "url":"https://bundle.js.org",
+      "sameAs":[
+        "https://www.producthunt.com/posts/bundle-6",
+        "https://bundle.js.org",
+        "https://github.com/okikio/bundle",
+        "https://okikio.github.io/bundle",
+        "https://bestofjs.org/projects/bundle"
+      ],
+      "description":"bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+      "logo":{
+        "name":"bundle",
+        "@type":"ImageObject",
+        "@id":"https://bundle.js.org/#logo",
+        "url":"https://bundle.js.org/favicon/favicon.svg",
+        "width":512,
+        "height":512,
+        "caption":"bundle's logo"
+      },
+      "contactPoint":[
+        {
+          "@type":"ContactPoint",
+          "url":"https://bundle.js.org",
+          "email":"mailto:hey@okikio.dev",
+          "contactType":"customer service"
+        }
+      ]
+    },
+    {
+      "@type":"WebSite",
+      "@id":"https://bundle.js.org/#website",
+      "url":"https://bundle.js.org",
+      "description":"bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+      "logo":{
+        "name":"bundle",
+        "@type":"ImageObject",
+        "@id":"https://bundle.js.org/#logo",
+        "url":"https://bundle.js.org/favicon/favicon.svg",
+        "width":512,
+        "height":512,
+        "caption":"bundle's logo"
+      },
+      "contactPoint":[
+        {
+          "@type":"ContactPoint",
+          "url":"https://bundle.js.org",
+          "email":"mailto:hey@okikio.dev",
+          "contactType":"customer service"
+        }
+      ],
+      "sameAs":[
+        "https://www.producthunt.com/posts/bundle-6",
+        "https://bundle.js.org",
+        "https://github.com/okikio/bundle",
+        "https://okikio.github.io/bundle",
+        "https://bestofjs.org/projects/bundle"
+      ],
+      "mainEntityOfPage":{
+        "@type":"WebPage",
+        "@id":"https://bundle.js.org/index.html#main",
+        "lastReviewed":"Mon August 09 2021 16:00:00 GMT-0400"
+      },
+      "about":{
+        "@id":"https://bundle.js.org/about.html"
+      },
+      "name":"bundle",
+      "publisher":{
+        "@id":"https://github.com/okikio"
+      },
+      "copyrightYear":"2021",
+      "copyrightHolder":[
+        {
+          "@id":"https://github.com/okikio"
+        }
+      ]
+    },
+    {
+      "@type":"WebPage",
+      "@id":"https://bundle.js.org/#webpage",
+      "url":"https://bundle.js.org/",
+      "description":"bundle is a quick and easy way to bundle your projects, minify and see it's gzip size, it's similar to bundlephobia but does all the work locally on you computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+      "inLanguage":"en",
+      "name":"bundle - a quick npm package size checker",
+      "isPartOf":{
+        "@id":"https://bundle.js.org/#website"
+      },
+      "about":{
+        "@id":"https://bundle.js.org/about.html"
+      }
+    }
+  ]
+}</script></body></html>
