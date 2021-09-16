@@ -114,6 +114,7 @@ coverage/
 
 # Theia
 .theia/
+docs/
 
 # Yarn
 .yarn/*
