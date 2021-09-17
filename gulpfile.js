@@ -146,7 +146,7 @@ task("js", async () => {
                 color: true,
                 format: "esm",
                 sourcemap: true,
-                splitting: true,
+                // splitting: true,
 
                 loader: {
                     '.ttf': 'file',
