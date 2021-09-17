@@ -40,13 +40,13 @@ block content
         .loading
       #editor
   .container  
-    +product-hunt.place-content-center
         
     //- p * Check the console for error messages and bundled code.
     //- p * Every 10 results the console will be cleared.
     //- br
     p * Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.
     br
+    h2#usage Usage
 
     p You can use custom protocols to specify which CDN the module should come from.
     br
@@ -80,7 +80,8 @@ block content
       a(href="https://cdn.skypack.dev" target="_blank" rel="noopener")  cdn.skypack.dev
       |  but you can use the others.
     br
-    hr
+    br
+    h4#url-queries URL Queries & Shareable Links
     br
     p
       | You can now use search queries in #[strong bundle], all you need to do is add this to the url #[br]
@@ -95,6 +96,13 @@ block content
       | If you only want a couple packages and don't care to treeshake, then all you need is something like this,
       a(href="/?q=react,react-dom,vue,@okikio/animate" rel="noopener")
         | ?q=react,react-dom,vue,@okikio/animate
+      | There is another way to share a reproduciable bundle, the sharable link. Shareble links look like this #[a(href="/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA] with the string value of the input code editor being compressed into a string and placed into the URL. 
+      br
+      br
+      | In order to create a shareble link, you click the `Share` button, it copies the share url to your clipboard, and from there you can paste where you wish. 
+    br
+    br
+    +product-hunt.place-content-center
         
 
 block script  
