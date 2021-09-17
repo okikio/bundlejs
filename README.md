@@ -50,4 +50,4 @@ All you need to do is to add this to your `README.md`
 [![Open Bundle](https://bundle.js.org/bundle-badge-dark.svg)](https://bundle.js.org/)
 ```
 
-You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when some clicks on the badge.
+You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
