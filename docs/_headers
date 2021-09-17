@@ -36,8 +36,16 @@
   Content-Type: font/ttf
 
 /js/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/javascript
+
+/js/*.min.js
   Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
   Content-Type: text/javascript
+
+/js/esbuild.wasm
+  Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
+  Content-Type: wasm
 
 /js/theme.min.js
   Cache-Control: public, max-age=31536000, immutable
