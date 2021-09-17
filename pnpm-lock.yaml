@@ -30,6 +30,7 @@ specifiers:
   gulp-postcss: ^9.0.1
   gulp-pug: ^5.0.0
   gulp-rename: ^2.0.0
+  gulp-replace: ^1.1.3
   gulp-sitemap: ^8.0.0
   gulp-size: ^4.0.1
   highlight.js: ^11.2.0
@@ -96,6 +97,7 @@ devDependencies:
   gulp-postcss: 9.0.1_postcss@8.3.6
   gulp-pug: 5.0.0
   gulp-rename: 2.0.0
+  gulp-replace: 1.1.3
   gulp-sitemap: 8.0.0
   gulp-size: 4.0.1_gulp@4.0.2
   husky: 7.0.2
@@ -627,12 +629,20 @@ packages:
       path-to-regexp: 6.2.0
     dev: false
 
+  /@types/expect/1.20.4:
+    resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
+    dev: true
+
   /@types/minimatch/3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: true
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/node/14.17.17:
+    resolution: {integrity: sha512-niAjcewgEYvSPCZm3OaM9y6YQrL2SEPH9PymtE6fuZAvFiP6ereCcvApGl2jKTq7copTIguX3PBvfP08LN4LvQ==}
     dev: true
 
   /@types/node/16.9.2:
@@ -645,6 +655,13 @@ packages:
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+    dev: true
+
+  /@types/vinyl/2.0.6:
+    resolution: {integrity: sha512-ayJ0iOCDNHnKpKTgBG6Q6JOnHTj9zFta+3j2b8Ejza0e4cvRyMn0ZoLEmbPrTHe5YYRlDYPvPWVdV4cTaRyH7g==}
+    dependencies:
+      '@types/expect': 1.20.4
+      '@types/node': 16.9.2
     dev: true
 
   /Base64/0.2.1:
@@ -1126,6 +1143,11 @@ packages:
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
+    dev: true
+
+  /binaryextensions/2.3.0:
+    resolution: {integrity: sha512-nAihlQsYGyc5Bwq6+EsubvANYGExeJKHDO3RjnvwU042fawQTQfM3Kxn7IHUXQOz4bzfwsGYYHGSvXyW4zOGLg==}
+    engines: {node: '>=0.8'}
     dev: true
 
   /bindings/1.5.0:
@@ -3313,6 +3335,17 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /gulp-replace/1.1.3:
+    resolution: {integrity: sha512-HcPHpWY4XdF8zxYkDODHnG2+7a3nD/Y8Mfu3aBgMiCFDW3X2GiOKXllsAmILcxe3KZT2BXoN18WrpEFm48KfLQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      '@types/node': 14.17.17
+      '@types/vinyl': 2.0.6
+      istextorbinary: 3.3.0
+      replacestream: 4.0.3
+      yargs-parser: 20.2.9
+    dev: true
+
   /gulp-sitemap/8.0.0:
     resolution: {integrity: sha512-rXvje8NxCAXxis1aqwUEhDU8iWnLcda2Ky/Cn4g2iWjWzaKahZ6lXbVy+HzjtfMslmVY9ownKVFe4ADTINM+Jw==}
     engines: {node: '>=10'}
@@ -4068,6 +4101,14 @@ packages:
   /isobject/3.0.1:
     resolution: {integrity: sha1-TkMekrEalzFjaqH5yNHMvP2reN8=}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /istextorbinary/3.3.0:
+    resolution: {integrity: sha512-Tvq1W6NAcZeJ8op+Hq7tdZ434rqnMx4CCZ7H0ff83uEloDvVbqAwaMTZcafKGJT0VHkYzuXUiCY4hlXQg6WfoQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      binaryextensions: 2.3.0
+      textextensions: 3.3.0
     dev: true
 
   /js-stringify/1.0.2:
@@ -5630,6 +5671,14 @@ packages:
       remove-trailing-separator: 1.1.0
     dev: true
 
+  /replacestream/4.0.3:
+    resolution: {integrity: sha512-AC0FiLS352pBBiZhd4VXB1Ab/lh0lEgpP+GGvZqbQh8a5cmXVoTe5EX/YeTFArnp4SRGTHh1qCHu9lGs1qG8sA==}
+    dependencies:
+      escape-string-regexp: 1.0.5
+      object-assign: 4.1.1
+      readable-stream: 2.3.7
+    dev: true
+
   /require-directory/2.1.1:
     resolution: {integrity: sha1-jGStX9MNqxyXbiNE/+f3kqam30I=}
     engines: {node: '>=0.10.0'}
@@ -6414,6 +6463,11 @@ packages:
   /text-extensions/1.9.0:
     resolution: {integrity: sha512-wiBrwC1EhBelW12Zy26JeOUkQ5mRu+5o8rpsJk5+2t+Y5vE7e842qtZDQ2g1NpX/29HdyFeJ4nSIhI47ENSxlQ==}
     engines: {node: '>=0.10'}
+    dev: true
+
+  /textextensions/3.3.0:
+    resolution: {integrity: sha512-mk82dS8eRABNbeVJrEiN5/UMSCliINAuz8mkUwH4SwslkNP//gbEzlWNS5au0z5Dpx40SQxzqZevZkn+WYJ9Dw==}
+    engines: {node: '>=8'}
     dev: true
 
   /tfunk/4.0.0:

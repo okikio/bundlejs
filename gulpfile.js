@@ -2,7 +2,7 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream, parallelFn } from "./util.js";
+import { watch, task, series, parallel, stream, streamList, parallelFn } from "./util.js";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
@@ -114,7 +114,10 @@ task("js", async () => {
 
         { WEB_WORKER },
         { solidPlugin: solid },
-        { default: rename }
+        { default: rename },
+
+        { default: replace },
+        { basename }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -122,16 +125,21 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
-        import("gulp-rename")
+        import("gulp-rename"),
+
+        import("gulp-replace"),
+        import("path")
     ]);
 
     const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
-    return stream([
-        `${tsFolder}/*.ts`,
-        `${tsFolder}/scripts/*`,
-        `!${tsFolder}/**/*.d.ts`,
-        `node_modules/esbuild-wasm/esbuild.wasm`
-    ], {
+    let monacoFilename;
+    await stream(
+        [
+            `${tsFolder}/*.ts`,
+            `${tsFolder}/scripts/*`,
+            `!${tsFolder}/**/*.d.ts`,
+            `node_modules/esbuild-wasm/esbuild.wasm`
+        ], {
         pipes: [
             // Bundle Modules
             esbuild({
@@ -146,7 +154,7 @@ task("js", async () => {
                 color: true,
                 format: "esm",
                 sourcemap: true,
-                // splitting: true,
+                splitting: true,
 
                 loader: {
                     '.ttf': 'file',
@@ -171,7 +179,23 @@ task("js", async () => {
             gulpif(
                 (file) => /monaco(.*)\.css$/.test(file.path),
                 rename("monaco.min.css")
+            ),
+
+            gulpif(
+                (file) => {
+                    let test = /monaco-(.*)\.js$/.test(file.path);
+                    if (test) monacoFilename = basename(file.path);
+                    return test;
+                },
+                rename("monaco.min.js")
             )
+        ],
+        dest: jsFolder, // Output
+    });
+
+    return stream([`${jsFolder}/**/*.js`], {
+        pipes: [
+            replace(new RegExp(monacoFilename, "g"), "monaco.min.js"),
         ],
         dest: jsFolder, // Output
     });
