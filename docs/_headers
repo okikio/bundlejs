@@ -20,8 +20,10 @@
   Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: </js/monaco.min.css>; rel=preload; as=style
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
-  Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/index.min.js>; rel=modulepreload
+  Link: </js/editor.worker.js>; rel=prefetch
+  Link: </js/typescript.worker.js>; rel=prefetch
+  Link: </js/esbuild.worker.js>; rel=prefetch
 
 /**/*.css
   Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
