@@ -23,16 +23,15 @@
   Link: </js/theme.min.js>; rel=modulepreload
   Link: </js/critical.min.js>; rel=modulepreload
   Link: <https://cdn.polyfill.io>; rel=preconnect; crossorigin
-  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: </js/monaco.min.css>; rel=preload; as=style
+  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
-  Link: </js/load-webanimation-polyfill.min.js>; rel=modulepreload
-  Link: </js/monaco.min.js>; rel=modulepreload
   Link: </js/index.min.js>; rel=modulepreload
-  Link: </js/esbuild.wasm>; rel=prefetch
-  Link: </js/esbuild.worker.js>; rel=prefetch
+  Link: </js/monaco.min.js>; rel=modulepreload
   Link: </js/editor.worker.js>; rel=prefetch
   Link: </js/typescript.worker.js>; rel=prefetch
+  Link: </js/esbuild.worker.js>; rel=prefetch
+  Link: </js/esbuild.wasm>; rel=prefetch
 
 /**/*.css
   Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
