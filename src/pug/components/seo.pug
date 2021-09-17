@@ -10,10 +10,10 @@ mixin seo(page)
 
   meta(name="contact" content="hey@okikio.dev")
 
-  meta(property='image' content='/favicon/android-chrome-512x512.png')
-  meta(property='og:image' content='/favicon/android-chrome-512x512.png')
+  meta(property='image' content=`${websiteURL}/favicon/android-chrome-512x512.png`)
+  meta(property='og:image' content=`${websiteURL}/favicon/android-chrome-512x512.png`)
   
-  meta(name="twitter:image" content=`/favicon/android-chrome-512x512.png`)
+  meta(name="twitter:image" content=`${websiteURL}/favicon/android-chrome-512x512.png`)
   meta(property="twitter:image:alt" content="An image of bundle's logo.")
   
   meta(name='twitter:url' content=`${websiteURL}${url}`)
