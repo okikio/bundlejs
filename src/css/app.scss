@@ -100,6 +100,8 @@ a {
 main {
     .container {
         @apply px-5 py-2 sm:max-w-screen-md;
+        
+        word-wrap: break-word;
     }
 
     strong {
@@ -133,6 +135,10 @@ main {
 
     h2 {
         @apply text-5xl font-bold mb-8;
+    }
+
+    h2#usage {
+        @apply text-4xl font-bold my-8;
     }
 
     h4 {
