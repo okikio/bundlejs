@@ -8,7 +8,7 @@ specifiers:
   '@okikio/animate': ^2.4.0
   '@okikio/emitter': ^2.1.7
   '@okikio/native': ^3.0.1
-  '@types/node': ^16.9.1
+  '@types/node': ^16.9.2
   assert: ^2.0.0
   autoprefixer: ^10.3.4
   browser-builtins: ^3.3.1
@@ -45,7 +45,7 @@ specifiers:
   pretty-bytes: ^5.6.0
   rollup: ^2.56.3
   rollup-plugin-virtual-fs: ^4.0.1-alpha.0
-  sass: ^1.41.0
+  sass: ^1.41.1
   solid-js: ^1.1.4
   standard-version: ^9.3.1
   stream: ^0.0.2
@@ -80,7 +80,7 @@ devDependencies:
   '@commitlint/cli': 13.1.0
   '@commitlint/config-conventional': 13.1.0
   '@csstools/postcss-sass': 4.0.0
-  '@types/node': 16.9.1
+  '@types/node': 16.9.2
   autoprefixer: 10.3.4_postcss@8.3.6
   browser-sync: 2.27.5
   commitizen: 4.2.4
@@ -104,7 +104,7 @@ devDependencies:
   postcss-csso: 5.0.1_postcss@8.3.6
   postcss-scss: 4.0.0_postcss@8.3.6
   rollup: 2.56.3
-  sass: 1.41.0
+  sass: 1.41.1
   standard-version: 9.3.1
   tailwindcss: 2.2.15_4dc2d3db2b138fb8fa7d5c7b0c803aba
 
@@ -549,7 +549,7 @@ packages:
     dependencies:
       '@csstools/sass-import-resolve': 1.0.0
       postcss: 7.0.36
-      sass: 1.41.0
+      sass: 1.41.1
       source-map: 0.7.3
     dev: true
 
@@ -635,8 +635,8 @@ packages:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: true
 
-  /@types/node/16.9.1:
-    resolution: {integrity: sha512-QpLcX9ZSsq3YYUUnD3nFDY8H7wctAhQj/TFKL8Ya8v5fMm3CFXxo8zStsLAl780ltoYoo1WvKUVGBQK+1ifr7g==}
+  /@types/node/16.9.2:
+    resolution: {integrity: sha512-ZHty/hKoOLZvSz6BtP1g7tc7nUeJhoCf3flLjh8ZEv1vFKBWHXcnMbJMyN/pftSljNyy0kNW/UqI3DccnBnZ8w==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -1316,7 +1316,7 @@ packages:
     dependencies:
       caniuse-lite: 1.0.30001257
       colorette: 1.4.0
-      electron-to-chromium: 1.3.840
+      electron-to-chromium: 1.3.841
       escalade: 3.1.1
       node-releases: 1.1.75
     dev: true
@@ -2371,8 +2371,8 @@ packages:
     resolution: {integrity: sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=}
     dev: true
 
-  /electron-to-chromium/1.3.840:
-    resolution: {integrity: sha512-yRoUmTLDJnkIJx23xLY7GbSvnmDCq++NSuxHDQ0jiyDJ9YZBUGJcrdUqm+ZwZFzMbCciVzfem2N2AWiHJcWlbw==}
+  /electron-to-chromium/1.3.841:
+    resolution: {integrity: sha512-0w3dJaRfl4A+LfbdvZaGT3JPm6TbTYKeJj8y5YWaEI9Z4WBNIshlzxL3S1msMGpuhiMZQE9cfgAV8oMib+Z4Tg==}
     dev: true
 
   /elliptic/3.1.0:
@@ -5797,8 +5797,8 @@ packages:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
     dev: true
 
-  /sass/1.41.0:
-    resolution: {integrity: sha512-wb8nT60cjo9ZZMcHzG7TzdbFtCAmHEKWrH+zAdScPb4ZxL64WQBnGdbp5nwlenW5wJPcHva1JWmVa0h6iqA5eg==}
+  /sass/1.41.1:
+    resolution: {integrity: sha512-vIjX7izRxw3Wsiez7SX7D+j76v7tenfO18P59nonjr/nzCkZuoHuF7I/Fo0ZRZPKr88v29ivIdE9BqGDgQD/Nw==}
     engines: {node: '>=8.9.0'}
     hasBin: true
     dependencies:
