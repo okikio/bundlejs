@@ -1,15 +1,17 @@
 .flex-wrapper {
-    @apply gap-3 w-full relative pb-2 mb-8 container max-w-screen-xl;
-    display: grid;
-    grid-template-columns: auto;
-    grid-auto-flow: column;
-    grid-auto-rows: 1fr;
-    min-height: 400px - 56px;
+    @apply w-full relative px-3 pb-6 mb-8 container max-w-screen-xl;
+    @apply grid gap-3 sm:grid-flow-col sm:grid-rows-1 lt-sm:grid-flow-row ;
+    // grid-template-columns: auto;
+    min-height: (300px - 56px) * 2;
     resize: vertical;
     overflow: hidden;
 
-    @screen lt-md {
+    @screen sm {
         min-height: 350px - 56px;
+    }
+
+    @screen md {
+        min-height: 400px - 56px;
     }
 }
 
@@ -20,14 +22,18 @@
     padding-top: 15px;
     padding-bottom: 15px;
     height: 100%;
-
+    
     resize: horizontal;
+
+    @screen lt-sm {
+        resize: vertical;
+    }
     overflow: hidden;
 }
 
 .app#output {
-    // resize: vertical;
-    // height: 100%;
+    resize: none;
+    height: 100%;
 }
 
 .push-to-side {
