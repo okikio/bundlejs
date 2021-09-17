@@ -39,15 +39,15 @@ In order to create a shareble link, you click the `Share` button, it copies the 
 
 You can also add bundle badges, they look like this,
 
-[![Open Bundle](./src/assets/bundle-badge-light.svg)](https://bundle.js.org/) [![Open Bundle](./src/assets/bundle-badge-dark.svg)](https://bundle.js.org/)
+[![Open Bundle](./src/assets/badge-light.svg)](https://bundle.js.org/) [![Open Bundle](./src/assets/badge-dark.svg)](https://bundle.js.org/)
 
 All you need to do is to add this to your `README.md`
 ```md
 # Light Mode Badge 
-[![Open Bundle](https://bundle.js.org/bundle-badge-light.svg)](https://bundle.js.org/)
+[![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/)
 
 # Dark Mode Badge 
-[![Open Bundle](https://bundle.js.org/bundle-badge-dark.svg)](https://bundle.js.org/)
+[![Open Bundle](https://bundle.js.org/badge-dark.svg)](https://bundle.js.org/)
 ```
 
 You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
