@@ -1,10 +1,23 @@
 mixin seo(page)
   - let { title, url, description, websiteURL, keywords } = page;
+
   meta(name="og:locale" content="en_Us")
   meta(property="og:type" content="website")
   meta(name="keywords", content=keywords)
 
+  meta(property="article:author" content="Okiki Ojo")
+  meta(property="og:site_name" content=websiteURL.replace("https://", ""))
+
+  meta(name="contact" content="hey@okikio.dev")
+
+  meta(property='image' content='/favicon/android-chrome-512x512.png')
   meta(property='og:image' content='/favicon/android-chrome-512x512.png')
+  
+  meta(name="twitter:image" content=`/favicon/android-chrome-512x512.png`)
+  meta(property="twitter:image:alt" content="An image of bundle's logo.")
+  
+  meta(name='twitter:url' content=`${websiteURL}${url}`)
+  meta(name="twitter:site", content="@okikio_dev")
 
   block title
     title= title
@@ -20,9 +33,10 @@ mixin seo(page)
   meta(itemprop='url' content=`${websiteURL}${url}`)
   meta(name="shortlink" content=`${websiteURL}${url}`)
   meta(property='og:url' content=`${websiteURL}${url}`)
-  meta(name='twitter:url' content=`${websiteURL}${url}`)
 
   meta(name='description' content=description)
   meta(property='og:description' content=description)
   meta(property='twitter:description' content=description)
   meta(itemprop='description' content=description)
+
+  meta(name="web-author" content="Okiki Ojo")
