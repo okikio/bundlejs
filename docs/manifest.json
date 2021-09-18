@@ -56,10 +56,16 @@
   ],
   "share_target": {
     "action": "/",
-    "method": "GET",
-    "enctype": "application/x-www-form-urlencoded",
+    "method": "POST",
+    "enctype": "multipart/form-data",
     "params": {
-      "text": "text"
+      "text": "text",
+      "files": [
+        {
+          "name": "js",
+          "accept": ["text/javascript", "application/javascript", ".js", ".ts"]
+        }
+      ]
     }
   },
   "orientation": "any",
