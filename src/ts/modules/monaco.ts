@@ -94,6 +94,9 @@ export const parseTreeshakeExports = (str: string) => (str ?? "").split(/\],/).m
 export const parseSearchQuery = () => {
     try {
         const searchParams = (new URL(String(document.location))).searchParams;
+        let plaintext = searchParams.get("text");
+        if (plaintext) return plaintext;
+
         let share = searchParams.get("share");
         if (share) return decompressFromURL(share);
 

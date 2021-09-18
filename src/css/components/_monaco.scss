@@ -59,8 +59,12 @@
 }
 
 .push-to-side {
-    @apply flex align-middle py-2 justify-end flex-1;
+    @apply flex align-middle py-2 justify-end flex-1 gap-2;
     flex-wrap: nowrap;
+
+    .btn {
+        margin: 0;
+    }
 }
 
 .push-to-side-overflow {
@@ -70,7 +74,7 @@
 }
 
 .file-size {
-    @apply inline-block px-4 py-2 rounded-md mx-2;
+    @apply inline-block px-4 py-2 rounded-md;
     @apply text-center flex justify-center items-center;
     @apply bg-gray-200 dark:bg-quaternary;
     @apply text-gray-500 dark:text-secondary;

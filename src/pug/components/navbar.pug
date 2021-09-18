@@ -17,6 +17,8 @@ mixin navbar
         a.navbar-logo(href='./') bundle
         .mobile
           a.btn.btn-highlight(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") GitHub
+          //- button.intall-btn(type='button')
+            span.icon get_app
           button.theme-toggle(type='button')
             span.icon dark_mode
           button.navbar-toggle(type='button')
@@ -27,5 +29,7 @@ mixin navbar
           .navbar-collapse
             +nav-list
               a.btn.btn-highlight(href="https://github.com/okikio/bundle" target="_blank" rel="noopener") GitHub
+              //- button.intall-btn(type='button')
+                span.icon get_app
               button.theme-toggle(type='button')
                 span.icon dark_mode
