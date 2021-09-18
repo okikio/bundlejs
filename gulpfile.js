@@ -193,6 +193,11 @@ task("js", async () => {
                     return test;
                 },
                 rename("monaco.min.js")
+            ),
+            
+            gulpif(
+                (file) => /monaco-(.*)\.js\.map$/.test(file.path),
+                rename("monaco.min.js.map")
             )
         ],
         dest: jsFolder, // Output

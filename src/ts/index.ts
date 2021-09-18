@@ -45,10 +45,11 @@ let initialized = false;
 let bundleFromUrl = () => {
     if (location.search && initialized) {
         const searchParams = (new URL(String(document.location))).searchParams;
+        let plaintext = searchParams.get("text");
         let query = searchParams.get("query") || searchParams.get("q");
         let share = searchParams.get("share");
         let bundle = searchParams.get("bundle");
-        if (query || share || bundle) {
+        if (query || share || bundle || plaintext) {
             fileSizeEl.textContent = `Wait...`;
             BundleEvents.emit("bundle");
         }
@@ -115,7 +116,7 @@ let output: Editor.IStandaloneCodeEditor;
     ResultEvents
         .on("add-module", (v) => {
             value = `` + editor?.getValue();
-            editor.setValue(value + v + "\n");
+            editor.setValue(value + "\n" + v);
         });
 
     // bundles using esbuild and returns the result
