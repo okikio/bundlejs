@@ -15,6 +15,25 @@ import { hit } from "countapi-js";
     }
 })();
 
+const offlineIcon = document.querySelector(".offline-icon");
+const hasNetwork = (online: boolean) => {
+    offlineIcon?.classList?.toggle("online", online);
+}
+
+window.addEventListener("load", () => {
+    hasNetwork(navigator.onLine);
+  
+    window.addEventListener("online", () => {
+      // Set hasNetwork to online when they change to online.
+      hasNetwork(true);
+    });
+  
+    window.addEventListener("offline", () => {
+      // Set hasNetwork to offline when they change to offline.
+      hasNetwork(false);
+    });
+  });
+
 // navbar focus on scroll effect
 let canScroll = true;
 const navbar = document.querySelector(".navbar") as HTMLElement;
@@ -55,3 +74,11 @@ try {
 } catch (err) {
     console.warn("[App] boot failed,", err);
 }
+
+// Check that service workers are supported
+if ('serviceWorker' in navigator) {
+    // Use the window load event to keep the page load performant
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+  }

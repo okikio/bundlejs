@@ -117,7 +117,9 @@ task("js", async () => {
         { default: rename },
 
         { default: replace },
-        { basename }
+        { basename },
+
+        { generateSW }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -128,11 +130,14 @@ task("js", async () => {
         import("gulp-rename"),
 
         import("gulp-replace"),
-        import("path")
+        import("path"),
+
+        import("workbox-build")
     ]);
 
-    const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
     let monacoFilename;
+    const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
+
     await stream(
         [
             `${tsFolder}/*.ts`,
@@ -200,6 +205,44 @@ task("js", async () => {
         dest: jsFolder, // Output
     });
 });
+
+// Service Worker
+task("service-worker", async () => {
+    const { generateSW } = await import("workbox-build");
+
+    return generateSW({
+        globDirectory: destFolder,
+        globPatterns: [
+            '**/*.{html,json,js,css}',
+            '**/*.{ttf,wasm,svg,map}',
+        ],
+        swDest: `${destFolder}/sw.js`,
+
+        // navigationPreload: true,
+        ignoreURLParametersMatching: [/.*/],
+        skipWaiting: true,
+        cleanupOutdatedCaches: true,
+        inlineWorkboxRuntime: true,
+
+        // Define runtime caching rules.
+        runtimeCaching: [{
+            // Match any request that ends with .png, .jpg, .jpeg or .svg.
+            urlPattern: /\.(?:png|jpg|jpeg|webp|woff2)$/,
+
+            // Apply a cache-first strategy.
+            handler: 'StaleWhileRevalidate',
+            method: "GET",
+
+            options: {
+                // Use a custom cache name.
+                cacheName: 'assets',
+                cacheableResponse: {
+                    statuses: [200]
+                },
+            },
+        }],
+    })
+})
 
 // Other assets
 task("assets", () => {
@@ -290,7 +333,8 @@ task("watch", async () => {
     ], { delay: 350 }, series("js", "reload"));
 
     watch([`${assetsFolder}/**/*`], { delay: 250 }, series("assets", "reload"));
+    watch([`${srcFolder}/js/*`], { delay: 1000 }, series("service-worker", "reload"))
 });
 
-task("build", series("clean", parallel("html", "css", "assets", "js"), parallelFn("minify-css", "sitemap")));
-task("default", series("clean", parallel("html", "css", "assets", "js"), "watch"));
+task("build", series("clean", parallel("html", "css", "assets", "js"), parallelFn("minify-css", "service-worker", "sitemap")));
+task("default", series("clean", parallel("html", "css", "assets", "js"), "service-worker", "watch"));

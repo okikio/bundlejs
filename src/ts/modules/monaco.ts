@@ -125,6 +125,8 @@ export const debounce = (func: Function, timeout = 300) => {
 export const build = () => {
     let inputEl = document.querySelector(".app #editor") as HTMLElement;
     let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
+    inputEl.textContent = "";
+    outputEl.textContent = "";
 
     let inputEditor: Editor.IStandaloneCodeEditor;
     let outputEditor: Editor.IStandaloneCodeEditor;

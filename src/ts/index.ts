@@ -62,7 +62,7 @@ let output: Editor.IStandaloneCodeEditor;
     let Fade = animate({
         target: loadingContainerEl,
         opacity: [1, 0],
-        delay: 1000,
+        delay: 1200,
         easing: "ease-in",
         duration: 500,
         autoplay: false
