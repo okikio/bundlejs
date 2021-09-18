@@ -194,7 +194,7 @@ task("js", async () => {
                 },
                 rename("monaco.min.js")
             ),
-            
+
             gulpif(
                 (file) => /monaco-(.*)\.js\.map$/.test(file.path),
                 rename("monaco.min.js.map")
@@ -218,8 +218,8 @@ task("service-worker", async () => {
     return generateSW({
         globDirectory: destFolder,
         globPatterns: [
-            '**/*.{html,json,js,css}',
-            '**/*.{ttf,wasm,svg,map}',
+            '**/*.{html,js,css}',
+            '**/*.{ttf,svg}',
         ],
         swDest: `${destFolder}/sw.js`,
 
@@ -230,22 +230,28 @@ task("service-worker", async () => {
         inlineWorkboxRuntime: true,
 
         // Define runtime caching rules.
-        runtimeCaching: [{
-            // Match any request that ends with .png, .jpg, .jpeg or .svg.
-            urlPattern: /\.(?:png|jpg|jpeg|webp|woff2)$/,
+        runtimeCaching: [
+            // {
+            //     handler: "StaleWhileRevalidate",
+            //     urlPattern: /.*/,
+            //     method: "GET"
+            // },
+            {
+                // Match any request that ends with .png, .jpg, .jpeg or .svg.
+                urlPattern: /\.(?:png|jpg|jpeg|webp|woff2|map|wasm|json)$/,
 
-            // Apply a cache-first strategy.
-            handler: 'StaleWhileRevalidate',
-            method: "GET",
+                // Apply a cache-first strategy.
+                handler: 'StaleWhileRevalidate',
+                method: "GET",
 
-            options: {
-                // Use a custom cache name.
-                cacheName: 'assets',
-                cacheableResponse: {
-                    statuses: [200]
-                },
-            },
-        }],
+                // options: {
+                //     // Use a custom cache name.
+                //     cacheName: 'assets',
+                //     cacheableResponse: {
+                //         statuses: [200]
+                //     },
+                // },
+            }],
     })
 })
 
