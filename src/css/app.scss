@@ -11,6 +11,7 @@
 html,
 body {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable both-edges;
 }
 
 html {
@@ -239,6 +240,23 @@ footer.footer {
     @apply dark:text-blue-400 dark:bg-quaternary;
     @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
     @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
+}
+
+.opacity-0 {
+    opacity: 0
+}
+
+.offline-icon {
+    @apply px-3 py-2 rounded-md;
+    @apply flex items-center justify-center bg-blue-600 text-black;
+    &.online {
+        display: none;
+    }
+    svg {
+        vertical-align: middle;
+        fill: currentColor;
+        width: 1em;
+    }
 }
 
 .btn,
