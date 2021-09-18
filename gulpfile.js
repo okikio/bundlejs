@@ -238,7 +238,7 @@ task("service-worker", async () => {
             // },
             {
                 // Match any request that ends with .png, .jpg, .jpeg or .svg.
-                urlPattern: /\.(?:png|jpg|jpeg|webp|woff2|map|wasm|json)$/,
+                urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json)$/,
 
                 // Apply a cache-first strategy.
                 handler: 'StaleWhileRevalidate',
