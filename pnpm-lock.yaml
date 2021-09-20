@@ -8,7 +8,7 @@ specifiers:
   '@okikio/animate': ^2.4.0
   '@okikio/emitter': ^2.1.7
   '@okikio/native': ^3.0.1
-  '@types/node': ^16.9.2
+  '@types/node': ^16.9.4
   assert: ^2.0.0
   autoprefixer: ^10.3.4
   browser-builtins: ^3.3.1
@@ -36,13 +36,14 @@ specifiers:
   highlight.js: ^11.2.0
   husky: ^7.0.2
   jstransformer-markdown-it: ^2.1.0
-  memfs: ^3.2.4
+  memfs: ^3.3.0
   monaco-editor: ^0.27.0
   pako: ^2.0.4
   path: ^0.12.7
   postcss: ^8.3.6
   postcss-csso: ^5.0.1
   postcss-scss: ^4.0.0
+  prettier: ^2.4.1
   pretty-bytes: ^5.6.0
   rollup: ^2.56.3
   rollup-plugin-virtual-fs: ^4.0.1-alpha.0
@@ -54,6 +55,7 @@ specifiers:
   typescript: ^4.4.3
   web-animations-js: ^2.3.2
   workbox-build: ^6.3.0
+  workbox-window: ^6.3.0
 
 dependencies:
   '@amoutonbrady/lz-string': 0.0.1
@@ -67,22 +69,24 @@ dependencies:
   esbuild-wasm: 0.12.28
   events: 3.3.0
   highlight.js: 11.2.0
-  memfs: 3.2.4
+  memfs: 3.3.0
   monaco-editor: 0.27.0
   pako: 2.0.4
   path: 0.12.7
+  prettier: 2.4.1
   pretty-bytes: 5.6.0
   rollup-plugin-virtual-fs: 4.0.1-alpha.0
   solid-js: 1.1.4
   stream: 0.0.2
   typescript: 4.4.3
   web-animations-js: 2.3.2
+  workbox-window: 6.3.0
 
 devDependencies:
   '@commitlint/cli': 13.1.0
   '@commitlint/config-conventional': 13.1.0
   '@csstools/postcss-sass': 4.0.0
-  '@types/node': 16.9.2
+  '@types/node': 16.9.4
   autoprefixer: 10.3.4_postcss@8.3.6
   browser-sync: 2.27.5
   commitizen: 4.2.4
@@ -1206,7 +1210,7 @@ packages:
       babel-plugin-polyfill-corejs2: 0.2.2_@babel+core@7.15.5
       babel-plugin-polyfill-corejs3: 0.2.4_@babel+core@7.15.5
       babel-plugin-polyfill-regenerator: 0.2.2_@babel+core@7.15.5
-      core-js-compat: 3.17.3
+      core-js-compat: 3.18.0
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -1584,8 +1588,8 @@ packages:
     resolution: {integrity: sha512-niAjcewgEYvSPCZm3OaM9y6YQrL2SEPH9PymtE6fuZAvFiP6ereCcvApGl2jKTq7copTIguX3PBvfP08LN4LvQ==}
     dev: true
 
-  /@types/node/16.9.2:
-    resolution: {integrity: sha512-ZHty/hKoOLZvSz6BtP1g7tc7nUeJhoCf3flLjh8ZEv1vFKBWHXcnMbJMyN/pftSljNyy0kNW/UqI3DccnBnZ8w==}
+  /@types/node/16.9.4:
+    resolution: {integrity: sha512-KDazLNYAGIuJugdbULwFZULF9qQ13yNWEBFnfVpqlpgAAo6H/qnM9RjBgh0A0kmHf3XxAKLdN5mTIng9iUvVLA==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -1599,18 +1603,17 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 16.9.2
+      '@types/node': 16.9.4
     dev: true
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
-    dev: true
 
   /@types/vinyl/2.0.6:
     resolution: {integrity: sha512-ayJ0iOCDNHnKpKTgBG6Q6JOnHTj9zFta+3j2b8Ejza0e4cvRyMn0ZoLEmbPrTHe5YYRlDYPvPWVdV4cTaRyH7g==}
     dependencies:
       '@types/expect': 1.20.4
-      '@types/node': 16.9.2
+      '@types/node': 16.9.4
     dev: true
 
   /Base64/0.2.1:
@@ -2006,10 +2009,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: false
 
-  /axios/0.21.1_debug@4.3.1:
-    resolution: {integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==}
+  /axios/0.21.4_debug@4.3.2:
+    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.14.4_debug@4.3.1
+      follow-redirects: 1.14.4_debug@4.3.2
     transitivePeerDependencies:
       - debug
     dev: true
@@ -2050,7 +2053,7 @@ packages:
     dependencies:
       '@babel/core': 7.15.5
       '@babel/helper-define-polyfill-provider': 0.2.3_@babel+core@7.15.5
-      core-js-compat: 3.17.3
+      core-js-compat: 3.18.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2284,7 +2287,7 @@ packages:
       fs-extra: 3.0.1
       http-proxy: 1.18.1
       immutable: 3.8.2
-      localtunnel: 2.0.1
+      localtunnel: 2.0.2
       micromatch: 4.0.4
       opn: 5.3.0
       portscanner: 2.1.1
@@ -2436,7 +2439,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       camelcase: 5.3.1
-      map-obj: 4.2.1
+      map-obj: 4.3.0
       quick-lru: 4.0.1
     dev: true
 
@@ -2986,8 +2989,8 @@ packages:
       is-plain-object: 5.0.0
     dev: true
 
-  /core-js-compat/3.17.3:
-    resolution: {integrity: sha512-+in61CKYs4hQERiADCJsdgewpdl/X0GhEX77pjKgbeibXviIt2oxEjTc8O2fqHX8mDdBrDvX8MYD/RYsBv4OiA==}
+  /core-js-compat/3.18.0:
+    resolution: {integrity: sha512-tRVjOJu4PxdXjRMEgbP7lqWy1TWJu9a01oBkn8d+dNrhgmBwdTkzhHZpVJnEmhISLdoJI1lX08rcBcHi3TZIWg==}
     dependencies:
       browserslist: 4.17.0
       semver: 7.0.0
@@ -3157,18 +3160,6 @@ packages:
     deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
     dependencies:
       ms: 2.1.3
-    dev: true
-
-  /debug/4.3.1:
-    resolution: {integrity: sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.2
     dev: true
 
   /debug/4.3.2:
@@ -3951,7 +3942,7 @@ packages:
       readable-stream: 2.3.7
     dev: true
 
-  /follow-redirects/1.14.4_debug@4.3.1:
+  /follow-redirects/1.14.4_debug@4.3.2:
     resolution: {integrity: sha512-zwGkiSXC1MUJG/qmeIFH2HBJx9u0V46QGUe3YR1fXG8bXQxq7fLj0RjLZQ5nubr9qNJUZrH+xUcwXEoXNpfS+g==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -3960,7 +3951,7 @@ packages:
       debug:
         optional: true
     dependencies:
-      debug: 4.3.1
+      debug: 4.3.2
     dev: true
 
   /for-in/1.0.2:
@@ -4659,7 +4650,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.14.4_debug@4.3.1
+      follow-redirects: 1.14.4_debug@4.3.2
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -5202,7 +5193,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 16.9.2
+      '@types/node': 16.9.4
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
@@ -5427,15 +5418,15 @@ packages:
       strip-bom: 3.0.0
     dev: true
 
-  /localtunnel/2.0.1:
-    resolution: {integrity: sha512-LiaI5wZdz0xFkIQpXbNI62ZnNn8IMsVhwxHmhA+h4vj8R9JG/07bQHWwQlyy7b95/5fVOCHJfIHv+a5XnkvaJA==}
+  /localtunnel/2.0.2:
+    resolution: {integrity: sha512-n418Cn5ynvJd7m/N1d9WVJISLJF/ellZnfsLnx8WBWGzxv/ntNcFkJ1o6se5quUhCplfLGBNL5tYHiq5WF3Nug==}
     engines: {node: '>=8.3.0'}
     hasBin: true
     dependencies:
-      axios: 0.21.1_debug@4.3.1
-      debug: 4.3.1
+      axios: 0.21.4_debug@4.3.2
+      debug: 4.3.2
       openurl: 1.1.1
-      yargs: 16.2.0
+      yargs: 17.1.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5540,8 +5531,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /map-obj/4.2.1:
-    resolution: {integrity: sha512-+WA2/1sPmDj1dlvvJmB5G6JKfY9dpn7EVBUL06+y6PoljPkh+6V1QihwxNkbcGxCRjt2b0F9K0taiCuo7MbdFQ==}
+  /map-obj/4.3.0:
+    resolution: {integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==}
     engines: {node: '>=8'}
     dev: true
 
@@ -5589,8 +5580,8 @@ packages:
     resolution: {integrity: sha1-/oWy7HWlkDfyrf7BAP1sYBdhFS4=}
     dev: true
 
-  /memfs/3.2.4:
-    resolution: {integrity: sha512-2mDCPhuduRPOxlfgsXF9V+uqC6Jgz8zt/bNe4d4W7d5f6pCzHrWkxLNr17jKGXd4+j2kQNsAG2HARPnt74sqVQ==}
+  /memfs/3.3.0:
+    resolution: {integrity: sha512-BEE62uMfKOavX3iG7GYX43QJ+hAeeWnwIAuJ/R6q96jaMtiLzhsxHJC8B1L7fK7Pt/vXDRwb3SG/yBpNGDPqzg==}
     engines: {node: '>= 4.0.0'}
     dependencies:
       fs-monkey: 1.0.3
@@ -6430,6 +6421,12 @@ packages:
       nanoid: 3.1.25
       source-map-js: 0.6.2
     dev: true
+
+  /prettier/2.4.1:
+    resolution: {integrity: sha512-9fbDAXSBcc6Bs1mZrDYb3XKzDLm4EXXL9sC1LqKP5rZkT6KRr/rf9amVUcODVXgguK/isJz0d0hP72WeaKWsvA==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: false
 
   /pretty-bytes/5.6.0:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
@@ -8336,7 +8333,6 @@ packages:
 
   /workbox-core/6.3.0:
     resolution: {integrity: sha512-SufToEV3SOLwwz3j+P4pgkfpzLRUlR17sX3p/LrMHP/brYKvJQqjTwtSvaCkkAX0RPHX2TFHmN8xhPP1bpmomg==}
-    dev: true
 
   /workbox-expiration/6.3.0:
     resolution: {integrity: sha512-teYuYfM3HFbwAD/nlZDw/dCMOrCKjsAiMRhz0uOy9IkfBb7vBynO3xf118lY62X6BfqjZdeahiHh10N0/aYICg==}
@@ -8413,7 +8409,6 @@ packages:
     dependencies:
       '@types/trusted-types': 2.0.2
       workbox-core: 6.3.0
-    dev: true
 
   /wrap-ansi/2.1.0:
     resolution: {integrity: sha1-2Pw9KE3QV5T+hJc8rs3Rz4JP3YU=}

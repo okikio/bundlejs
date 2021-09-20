@@ -2,8 +2,16 @@
 const mode = process.argv.includes("--watch") ? "watch" : "build";
 
 // Gulp utilities
-import { watch, task, series, parallel, stream, streamList, parallelFn } from "./util.js";
-import { createRequire } from 'module';
+import {
+    watch,
+    task,
+    series,
+    parallel,
+    stream,
+    streamList,
+    parallelFn,
+} from "./util.js";
+import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 // Origin folders (source and destination folders)
@@ -25,10 +33,7 @@ let browserSync;
 
 // HTML Tasks
 task("html", async () => {
-    const [
-        { default: pug },
-        { default: plumber }
-    ] = await Promise.all([
+    const [{ default: pug }, { default: plumber }] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
     ]);
@@ -54,7 +59,7 @@ task("css", async () => {
         { default: scss },
         { default: sass },
 
-        { default: rename }
+        { default: rename },
     ] = await Promise.all([
         import("fibers"),
 
@@ -64,17 +69,20 @@ task("css", async () => {
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
 
-        import("gulp-rename")
+        import("gulp-rename"),
     ]);
 
     return stream(`${cssSrcFolder}/*.scss`, {
         pipes: [
             // Minify scss to css
-            postcss([
-                sass({ outputStyle: "compressed", fiber }),
-                tailwind("./tailwind.config.cjs"),
-            ], { syntax: scss }),
-            rename({ extname: ".css", suffix: ".min" })
+            postcss(
+                [
+                    sass({ outputStyle: "compressed", fiber }),
+                    tailwind("./tailwind.config.cjs"),
+                ],
+                { syntax: scss }
+            ),
+            rename({ extname: ".css", suffix: ".min" }),
         ],
         dest: cssFolder,
         end: browserSync ? [browserSync.stream()] : null,
@@ -82,23 +90,17 @@ task("css", async () => {
 });
 
 task("minify-css", async () => {
-    const [
-        { default: postcss },
-        { default: autoprefixer },
-        { default: csso },
-    ] = await Promise.all([
-        import("gulp-postcss"),
-        import("autoprefixer"),
-        import("postcss-csso"),
-    ]);
+    const [{ default: postcss }, { default: autoprefixer }, { default: csso }] =
+        await Promise.all([
+            import("gulp-postcss"),
+            import("autoprefixer"),
+            import("postcss-csso"),
+        ]);
 
     return stream(`${destFolder}/**/*.css`, {
         pipes: [
             // Minify scss to css
-            postcss([
-                csso(),
-                autoprefixer(),
-            ])
+            postcss([csso(), autoprefixer()]),
         ],
         dest: destFolder,
         end: browserSync ? [browserSync.stream()] : null,
@@ -118,8 +120,6 @@ task("js", async () => {
 
         { default: replace },
         { basename },
-
-        { generateSW }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -131,82 +131,77 @@ task("js", async () => {
 
         import("gulp-replace"),
         import("path"),
-
-        import("workbox-build")
     ]);
 
     let monacoFilename;
-    const esbuild = mode == "watch" ? createGulpEsbuild({ incremental: true }) : gulpEsBuild;
+    const esbuild =
+        mode == "watch"
+            ? createGulpEsbuild({ incremental: true })
+            : gulpEsBuild;
 
     await stream(
         [
             `${tsFolder}/*.ts`,
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
-            `node_modules/esbuild-wasm/esbuild.wasm`
-        ], {
-        pipes: [
-            // Bundle Modules
-            esbuild({
-                target: ["es2018"],
-                platform: "browser",
+            `node_modules/esbuild-wasm/esbuild.wasm`,
+        ],
+        {
+            pipes: [
+                // Bundle Modules
+                esbuild({
+                    target: ["es2018"],
+                    platform: "browser",
 
-                assetNames: "[name]",
-                entryNames: '[name].min',
+                    assetNames: "[name]",
+                    entryNames: "[name].min",
 
-                bundle: true,
-                minify: true,
-                color: true,
-                format: "esm",
-                sourcemap: true,
-                splitting: true,
+                    bundle: true,
+                    minify: true,
+                    color: true,
+                    format: "esm",
+                    sourcemap: true,
+                    splitting: true,
 
-                loader: {
-                    '.ttf': 'file',
-                    ".wasm": "file"
-                },
+                    loader: {
+                        ".ttf": "file",
+                        ".wasm": "file",
+                    },
 
-                plugins: [
-                    WEB_WORKER(),
-                    solid()
-                ]
-            }),
+                    plugins: [WEB_WORKER(), solid()],
+                }),
 
-            gulpif(
-                (file) => /\.js$/.test(file.path),
-                size({
-                    gzip: true,
-                    showFiles: true,
-                    showTotal: false
-                })
-            ),
+                gulpif(
+                    (file) => /\.js$/.test(file.path),
+                    size({
+                        gzip: true,
+                        showFiles: true,
+                        showTotal: false,
+                    })
+                ),
 
-            gulpif(
-                (file) => /monaco(.*)\.css$/.test(file.path),
-                rename("monaco.min.css")
-            ),
+                gulpif(
+                    (file) => /monaco(.*)\.css$/.test(file.path),
+                    rename("monaco.min.css")
+                ),
 
-            gulpif(
-                (file) => {
+                gulpif((file) => {
                     let test = /monaco-(.*)\.js$/.test(file.path);
                     if (test) monacoFilename = basename(file.path);
                     return test;
-                },
-                rename("monaco.min.js")
-            ),
+                }, rename("monaco.min.js")),
 
-            gulpif(
-                (file) => /monaco-(.*)\.js\.map$/.test(file.path),
-                rename("monaco.min.js.map")
-            )
-        ],
-        dest: jsFolder, // Output
-    });
+                gulpif(
+                    (file) => /monaco-(.*)\.js\.map$/.test(file.path),
+                    rename("monaco.min.js.map")
+                ),
+            ],
+            dest: jsFolder, // Output
+        }
+    );
 
     return stream([`${jsFolder}/**/*.js`], {
-        pipes: [
-            replace(new RegExp(monacoFilename, "g"), "monaco.min.js"),
-        ],
+        pipes: monacoFilename ? [replace(new RegExp(monacoFilename, "g"), "monaco.min.js")] : [],
         dest: jsFolder, // Output
     });
 });
@@ -217,43 +212,29 @@ task("service-worker", async () => {
 
     return generateSW({
         globDirectory: destFolder,
-        globPatterns: [
-            '**/*.{html,js,css}',
-            '**/*.{ttf,svg}',
-        ],
+        globPatterns: ["**/*.{html,js,css}", "**/*.{ttf,svg}"],
         swDest: `${destFolder}/sw.js`,
 
         // navigationPreload: true,
-        ignoreURLParametersMatching: [/.*/],
-        skipWaiting: true,
+        ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
+        // skipWaiting: true,
         cleanupOutdatedCaches: true,
         inlineWorkboxRuntime: true,
+        // clientsClaim: true,
 
         // Define runtime caching rules.
         runtimeCaching: [
-            // {
-            //     handler: "StaleWhileRevalidate",
-            //     urlPattern: /.*/,
-            //     method: "GET"
-            // },
             {
                 // Match any request that ends with .png, .jpg, .jpeg or .svg.
                 urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json)$/,
 
                 // Apply a cache-first strategy.
-                handler: 'StaleWhileRevalidate',
+                handler: "StaleWhileRevalidate",
                 method: "GET",
-
-                // options: {
-                //     // Use a custom cache name.
-                //     cacheName: 'assets',
-                //     cacheableResponse: {
-                //         statuses: [200]
-                //     },
-                // },
-            }],
-    })
-})
+            },
+        ],
+    });
+});
 
 // Other assets
 task("assets", () => {
@@ -266,11 +247,7 @@ task("assets", () => {
 });
 
 task("sitemap", async () => {
-    let [
-        { default: sitemap },
-    ] = await Promise.all([
-        import("gulp-sitemap"),
-    ]);
+    let [{ default: sitemap }] = await Promise.all([import("gulp-sitemap")]);
 
     return stream(`${htmlFolder}/**/*.html`, {
         pipes: [
@@ -323,7 +300,7 @@ task("watch", async () => {
             browser: "chrome",
             online: true,
             reloadOnRestart: true,
-            scrollThrottle: 350
+            scrollThrottle: 350,
         },
         (_err, bs) => {
             bs.addMiddleware("*", (_req, res) => {
@@ -335,17 +312,40 @@ task("watch", async () => {
         }
     );
 
-    watch(`${pugFolder}/**/*.pug`, { delay: 350 }, series("html", "reload"));
-    watch([`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`], { delay: 350 }, series("css"));
+    watch(
+        `${pugFolder}/**/*.pug`,
+        { delay: 450 },
+        series("html", "css", "service-worker", "reload")
+    );
+    watch(
+        [`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`],
+        { delay: 250 },
+        series("css")
+    );
 
-    watch([
-        `${tsFolder}/**/*.{tsx,ts}`,
-        `!${tsFolder}/**/*.d.ts`
-    ], { delay: 350 }, series("js", "reload"));
+    watch(
+        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
+        { delay: 850 },
+        series("js", "service-worker", "reload")
+    );
 
-    watch([`${assetsFolder}/**/*`], { delay: 250 }, series("assets", "reload"));
-    watch([`${srcFolder}/js/*`], { delay: 1000 }, series("service-worker", "reload"))
+    watch([`${assetsFolder}/**/*`], { delay: 750 }, series("assets", "service-worker", "reload"));
 });
 
-task("build", series("clean", parallel("html", "css", "assets", "js"), parallelFn("minify-css", "service-worker", "sitemap")));
-task("default", series("clean", parallel("html", "css", "assets", "js"), "service-worker", "watch"));
+task(
+    "build",
+    series(
+        "clean",
+        parallel("html", "css", "assets", "js"),
+        parallelFn("minify-css", "service-worker", "sitemap")
+    )
+);
+task(
+    "default",
+    series(
+        "clean",
+        parallel("html", "css", "assets", "js"),
+        "service-worker",
+        "watch"
+    )
+);
