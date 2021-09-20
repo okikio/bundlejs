@@ -38,7 +38,7 @@
   Content-Type: text/javascript
 
 /js/sw.js
-  Cache-Control: public, max-age=604800, stale-while-revalidate=480
+  Cache-Control: public, max-age=60, stale-while-revalidate=480
   Content-Type: text/javascript
 
 /js/*.worker.js
