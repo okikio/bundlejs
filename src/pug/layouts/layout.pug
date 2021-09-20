@@ -62,6 +62,19 @@ html.dark(lang="en")
   body
     +navbar
 
+    .prompt-container
+      .horz
+        .info-prompt.offline-ready
+          p Ready to work offline!
+          .flex-1
+          button.btn.dismiss(type="button") DISMISS
+        .info-prompt.reload
+          p New content is available. Click OK to refresh.
+          .flex-1
+          div.flex.self-end
+            button.btn.accept(type="button") OK
+            button.btn.dismiss(type="button") DISMISS
+
     .navbar-offset
     main#main(data-wrapper)
       block content

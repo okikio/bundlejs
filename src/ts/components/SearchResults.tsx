@@ -33,10 +33,13 @@ export const Card = ({
                 </h3>
                 <p>{description}</p>
                 <p class="updated-time">
-                    Updated {_date} by{" "}
-                    <a href={_authorHref} target="_blank">
-                        @{author}
-                    </a>
+                    Updated {_date} 
+                    {author ? (<>
+                        by 
+                        <a href={_authorHref} target="_blank">
+                            @{author}
+                        </a>
+                    </>) : ""}
                     .
                 </p>
             </section>

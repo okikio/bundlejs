@@ -20,7 +20,7 @@ html {
 
 html.dark {
     color-scheme: dark light;
-    accent-color: theme("colors.blue.400")
+    accent-color: theme("colors.blue.400");
 }
 
 body {
@@ -244,7 +244,7 @@ footer.footer {
 }
 
 .opacity-0 {
-    opacity: 0
+    opacity: 0;
 }
 
 .offline-icon {
@@ -257,6 +257,104 @@ footer.footer {
         vertical-align: middle;
         fill: currentColor;
         width: 1em;
+    }
+}
+
+.editor-btns {
+    transition: opacity ease 0.8s;
+    @apply absolute bottom-2 right-0 px-5 w-full flex-wrap;
+    opacity: 0;
+    pointer-events: none;
+    @apply flex gap-2;
+}
+
+.editor-btns.delay {
+    opacity: 1;
+}
+
+.app:hover .editor-btns {
+    transition: opacity ease-out 0.5s;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.editor-btns {
+    button {
+        @apply flex items-center justify-center;
+        @apply bg-gray-100 dark:bg-gray-600 text-blue-400 dark:text-white;
+        @apply hover:bg-gray-200 dark:hover:bg-gray-700;
+        @apply px-3 py-2 rounded-md z-10;
+        @apply flex items-center justify-center;
+        pointer-events: auto;
+
+        @supports (backdrop-filter: blur(5px)) {
+            @apply bg-opacity-50 dark:bg-opacity-50 backdrop-filter backdrop-blur-sm;
+        }
+
+        svg {
+            @apply text-lg;
+            vertical-align: middle;
+            fill: currentColor;
+            width: 1em;
+        }
+    }
+
+    .copy-container {
+        @apply relative z-10;
+    }
+
+    .editor-info {
+        @apply absolute top-0 right-0 z-0;
+        transform: translateY(100px);
+
+        &,
+        &:hover {
+            @apply bg-white dark:bg-gray-800  text-blue-500 dark:text-blue-500;
+
+            @supports (backdrop-filter: blur(5px)) {
+                @apply bg-opacity-50 dark:bg-opacity-60 backdrop-filter backdrop-blur-sm;
+            }
+        }
+    }
+}
+
+.prompt-container {
+    @apply w-full h-full z-10 flex items-end justify-end;
+    @apply fixed top-0 left-0 pointer-events-none;
+    @apply px-2 sm:px-6 py-4 z-20;
+
+    .horz {
+        @apply w-full relative;
+        max-width: theme("spacing.96");
+    }
+}
+
+.info-prompt {
+    @apply flex items-center w-full;
+    @apply p-2 bg-gray-200 dark:bg-gray-900 rounded-lg;
+    @apply pointer-events-auto;
+    @apply absolute bottom-0 right-0;
+    transform: translateY(200px);
+
+    @supports (backdrop-filter: blur(5px)) {
+        @apply bg-opacity-70 dark:bg-opacity-80;
+        @apply backdrop-filter backdrop-blur;
+    }
+
+    &.reload {
+        @apply flex-col p-1;
+
+        p {
+            @apply pt-3 pb-5;
+        }
+    }
+
+    p {
+        @apply px-3;
+    }
+
+    .btn {
+        @apply hover:bg-gray-100 hover:bg-opacity-90 dark:hover:bg-gray-600 dark:hover:bg-opacity-50;
     }
 }
 
