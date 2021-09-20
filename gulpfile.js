@@ -215,11 +215,11 @@ task("service-worker", async () => {
         globPatterns: ["**/*.{html,js,css}", "**/*.{ttf,svg}"],
         swDest: `${destFolder}/sw.js`,
 
-        // navigationPreload: true,
+        navigationPreload: true,
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
-        // skipWaiting: true,
         cleanupOutdatedCaches: true,
         inlineWorkboxRuntime: true,
+        // skipWaiting: true,
         // clientsClaim: true,
 
         // Define runtime caching rules.
