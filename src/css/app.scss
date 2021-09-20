@@ -272,7 +272,8 @@ footer.footer {
     opacity: 1;
 }
 
-.app:hover .editor-btns {
+.app:hover .editor-btns,
+.app:focus-within .editor-btns {
     transition: opacity ease-out 0.5s;
     opacity: 1;
     pointer-events: none;

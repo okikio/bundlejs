@@ -215,10 +215,10 @@ task("service-worker", async () => {
         globPatterns: ["**/*.{html,js,css}", "**/*.{ttf,svg}"],
         swDest: `${destFolder}/sw.js`,
 
-        navigationPreload: true,
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
         cleanupOutdatedCaches: true,
         inlineWorkboxRuntime: true,
+        // navigationPreload: true,
         // skipWaiting: true,
         // clientsClaim: true,
 
@@ -314,7 +314,7 @@ task("watch", async () => {
 
     watch(
         `${pugFolder}/**/*.pug`,
-        { delay: 450 },
+        { delay: 750 },
         series("html", "css", "service-worker", "reload")
     );
     watch(

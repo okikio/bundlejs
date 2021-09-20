@@ -2,7 +2,7 @@
     @apply w-full relative px-3 pb-6 mb-8 container max-w-screen-xl;
     @apply grid gap-3;
     // grid-template-columns: auto;
-    min-height: (300px - 56px) * 2;
+    min-height: (400px - 56px) * 2;
     resize: vertical;
     overflow: hidden;
 
@@ -59,7 +59,7 @@
 }
 
 .push-to-side {
-    @apply flex align-middle py-2 justify-end flex-1 gap-2;
+    @apply flex align-middle justify-end flex-1 gap-2;
     flex-wrap: nowrap;
 
     .btn {
