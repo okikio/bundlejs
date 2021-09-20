@@ -16,19 +16,17 @@
   Link: </js/critical.min.js>; rel=modulepreload
 
 /
-  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: </js/monaco.min.css>; rel=preload; as=style
+  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
   Link: </js/monaco.min.js>; rel=modulepreload
-  Link: </js/editor.worker.js>; rel=prefetch
   Link: </js/typescript.worker.js>; rel=prefetch
   Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/esbuild.worker.js>; rel=prefetch
   Link: </js/index.min.js>; rel=modulepreload
-  Link: </js/load-webanimation-polyfill.min.js>; rel=modulepreload
 
 /**/*.css
-  Cache-Control: public, max-age=60
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
   Content-Type: text/css
 
 /js/*.ttf
@@ -40,15 +38,15 @@
   Content-Type: text/javascript
 
 /js/sw.js
-  Cache-Control: public, max-age=60
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
   Content-Type: text/javascript
 
 /js/*.worker.js
-  Cache-Control: public, max-age=360, stale-while-revalidate=480
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
   Content-Type: text/javascript
 
 /js/*.min.js
-  Cache-Control: public, max-age=360, stale-while-revalidate=480
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
   Content-Type: text/javascript
 
 /js/esbuild.wasm
@@ -60,7 +58,7 @@
   Content-Type: text/javascript
 
 /manifest.json
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
   Content-Type: application/manifest+json
 
 /favicon/*
