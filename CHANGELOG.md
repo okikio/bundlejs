@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/okikio/bundle/compare/v0.0.1...v0.0.2) (2021-09-20)
+
+
+### Features
+
+* add copy, wrap, format & reset btns; ([faaf924](https://github.com/okikio/bundle/commit/faaf924cb1c081d1f0e7a358c8b337de43cd888c))
+* add PWA screenshots; add sharing to PWA ([4e50e04](https://github.com/okikio/bundle/commit/4e50e043ba3b3fd382db358df2b3d10e6bc8d87b))
+* add sw for PWA; detect offline/online mode ([473c098](https://github.com/okikio/bundle/commit/473c098f10729f538b4853f0faa648bfb40e992a))
+* faster preloading & prefetching ([3882c11](https://github.com/okikio/bundle/commit/3882c11eedbaae7a179021ed0e84fe1ead26cf56))
+* prefetch workers ([dbe1287](https://github.com/okikio/bundle/commit/dbe1287a92d589db49a8784aec1f76169e916e97))
+* preload monaco.min.js for faster perfs; ([0222b70](https://github.com/okikio/bundle/commit/0222b706a807e28e4bd5ce22e99d8bb9b45f640d))
+* PWA support for js/ts files ([987984b](https://github.com/okikio/bundle/commit/987984bfef601337a96eb058ebb71d7a4257ec71))
+* update deps; better seo ([3c4ab38](https://github.com/okikio/bundle/commit/3c4ab38683b827ac45c800d342b06fbd2efb8846))
+
+
+### Bug Fixes
+
+* editor styles on mobile; update deps ([407d216](https://github.com/okikio/bundle/commit/407d216e5dbf788f776b5a672932701811c71d4e))
+* ensure all preloads are in order ([a5bece7](https://github.com/okikio/bundle/commit/a5bece755b8eab4e5d9c19d9bc124a97222766d3))
+* reorder preloads and prefetch ([d31d40f](https://github.com/okikio/bundle/commit/d31d40f48df95fa0757f064956316e69ce766a2e))
+* seo social image previews bug ([ed82939](https://github.com/okikio/bundle/commit/ed82939bcd40cc369ed46669d4a2e8181e049278))
+* social media preview ([10e295c](https://github.com/okikio/bundle/commit/10e295c83b8f17a8abc149d0d003073ffb899a6e))
+* unsafe-eval CSP issue ([16db273](https://github.com/okikio/bundle/commit/16db2736236c3e90fca85628090a77ac51198b38))
+* update sw.js caching algorithm ([061205c](https://github.com/okikio/bundle/commit/061205c747e6340a852f36e3568303bf0c934829))
+* use a new image for social media cards ([2e9b301](https://github.com/okikio/bundle/commit/2e9b301fe308711913214008b2dffa66c85c4cfb))
+
 ### [0.0.1](https://github.com/okikio/bundle/compare/v0.0.0...v0.0.1) (2021-09-16)
 
 
