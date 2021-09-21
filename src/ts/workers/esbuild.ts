@@ -5,7 +5,7 @@ import path from "path";
 import { fs, vol } from "memfs";
 
 import { rollup } from "rollup";
-import { virtualFs } from "rollup-plugin-virtual-fs";
+import virtual from "@rollup/plugin-virtual";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
@@ -50,22 +50,16 @@ vol.fromJSON({}, "/");
 
 const encoder = new TextEncoder();
 const start = (port) => {
+    InitEvent.on("init", (data) => {
+        port.postMessage(data);
+    });
+
     if (_initialized) {
         port.postMessage({
-            event: "ready",
+            event: "init",
             details: {}
         });
     }
-
-    InitEvent.on("init", (data) => {
-        port.postMessage(data);
-
-        if (data.event == "init" && !_initialized)
-            port.postMessage({
-                event: "ready",
-                details: {}
-            });
-    })
 
     let result: BuildResult & {
         outputFiles: OutputFile[];
@@ -157,28 +151,26 @@ const start = (port) => {
 
             // esbuild doesn't treeshake files very well, so, I choose to use rollup for treeshaking files. 
             try {
-                const { generate } = await rollup({
-                    input: "/input.js",
+                const bundle = await rollup({
+                    input: "entry",
                     treeshake: true,
-                    experimentalCacheExpiry: 1,
-                    cache: false,
                     plugins: [
-                        virtualFs({
-                            files: {
-                                '/input.js': content,
-                            }
+                        virtual({
+                            entry: content
                         })
                     ]
                 });
 
-                const { output } = await generate({
+                const { output } = await bundle.generate({
                     format: "esm",
                     sourcemap: false,
                     minifyInternalExports: false,
                 });
 
-                content = output[0].code;
-                content = content?.trim?.(); // Remove unesscary space
+                content = output[0].code?.trim?.() ?? content; // Remove unesscary space
+
+                // // Closes the bundle
+                // await bundle.close();
             } catch (error) {
                 port.postMessage({
                     event: "error",

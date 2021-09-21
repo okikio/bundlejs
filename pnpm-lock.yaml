@@ -8,6 +8,7 @@ specifiers:
   '@okikio/animate': ^2.4.0
   '@okikio/emitter': ^2.1.7
   '@okikio/native': ^3.0.1
+  '@rollup/plugin-virtual': ^2.0.3
   '@types/node': ^16.9.4
   assert: ^2.0.0
   autoprefixer: ^10.3.4
@@ -46,9 +47,8 @@ specifiers:
   prettier: ^2.4.1
   pretty-bytes: ^5.6.0
   rollup: ^2.56.3
-  rollup-plugin-virtual-fs: ^4.0.1-alpha.0
-  sass: ^1.41.1
-  solid-js: ^1.1.4
+  sass: ^1.42.0
+  solid-js: ^1.1.5
   standard-version: ^9.3.1
   stream: ^0.0.2
   tailwindcss: ^2.2.15
@@ -62,6 +62,7 @@ dependencies:
   '@okikio/animate': 2.4.0
   '@okikio/emitter': 2.1.7
   '@okikio/native': 3.0.1
+  '@rollup/plugin-virtual': 2.0.3_rollup@2.56.3
   assert: 2.0.0
   browser-builtins: 3.3.1
   buffer: 6.0.3
@@ -75,8 +76,7 @@ dependencies:
   path: 0.12.7
   prettier: 2.4.1
   pretty-bytes: 5.6.0
-  rollup-plugin-virtual-fs: 4.0.1-alpha.0
-  solid-js: 1.1.4
+  solid-js: 1.1.5
   stream: 0.0.2
   typescript: 4.4.3
   web-animations-js: 2.3.2
@@ -92,7 +92,7 @@ devDependencies:
   commitizen: 4.2.4
   del: 6.0.0
   esbuild: 0.12.28
-  esbuild-plugin-solid: 0.4.0_esbuild@0.12.28+solid-js@1.1.4
+  esbuild-plugin-solid: 0.4.0_esbuild@0.12.28+solid-js@1.1.5
   fibers: 5.0.0
   gulp: 4.0.2
   gulp-changed: 4.0.3_gulp@4.0.2
@@ -111,7 +111,7 @@ devDependencies:
   postcss-csso: 5.0.1_postcss@8.3.6
   postcss-scss: 4.0.0_postcss@8.3.6
   rollup: 2.56.3
-  sass: 1.41.1
+  sass: 1.42.0
   standard-version: 9.3.1
   tailwindcss: 2.2.15_4dc2d3db2b138fb8fa7d5c7b0c803aba
   workbox-build: 6.3.0
@@ -1429,7 +1429,7 @@ packages:
     dependencies:
       '@csstools/sass-import-resolve': 1.0.0
       postcss: 7.0.36
-      sass: 1.41.1
+      sass: 1.42.0
       source-map: 0.7.3
     dev: true
 
@@ -1548,6 +1548,14 @@ packages:
       magic-string: 0.25.7
       rollup: 2.56.3
     dev: true
+
+  /@rollup/plugin-virtual/2.0.3_rollup@2.56.3:
+    resolution: {integrity: sha512-pw6ziJcyjZtntQ//bkad9qXaBx665SgEL8C8KI5wO8G5iU5MPxvdWrQyVaAvjojGm9tJoS8M9Z/EEepbqieYmw==}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      rollup: 2.56.3
+    dev: false
 
   /@rollup/pluginutils/3.1.0_rollup@2.56.3:
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
@@ -1996,7 +2004,7 @@ packages:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.17.0
-      caniuse-lite: 1.0.30001258
+      caniuse-lite: 1.0.30001259
       colorette: 1.4.0
       fraction.js: 4.1.1
       normalize-range: 0.1.2
@@ -2023,8 +2031,8 @@ packages:
       object.assign: 4.1.2
     dev: true
 
-  /babel-plugin-jsx-dom-expressions/0.29.16_@babel+core@7.15.5:
-    resolution: {integrity: sha512-09bLfsWh+J0U0z8QNwmlxvow0yGAACKcuxN6VvAESmVJNn0V4AS3mQA4II795rhCKK0yW7KfYDkUv9fQxUd3OQ==}
+  /babel-plugin-jsx-dom-expressions/0.29.17_@babel+core@7.15.5:
+    resolution: {integrity: sha512-RGd2bUEu6Ym+t/eqS+CwhTMRBnoIgVUEPDD+rUx5GhwLLuGBbJI2tTC0Q92ScX1I5hQpJgveAvaaoDjjyGkgPA==}
     dependencies:
       '@babel/helper-module-imports': 7.15.4
       '@babel/plugin-syntax-jsx': 7.14.5_@babel+core@7.15.5
@@ -2069,10 +2077,10 @@ packages:
       - supports-color
     dev: true
 
-  /babel-preset-solid/1.1.3_@babel+core@7.15.5:
-    resolution: {integrity: sha512-I27j40FJQ6T1Y4Is3E2XXXgW6uyl6EhOavon75eRuN8J0j5koSi7VhoslSjZffYCUixZLTIuM44/Bg2BJsT9hg==}
+  /babel-preset-solid/1.1.5_@babel+core@7.15.5:
+    resolution: {integrity: sha512-u+s+3zwErLfQzNqE6BfMRxfalxjSCm7BY/ua4pkCHlUuS5KrCFF/i4Bv5G98Z2uC9fWRXoD1nAu5zXA79vwkZA==}
     dependencies:
-      babel-plugin-jsx-dom-expressions: 0.29.16_@babel+core@7.15.5
+      babel-plugin-jsx-dom-expressions: 0.29.17_@babel+core@7.15.5
     transitivePeerDependencies:
       - '@babel/core'
     dev: true
@@ -2344,9 +2352,9 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001258
+      caniuse-lite: 1.0.30001259
       colorette: 1.4.0
-      electron-to-chromium: 1.3.843
+      electron-to-chromium: 1.3.845
       escalade: 3.1.1
       node-releases: 1.1.76
     dev: true
@@ -2453,8 +2461,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /caniuse-lite/1.0.30001258:
-    resolution: {integrity: sha512-RBByOG6xWXUp0CR2/WU2amXz3stjKpSl5J1xU49F1n2OxD//uBZO4wCKUiG+QMGf7CHGfDDcqoKriomoGVxTeA==}
+  /caniuse-lite/1.0.30001259:
+    resolution: {integrity: sha512-V7mQTFhjITxuk9zBpI6nYsiTXhcPe05l+364nZjK7MFK/E7ibvYBSAXr4YcA6oPR8j3ZLM/LN+lUqUVAQEUZFg==}
     dev: true
 
   /chalk/1.1.3:
@@ -3422,8 +3430,8 @@ packages:
     requiresBuild: true
     dev: true
 
-  /electron-to-chromium/1.3.843:
-    resolution: {integrity: sha512-OWEwAbzaVd1Lk9MohVw8LxMXFlnYd9oYTYxfX8KS++kLLjDfbovLOcEEXwRhG612dqGQ6+44SZvim0GXuBRiKg==}
+  /electron-to-chromium/1.3.845:
+    resolution: {integrity: sha512-y0RorqmExFDI4RjLEC6j365bIT5UAXf9WIRcknvSFHVhbC/dRnCgJnPA3DUUW6SCC85QGKEafgqcHJ6uPdEP1Q==}
     dev: true
 
   /elliptic/3.1.0:
@@ -3577,7 +3585,7 @@ packages:
       es6-symbol: 3.1.3
     dev: true
 
-  /esbuild-plugin-solid/0.4.0_esbuild@0.12.28+solid-js@1.1.4:
+  /esbuild-plugin-solid/0.4.0_esbuild@0.12.28+solid-js@1.1.5:
     resolution: {integrity: sha512-HSFp04cHuMufxWE/KtDdP9Cnn/7Gm33DKZk5CF/VIDZglj0EDizBigz7gUhxt2qckUyqW5hUIuGjs+d4FdmwuQ==}
     peerDependencies:
       esbuild: ^0.11
@@ -3585,9 +3593,9 @@ packages:
     dependencies:
       '@babel/core': 7.15.5
       '@babel/preset-typescript': 7.15.0_@babel+core@7.15.5
-      babel-preset-solid: 1.1.3_@babel+core@7.15.5
+      babel-preset-solid: 1.1.5_@babel+core@7.15.5
       esbuild: 0.12.28
-      solid-js: 1.1.4
+      solid-js: 1.1.5
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6983,10 +6991,6 @@ packages:
       terser: 5.8.0
     dev: true
 
-  /rollup-plugin-virtual-fs/4.0.1-alpha.0:
-    resolution: {integrity: sha512-tQ0SymyiUeA4Xn0nT5eP7gwGMiEewL6qyPvOc3xkaaLRILCr+wqWBQNh2a9SfpaMDJdoRt+68sk9TAhC24ZeVA==}
-    dev: false
-
   /rollup/2.56.3:
     resolution: {integrity: sha512-Au92NuznFklgQCUcV96iXlxUbHuB1vQMaH76DHl5M11TotjOHwqk9CwcrT78+Tnv4FN9uTBxq6p4EJoYkpyekg==}
     engines: {node: '>=10.0.0'}
@@ -7041,8 +7045,8 @@ packages:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
     dev: true
 
-  /sass/1.41.1:
-    resolution: {integrity: sha512-vIjX7izRxw3Wsiez7SX7D+j76v7tenfO18P59nonjr/nzCkZuoHuF7I/Fo0ZRZPKr88v29ivIdE9BqGDgQD/Nw==}
+  /sass/1.42.0:
+    resolution: {integrity: sha512-kcjxsemgaOnfl43oZgO/IePLvXQI0ZKzo0/xbCt6uyrg3FY/FF8hVK9YoO8GiZBcEG2Ebl79EKnUc+aiE4f2Vw==}
     engines: {node: '>=8.9.0'}
     hasBin: true
     dependencies:
@@ -7279,8 +7283,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solid-js/1.1.4:
-    resolution: {integrity: sha512-u3rvemWTQQ1ab9YrrRR+bUi7Daq5ZRVlR6gEDsHrRYC5uYFkFGGRt/ibjo+OsBxjbPRxGzy7jel3mfTZiiuNzA==}
+  /solid-js/1.1.5:
+    resolution: {integrity: sha512-cwMNe1U/1bqCTMco2za6LDU66jDn/57m5kfrDUhW3ls9YIbaREdktqPFGULrill22qyoFDngEg5hgm6a6vf6wg==}
     dev: false
 
   /source-map-js/0.6.2:
