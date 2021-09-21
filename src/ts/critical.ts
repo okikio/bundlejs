@@ -2,7 +2,6 @@ import { App } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet, runTheme } from "./scripts/theme";
-import { hit } from "countapi-js";
 
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
@@ -19,21 +18,6 @@ try {
 } catch (e) {
     console.warn("Theming seems to break on this browser.", e);
 }
-
-// countapi-js hit counter. It counts the number of time the website is loaded
-(async () => {
-    try {
-        let { value } = await hit("bundle.js.org", "visits");
-        let visitCounterEl = document.querySelector("#visit-counter");
-        if (visitCounterEl)
-            visitCounterEl.textContent = `(${value} Page Visits)`;
-    } catch (err) {
-        console.warn(
-            "Visit Counter Error (please create a new issue in the repo)",
-            err
-        );
-    }
-})();
 
 // navbar focus on scroll effect
 let canScroll = true;
