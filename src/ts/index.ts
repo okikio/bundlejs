@@ -10,6 +10,8 @@ import {
     setState,
 } from "./components/SearchResults";
 
+import { hit } from "countapi-js";
+
 import type { editor as Editor } from "monaco-editor";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker from "./util/WebWorker";
@@ -259,61 +261,59 @@ BundleEvents.on({
     });
 })();
 
-// @ts-ignore
-globalThis.requestIdleCallback =
-    globalThis.requestIdleCallback ??
-    function (cb) {
-        let start = Date.now();
-        return setTimeout(function () {
-            cb({
-                didTimeout: false,
-                timeRemaining: function () {
-                    return Math.max(0, 50 - (Date.now() - start));
-                },
-            });
-        }, 1);
-    };
+// Bundle worker
+(() => {
+    const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
 
-globalThis.requestIdleCallback(
-    () => {
-        const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
+    // bundles using esbuild and returns the result
+    BundleEvents.on("bundle", () => {
+        if (!initialized) return;
+        console.log("Bundle");
+        value = `` + editor?.getValue();
 
-        // bundles using esbuild and returns the result
-        BundleEvents.on("bundle", () => {
-            if (!initialized) return;
-            console.log("Bundle");
-            value = `` + editor?.getValue();
+        fileSizeEl.innerHTML = `<div class="loading"></div>`;
+        bundleTime.textContent = ``;
 
-            fileSizeEl.innerHTML = `<div class="loading"></div>`;
-            bundleTime.textContent = ``;
+        start = Date.now();
+        BundleWorker.postMessage(value);
+    });
 
-            start = Date.now();
-            BundleWorker.postMessage(value);
-        });
+    // Emit bundle events based on WebWorker messages
+    BundleWorker.addEventListener(
+        "message",
+        ({ data }: MessageEvent<{ event: string; details: any }>) => {
+            let { event, details } = data;
+            BundleEvents.emit(event, details);
+        }
+    );
 
-        // Emit bundle events based on WebWorker messages
-        BundleWorker.addEventListener(
-            "message",
-            ({ data }: MessageEvent<{ event: string; details: any }>) => {
-                let { event, details } = data;
-                BundleEvents.emit(event, details);
-            }
+    window.addEventListener("pageshow", function (event) {
+        if (!event.persisted) {
+            BundleWorker?.start();
+        }
+    });
+
+    window.addEventListener("pagehide", function (event) {
+        if (event.persisted === true) {
+            console.log("This page *might* be entering the bfcache.");
+        } else {
+            console.log("This page will unload normally and be discarded.");
+            BundleWorker?.close();
+        }
+    });
+})();
+
+// countapi-js hit counter. It counts the number of time the website is loaded
+(async () => {
+    try {
+        let { value } = await hit("bundle.js.org", "visits");
+        let visitCounterEl = document.querySelector("#visit-counter");
+        if (visitCounterEl)
+            visitCounterEl.textContent = `(${value} Page Visits)`;
+    } catch (err) {
+        console.warn(
+            "Visit Counter Error (please create a new issue in the repo)",
+            err
         );
-
-        window.addEventListener("pageshow", function (event) {
-            if (!event.persisted) {
-                BundleWorker?.start();
-            }
-        });
-
-        window.addEventListener("pagehide", function (event) {
-            if (event.persisted === true) {
-                console.log("This page *might* be entering the bfcache.");
-            } else {
-                console.log("This page will unload normally and be discarded.");
-                BundleWorker?.close();
-            }
-        });
-    },
-    { timeout: 2000 }
-);
+    }
+})();
