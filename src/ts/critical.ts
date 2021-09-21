@@ -4,6 +4,9 @@ import { Navbar } from "./services/Navbar";
 import { themeSet, themeGet, runTheme } from "./scripts/theme";
 import { hit } from "countapi-js";
 
+import { Workbox } from "workbox-window";
+import { animate } from "@okikio/animate";
+
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
     let themeSwitch = Array.from(document.querySelectorAll(".theme-toggle"));
@@ -85,10 +88,7 @@ window.addEventListener("load", () => {
 
 // Check that service workers are supported
 (async () => {
-    if ("serviceWorker" in navigator) {
-        const { Workbox } = await import("workbox-window");
-        const { animate } = await import("@okikio/animate");
-        
+    if ("serviceWorker" in navigator) {        
         let reloadDialog = document.querySelector(
             ".info-prompt.reload"
         ) as HTMLElement;
@@ -111,7 +111,8 @@ window.addEventListener("load", () => {
                     target: dialogEl,
                     translateY: [200, 0],
                     fillMode: "both",
-                    easing: "ease-out",
+                    easing: "ease",
+                    duration: 350
                 };
 
                 let animateOut = {
@@ -162,16 +163,17 @@ window.addEventListener("load", () => {
             // that a user can either accept or reject.
             dialog("confirm")
                 .then(() => {
-                    // Assuming the user accepted the update, set up a listener
-                    // that will reload the page as soon as the previously waiting
-                    // service worker has taken control.
-                    wb.addEventListener("controlling", (event) => {
-                        window.location.reload();
-                    });
 
                     wb.messageSkipWaiting();
                 })
                 .catch(() => { });
+        });
+
+        // Assuming the user accepted the update, set up a listener
+        // that will reload the page as soon as the previously waiting
+        // service worker has taken control.
+        wb.addEventListener("controlling", (event) => {
+            window.location.reload();
         });
 
         wb.addEventListener("activated", (event) => {
@@ -186,8 +188,6 @@ window.addEventListener("load", () => {
             }
         });
 
-        window.addEventListener("load", () => {
-            wb.register();
-        });
+        wb.register();
     }
 })();

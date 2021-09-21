@@ -360,6 +360,10 @@ export default {
     descriptionForeground: '#959DA5',
     'diffEditor.insertedTextBackground': '#28A74530',
     'diffEditor.removedTextBackground': '#D73A4930',
+    
+    "minimap.background": "#24292E",
+    "minimap.hoverBackground": "#00000028",
+
     'dropdown.background': '#2F363D',
     'dropdown.border': '#1B1F23',
     'dropdown.foreground': '#E1E4E8',
@@ -443,9 +447,6 @@ export default {
     'quickInput.background': '#24292E',
     'quickInput.foreground': '#E1E4E8',
     'scrollbar.shadow': '#00000088',
-    'scrollbarSlider.activeBackground': '#6A737D88',
-    'scrollbarSlider.background': '#6A737D33',
-    'scrollbarSlider.hoverBackground': '#6A737D44',
     'settings.headerForeground': '#E1E4E8',
     'settings.modifiedItemIndicator': '#0366D6',
     'sideBar.background': '#1F2428',

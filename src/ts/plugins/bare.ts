@@ -23,8 +23,8 @@ export const BARE = (): Plugin => {
                     }
                     
                     // typescript will only work on esm.sh
-                    else if (/^typecript/.test(args.path)) {
-                        host = `https://cdn.esm.sh/`;
+                    else if (/^typescript/.test(args.path)) {
+                        host = `https://unpkg.com/`;
                     }
 
                     return {

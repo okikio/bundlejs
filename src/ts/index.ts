@@ -12,6 +12,7 @@ import {
 
 import type { editor as Editor } from "monaco-editor";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
+import WebWorker from "./util/WebWorker";
 
 const BundleEvents = new EventEmitter();
 
@@ -32,30 +33,38 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
     numeric: "auto",
 });
 
-const bundleFromUrl = () => {
-    if (location.search && initialized) {
-        const searchParams = new URL(String(document.location)).searchParams;
-        let plaintext = searchParams.get("text");
-        let query = searchParams.get("query") || searchParams.get("q");
-        let share = searchParams.get("share");
-        let bundle = searchParams.get("bundle");
-        if (query || share || bundle || plaintext) {
-            fileSizeEl.textContent = `Wait...`;
-            BundleEvents.emit("bundle");
-        }
-    }
-};
+let  monacoLoadedFirst = false;
 
 // Bundle Events
 BundleEvents.on({
+    loaded() {
+        monacoLoadedFirst = true;
+
+        if (initialized)
+            BundleEvents.emit("ready");
+    },
     init() {
-        console.log("Initialized");
+        console.log("Initalized");
+        initialized = true;
+        fileSizeEl.textContent = `...`;
+
+        if (monacoLoadedFirst)
+            BundleEvents.emit("ready");
     },
     ready() {
         console.log("Ready");
-        initialized = true;
-        fileSizeEl.textContent = `...`;
-        bundleFromUrl();
+        if (location.search) {
+            const searchParams = new URL(String(document.location))
+                .searchParams;
+            let plaintext = searchParams.get("text");
+            let query = searchParams.get("query") || searchParams.get("q");
+            let share = searchParams.get("share");
+            let bundle = searchParams.get("bundle");
+            if (query || share || bundle || plaintext) {
+                fileSizeEl.textContent = `Wait...`;
+                BundleEvents.emit("bundle");
+            }
+        }
     },
     warn(details) {
         let { type, message } = details;
@@ -98,13 +107,10 @@ BundleEvents.on({
     let Monaco = await import("./modules/monaco");
     [editor, output] = Monaco.build();
 
-    await editor.getAction("editor.action.formatDocument").run();
-    await output.getAction("editor.action.formatDocument").run();
-
     await new Promise<void>((resolve) => {
         setTimeout(() => {
             resolve();
-        }, 300);
+        }, 100);
     });
 
     [editor.getDomNode(), output.getDomNode()].forEach((el) => {
@@ -124,6 +130,8 @@ BundleEvents.on({
 
     loadingContainerEl.forEach((x) => x?.remove());
     FadeLoadingScreen.stop();
+
+    BundleEvents.emit("loaded");
 
     loadingContainerEl = null;
     FadeLoadingScreen = null;
@@ -268,11 +276,20 @@ globalThis.requestIdleCallback =
 
 globalThis.requestIdleCallback(
     () => {
-        const AdvancedWorker =
-            "SharedWorker" in globalThis &&
-            new SharedWorker(ESBUILD_WORKER_URL, WorkerArgs);
-        const BundleWorker =
-            AdvancedWorker?.port || new Worker(ESBUILD_WORKER_URL, WorkerArgs);
+        const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
+
+        // bundles using esbuild and returns the result
+        BundleEvents.on("bundle", () => {
+            if (!initialized) return;
+            console.log("Bundle");
+            value = `` + editor?.getValue();
+
+            fileSizeEl.innerHTML = `<div class="loading"></div>`;
+            bundleTime.textContent = ``;
+
+            start = Date.now();
+            BundleWorker.postMessage(value);
+        });
 
         // Emit bundle events based on WebWorker messages
         BundleWorker.addEventListener(
@@ -283,23 +300,9 @@ globalThis.requestIdleCallback(
             }
         );
 
-        // bundles using esbuild and returns the result
-        BundleEvents.on("bundle", () => {
-            if (initialized) {
-                console.log("Bundle");
-                value = `` + editor?.getValue();
-
-                fileSizeEl.innerHTML = `<div class="loading"></div>`;
-                bundleTime.textContent = ``;
-
-                start = Date.now();
-                BundleWorker.postMessage(value);
-            }
-        });
-
         window.addEventListener("pageshow", function (event) {
-            if (AdvancedWorker && !event.persisted) {
-                (BundleWorker as MessagePort)?.start?.();
+            if (!event.persisted) {
+                BundleWorker?.start();
             }
         });
 
@@ -308,7 +311,7 @@ globalThis.requestIdleCallback(
                 console.log("This page *might* be entering the bfcache.");
             } else {
                 console.log("This page will unload normally and be discarded.");
-                (BundleWorker as MessagePort)?.close?.();
+                BundleWorker?.close();
             }
         });
     },

@@ -90,6 +90,7 @@ import { animate } from "@okikio/animate";
 import prettier from "prettier/esm/standalone.mjs";
 // @ts-ignore
 import parserBabel from "prettier/esm/parser-babel.mjs";
+import WebWorker from "../util/WebWorker.js";
 
 const format = (code: string) => {
     return prettier.format(code, {
@@ -188,7 +189,7 @@ export const build = () => {
         isolatedModules: true,
         allowNonTsExtensions: true,
         esModuleInterop: true,
-        noResolve: true,
+        noResolve: true
     });
 
     // Read this on adding autocomplete to monaco:
@@ -216,29 +217,12 @@ export const build = () => {
         getWorker: function (moduleId, label) {
             if (label === "typescript" || label === "javascript") {
                 let WorkerArgs = { name: `${label}-worker` };
-                let AdvancedWorker =
-                    "SharedWorker" in globalThis &&
-                    new SharedWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
-                return (
-                    AdvancedWorker?.port ||
-                    new Worker(TYPESCRIPT_WORKER_URL, WorkerArgs)
-                );
+                return new WebWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
             }
 
             return (() => {
                 let WorkerArgs = { name: `editor-worker` };
-                let AdvancedWorker =
-                    "SharedWorker" in globalThis &&
-                    new SharedWorker(EDITOR_WORKER_URL, WorkerArgs);
-                let EditorWorker = (
-                    AdvancedWorker?.port ||
-                    new Worker(EDITOR_WORKER_URL, WorkerArgs)
-                );
-
-                if (AdvancedWorker) (EditorWorker as MessagePort)?.close();
-                else (EditorWorker as Worker)?.terminate();
-
-                return EditorWorker;
+                return new WebWorker(EDITOR_WORKER_URL, WorkerArgs);
             })();
         },
     };
@@ -249,10 +233,20 @@ export const build = () => {
     // @ts-ignore
     Editor.defineTheme("light", GithubLight);
 
-    let editorOpts = {
+    let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
         value: initialValue,
         minimap: {
             enabled: false,
+        },
+        inlayHints: {
+            enabled: true
+        },
+        parameterHints: {
+            enabled: true,
+        },
+        padding: {
+            bottom: 15,
+            top: 15,
         },
         scrollbar: {
             // Subtle shadows to the left & top. Defaults to true.
@@ -272,13 +266,13 @@ export const build = () => {
 
     inputEditor = Editor.create(
         inputEl,
-        editorOpts as Editor.IStandaloneEditorConstructionOptions
+        editorOpts
     );
     outputEditor = Editor.create(
         outputEl,
         Object.assign({}, editorOpts, {
             value: `// Output`,
-        }) as Editor.IStandaloneEditorConstructionOptions
+        })
     );
 
     let editorBtns = (
