@@ -1,5 +1,5 @@
 .flex-wrapper {
-    @apply w-full relative px-3 pb-6 mb-8 container max-w-screen-xl;
+    @apply w-full relative pb-6 mb-8;
     @apply grid gap-3;
     // grid-template-columns: auto;
     min-height: (400px - 56px) * 2;
@@ -50,7 +50,15 @@
     @screen lt-sm {
         resize: vertical;
     }
+
     overflow: hidden;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: normal;
+    font-size: 14px;
+    font-feature-settings: "liga" 0, "calt" 0;
+    line-height: 19px;
+    letter-spacing: 0px;
 }
 
 .app#output {
@@ -96,6 +104,10 @@
     &.show {
         opacity: 1;
     }
+}
+
+.monaco-editor .peekview-widget .monaco-list .monaco-list-row .codicon {
+    padding-right: 14px;
 }
 
 .loading {

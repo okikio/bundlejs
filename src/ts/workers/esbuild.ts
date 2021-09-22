@@ -85,44 +85,48 @@ const start = (port) => {
             // use esbuild to bundle files
             try {
                 await fs.promises.writeFile("input.ts", `${input}`);
+                
+                if (result?.rebuild) {
+                    result = await result?.rebuild();
+                } else {
+                    result = await build({
+                        entryPoints: ['<stdin>'],
+                        bundle: true,
+                        minify: true,
+                        color: true,
+                        incremental: true,
+                        target: ["esnext"],
+                        logLevel: 'info',
+                        write: false,
+                        outfile: "/bundle.js",
+                        platform: "browser",
+                        format: "esm",
+                        loader: {
+                            '.png': 'file',
+                            '.jpeg': 'file',
+                            '.ttf': 'file',
+                            '.svg': 'text',
+                            '.html': 'text',
+                            '.scss': 'css'
+                        },
+                        define: {
+                            "__NODE__": `false`,
+                            "process.env.NODE_ENV": `"production"`
+                        },
+                        plugins: [
+                            EXTERNAL(),
+                            ENTRY(`/input.ts`),
+                            JSON_PLUGIN(),
 
-                result = await build({
-                    entryPoints: ['<stdin>'],
-                    bundle: true,
-                    minify: true,
-                    color: true,
-                    incremental: false,
-                    target: ["esnext"],
-                    logLevel: 'info',
-                    write: false,
-                    outfile: "/bundle.js",
-                    platform: "browser",
-                    format: "esm",
-                    loader: {
-                        '.png': 'file',
-                        '.jpeg': 'file',
-                        '.ttf': 'file',
-                        '.svg': 'text',
-                        '.html': 'text',
-                        '.scss': 'css'
-                    },
-                    define: {
-                        "__NODE__": `false`,
-                        "process.env.NODE_ENV": `"production"`
-                    },
-                    plugins: [
-                        EXTERNAL(),
-                        ENTRY(`/input.ts`),
-                        JSON_PLUGIN(),
-
-                        BARE(),
-                        HTTP(),
-                        CDN(),
-                        VIRTUAL_FS(),
-                        WASM(),
-                    ],
-                    globalName: 'bundler',
-                });
+                            BARE(),
+                            HTTP(),
+                            CDN(),
+                            VIRTUAL_FS(),
+                            WASM(),
+                        ],
+                        globalName: 'bundler',
+                    });
+                }
 
                 result?.outputFiles?.forEach((x) => {
                     if (!fs.existsSync(path.dirname(x.path))) {
