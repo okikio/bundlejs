@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/okikio/bundle/compare/v0.0.3...v0.0.4) (2021-09-22)
+
+
+### Features
+
+* add css env(inset-*); monaco ts types supprt; ([8bfb5e3](https://github.com/okikio/bundle/commit/8bfb5e39554a83b6214b7d7f23854b06acf5a5f4))
+
+
+### Bug Fixes
+
+* add navigationPreload to sw; preload css fonts ([d644b4e](https://github.com/okikio/bundle/commit/d644b4e2048c4cc8e6ac70c44b0349c51d8a4fd4))
+* hit counter counting on all pages; ([cd3d718](https://github.com/okikio/bundle/commit/cd3d718488b4727e10841226b9674c46b61e56b0))
+* proper fix for release process ([f2631c1](https://github.com/okikio/bundle/commit/f2631c1fe65d72ea4b99085aba4aac4a96718ee2))
+* reduce sw.js max-age header ([dd7837d](https://github.com/okikio/bundle/commit/dd7837de3a785ccd7db9536e1cde4555e20bd397))
+* use stale-while-revalidate cache headers; ([1b458e5](https://github.com/okikio/bundle/commit/1b458e560b7712c12f514e1d3ab064f659a1463d))
+* use WebWorker polyfill to fix terminate error; ([90932c9](https://github.com/okikio/bundle/commit/90932c96005bfc80710893a415f4d2597f234055))
+
 ### [0.0.3](https://github.com/okikio/bundle/compare/v0.0.2...v0.0.3) (2021-09-20)
 
 
