@@ -22,6 +22,7 @@ export function initialize(foreignModule, port, initialized) {
 // The Editor worker is really not nesscary, so, I set it up to be self terminating 
 const connect = (port) => {
     let initialized = false;
+    self.close();
     port.onmessage = (e) => {
         // Ignore first message in this case and initialize if not yet initialized
         if (!initialized) {
