@@ -22,9 +22,11 @@
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
   Link: </js/monaco.min.js>; rel=modulepreload
   Link: </js/typescript.worker.js>; rel=prefetch
+  Link: </js/editor.worker.js>; rel=prefetch
   Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/esbuild.worker.js>; rel=prefetch
   Link: </js/index.min.js>; rel=modulepreload
+  Link: <https://cdn.esm.sh>; rel=preconnect; crossorigin
 
 /**/*.css
   Cache-Control: public, max-age=604800, stale-while-revalidate=480
@@ -51,7 +53,7 @@
   Content-Type: text/javascript
 
 /js/esbuild.wasm
-  Cache-Control: public, max-age=604800, stale-while-revalidate=31536000
+  Cache-Control: public, max-age=604800, stale-while-revalidate=60480
   Content-Type: wasm
 
 /js/theme.min.js
