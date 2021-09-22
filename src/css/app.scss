@@ -101,8 +101,13 @@ a {
 main {
     .container {
         @apply px-5 py-2 sm:max-w-screen-md;
-        
+
         word-wrap: break-word;
+
+        @supports (padding-top: env(safe-area-inset-top, 0)) {
+            padding-right: calc(theme("spacing.5") + env(safe-area-inset-right));
+            padding-left: calc(theme("spacing.5") + env(safe-area-inset-left));
+        }
     }
 
     strong {

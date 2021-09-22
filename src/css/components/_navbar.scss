@@ -55,8 +55,24 @@
     }
 }
 
+@supports (padding-top: env(safe-area-inset-top, 0)) {
+    .navbar {
+        top: env(safe-area-inset-top, 0);
+        left: env(safe-area-inset-left, 0);
+        width: calc(
+            100% - env(safe-area-inset-right, 0) - env(safe-area-inset-left, 0)
+        );
+    }
+}
+
 .navbar-offset {
     @apply mt-16;
+}
+
+@supports (padding-top: env(safe-area-inset-top, 0)) {
+    .navbar {
+        padding-top: env(safe-area-inset-top, 0);
+    }
 }
 
 .navbar-collapse {

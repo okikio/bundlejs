@@ -167,7 +167,7 @@ task("js", async () => {
                         ".ttf": "file",
                         ".wasm": "file",
                     },
-
+                    
                     plugins: [WEB_WORKER(), solid()],
                 }),
 
@@ -226,7 +226,7 @@ task("service-worker", async () => {
         runtimeCaching: [
             {
                 // Match any request that ends with .png, .jpg, .jpeg or .svg.
-                urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json)$/,
+                urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts)$/,
 
                 // Apply a cache-first strategy.
                 handler: "StaleWhileRevalidate",
