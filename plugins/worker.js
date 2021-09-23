@@ -52,11 +52,12 @@ export const WEB_WORKER = () => {
 
                         minify: true,
                         bundle: true,
+                        treeShaking: true,
 
                         define: {
                             "global": "globalThis"
                         },
-                        inject: ["./shims/node-shim.js"]
+                        inject: /esbuild/.test(workerFileName) ? ["./shims/node-shim.js"] : []
                     });
 
                     return {

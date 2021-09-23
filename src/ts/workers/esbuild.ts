@@ -94,6 +94,7 @@ const start = (port) => {
                         bundle: true,
                         minify: true,
                         color: true,
+                        treeShaking: true,
                         incremental: true,
                         target: ["esnext"],
                         logLevel: 'info',
