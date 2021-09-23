@@ -48,25 +48,25 @@ import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codi
 // import 'monaco-editor/esm/vs/basic-languages/monaco.contribution.js';
 
 // export * from 'monaco-editor/esm/vs/editor/edcore.main';
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffNavigator.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/anchorSelect/anchorSelect.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/transpose.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codelens/codelensController.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/colorPicker/colorContributions.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/documentSymbols/documentSymbols.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlineCompletions/ghostTextController.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToCommands.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffNavigator.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/anchorSelect/anchorSelect.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/transpose.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codelens/codelensController.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/colorPicker/colorContributions.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/documentSymbols/documentSymbols.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlineCompletions/ghostTextController.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToCommands.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js";
 
 import {
     editor as Editor,
@@ -181,7 +181,7 @@ export const build = () => {
         target: languages.typescript.ScriptTarget.Latest,
         module: languages.typescript.ModuleKind.ES2015,
         noEmit: true,
-        lib: ["ES2021", "DOM", "DOM.Iterable", "WebWorker", "ESNEXT", "NODE"],
+        lib: ["es2021", "dom", "dom.iterable", "webworker", "esnext", "node"],
         exclude: ["node_modules"],
         resolveJsonModule: true,
         allowNonTsExtensions: true,
@@ -193,7 +193,7 @@ export const build = () => {
 
     // @ts-ignore
     languages.typescript.typescriptDefaults.setInlayHintsOptions({
-        includeInlayParameterNameHints: 'literals',
+        includeInlayParameterNameHints: "literals",
         includeInlayParameterNameHintsWhenArgumentMatchesName: true,
         // includeInlayFunctionParameterTypeHints: true,
         // includeInlayVariableTypeHints: true,
@@ -202,23 +202,98 @@ export const build = () => {
         // includeInlayEnumMemberValueHints: true
     });
 
-    // Read this on adding autocomplete to monaco:
-    // https://blog.expo.io/building-a-code-editor-with-monaco-f84b3a06deaf
-    // and
-    // https://mono.software/2017/04/11/custom-intellisense-with-monaco-editor/
-    // languages.registerHoverProvider('typescript', {
-    //     provideHover: function (model, position) {
-    //         // return xhr('../playground.html').then(function (res) {
-    //         //     return {
-    //         //         range: new Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
-    //         //         contents: [
-    //         //             { value: '**SOURCE**' },
-    //         //             { value: '```html\n' + res.responseText.substring(0, 200) + '\n```' }
-    //         //         ]
-    //         //     }
-    //         // });
-    //     }
-    // });
+    languages.typescript.javascriptDefaults.setEagerModelSync(true);
+
+    const parseInput = (value: string) => {
+        const host = "https://api.npms.io";
+        let urlScheme = `${host}/v2/search?q=${encodeURIComponent(
+            value
+        )}&size=30`;
+        let version = "";
+
+        let exec = /([\S]+)@([\S]+)/g.exec(value);
+        if (exec) {
+            let [, pkg, ver] = exec;
+            version = ver;
+            urlScheme = `${host}/v2/search?q=${encodeURIComponent(
+                pkg
+            )}&size=30`;
+        }
+
+        return { url: urlScheme, version };
+    };
+
+    const IMPORTS_REXPORTS_REQUIRE_REGEX =
+        /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
+    const FetchCache = new Map();
+
+    languages.registerHoverProvider("typescript", {
+        provideHover(model, position) {
+            let content = model.getLineContent(position.lineNumber);
+            let matches =
+                Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ??
+                [];
+            if (matches.length <= 0) return;
+
+            let matchArr = matches.map(([, pkg]) => pkg);
+            let pkg = matchArr[0];
+
+            if (/\.|http(s)?\:/.test(pkg)) return;
+            else if (
+                /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg)
+            ) {
+                pkg = pkg.replace(
+                    /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/,
+                    ""
+                );
+            }
+
+            return (async () => {
+                let { url } = parseInput(pkg);
+                let response: Response, result: any;
+
+                try {
+                    if (!FetchCache.has(url)) {
+                        response = await fetch(url);
+                        result = await response.json();
+                        FetchCache.set(url, result);
+                    } else {
+                        result = FetchCache.get(url);
+                    }
+                } catch (e) {
+                    console.warn(e);
+                    return;
+                }
+
+                if (result?.results.length <= 0) return;
+
+                const { name, description, version, date, publisher, links } =
+                    result?.results?.[0]?.package ?? {};
+                let author = publisher?.username;
+                let _date = new Date(date).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                });
+
+                return {
+                    contents: [].concat({
+                        value: `### [${name}](${
+                            links?.npm
+                        }) v${version}\n${description}\n\nPublished on ${_date} ${
+                            author
+                                ? `by [@${author}](https://www.npmjs.com/~${author})`
+                                : ""
+                        }\n\n${
+                            links?.repository
+                                ? `[GitHub](${links?.repository})  |`
+                                : ""
+                        }  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
+                    }),
+                };
+            })();
+        },
+    });
 
     // Since packaging is done by you, you need
     // to instruct the editor how you named the
@@ -246,7 +321,10 @@ export const build = () => {
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
         // @ts-ignore
         bracketPairColorization: {
-            enabled: true
+            enabled: true,
+        },
+        parameterHints: {
+            enabled: true,
         },
         model: Editor.createModel(
             initialValue,
@@ -256,12 +334,9 @@ export const build = () => {
         minimap: {
             enabled: false,
         },
-        parameterHints: {
-            enabled: true,
-        },
         padding: {
-            bottom: 7.5,
-            top: 7.5,
+            bottom: 2.5,
+            top: 2.5,
         },
         scrollbar: {
             // Subtle shadows to the left & top. Defaults to true.
@@ -280,18 +355,14 @@ export const build = () => {
     };
 
     inputEditor = Editor.create(inputEl, editorOpts);
-
-    outputEditor = Editor.create(
-        outputEl,
-        {
-            ...editorOpts,
-            model: Editor.createModel(
-                `// Output`,
-                "typescript",
-                Uri.parse("file://output.ts")
-            ),
-        }
-    );
+    outputEditor = Editor.create(outputEl, {
+        ...editorOpts,
+        model: Editor.createModel(
+            `// Output`,
+            "typescript",
+            Uri.parse("file://output.ts")
+        ),
+    });
 
     languages.typescript.typescriptDefaults.addExtraLib(
         "declare module 'https://*' {\n\texport * from \"https://cdn.esm.sh/*\";\n}",
@@ -302,7 +373,11 @@ export const build = () => {
         /(?:(?:(?:import)|(?:export))(?:.)*?from\s+["']([^"']+)["'])|(?:\/+\s+<reference\s+path=["']([^"']+)["']\s+\/>)/g;
 
     const FetchedURLs = new Set();
-    const TypeAquisition = (value = inputEditor.getValue(), origin?: string, pkg?: string) => {
+    const TypeAquisition = (
+        value = inputEditor.getValue(),
+        origin?: string,
+        pkg?: string
+    ) => {
         [...value.matchAll(REGEX_DETECT_IMPORT)].forEach(([, imports]) => {
             (async () => {
                 let content: string,
@@ -386,15 +461,15 @@ export const build = () => {
         });
     };
 
-    // TypeAquisition();
+    TypeAquisition();
 
-    // let timer: number;
-    // inputEditor.onDidChangeModelContent(() => {
-    //     window.clearTimeout(timer);
-    //     timer = window.setTimeout(TypeAquisition, 1000);
-    // });
+    let timer: number;
+    inputEditor.onDidChangeModelContent(() => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(TypeAquisition, 1000);
+    });
 
-    let editorBtns = (
+    const editorBtns = (
         el: HTMLElement,
         editor: typeof inputEditor,
         reset: string

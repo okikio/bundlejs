@@ -213,7 +213,7 @@ task("service-worker", async () => {
 
     return generateSW({
         globDirectory: destFolder,
-        globPatterns: ["**/*.{html,js,css}", "**/*.{ttf,svg}"],
+        globPatterns: ["**/*.{html,js,css}", "/js/*.ttf", "/favicon/*.svg", "!/js/index.min.css"],
         swDest: `${destFolder}/sw.js`,
 
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
@@ -227,7 +227,7 @@ task("service-worker", async () => {
         runtimeCaching: [
             {
                 // Match any request that ends with .png, .jpg, .jpeg or .svg.
-                urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts)$/,
+                urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$/,
 
                 // Apply a cache-first strategy.
                 handler: "StaleWhileRevalidate",

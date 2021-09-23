@@ -11,9 +11,9 @@
   Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
 
 /*.html
-  Link: </css/app.min.css>; rel=preload; as=style
   Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
   Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+  Link: </css/app.min.css>; rel=preload; as=style
   Link: </js/theme.min.js>; rel=modulepreload
   Link: </js/critical.min.js>; rel=modulepreload
 
@@ -29,6 +29,7 @@
   Link: </js/monaco.min.js>; rel=modulepreload
   Link: </js/typescript.worker.js>; rel=prefetch
   Link: </js/editor.worker.js>; rel=prefetch
+  Link: <https://cdn.esm.sh>; rel=preconnect; crossorigin
   Link: <https://cdn.skypack.dev>; rel=preconnect; crossorigin
   Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/esbuild.worker.js>; rel=prefetch
