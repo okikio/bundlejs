@@ -278,9 +278,9 @@ export const build = () => {
 
                 return {
                     contents: [].concat({
-                        value: `### [${name}](${
+                        value: `## [${name}](${
                             links?.npm
-                        }) v${version}\n${description}\n\nPublished on ${_date} ${
+                        }) v${version}\n${description}\n\n\nPublished on ${_date} ${
                             author
                                 ? `by [@${author}](https://www.npmjs.com/~${author})`
                                 : ""
