@@ -386,13 +386,13 @@ export const build = () => {
         });
     };
 
-    TypeAquisition();
+    // TypeAquisition();
 
-    let timer: number;
-    inputEditor.onDidChangeModelContent(() => {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(TypeAquisition, 1000);
-    });
+    // let timer: number;
+    // inputEditor.onDidChangeModelContent(() => {
+    //     window.clearTimeout(timer);
+    //     timer = window.setTimeout(TypeAquisition, 1000);
+    // });
 
     let editorBtns = (
         el: HTMLElement,
