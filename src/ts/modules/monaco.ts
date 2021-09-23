@@ -48,25 +48,25 @@ import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codi
 // import 'monaco-editor/esm/vs/basic-languages/monaco.contribution.js';
 
 // export * from 'monaco-editor/esm/vs/editor/edcore.main';
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffNavigator.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/anchorSelect/anchorSelect.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/transpose.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codelens/codelensController.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/colorPicker/colorContributions.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/documentSymbols/documentSymbols.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlineCompletions/ghostTextController.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToCommands.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js";
-// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/browser/widget/diffNavigator.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/anchorSelect/anchorSelect.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/transpose.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codelens/codelensController.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/colorPicker/colorContributions.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/documentSymbols/documentSymbols.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlineCompletions/ghostTextController.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToCommands.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js";
 
 import {
     editor as Editor,
@@ -191,6 +191,17 @@ export const build = () => {
         // isolatedModules: true,
     });
 
+    // @ts-ignore
+    languages.typescript.typescriptDefaults.setInlayHintsOptions({
+        includeInlayParameterNameHints: 'literals',
+        includeInlayParameterNameHintsWhenArgumentMatchesName: true,
+        // includeInlayFunctionParameterTypeHints: true,
+        // includeInlayVariableTypeHints: true,
+        // includeInlayPropertyDeclarationTypeHints: true,
+        // includeInlayFunctionLikeReturnTypeHints: true,
+        // includeInlayEnumMemberValueHints: true
+    });
+
     // Read this on adding autocomplete to monaco:
     // https://blog.expo.io/building-a-code-editor-with-monaco-f84b3a06deaf
     // and
@@ -233,6 +244,10 @@ export const build = () => {
     Editor.defineTheme("light", GithubLight);
 
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
+        // @ts-ignore
+        bracketPairColorization: {
+            enabled: true
+        },
         model: Editor.createModel(
             initialValue,
             "typescript",
@@ -240,9 +255,6 @@ export const build = () => {
         ),
         minimap: {
             enabled: false,
-        },
-        inlayHints: {
-            enabled: true,
         },
         parameterHints: {
             enabled: true,
@@ -268,15 +280,17 @@ export const build = () => {
     };
 
     inputEditor = Editor.create(inputEl, editorOpts);
+
     outputEditor = Editor.create(
         outputEl,
-        Object.assign({}, editorOpts, {
+        {
+            ...editorOpts,
             model: Editor.createModel(
                 `// Output`,
                 "typescript",
                 Uri.parse("file://output.ts")
             ),
-        })
+        }
     );
 
     languages.typescript.typescriptDefaults.addExtraLib(

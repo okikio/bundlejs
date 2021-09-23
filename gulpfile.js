@@ -152,6 +152,7 @@ task("js", async () => {
                 esbuild({
                     target: ["es2018"],
                     platform: "browser",
+                    treeShaking: true,
 
                     assetNames: "[name]",
                     entryNames: "[name].min",
