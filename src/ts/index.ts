@@ -24,7 +24,6 @@ let bundleTime = document.querySelector("#bundle-time");
 
 let value = "";
 let start = Date.now();
-let initialized = false;
 
 let editor: Editor.IStandaloneCodeEditor;
 let output: Editor.IStandaloneCodeEditor;
@@ -36,6 +35,7 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
 });
 
 let  monacoLoadedFirst = false;
+let initialized = false;
 
 // Bundle Events
 BundleEvents.on({
