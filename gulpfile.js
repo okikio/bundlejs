@@ -229,8 +229,16 @@ task("service-worker", async () => {
                 // Match any request that ends with .png, .jpg, .jpeg or .svg.
                 urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$/,
 
-                // Apply a cache-first strategy.
+                // Apply a stale-while-revalidate strategy.
                 handler: "StaleWhileRevalidate",
+                method: "GET",
+            },
+            {
+                // Match any request that ends with .png, .jpg, .jpeg or .svg.
+                urlPattern: /^https:\/\/cdn\.polyfill\.io/,
+
+                // Apply a network-first strategy.
+                handler: "NetworkFirst",
                 method: "GET",
             },
         ],
