@@ -13,6 +13,7 @@ import {
 import { hit } from "countapi-js";
 
 import type { editor as Editor } from "monaco-editor";
+
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker from "./util/WebWorker";
 
@@ -34,7 +35,7 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
     numeric: "auto",
 });
 
-let  monacoLoadedFirst = false;
+let monacoLoadedFirst = false;
 let initialized = false;
 
 // Bundle Events
@@ -42,16 +43,14 @@ BundleEvents.on({
     loaded() {
         monacoLoadedFirst = true;
 
-        if (initialized)
-            BundleEvents.emit("ready");
+        if (initialized) BundleEvents.emit("ready");
     },
     init() {
         console.log("Initalized");
         initialized = true;
         fileSizeEl.textContent = `...`;
 
-        if (monacoLoadedFirst)
-            BundleEvents.emit("ready");
+        if (monacoLoadedFirst) BundleEvents.emit("ready");
     },
     ready() {
         console.log("Ready");
@@ -92,174 +91,181 @@ BundleEvents.on({
     },
 });
 
-(async () => {
-    let loadingContainerEl = Array.from(
-        document.querySelectorAll(".center-container")
-    );
-    let FadeLoadingScreen = animate({
-        target: loadingContainerEl,
-        opacity: [1, 0],
-        easing: "ease-in",
-        duration: 500,
-        autoplay: false,
-        fillMode: "both",
-    });
+window.requestIdleCallback(() => {
+    (async () => {
+        let loadingContainerEl = Array.from(
+            document.querySelectorAll(".center-container")
+        );
+        let FadeLoadingScreen = animate({
+            target: loadingContainerEl,
+            opacity: [1, 0],
+            easing: "ease-in",
+            duration: 500,
+            autoplay: false,
+            fillMode: "both",
+        });
 
-    // Monaco Code Editor
-    let Monaco = await import("./modules/monaco");
-    [editor, output] = Monaco.build();
+        // Monaco Code Editor
+        let Monaco = await import("./modules/monaco");
+        [editor, output] = Monaco.build();
 
-    await new Promise<void>((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, 100);
-    });
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 100);
+        });
 
-    [editor.getDomNode(), output.getDomNode()].forEach((el) => {
-        el?.parentElement?.classList.add("show");
-    });
+        [editor.getDomNode(), output.getDomNode()].forEach((el) => {
+            el?.parentElement?.classList.add("show");
+        });
 
-    FadeLoadingScreen.play(); // Fade away the loading screen
-    await FadeLoadingScreen;
+        FadeLoadingScreen.play(); // Fade away the loading screen
+        await FadeLoadingScreen;
 
-    const editorBtns = Array.from(document.querySelectorAll(".editor-btns"));
-    if (editorBtns) {
-        editorBtns?.[1].classList.add("delay");
-        setTimeout(() => {
-            editorBtns?.[1].classList.remove("delay");
-        }, 1600);
-    }
+        const editorBtns = Array.from(
+            document.querySelectorAll(".editor-btns")
+        );
+        if (editorBtns) {
+            editorBtns?.[1].classList.add("delay");
+            setTimeout(() => {
+                editorBtns?.[1].classList.remove("delay");
+            }, 1600);
+        }
 
-    loadingContainerEl.forEach((x) => x?.remove());
-    FadeLoadingScreen.stop();
+        loadingContainerEl.forEach((x) => x?.remove());
+        FadeLoadingScreen.stop();
 
-    BundleEvents.emit("loaded");
+        BundleEvents.emit("loaded");
 
-    loadingContainerEl = null;
-    FadeLoadingScreen = null;
+        loadingContainerEl = null;
+        FadeLoadingScreen = null;
 
-    let oldShareLink: string;
-    let generateShareLink = () => {
-        if (value == editor?.getValue()) {
-            return (
-                oldShareLink ??
-                String(
-                    new URL(
-                        `/?share=${compressToURL(value)}`,
-                        document.location.origin
+        let oldShareLink: string;
+        let generateShareLink = () => {
+            if (value == editor?.getValue()) {
+                return (
+                    oldShareLink ??
+                    String(
+                        new URL(
+                            `/?share=${compressToURL(value)}`,
+                            document.location.origin
+                        )
                     )
-                )
-            );
-        }
-
-        value = `` + editor?.getValue();
-        return (oldShareLink = String(
-            new URL(`/?share=${compressToURL(value)}`, document.location.origin)
-        ));
-    };
-
-    editor.onDidChangeModelContent(
-        debounce((e) => {
-            window.history.replaceState({}, "", generateShareLink());
-        }, 300)
-    );
-
-    const shareBtn = document.querySelector(
-        ".btn-share#share"
-    ) as HTMLButtonElement;
-    const shareInput = document.querySelector(
-        "#copy-input"
-    ) as HTMLInputElement;
-    shareBtn?.addEventListener("click", () => {
-        shareInput.value = generateShareLink();
-        shareInput.select();
-        document.execCommand("copy");
-
-        let shareBtnValue = shareBtn.innerText;
-
-        shareBtn.innerText = "Copied!";
-        setTimeout(() => {
-            shareBtn.innerText = shareBtnValue;
-        }, 600);
-    });
-
-    // Listen to events for the results
-    ResultEvents.on("add-module", (v) => {
-        value = `` + editor?.getValue();
-        editor.setValue(value + "\n" + v);
-    });
-
-    RunBtn.addEventListener("click", () => {
-        BundleEvents.emit("bundle");
-    });
-})();
-
-// SarchResults solidjs component
-(async () => {
-    const parseInput = (value: string) => {
-        const host = "https://api.npms.io";
-        let urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-            value
-        )}&size=30`;
-        let version = "";
-
-        let exec = /([\S]+)@([\S]+)/g.exec(value);
-        if (exec) {
-            let [, pkg, ver] = exec;
-            version = ver;
-            urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-                pkg
-            )}&size=30`;
-        }
-
-        return { url: urlScheme, version };
-    };
-
-    const searchInput = document.querySelector(
-        ".search input"
-    ) as HTMLInputElement;
-    searchInput?.addEventListener?.(
-        "keydown",
-        debounce(() => {
-            let { value } = searchInput;
-            if (value.length <= 0) return;
-
-            let { url, version } = parseInput(value);
-            (async () => {
-                let response = await fetch(url);
-                let result = await response.json();
-                setState(
-                    // result.objects
-                    result?.results.map((obj) => {
-                        const { name, description, date, publisher } =
-                            obj.package;
-                        return {
-                            name,
-                            description,
-                            date,
-                            version,
-                            author: publisher?.username,
-                        };
-                    }) ?? []
                 );
-            })();
-        }, 125)
-    );
+            }
 
-    const SearchContainerEl = document.querySelector(
-        ".search-container"
-    ) as HTMLElement;
-    const SearchResultContainerEl = SearchContainerEl.querySelector(
-        ".search-results-container"
-    ) as HTMLElement;
-    if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
+            value = `` + editor?.getValue();
+            return (oldShareLink = String(
+                new URL(
+                    `/?share=${compressToURL(value)}`,
+                    document.location.origin
+                )
+            ));
+        };
 
-    const clearBtn = document.querySelector(".search .clear");
-    clearBtn?.addEventListener("click", () => {
-        searchInput.value = "";
-        setState([]);
-    });
-})();
+        editor.onDidChangeModelContent(
+            debounce((e) => {
+                window.history.replaceState({}, "", generateShareLink());
+            }, 300)
+        );
+
+        const shareBtn = document.querySelector(
+            ".btn-share#share"
+        ) as HTMLButtonElement;
+        const shareInput = document.querySelector(
+            "#copy-input"
+        ) as HTMLInputElement;
+        shareBtn?.addEventListener("click", () => {
+            shareInput.value = generateShareLink();
+            shareInput.select();
+            document.execCommand("copy");
+
+            let shareBtnValue = shareBtn.innerText;
+
+            shareBtn.innerText = "Copied!";
+            setTimeout(() => {
+                shareBtn.innerText = shareBtnValue;
+            }, 600);
+        });
+
+        // Listen to events for the results
+        ResultEvents.on("add-module", (v) => {
+            value = `` + editor?.getValue();
+            editor.setValue(value + "\n" + v);
+        });
+
+        RunBtn.addEventListener("click", () => {
+            BundleEvents.emit("bundle");
+        });
+    })();
+
+    // SarchResults solidjs component
+    (async () => {
+        const parseInput = (value: string) => {
+            const host = "https://api.npms.io";
+            let urlScheme = `${host}/v2/search?q=${encodeURIComponent(
+                value
+            )}&size=30`;
+            let version = "";
+
+            let exec = /([\S]+)@([\S]+)/g.exec(value);
+            if (exec) {
+                let [, pkg, ver] = exec;
+                version = ver;
+                urlScheme = `${host}/v2/search?q=${encodeURIComponent(
+                    pkg
+                )}&size=30`;
+            }
+
+            return { url: urlScheme, version };
+        };
+
+        const searchInput = document.querySelector(
+            ".search input"
+        ) as HTMLInputElement;
+        searchInput?.addEventListener?.(
+            "keydown",
+            debounce(() => {
+                let { value } = searchInput;
+                if (value.length <= 0) return;
+
+                let { url, version } = parseInput(value);
+                (async () => {
+                    let response = await fetch(url);
+                    let result = await response.json();
+                    setState(
+                        // result.objects
+                        result?.results.map((obj) => {
+                            const { name, description, date, publisher } =
+                                obj.package;
+                            return {
+                                name,
+                                description,
+                                date,
+                                version,
+                                author: publisher?.username,
+                            };
+                        }) ?? []
+                    );
+                })();
+            }, 125)
+        );
+
+        const SearchContainerEl = document.querySelector(
+            ".search-container"
+        ) as HTMLElement;
+        const SearchResultContainerEl = SearchContainerEl.querySelector(
+            ".search-results-container"
+        ) as HTMLElement;
+        if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
+
+        const clearBtn = document.querySelector(".search .clear");
+        clearBtn?.addEventListener("click", () => {
+            searchInput.value = "";
+            setState([]);
+        });
+    })();
+});
 
 // Bundle worker
 (() => {
