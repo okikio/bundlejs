@@ -25,7 +25,6 @@
   Link: </css/app.min.css>; rel=preload; as=style
   Link: </js/monaco.min.css>; rel=preload; as=style
   Link: </js/theme.min.js>; rel=modulepreload
-  Link: <https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback>; rel=preload; as=script
   Link: </js/critical.min.js>; rel=modulepreload
   Link: </js/index.min.js>; rel=modulepreload
   Link: </js/monaco.min.js>; rel=modulepreload

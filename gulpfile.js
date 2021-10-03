@@ -226,7 +226,7 @@ task("service-worker", async () => {
         // Define runtime caching rules.
         runtimeCaching: [
             {
-                // Match any request that ends with .png, .jpg, .jpeg or .svg.
+                // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
                 urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$/,
 
                 // Apply a stale-while-revalidate strategy.
@@ -234,7 +234,7 @@ task("service-worker", async () => {
                 method: "GET",
             },
             {
-                // Match any request that ends with .png, .jpg, .jpeg or .svg.
+                // Match any request that starts with https://cdn.polyfill.io
                 urlPattern: /^https:\/\/cdn\.polyfill\.io/,
 
                 // Apply a network-first strategy.
