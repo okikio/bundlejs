@@ -172,8 +172,7 @@ window.addEventListener("load", () => {
             }
         });
 
-        window.addEventListener("load", () => {
-            wb.register();
-        });
+        // window.addEventListener("load", () => { });
+        wb.register();
     }
 })();
