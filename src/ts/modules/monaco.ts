@@ -82,7 +82,7 @@ import { themeGet } from "../scripts/theme";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 
-import { compressToURL, decompressFromURL } from "@amoutonbrady/lz-string";
+import { decompressFromURL } from "@amoutonbrady/lz-string";
 import { animate } from "@okikio/animate";
 
 // @ts-ignore
@@ -188,18 +188,13 @@ export const build = () => {
         esModuleInterop: true,
         noResolve: true,
         allowSyntheticDefaultImports: true,
-        // isolatedModules: true,
+        isolatedModules: true,
     });
 
     // @ts-ignore
     languages.typescript.typescriptDefaults.setInlayHintsOptions({
         includeInlayParameterNameHints: "literals",
-        includeInlayParameterNameHintsWhenArgumentMatchesName: true,
-        // includeInlayFunctionParameterTypeHints: true,
-        // includeInlayVariableTypeHints: true,
-        // includeInlayPropertyDeclarationTypeHints: true,
-        // includeInlayFunctionLikeReturnTypeHints: true,
-        // includeInlayEnumMemberValueHints: true
+        includeInlayParameterNameHintsWhenArgumentMatchesName: true
     });
 
     languages.typescript.javascriptDefaults.setEagerModelSync(true);
@@ -307,7 +302,9 @@ export const build = () => {
 
             return (() => {
                 let WorkerArgs = { name: `editor-worker` };
-                return new WebWorker(EDITOR_WORKER_URL, WorkerArgs);
+                let EditorWorker = new WebWorker(EDITOR_WORKER_URL, WorkerArgs);
+                EditorWorker?.terminate();
+                return EditorWorker;
             })();
         },
     };
