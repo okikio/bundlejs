@@ -104,7 +104,7 @@ const format = (code: string) => {
  * ```
  * where the brackets represent seperate packages
  */
-export const parseTreeshakeExports = (str: string) =>
+export const parseTreeshakeExports = (str: string) => 
     (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
 // Inspired by https://github.com/solidjs/solid-playground

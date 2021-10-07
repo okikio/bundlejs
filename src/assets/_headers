@@ -15,7 +15,7 @@
   Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
   Link: </css/app.min.css>; rel=preload; as=style
   Link: </js/theme.min.js>; rel=modulepreload
-  Link: <https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback>; rel=preload; as=script
+  # Link: <https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback>; rel=preload; as=script
   Link: </js/critical.min.js>; rel=modulepreload
 
 /
