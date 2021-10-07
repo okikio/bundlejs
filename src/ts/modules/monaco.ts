@@ -344,7 +344,10 @@ export const build = () => {
         roundedSelection: true,
         scrollBeyondLastLine: true,
         smoothScrolling: true,
-        theme: themeGet(),
+        theme: (() => {
+            let theme = themeGet();
+            return theme == "system" ? mediaTheme() : theme;
+        })(),
         automaticLayout: true,
         language: "typescript",
 
