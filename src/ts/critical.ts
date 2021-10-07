@@ -176,6 +176,6 @@ window.addEventListener("load", () => {
         });
 
         // window.addEventListener("load", () => { });
-        // wb.register();
+        wb.register();
     }
 })();
