@@ -18,9 +18,9 @@ specifiers:
   commitizen: ^4.2.4
   countapi-js: ^1.0.2
   del: ^6.0.0
-  esbuild: ^0.13.3
+  esbuild: ^0.13.4
   esbuild-plugin-solid: ^0.4.0
-  esbuild-wasm: ^0.13.3
+  esbuild-wasm: ^0.13.4
   events: ^3.3.0
   fibers: ^5.0.0
   gulp: ^4.0.2
