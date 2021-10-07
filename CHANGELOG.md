@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/okikio/bundle/compare/v0.0.4...v0.0.5) (2021-10-07)
+
+
+### Features
+
+* add hover package info; ([6eda9f6](https://github.com/okikio/bundle/commit/6eda9f64b6994c4ad6927e639bb2ff9b70ffdccc))
+* only bundle code when `bundle` is included in url; ([43fef60](https://github.com/okikio/bundle/commit/43fef6055495c2f3b03edfd8e41c2759f6c9f49f))
+
+
+### Bug Fixes
+
+* disable typeaquisition; ([a43aeb6](https://github.com/okikio/bundle/commit/a43aeb650934b2422a0ee06f08f78b7459052bce))
+* seperate workbox file ([2b7f8ed](https://github.com/okikio/bundle/commit/2b7f8ed57c8f95a8ea6481b53446d11fc731bb16))
+
 ### [0.0.4](https://github.com/okikio/bundle/compare/v0.0.3...v0.0.4) (2021-09-22)
 
 
