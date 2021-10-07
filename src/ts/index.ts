@@ -196,6 +196,7 @@ BundleEvents.on({
     });
 
     RunBtn.addEventListener("click", () => {
+        window.history.pushState({}, "", generateShareLink());
         BundleEvents.emit("bundle");
     });
 })();
