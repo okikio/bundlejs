@@ -52,8 +52,9 @@ export let themeSet = (theme: string) => {
 export let runTheme = () => {
     try {
         let theme = getTheme();
-        if (theme === null) theme = mediaTheme();
-        theme && themeSet(theme);
+        if (theme === null) {
+            themeSet("system");
+        } else themeSet(theme);
 
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
             themeSet("system");
