@@ -378,3 +378,13 @@ footer.footer {
     @apply dark:hover:bg-gray-800 dark:active:bg-gray-700;
     @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
 }
+
+.theme-options {
+    @apply px-2 py-2 rounded-md ml-2;
+    // color-scheme: light;
+}
+
+// html.dark .theme-options {
+//     color-scheme: dark;
+//     @apply bg-black;
+// }

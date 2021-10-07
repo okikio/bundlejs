@@ -77,7 +77,7 @@ import {
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import WebWorker from "../util/WebWorker";
-import { themeGet } from "../scripts/theme";
+import { mediaTheme, themeGet } from "../scripts/theme";
 
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
@@ -534,7 +534,8 @@ export * from "@okikio/animate";`
     editorBtns(outputEl, outputEditor, `// Output`);
 
     document.addEventListener("theme-change", () => {
-        Editor.setTheme(themeGet());
+        let theme = themeGet();
+        Editor.setTheme(theme == "system" ? mediaTheme() : theme);
     });
 
     return [inputEditor, outputEditor];
