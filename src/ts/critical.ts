@@ -1,19 +1,22 @@
 import { App } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
-import { themeSet, themeGet, runTheme } from "./scripts/theme";
+import { themeSet, themeGet } from "./scripts/theme";
 
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
 
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
-    let themeSwitch = Array.from(document.querySelectorAll(".theme-toggle"));
+    let themeSwitch = Array.from(document.querySelectorAll(".theme-options")) as HTMLSelectElement[];
     if (themeSwitch[0]) {
-        for (let el of themeSwitch)
-            el.addEventListener("click", () => {
-                themeSet(themeGet() === "dark" ? "light" : "dark");
+        for (let el of themeSwitch) {
+            el.value = themeGet();
+            el.addEventListener("change", () => {
+                themeSet(el.value);
+                el.value = themeGet();
             });
+        }
     }
 } catch (e) {
     console.warn("Theming seems to break on this browser.", e);

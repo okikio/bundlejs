@@ -34,6 +34,8 @@ There is another way to share a reproduciable bundle, the sharable link. Sharebl
 
 In order to create a shareble link, you click the `Share` button, it copies the share url to your clipboard, and from there you can paste where you wish. 
 
+> If you would like to bundle your code when the share URL is loaded, add `bundle` to the url, e.g. [/?q=@okikio/animate&bundle](https://bundle.js.org/?q=@okikio/animate&bundle) or [/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA](https://bundle.js.org/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA)
+
 
 ## Badges
 

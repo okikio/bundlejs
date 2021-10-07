@@ -1,7 +1,16 @@
 mixin footer
   footer.footer.my-6
-    .container.space-x-2
-      p.bg-gray-200(class="dark:bg-quaternary").inline-block.px-4.py-2.rounded-md
-        span="  Made by "
-        a(href='https://github.com/okikio' target='_blank' rel="noopener") Okiki Ojo
-        | .
+    .container.flex.flex-wrap.gap-2
+      div.text-left
+        label(for="pet-select") Change Theme:
+
+        select.theme-options
+          option(value="system" selected) System
+          option(value="light") Light
+          option(value="dark") Dark
+      .flex-grow
+      div.text-right
+        p.bg-gray-200(class="dark:bg-quaternary").inline-block.px-4.py-2.rounded-md
+          span="  Made by "
+          a(href='https://github.com/okikio' target='_blank' rel="noopener") Okiki Ojo
+          | .

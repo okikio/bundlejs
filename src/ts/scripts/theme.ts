@@ -42,8 +42,9 @@ export let themeGet = () => {
 
 // Set theme in localStorage, as well as in the html tag
 export let themeSet = (theme: string) => {
+    let themeColor = theme == "system" ? mediaTheme() : theme;
     html.setAttribute("data-theme", theme);
-    html.classList.toggle("dark", theme == "dark");
+    html.classList.toggle("dark", themeColor == "dark");
     setTheme(theme);
     document.dispatchEvent(ThemeChange);
 };
@@ -55,13 +56,12 @@ export let runTheme = () => {
         theme && themeSet(theme);
 
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-            themeSet(e.matches ? "dark" : "light");
+            themeSet("system");
         });
 
         window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
-            themeSet(e.matches ? "light" : "dark");
+            themeSet("system");
         });
-
     } catch (e) {
         console.warn("Theming isn't available on this browser.", e);
     }

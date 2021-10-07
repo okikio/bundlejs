@@ -61,9 +61,12 @@ BundleEvents.on({
             let query = searchParams.get("query") || searchParams.get("q");
             let share = searchParams.get("share");
             let bundle = searchParams.get("bundle");
-            if (query || share || bundle || plaintext) {
+            if (query || share || plaintext) {
                 fileSizeEl.textContent = `Wait...`;
-                BundleEvents.emit("bundle");
+                
+                if (bundle != null) {
+                    BundleEvents.emit("bundle");
+                }
             }
         }
     },
