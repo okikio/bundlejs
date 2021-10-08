@@ -476,11 +476,16 @@ export const build = () => {
     ) => {
         let parentEl = el?.parentElement.querySelector(".editor-btns");
         if (parentEl) {
+            let clearBtn = parentEl.querySelector(".clear-btn");
             let prettierBtn = parentEl.querySelector(".prettier-btn");
             let resetBtn = parentEl.querySelector(".reset-btn");
             let copyBtn = parentEl.querySelector(".copy-btn");
             let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
             let editorInfo = parentEl.querySelector(".editor-info");
+
+            clearBtn.addEventListener("click", () => {
+                editor.setValue("");
+            });
 
             prettierBtn.addEventListener("click", () => {
                 let value = `` + editor.getValue();
