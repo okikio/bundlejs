@@ -110,11 +110,11 @@ BundleEvents.on({
     let Monaco = await import("./modules/monaco");
     [editor, output] = Monaco.build();
 
-    await new Promise<void>((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, 100);
-    });
+    // await new Promise<void>((resolve) => {
+    //     setTimeout(() => {
+    //         resolve();
+    //     }, 100);
+    // });
 
     [editor.getDomNode(), output.getDomNode()].forEach((el) => {
         el?.parentElement?.classList.add("show");
@@ -122,6 +122,9 @@ BundleEvents.on({
 
     FadeLoadingScreen.play(); // Fade away the loading screen
     await FadeLoadingScreen;
+
+    FadeLoadingScreen.stop();
+    loadingContainerEl.forEach((x) => x?.remove());
 
     const editorBtns = Array.from(
         document.querySelectorAll(".editor-btns")
@@ -132,9 +135,6 @@ BundleEvents.on({
             editorBtns?.[1].classList.remove("delay");
         }, 1600);
     }
-
-    loadingContainerEl.forEach((x) => x?.remove());
-    FadeLoadingScreen.stop();
 
     BundleEvents.emit("loaded");
 
