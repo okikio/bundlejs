@@ -6,7 +6,7 @@ A small online tool for checking the gzipped and minified size of npm packages.
 
 I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, [esbuild](https://github.com/evanw/esbuild) and [rollup](https://github.com/rollup/rollup) as bundler and treeshaker respectively, [pako](https://github.com/nodeca/pako) as a js port of the zlib and gzip libraries, [pretty-bytes](https://github.com/sindresorhus/pretty-bytes) to convert the gzip size to human readable values, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.
 
-This project was greatly influenced by hardfists [neo-tools](https://github.com/hardfist/neo-tools) and mizchi's [uniroll](https://github.com/mizchi/uniroll) project.
+This project was greatly influenced by the [hardfist/neo-tools](https://github.com/hardfist/neo-tools) and [mizchi/uniroll](https://github.com/mizchi/uniroll) projects.
 
 **bundle** is a quick and easy way to bundle your projects, minify and see it's gzip size. It's an online tool similar to [bundlephobia](https://bundlephobia.com), but **bundle** does all the bundling locally on you browser and can treeshake and bundle multiple packages (both commonjs and esm) together, all without having to install any npm packages and with typescript support.
 
