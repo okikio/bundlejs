@@ -205,20 +205,20 @@ task("minify-js", async () => {
 
     return stream([`${jsFolder}/**/*.js`], {
         pipes: [
-            rollup({
-                preserveModules: true,
-                plugins: [terser()],
-            }, {
-                format: "esm",
-                entryFileNames: '[name].js',
-                chunkFileNames: 'chunk-[hash].js',
-            }),
+            // rollup({
+            //     preserveModules: true,
+            //     plugins: [terser()],
+            // }, {
+            //     format: "esm",
+            //     entryFileNames: '[name].js',
+            //     chunkFileNames: 'chunk-[hash].js',
+            // }),
 
-            size({
-                gzip: true,
-                showFiles: true,
-                showTotal: false,
-            })
+            // size({
+            //     gzip: true,
+            //     showFiles: true,
+            //     showTotal: false,
+            // })
         ],
         dest: jsFolder, // Output
     });
