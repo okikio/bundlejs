@@ -299,7 +299,7 @@ BundleEvents.on({
         value = `` + editor?.getValue();
 
         fileSizeEl.innerHTML = `<div class="loading"></div>`;
-        bundleTime.textContent = ``;
+        bundleTime.textContent = `Bundled in ...`;
 
         start = Date.now();
         BundleWorker.postMessage(value);
@@ -333,16 +333,16 @@ BundleEvents.on({
 // countapi-js hit counter. It counts the number of time the website is loaded
 import { hit } from "countapi-js";
 
-(async () => {
-    try {
-        let { value } = await hit("bundle.js.org", "visits");
-        let visitCounterEl = document.querySelector("#visit-counter");
-        if (visitCounterEl)
-            visitCounterEl.textContent = `👋 ${value} visits`;
-    } catch (err) {
-        console.warn(
-            "Visit Counter Error (please create a new issue in the repo)",
-            err
-        );
-    }
-})();
+// (async () => {
+//     try {
+//         let { value } = await hit("bundle.js.org", "visits");
+//         let visitCounterEl = document.querySelector("#visit-counter");
+//         if (visitCounterEl)
+//             visitCounterEl.textContent = `👋 ${value} visits`;
+//     } catch (err) {
+//         console.warn(
+//             "Visit Counter Error (please create a new issue in the repo)",
+//             err
+//         );
+//     }
+// })();

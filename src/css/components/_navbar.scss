@@ -2,7 +2,7 @@
     @apply fixed top-0 left-0 w-full z-50;
 
     @supports (backdrop-filter: blur(5px)) {
-        @apply backdrop-filter backdrop-blur dark:backdrop-blur-lg;
+        @apply backdrop-filter backdrop-blur dark:backdrop-blur;
     }
 
     .container {
@@ -52,6 +52,11 @@
     &.shadow .navbar-border {
         @apply border-gray-300;
         @apply dark:border-tertiary;
+    }
+
+    .btn, button {
+        @apply border border-gray-300;
+        @apply dark:border-gray-600;
     }
 }
 
@@ -143,6 +148,7 @@
     }
 
     @apply transform scale-100;
+    @apply active:bg-blue-200 dark:active:bg-gray-700;
 
     &:active {
         @apply scale-90;

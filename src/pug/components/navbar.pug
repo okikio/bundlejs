@@ -14,9 +14,11 @@ mixin navbar
         .navbar-border
     .container
       .navbar-frame
-        a.navbar-logo(href='./') bundle
+        a.navbar-logo(href='./').flex.gap-2
+          img(src="/favicon/favicon.svg", alt="")
+          span bundle
         .mobile
-          .flex.gap-1.w-full.space-x-0
+          .flex.gap-1.w-full.space-x-0.items-center
             .offline-icon.online(title="You are offline")
               //- span.icon wifi_off 
               svg.icon(viewbox='0 0 24 24' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink')
