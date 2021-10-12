@@ -2,6 +2,7 @@ import { App } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet } from "./scripts/theme";
+
 import { hljs } from "./modules/highlightjs";
 import * as Accordion from "./modules/accordion";
 
@@ -128,8 +129,9 @@ try {
             }
         });
 
-        // window.addEventListener("load", () => { });
-        wb.register();
+        window.addEventListener("load", () => {
+            wb.register();
+        });
     }
 })();
 

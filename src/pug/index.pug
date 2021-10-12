@@ -1,5 +1,8 @@
 extends /layouts/layout.pug
 
+block styles
+  link(rel="stylesheet", href="./js/index.min.css")
+
 block content
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
 
@@ -126,7 +129,7 @@ block content
       br
       details(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").rounded-md
         summary
-          p.px-4.py-2.font-bold.italic.cursor-pointer.select-none Auto-bundling shared URL's
+          p.px-4.py-2.italic.cursor-pointer.select-none Auto-bundling shared URL's
         div.content.px-2
           p If you would like to bundle your code when the share URL is loaded, add #[code bundle] to the url, e.g. #[a(href="/?q=@okikio/animate&bundle" rel="noopener") /?bundle&q=@okikio/animate] or #[a(href="/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?bundle&share=PTAEGEBs...]
     br
@@ -139,9 +142,6 @@ block content
     +product-hunt.place-content-center
 
 block script 
-  link(rel="stylesheet", href="./js/monaco.min.css")
-
-  script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
-  script(src='./js/index.min.js' type='module' async)
+  script(src='./js/index.min.js' type='module' defer)
 
   

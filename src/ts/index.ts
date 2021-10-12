@@ -93,134 +93,6 @@ BundleEvents.on({
     },
 });
 
-(async () => {
-    let flexWrapper = document.querySelector(".flex-wrapper") as HTMLElement;
-    let loadingContainerEl = Array.from(
-        document.querySelectorAll(".center-container")
-    );
-    let FadeLoadingScreen = animate({
-        target: loadingContainerEl,
-        opacity: [1, 0],
-        easing: "ease-in",
-        duration: 500,
-        autoplay: false,
-        fillMode: "both",
-    });
-
-    // Monaco Code Editor
-    let Monaco = await import("./modules/monaco");
-    [editor, output] = Monaco.build();
-
-    await new Promise<void>((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, 100);
-    });
-
-    [editor.getDomNode(), output.getDomNode()].forEach((el) => {
-        el?.parentElement?.classList.add("show");
-    });
-
-    FadeLoadingScreen.play(); // Fade away the loading screen
-    await FadeLoadingScreen;
-
-    FadeLoadingScreen.stop();
-    loadingContainerEl.forEach((x) => x?.remove());
-
-    flexWrapper.classList.add("loaded");
-
-    const editorBtns = Array.from(
-        document.querySelectorAll(".editor-btns")
-    );
-    if (editorBtns) {
-        editorBtns?.[1].classList.add("delay");
-        setTimeout(() => {
-            editorBtns?.[1].classList.remove("delay");
-        }, 1600);
-    }
-
-    BundleEvents.emit("loaded");
-
-    loadingContainerEl = null;
-    FadeLoadingScreen = null;
-
-    let oldShareLink: string;
-    let generateShareLink = () => {
-        if (value == editor?.getValue()) {
-            return (
-                oldShareLink ??
-                String(
-                    new URL(
-                        `/?share=${compressToURL(value)}`,
-                        document.location.origin
-                    )
-                )
-            );
-        }
-
-        value = `` + editor?.getValue();
-        return (oldShareLink = String(
-            new URL(
-                `/?share=${compressToURL(value)}`,
-                document.location.origin
-            )
-        ));
-    };
-
-    editor.onDidChangeModelContent(
-        debounce((e) => {
-            window.history.replaceState({}, "", generateShareLink());
-        }, 300)
-    );
-
-    const shareBtn = document.querySelector(
-        ".btn-share#share"
-    ) as HTMLButtonElement;
-    const shareInput = document.querySelector(
-        "#copy-input"
-    ) as HTMLInputElement;
-    shareBtn?.addEventListener("click", () => {
-        if (navigator.share) {
-            let shareBtnValue = shareBtn.innerText;
-
-            navigator.share({
-                title: 'bundle',
-                text: 'Check out on bundle.js.org',
-                url: generateShareLink(),
-            })
-                .then(() => {
-                    shareBtn.innerText = "Shared!";
-                    setTimeout(() => {
-                        shareBtn.innerText = shareBtnValue;
-                    }, 600);
-                })
-                .catch((error) => console.log('Error sharing', error));
-        } else {
-            shareInput.value = generateShareLink();
-            shareInput.select();
-            document.execCommand("copy");
-
-            let shareBtnValue = shareBtn.innerText;
-
-            shareBtn.innerText = "Copied!";
-            setTimeout(() => {
-                shareBtn.innerText = shareBtnValue;
-            }, 600);
-        }
-    });
-
-    // Listen to events for the results
-    ResultEvents.on("add-module", (v) => {
-        value = `` + editor?.getValue();
-        editor.setValue(value + "\n" + v);
-    });
-
-    RunBtn.addEventListener("click", () => {
-        window.history.pushState({}, "", generateShareLink());
-        BundleEvents.emit("bundle");
-    });
-})();
-
 // SearchResults solidjs component
 (async () => {
     const parseInput = (value: string) => {
@@ -327,6 +199,130 @@ BundleEvents.on({
             console.log("This page will unload normally and be discarded.");
             BundleWorker?.terminate();
         }
+    });
+})();
+
+import * as Monaco from "./modules/monaco";
+
+(async () => {
+    let flexWrapper = document.querySelector(".flex-wrapper") as HTMLElement;
+    let loadingContainerEl = Array.from(
+        document.querySelectorAll(".center-container")
+    );
+    let FadeLoadingScreen = animate({
+        target: loadingContainerEl,
+        opacity: [1, 0],
+        easing: "ease-in",
+        duration: 300,
+        autoplay: false,
+        fillMode: "both",
+    });
+
+    // Monaco Code Editor
+    // let Monaco = await import("./modules/monaco");
+    [editor, output] = Monaco.build();
+
+    FadeLoadingScreen.play(); // Fade away the loading screen
+    await FadeLoadingScreen;
+
+    [editor.getDomNode(), output.getDomNode()].forEach((el) => {
+        el?.parentElement?.classList.add("show");
+    });
+
+    FadeLoadingScreen.stop();
+    loadingContainerEl.forEach((x) => x?.remove());
+
+    flexWrapper.classList.add("loaded");
+
+    const editorBtns = Array.from(
+        document.querySelectorAll(".editor-btns")
+    );
+    if (editorBtns) {
+        editorBtns?.[1].classList.add("delay");
+        setTimeout(() => {
+            editorBtns?.[1].classList.remove("delay");
+        }, 1600);
+    }
+
+    BundleEvents.emit("loaded");
+
+    loadingContainerEl = null;
+    FadeLoadingScreen = null;
+
+    let oldShareLink: string;
+    let generateShareLink = () => {
+        if (value == editor?.getValue()) {
+            return (
+                oldShareLink ??
+                String(
+                    new URL(
+                        `/?share=${compressToURL(value)}`,
+                        document.location.origin
+                    )
+                )
+            );
+        }
+
+        value = `` + editor?.getValue();
+        return (oldShareLink = String(
+            new URL(
+                `/?share=${compressToURL(value)}`,
+                document.location.origin
+            )
+        ));
+    };
+
+    editor.onDidChangeModelContent(
+        debounce((e) => {
+            window.history.replaceState({}, "", generateShareLink());
+        }, 300)
+    );
+
+    const shareBtn = document.querySelector(
+        ".btn-share#share"
+    ) as HTMLButtonElement;
+    const shareInput = document.querySelector(
+        "#copy-input"
+    ) as HTMLInputElement;
+    shareBtn?.addEventListener("click", () => {
+        if (navigator.share) {
+            let shareBtnValue = shareBtn.innerText;
+
+            navigator.share({
+                title: 'bundle',
+                text: 'Check out on bundle.js.org',
+                url: generateShareLink(),
+            })
+                .then(() => {
+                    shareBtn.innerText = "Shared!";
+                    setTimeout(() => {
+                        shareBtn.innerText = shareBtnValue;
+                    }, 600);
+                })
+                .catch((error) => console.log('Error sharing', error));
+        } else {
+            shareInput.value = generateShareLink();
+            shareInput.select();
+            document.execCommand("copy");
+
+            let shareBtnValue = shareBtn.innerText;
+
+            shareBtn.innerText = "Copied!";
+            setTimeout(() => {
+                shareBtn.innerText = shareBtnValue;
+            }, 600);
+        }
+    });
+
+    // Listen to events for the results
+    ResultEvents.on("add-module", (v) => {
+        value = `` + editor?.getValue();
+        editor.setValue(value + "\n" + v);
+    });
+
+    RunBtn.addEventListener("click", () => {
+        window.history.pushState({}, "", generateShareLink());
+        BundleEvents.emit("bundle");
     });
 })();
 

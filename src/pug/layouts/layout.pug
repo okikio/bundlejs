@@ -39,12 +39,14 @@ html.dark(lang="en")
     //- link(rel='preconnect' href='https://fonts.gstatic.com')
     //- link(rel="preload" href='https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2' as="font" type="font/woff2" crossorigin)
     //- link(rel="preload" href="https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2" as="font" type="font/woff2" crossorigin)
-    link(rel='stylesheet' href='./css/app.min.css')
-
-    script(src='./js/theme.min.js' type='module')
 
     //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
+
+    link(rel='stylesheet' href='./css/app.min.css')
+    block styles
+
+    script(src='./js/theme.min.js' type='module' async)
 
     -
       let defaults = {
@@ -89,6 +91,7 @@ html.dark(lang="en")
     block footer
       +footer
     
+    script(src="./js/load-webanimation-polyfill.min.js" type='module' async)
     script(src='./js/critical.min.js' type='module' async)
 
     //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async)

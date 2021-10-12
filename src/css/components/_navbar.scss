@@ -123,6 +123,7 @@
 .navbar-list a {
     @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
     @apply dark:text-blue-400 dark:hover:bg-quaternary;
+    @apply border border-transparent hover:border-gray-300 dark:hover:border-gray-600;
 
     &.active {
         @apply bg-blue-600 text-white hover:bg-blue-700;
