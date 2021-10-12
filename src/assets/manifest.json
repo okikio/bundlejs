@@ -7,7 +7,7 @@
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "description": "a quick npm package size checker",
+  "description": "a quick and easy way to bundle your js projects, minify and see their gzipped size, all locally on your device",
   "icons": [
     {
       "src": "/favicon/android-chrome-192x192.png",

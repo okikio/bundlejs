@@ -94,6 +94,7 @@ BundleEvents.on({
 });
 
 (async () => {
+    let flexWrapper = document.querySelector(".flex-wrapper") as HTMLElement;
     let loadingContainerEl = Array.from(
         document.querySelectorAll(".center-container")
     );
@@ -110,11 +111,11 @@ BundleEvents.on({
     let Monaco = await import("./modules/monaco");
     [editor, output] = Monaco.build();
 
-    // await new Promise<void>((resolve) => {
-    //     setTimeout(() => {
-    //         resolve();
-    //     }, 100);
-    // });
+    await new Promise<void>((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 100);
+    });
 
     [editor.getDomNode(), output.getDomNode()].forEach((el) => {
         el?.parentElement?.classList.add("show");
@@ -125,6 +126,8 @@ BundleEvents.on({
 
     FadeLoadingScreen.stop();
     loadingContainerEl.forEach((x) => x?.remove());
+
+    flexWrapper.classList.add("loaded");
 
     const editorBtns = Array.from(
         document.querySelectorAll(".editor-btns")
@@ -177,16 +180,33 @@ BundleEvents.on({
         "#copy-input"
     ) as HTMLInputElement;
     shareBtn?.addEventListener("click", () => {
-        shareInput.value = generateShareLink();
-        shareInput.select();
-        document.execCommand("copy");
+        if (navigator.share) {
+            let shareBtnValue = shareBtn.innerText;
 
-        let shareBtnValue = shareBtn.innerText;
+            navigator.share({
+                title: 'bundle',
+                text: 'Check out on bundle.js.org',
+                url: generateShareLink(),
+            })
+                .then(() => {
+                    shareBtn.innerText = "Shared!";
+                    setTimeout(() => {
+                        shareBtn.innerText = shareBtnValue;
+                    }, 600);
+                })
+                .catch((error) => console.log('Error sharing', error));
+        } else {
+            shareInput.value = generateShareLink();
+            shareInput.select();
+            document.execCommand("copy");
 
-        shareBtn.innerText = "Copied!";
-        setTimeout(() => {
-            shareBtn.innerText = shareBtnValue;
-        }, 600);
+            let shareBtnValue = shareBtn.innerText;
+
+            shareBtn.innerText = "Copied!";
+            setTimeout(() => {
+                shareBtn.innerText = shareBtnValue;
+            }, 600);
+        }
     });
 
     // Listen to events for the results
@@ -201,7 +221,7 @@ BundleEvents.on({
     });
 })();
 
-// SarchResults solidjs component
+// SearchResults solidjs component
 (async () => {
     const parseInput = (value: string) => {
         const host = "https://api.npms.io";
@@ -318,7 +338,7 @@ import { hit } from "countapi-js";
         let { value } = await hit("bundle.js.org", "visits");
         let visitCounterEl = document.querySelector("#visit-counter");
         if (visitCounterEl)
-            visitCounterEl.textContent = `(${value} Page Visits)`;
+            visitCounterEl.textContent = `👋 ${value} visits`;
     } catch (err) {
         console.warn(
             "Visit Counter Error (please create a new issue in the repo)",

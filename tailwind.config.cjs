@@ -33,6 +33,9 @@ module.exports = {
 
         'lt-sm': { 'max': '640px' },
         // => @media (max-width: 640px) { ... }
+
+        'lt-xsm': { 'max': '440px' },
+        // => @media (max-width: 480px) { ... }
       },
       container: {
         center: 'true',

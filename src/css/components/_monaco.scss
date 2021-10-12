@@ -1,4 +1,5 @@
 .flex-wrapper {
+    --cols: 1fr;
     @apply w-full relative pb-6 mb-8;
     @apply grid gap-3;
     // grid-template-columns: auto;
@@ -8,6 +9,7 @@
 
     @screen lt-sm {
         grid-template-rows: auto auto;
+        grid-template-rows: var(--cols) var(--cols);
         // grid-flow: rows;
 
         // @apply grid-flow-row;
@@ -16,12 +18,17 @@
     @screen sm {
         min-height: 350px - 56px;
         grid-template-columns: auto auto;
+        grid-template-columns: var(--cols) var(--cols);
 
         @apply grid-rows-1;
     }
 
     @screen md {
         min-height: 400px - 56px;
+    }
+
+    &.loaded {
+        --cols: auto;
     }
 }
 
@@ -45,12 +52,6 @@
     padding-bottom: 15px;
     height: 100%;
 
-    resize: horizontal;
-
-    @screen lt-sm {
-        resize: vertical;
-    }
-
     overflow: hidden;
 
     font-family: Consolas, "Courier New", monospace;
@@ -61,24 +62,42 @@
     letter-spacing: 0px;
 }
 
+.flex-wrapper.loaded .app {
+    resize: horizontal;
+
+    @screen lt-sm {
+        resize: vertical;
+    }
+}
+
 .app#output {
     resize: none;
     height: 100%;
 }
 
-.push-to-side {
-    @apply flex align-middle justify-end flex-1 gap-2;
+.info-pane {
+    @apply flex w-full lt-sm:flex-col align-middle gap-2 lt-sm:gap-3;
     flex-wrap: nowrap;
+
+    #bundle-time {
+        @apply w-full;
+        min-height: theme("spacing.6");
+    }
+
+    .action-btns-overflow {
+        @apply py-1;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .action-btns {
+        @apply flex w-full align-middle gap-2;
+        position: relative;
+    }
 
     .btn {
         margin: 0;
     }
-}
-
-.push-to-side-overflow {
-    overflow-x: auto;
-    position: relative;
-    display: flex;
 }
 
 .file-size {
@@ -86,7 +105,10 @@
     @apply text-center flex justify-center items-center;
     @apply bg-gray-200 dark:bg-quaternary;
     @apply text-gray-500 dark:text-secondary;
-    min-width: theme("spacing.40");
+    // min-width: theme("spacing.24");
+    min-width: 18ch;
+    white-space: nowrap;
+
     min-height: theme("spacing.12");
 }
 
@@ -169,4 +191,77 @@
 .current-line {
     width: calc(100% - 20px);
     border-radius: 4px;
+}
+
+.offline-icon {
+    @apply px-3 py-2 rounded-md;
+    @apply flex items-center justify-center bg-blue-600 text-black;
+    &.online {
+        display: none;
+    }
+    svg {
+        vertical-align: middle;
+        fill: currentColor;
+        width: 1em;
+    }
+}
+
+.editor-btns {
+    transition: opacity ease 0.8s;
+    @apply absolute bottom-2 right-0 px-5 w-full flex-wrap;
+    opacity: 0;
+    pointer-events: none;
+    @apply flex gap-2;
+}
+
+.editor-btns.delay {
+    opacity: 1;
+}
+
+.app:hover .editor-btns,
+.app:focus-within .editor-btns {
+    transition: opacity ease-out 0.5s;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.editor-btns {
+    button {
+        @apply flex items-center justify-center;
+        @apply bg-gray-100 border dark:bg-gray-600 text-blue-400 dark:text-white;
+        @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-500;
+        @apply px-3 py-2 rounded-md z-10;
+        @apply flex items-center justify-center;
+        pointer-events: auto;
+
+        @supports (backdrop-filter: blur(5px)) {
+            @apply bg-opacity-50 dark:bg-opacity-50 backdrop-filter backdrop-blur-sm;
+        }
+
+        svg {
+            @apply text-lg;
+            vertical-align: middle;
+            fill: currentColor;
+            width: 1em;
+        }
+    }
+
+    .copy-container {
+        @apply relative z-[5];
+        // z-index: 5;
+    }
+
+    .editor-info {
+        @apply absolute top-0 right-0 z-0;
+        transform: translateY(100px);
+
+        &,
+        &:hover {
+            @apply bg-white dark:bg-gray-800  text-blue-500 dark:text-blue-500;
+
+            @supports (backdrop-filter: blur(5px)) {
+                @apply bg-opacity-50 dark:bg-opacity-60 backdrop-filter backdrop-blur-sm;
+            }
+        }
+    }
 }
