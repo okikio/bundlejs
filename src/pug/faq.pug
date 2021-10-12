@@ -1,9 +1,17 @@
 extends /layouts/layout.pug
 
+block pageInfo
+  - 
+    let page = {
+      url: "/faq",
+      title: "frequently asked questions - bundle",
+      description: "I frequently get asked what was the point in building bundle, this is a short, quick, and simple summary of frequently asked questions and my reasons for building bundle."
+    };
+
 block content
   #faq.container.max-w-screen-lg
-    h2 Frequently Asked Questions
-    p I often get asked what was the point in building bundle, this is a short, quick, and simple summary of my reasons for building bundle.   
+    h2 FAQ
+    p I frequently get asked what was the point in building bundle, this is a short, quick, and simple summary of frequently asked questions and my reasons for building bundle.   
     br
     br
     h4 
