@@ -24,6 +24,9 @@ html.dark(lang="en")
 
     meta(name='theme-color', content='#ffffff' media="(prefers-color-scheme: light)")
     meta(name='theme-color', content='#000000' media="(prefers-color-scheme: dark)")
+    
+    meta(name='color-scheme', content='light' media="(prefers-color-scheme: light)")
+    meta(name='color-scheme', content='dark' media="(prefers-color-scheme: dark)")
 
     link(rel='search' href='https://bundle.js.org/open-search.xml' type='application/opensearchdescription+xml' title='bundle')
 
@@ -37,6 +40,8 @@ html.dark(lang="en")
     //- link(rel="preload" href='https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2' as="font" type="font/woff2" crossorigin)
     //- link(rel="preload" href="https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2" as="font" type="font/woff2" crossorigin)
     link(rel='stylesheet' href='./css/app.min.css')
+
+    script(src='./js/theme.min.js' type='module')
 
     //- link(href='https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet' async)
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
@@ -84,7 +89,6 @@ html.dark(lang="en")
     block footer
       +footer
     
-    script(src='./js/theme.min.js' type='module' async)
     script(src='./js/critical.min.js' type='module' async)
 
     //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async)

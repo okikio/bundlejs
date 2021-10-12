@@ -45,9 +45,10 @@
 }
 
 .app {
-    @apply border border-gray-200 dark:border-transparent;
+    @apply bg-white border border-gray-300;
+    @apply dark:bg-elevated dark:border-gray-700;
     @apply rounded-lg shadow-lg;
-    @apply bg-white relative block;
+    @apply relative block;
     padding-top: 15px;
     padding-bottom: 15px;
     height: 100%;
@@ -84,6 +85,11 @@
         min-height: theme("spacing.6");
     }
 
+    .btn, button {
+        @apply border border-gray-300;
+        @apply dark:border-gray-600;
+    }
+
     .action-btns-overflow {
         @apply py-1;
         overflow-x: auto;
@@ -103,8 +109,10 @@
 .file-size {
     @apply inline-block px-4 py-2 rounded-md;
     @apply text-center flex justify-center items-center;
-    @apply bg-gray-200 dark:bg-quaternary;
     @apply text-gray-500 dark:text-secondary;
+    // @apply bg-gray-200 dark:bg-quaternary;
+    @apply bg-white border border-gray-300;
+    @apply dark:bg-elevated dark:border-gray-700;
     // min-width: theme("spacing.24");
     min-width: 18ch;
     white-space: nowrap;
@@ -141,7 +149,8 @@
 }
 
 .dark .app {
-    background-color: #24292e;
+    background-color: #0d1117;
+    border: 1px solid #30363D;
 }
 
 .dark .center-container {
@@ -228,8 +237,8 @@
 .editor-btns {
     button {
         @apply flex items-center justify-center;
-        @apply bg-gray-100 border dark:bg-gray-600 text-blue-400 dark:text-white;
-        @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-500;
+        @apply bg-gray-100 border dark:border-gray-500 dark:bg-gray-600 text-blue-400 dark:text-white;
+        @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600;
         @apply px-3 py-2 rounded-md z-10;
         @apply flex items-center justify-center;
         pointer-events: auto;

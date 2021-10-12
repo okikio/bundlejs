@@ -2,12 +2,20 @@
     
     transition: box-shadow ease 0.25s;
     // @apply transition duration-300 ease-out;
+    // @apply bg-gray-200 dark:bg-quaternary;
     @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
-    @apply bg-gray-200 dark:bg-quaternary rounded-lg;
-    @apply flex items-center pl-4;
+    @apply  bg-white border border-gray-300;
+    @apply dark:bg-elevated dark:border-gray-700;
+
+    @apply flex items-center pl-4  rounded-lg;
 
     input#search-input {
         @apply w-full ml-2 p-2 bg-transparent align-middle focus:outline-none;
+        // @apply text-gray-600;
+
+        &::placeholder {
+            @apply text-gray-400;
+        }
     }
 
     .clear {
