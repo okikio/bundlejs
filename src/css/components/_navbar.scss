@@ -80,18 +80,22 @@
 
     @screen lt-md {
         --height: 100vh;
-        transition: height ease-out 0.35s;
+        transition: height ease-out 0.35s, transform ease-out 0.35s;
         @apply flex-grow;
         flex-basis: 100%;
         overflow-y: hidden;
+        @apply transform;
+        transform-origin: top center;
 
         &.show {
             height: 100%;
             height: var(--height, 100vh);
+            @apply scale-100;
         }
 
         &.collapse {
             height: 0;
+            @apply scale-[0.8];
         }
     }
 }
@@ -129,11 +133,19 @@
 .theme-toggle,
 .navbar-logo,
 .navbar-list a {
-    transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+    transition: transform ease-in-out 0.15s, border-color 0.2s ease-out,
+        box-shadow 0.2s ease-out;
 
     @screen md {
-        transition: background-color 0.15s ease-out, color 0.15s ease-out,
-            border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+        transition: transform ease-in-out 0.15s, background-color 0.15s ease-out,
+            color 0.15s ease-out, border-color 0.2s ease-out,
+            box-shadow 0.2s ease-out;
+    }
+
+    @apply transform scale-100;
+
+    &:active {
+        @apply scale-90;
     }
 }
 

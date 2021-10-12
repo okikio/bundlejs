@@ -2,6 +2,8 @@ import { App } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet } from "./scripts/theme";
+import { hljs } from "./modules/highlightjs";
+import * as Accordion from "./modules/accordion";
 
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
@@ -22,60 +24,9 @@ try {
     console.warn("Theming seems to break on this browser.", e);
 }
 
-// navbar focus on scroll effect
-let canScroll = true;
-const navbar = document.querySelector(".navbar") as HTMLElement;
-window.addEventListener(
-    "scroll",
-    () => {
-        if (canScroll) {
-            canScroll = false;
-            requestAnimationFrame(() => {
-                navbar.classList.toggle("shadow", window.scrollY >= 5);
-
-                canScroll = true;
-            });
-        }
-    },
-    { passive: true }
-);
-
-try {
-    const app = new App();
-    app.add(new Navbar());
-    app.boot();
-} catch (err) {
-    console.warn("[App] boot failed,", err);
-}
-
-const offlineIcon = document.querySelector(".offline-icon");
-const hasNetwork = (online: boolean) => {
-    offlineIcon?.classList?.toggle("online", online);
-};
-
-window.addEventListener("load", () => {
-    hasNetwork(navigator.onLine);
-
-    window.addEventListener("online", () => {
-        // Set hasNetwork to online when they change to online.
-        hasNetwork(true);
-    });
-
-    window.addEventListener("offline", () => {
-        // Set hasNetwork to offline when they change to offline.
-        hasNetwork(false);
-    });
-});
-
-// highlight.js for code highlighting
-(async () => {
-    let { hljs } = await import("./modules/highlightjs");
-    hljs.highlightAll();
-})();
-
 // Check that service workers are supported
 (async () => {
-    if ("serviceWorker" in navigator) {        
+    if ("serviceWorker" in navigator) {
         let reloadDialog = document.querySelector(
             ".info-prompt.reload"
         ) as HTMLElement;
@@ -97,6 +48,7 @@ window.addEventListener("load", () => {
                 let animateIn = {
                     target: dialogEl,
                     translateY: [200, 0],
+                    visibility: ["visible", "visible"],
                     fillMode: "both",
                     easing: "ease",
                     duration: 350
@@ -105,6 +57,7 @@ window.addEventListener("load", () => {
                 let animateOut = {
                     ...animateIn,
                     translateY: [0, 200],
+                    visibility: ["visible", "hidden"],
                     delay: 3000,
                 };
 
@@ -179,3 +132,56 @@ window.addEventListener("load", () => {
         wb.register();
     }
 })();
+
+// navbar focus on scroll effect
+let canScroll = true;
+const navbar = document.querySelector(".navbar") as HTMLElement;
+window.addEventListener(
+    "scroll",
+    () => {
+        if (canScroll) {
+            canScroll = false;
+            requestAnimationFrame(() => {
+                navbar.classList.toggle("shadow", window.scrollY >= 5);
+
+                canScroll = true;
+            });
+        }
+    },
+    { passive: true }
+);
+
+try {
+    const app = new App();
+    app.add(new Navbar());
+    app.boot();
+} catch (err) {
+    console.warn("[App] boot failed,", err);
+}
+
+const offlineIcons = Array.from(document.querySelectorAll(".offline-icon"));
+const hasNetwork = (online: boolean) => {
+    offlineIcons.forEach(el => {
+        el?.classList?.toggle("online", online);
+    });
+};
+
+window.addEventListener("load", () => {
+    hasNetwork(navigator.onLine);
+
+    window.addEventListener("online", () => {
+        // Set hasNetwork to online when they change to online.
+        hasNetwork(true);
+    });
+
+    window.addEventListener("offline", () => {
+        // Set hasNetwork to offline when they change to offline.
+        hasNetwork(false);
+    });
+});
+
+// highlight.js for code highlighting
+hljs.highlightAll();
+
+// Accordion
+Accordion.run();

@@ -7,12 +7,14 @@ export class Navbar extends Service {
     public collapseSection: HTMLElement;
     public navbarList: HTMLElement;
     public toggleStatus: boolean;
+    public mobileEls: HTMLElement[];
 
     public init() {
         // Elements
         this.navbar = document.querySelector(".navbar") as HTMLElement;
         this.collapseSection = this.navbar.querySelector(".navbar-collapse.mobile") as HTMLElement;
         this.navbarList = this.navbar.querySelector(".navbar-list") as HTMLElement;
+        this.mobileEls = Array.from(this.collapseSection.querySelectorAll(".navbar-list a"));
         this.elements = Array.from(this.navbar.querySelectorAll(".navbar-list a"));
         this.menu = this.navbar.querySelector(".navbar-toggle") as HTMLElement;
         this.toggleStatus = false;
@@ -43,8 +45,9 @@ export class Navbar extends Service {
     }
 
     public fixTabindex() {
-        for (let el of this.elements) {
+        for (let el of this.mobileEls) {
             el.setAttribute("tabindex", `${this.toggleStatus ? 0 : -1}`);
+            // el.style.setProperty("visibility", `${this.toggleStatus ? "visible" : "hidden"}`);
         }
     }
 

@@ -5,7 +5,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cache-Control: max-age=360, stale-while-revalidate=480, public
-  Accept-CH: DPR, Viewport-Width, Width
+  Accept-CH: DPR, Viewport-Width, Widthyo
   X-UA-Compatible: IE=edge
   Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com data:; script-src 'self' https://cdn.polyfill.io 'unsafe-eval'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-ancestors 'self' https:;
   Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()

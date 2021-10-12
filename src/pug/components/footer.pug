@@ -1,15 +1,18 @@
 mixin footer
   footer.footer.my-6
-    .container.flex.flex-wrap.gap-2
-      div.text-left
-        label(for="pet-select") Change Theme:
+    .container.flex.flex-wrap.gap-2(class="flex-col sm:flex-row")
+      .flex.flex-grow
+        div
+          label(for="pet-select") Change Theme:
 
-        select.theme-options
-          option(value="system" selected) System
-          option(value="light") Light
-          option(value="dark") Dark
+          select.theme-options
+            option(value="system" selected) System
+            option(value="light") Light
+            option(value="dark") Dark
+        .flex-grow(class="text-right")
+          div.px-4.py-2.inline-block (c) 2021 Okiki Ojo 
       .flex-grow
-      div.text-right
+      div.flex.flex-wrap.gap-2.justify-end
         p.bg-gray-200(class="dark:bg-quaternary").inline-block.px-4.py-2.rounded-md
           span="  Made by "
           a(href='https://github.com/okikio' target='_blank' rel="noopener") Okiki Ojo

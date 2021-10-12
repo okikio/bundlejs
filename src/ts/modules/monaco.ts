@@ -160,7 +160,7 @@ export const debounce = (func: Function, timeout = 300) => {
 };
 
 export const build = () => {
-    let inputEl = document.querySelector(".app #editor") as HTMLElement;
+    let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
 
     inputEl.textContent = "";

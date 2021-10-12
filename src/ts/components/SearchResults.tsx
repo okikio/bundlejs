@@ -23,6 +23,7 @@ export const Card = ({
     let _packageHref = `https://www.skypack.dev/view/${_package}`;
 
     let btnTextEl: HTMLElement;
+    let btnEl: HTMLButtonElement;
     return (
         <div class="card">
             <section class="content">
@@ -44,9 +45,9 @@ export const Card = ({
                 </p>
             </section>
             <section class="add">
-                <button
+                <button ref={btnEl}
                     class="btn"
-                    onmousedown={() => {
+                    onclick={() => {
                         let text = btnTextEl.innerText;
                         
                         timeline()
@@ -56,12 +57,11 @@ export const Card = ({
                                 duration: 400,
                                 fillMode: "forwards",
                                 onfinish() {
+                                    btnTextEl.innerText = "Added!";
                                     ResultEvents.emit(
                                         "add-module",
                                         `export * from "${_package}";`
                                     );
-
-                                    btnTextEl.innerText = "Added!";
                                 }
                             })
                             .add({
@@ -69,6 +69,9 @@ export const Card = ({
                                 opacity: [0, 1],
                                 duration: 400,
                                 fillMode: "forwards",
+                                onfinish() {
+                                    // btnEl.blur();
+                                }
                             })
                             .add({
                                 target: btnTextEl,

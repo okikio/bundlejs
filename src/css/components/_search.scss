@@ -1,4 +1,6 @@
 .search {
+    
+    transition: box-shadow ease 0.25s;
     // @apply transition duration-300 ease-out;
     @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
     @apply bg-gray-200 dark:bg-quaternary rounded-lg;
@@ -87,14 +89,14 @@
         }
 
         &.add {
-            @apply transition transform scale-100 active:scale-90;
+            // @apply transition transform scale-100 active:scale-90;
             @apply flex sm:text-center sm:col-span-3;
             justify-content: end;
             align-items: center;
 
             .btn {
                 @apply w-full relative block m-0;
-                @apply transition duration-150;
+                // @apply transition duration-150;
                 @apply bg-gray-200 dark:bg-quaternary;
                 @apply hover:bg-blue-200 dark:hover:bg-gray-600;
                 @apply active:bg-blue-100 dark:active:bg-gray-800;
