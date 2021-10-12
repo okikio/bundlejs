@@ -1,5 +1,13 @@
 extends /layouts/layout.pug
 
+block pageInfo
+  - 
+    let page = {
+      url: "/about",
+      title: "about - bundle",
+      description: "Details about how bundle was made as well, as well links, sources, and all the tools I used to make bundle."
+    };
+
 block content
   #about.container.max-w-screen-lg
     h2.text-center about
