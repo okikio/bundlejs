@@ -290,7 +290,7 @@ import * as Monaco from "./modules/monaco";
 
             navigator.share({
                 title: 'bundle',
-                text: 'Check out on bundle.js.org',
+                text: '',
                 url: generateShareLink(),
             })
                 .then(() => {
