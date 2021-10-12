@@ -116,10 +116,11 @@ task("js", async () => {
 
         { WEB_WORKER },
         { solidPlugin: solid },
-        { default: rename },
+        { default: rollup },
+        // { default: rename },
 
-        { default: replace },
-        { basename },
+        // { default: replace },
+        // { basename },
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -127,10 +128,11 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
-        import("gulp-rename"),
+        import("gulp-better-rollup")
+        // import("gulp-rename"),
 
-        import("gulp-replace"),
-        import("path"),
+        // import("gulp-replace"),
+        // import("path"),
     ]);
 
     let monacoFilename;
@@ -139,7 +141,7 @@ task("js", async () => {
             ? createGulpEsbuild({ incremental: true })
             : gulpEsBuild;
 
-    await stream(
+    return stream(
         [
             `${tsFolder}/*.ts`,
             `${tsFolder}/scripts/*`,
@@ -161,7 +163,7 @@ task("js", async () => {
                     minify: true,
                     color: true,
                     format: "esm",
-                    sourcemap: true,
+                    sourcemap: false,
                     splitting: true,
 
                     loader: {
@@ -180,29 +182,44 @@ task("js", async () => {
                         showTotal: false,
                     })
                 ),
-
-                gulpif(
-                    (file) => /monaco(.*)\.css$/.test(file.path),
-                    rename("monaco.min.css")
-                ),
-
-                gulpif((file) => {
-                    let test = /monaco-(.*)\.js$/.test(file.path);
-                    if (test) monacoFilename = basename(file.path);
-                    return test;
-                }, rename("monaco.min.js")),
-
-                gulpif(
-                    (file) => /monaco-(.*)\.js\.map$/.test(file.path),
-                    rename("monaco.min.js.map")
-                ),
             ],
             dest: jsFolder, // Output
         }
     );
+});
+
+task("minify-js", async () => {
+    const [
+        { default: size },
+        { default: gulpif },
+
+        { default: rollup },
+        { terser }
+    ] = await Promise.all([
+        import("gulp-size"),
+        import("gulp-if"),
+
+        import("gulp-better-rollup"),
+        import("rollup-plugin-terser")
+    ]);
 
     return stream([`${jsFolder}/**/*.js`], {
-        pipes: monacoFilename ? [replace(new RegExp(monacoFilename, "g"), "monaco.min.js")] : [],
+        pipes: [
+            rollup({
+                preserveModules: true,
+                plugins: [terser()],
+            }, {
+                format: "esm",
+                entryFileNames: '[name].js',
+                chunkFileNames: 'chunk-[hash].js',
+            }),
+
+            size({
+                gzip: true,
+                showFiles: true,
+                showTotal: false,
+            })
+        ],
         dest: jsFolder, // Output
     });
 });
@@ -346,6 +363,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
+        "minify-js",
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );

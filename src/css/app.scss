@@ -176,6 +176,7 @@ main {
 #product-hunt {
     @apply flex mb-6;
 
+    a,
     a:focus-visible {
         @apply rounded-xl;
     }
@@ -360,8 +361,18 @@ details {
     content: "";
   }
   summary {
-    @apply relative cursor-pointer;
+      --text-shadow-color: currentColor;
+    @apply relative cursor-pointer font-light;
+    // letter-spacing: .1em;
     padding-left: 2ch;
+    transition: text-shadow ease 0.4s;
+    text-shadow: 0 0 .6px var(--text-shadow-color), 
+                 0 0 .6px var(--text-shadow-color), 
+                 0 0 .6px var(--text-shadow-color);
+    &:active {
+        --text-shadow-color: transparent;
+    }
+
     &:before {
         font-family: 'Material Icons Round';
         font-size: 24px;
@@ -375,26 +386,42 @@ details {
         word-wrap: normal;
         direction: ltr;
         -webkit-font-smoothing: antialiased;
+        text-shadow: none;
 
-      content: "► ";
-      content: "chevron_right";
-      @apply absolute top-1/2;
-      left: 0.25ch;
-      @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
-      transform: translate(0, -50%);
+        content: "► ";
+        content: "chevron_right";
+        @apply absolute top-1/2;
+        left: 0.25ch;
+        @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
+        transform: translate(0, -50%);
+    }
+    &:active,
+    &:active:before {
+        @apply text-gray-800 dark:text-gray-100;
     }
   }
+  
   summary:before {
       transition: transform 0.2s ease-in-out, color ease 0.2s;
       transform: translate(0, -50%) rotateZ(0deg);
   }
+
   &[open] > summary {
-    // @apply text-blue-500;
+    --text-shadow-color: transparent;
+
+    &:active {
+        --text-shadow-color: currentColor;
+    }
+
     &:before {
         @apply text-gray-600/60 dark:text-gray-400/60;
       // content: "▼ ";
       // content: "\f2a2";
       transform: translate(0, -50%) rotateZ(90deg);
+    }
+
+    &:active:before {
+        @apply text-gray-800 dark:text-gray-100;
     }
   }
 }

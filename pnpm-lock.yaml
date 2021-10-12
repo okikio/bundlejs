@@ -9,6 +9,7 @@ specifiers:
   '@okikio/emitter': ^2.1.7
   '@okikio/native': ^3.0.1
   '@rollup/plugin-virtual': ^2.0.3
+  '@rollup/stream': ^2.0.0
   '@types/node': ^16.10.3
   assert: ^2.0.0
   autoprefixer: ^10.3.7
@@ -24,6 +25,7 @@ specifiers:
   events: ^3.3.0
   fibers: ^5.0.0
   gulp: ^4.0.2
+  gulp-better-rollup: ^4.0.1
   gulp-changed: ^4.0.3
   gulp-esbuild: ^0.9.0
   gulp-if: ^3.0.0
@@ -47,6 +49,7 @@ specifiers:
   prettier: ^2.4.1
   pretty-bytes: ^5.6.0
   rollup: ^2.58.0
+  rollup-plugin-terser: ^7.0.2
   sass: ^1.42.1
   solid-js: ^1.1.6
   standard-version: ^9.3.1
@@ -86,6 +89,7 @@ devDependencies:
   '@commitlint/cli': 13.2.1
   '@commitlint/config-conventional': 13.2.0
   '@csstools/postcss-sass': 4.0.0
+  '@rollup/stream': 2.0.0_rollup@2.58.0
   '@types/node': 16.10.3
   autoprefixer: 10.3.7_postcss@8.3.9
   browser-sync: 2.27.5
@@ -95,6 +99,7 @@ devDependencies:
   esbuild-plugin-solid: 0.4.0_esbuild@0.13.4+solid-js@1.1.6
   fibers: 5.0.0
   gulp: 4.0.2
+  gulp-better-rollup: 4.0.1_rollup@2.58.0
   gulp-changed: 4.0.3_gulp@4.0.2
   gulp-esbuild: 0.9.0
   gulp-if: 3.0.0
@@ -111,6 +116,7 @@ devDependencies:
   postcss-csso: 5.0.1_postcss@8.3.9
   postcss-scss: 4.0.1_postcss@8.3.9
   rollup: 2.58.0
+  rollup-plugin-terser: 7.0.2_rollup@2.58.0
   sass: 1.42.1
   standard-version: 9.3.1
   tailwindcss: 2.2.16_96f83969316717847b3edf58a3f353f3
@@ -1583,6 +1589,15 @@ packages:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.3.0
+      rollup: 2.58.0
+    dev: true
+
+  /@rollup/stream/2.0.0_rollup@2.58.0:
+    resolution: {integrity: sha512-HsCyY/phZMys1zFUYoYlnDJGG9zMmYFfEjDKNQa00CYgjeyGD4cLdO6KNIkBh61AWOZfOsTPuGtNmFCsjQOfFg==}
+    engines: {node: '>= 10.20.1'}
+    peerDependencies:
+      rollup: ^2.35.1
+    dependencies:
       rollup: 2.58.0
     dev: true
 
@@ -4469,6 +4484,19 @@ packages:
     resolution: {integrity: sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==}
     dev: true
 
+  /gulp-better-rollup/4.0.1_rollup@2.58.0:
+    resolution: {integrity: sha512-oUGrMd+p9umBPoIPYVDxFT4EwCzywh3o8q++eswJyAxrRgYCEM6OOGGxJLG+AmzzjEoiq0cc/ndgF5SH2qW3Fg==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      rollup: ^1.4.1
+    dependencies:
+      lodash.camelcase: 4.3.0
+      plugin-error: 1.0.1
+      rollup: 2.58.0
+      vinyl: 2.2.1
+      vinyl-sourcemaps-apply: 0.2.1
+    dev: true
+
   /gulp-changed/4.0.3_gulp@4.0.2:
     resolution: {integrity: sha512-oIymgTNmmIvdqRRpdtohmELix81q+CA/D9DgVCvaM4Ulai0xgalf+XS6A95JwskbxRGQKtzzhMmdWZEuikX67w==}
     engines: {node: '>=8'}
@@ -5650,6 +5678,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+    dev: true
+
+  /lodash.camelcase/4.3.0:
+    resolution: {integrity: sha1-soqmKIorn8ZRA1x3EfZathkDMaY=}
     dev: true
 
   /lodash.debounce/4.0.8:
