@@ -216,10 +216,6 @@ footer.footer {
     }
 }
 
-#visit-counter {
-    @apply tabular-nums;
-}
-
 #copy-input {
     position: absolute;
     top: -50px;
@@ -361,7 +357,7 @@ details {
     content: "";
   }
   summary {
-      --text-shadow-color: currentColor;
+      --text-shadow-color: transparent;
     @apply relative cursor-pointer font-light;
     // letter-spacing: .1em;
     padding-left: 2ch;
@@ -370,7 +366,7 @@ details {
                  0 0 .6px var(--text-shadow-color), 
                  0 0 .6px var(--text-shadow-color);
     &:active {
-        --text-shadow-color: transparent;
+        --text-shadow-color: currentColor;
     }
 
     &:before {
@@ -407,10 +403,10 @@ details {
   }
 
   &[open] > summary {
-    --text-shadow-color: transparent;
+    --text-shadow-color: currentColor;
 
     &:active {
-        --text-shadow-color: currentColor;
+        --text-shadow-color: transparent;
     }
 
     &:before {
