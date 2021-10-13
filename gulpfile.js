@@ -243,8 +243,8 @@ task("service-worker", async () => {
         // Define runtime caching rules.
         runtimeCaching: [
             {
-                // Match any request that starts with https://cdn.polyfill.io
-                urlPattern: /^https:\/\/(?:cdn\.polyfill\.io)|(?:api\.producthunt\.com)|(?:api\.countapi\.xyz)/,
+                // Match any request that starts with https://api.producthunt.com and https://api.countapi.xyz
+                urlPattern: /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz))/,
 
                 // Apply a network-first strategy.
                 handler: "NetworkFirst",
@@ -252,7 +252,7 @@ task("service-worker", async () => {
             },
             {
                 // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
-                urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$/,
+                urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
 
                 // Apply a stale-while-revalidate strategy.
                 handler: "StaleWhileRevalidate",
