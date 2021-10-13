@@ -3,7 +3,7 @@
     @apply w-full relative pb-6 mb-8;
     @apply grid gap-3;
     // grid-template-columns: auto;
-    min-height: (400px - 56px) * 2;
+    height: (300px - 56px) * 2;
     resize: vertical;
     overflow: hidden;
 
@@ -72,6 +72,7 @@
 }
 
 .app#output {
+    flex-shrink: 1;
     resize: none;
     height: 100%;
 }
