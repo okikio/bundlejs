@@ -15,7 +15,7 @@ export const JSON_PLUGIN = (): Plugin => {
 
                 return {
                     contents: `
-                    export const value = ${content};
+                    const value = ${content};
                     export default value;`,
                     pluginData: {
                         parentUrl: url,

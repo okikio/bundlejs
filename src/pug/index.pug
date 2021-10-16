@@ -105,6 +105,15 @@ block content
       a(href="https://cdn.skypack.dev" target="_blank" rel="noopener")  cdn.skypack.dev
       |  but you can use the others.
     br
+    p.relative
+      span="* For some packages an error occurs where the default export is excluded from the treeshaken bundle, the solution for this is to manually include the default export like so,  "
+      :markdown-it(linkify langPrefix='language-')
+        ```typescript
+        export * from "solid-dismiss";
+        // and
+        export { default } from "solid-dismiss";
+        ```
+    br
     br
     h4#url-queries URL Queries & Shareable Links
     br
