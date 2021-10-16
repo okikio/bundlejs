@@ -3,7 +3,7 @@
     @apply w-full relative pb-6 mb-8;
     @apply grid gap-3;
     // grid-template-columns: auto;
-    height: (300px - 56px) * 2;
+    height: (300px - 56px);
     resize: vertical;
     overflow: hidden;
 
@@ -23,9 +23,9 @@
         @apply grid-rows-1;
     }
 
-    @screen md {
-        min-height: 400px - 56px;
-    }
+    // @screen md {
+    //     min-height: 400px - 56px;
+    // }
 
     &.loaded {
         --cols: auto;
@@ -53,6 +53,10 @@
     padding-bottom: 15px;
     height: 100%;
 
+    // width: 100%;
+    // min-width: theme("spacing.3");
+    // max-width: calc(100% - theme("spacing.3"));
+
     overflow: hidden;
 
     font-family: Consolas, "Courier New", monospace;
@@ -71,8 +75,17 @@
     }
 }
 
+.app#input {
+    --spacing: theme("spacing.10");
+    @supports (padding-left: env(safe-area-inset-right)) {
+        --spacing: calc(theme("spacing.10") + env(safe-area-inset-right) + env(safe-area-inset-left));
+    }
+
+    min-width: 25px;
+    max-width: calc(theme("screens.lg") - theme("spacing.3") - 25px - var(--spacing));
+}
+
 .app#output {
-    flex-shrink: 1;
     resize: none;
     height: 100%;
 }
