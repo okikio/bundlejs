@@ -33,10 +33,61 @@ let browserSync;
 
 // HTML Tasks
 task("html", async () => {
-    const [{ default: pug }, { default: plumber }] = await Promise.all([
+    const [
+        { default: pug },
+        { default: plumber },
+
+        { default: posthtml },
+        { render },
+        { parser },
+
+        { rehype },
+        { h }
+    ] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
+
+        import("gulp-posthtml"),
+        import("posthtml-render"),
+        import("posthtml-parser"),
+
+        import("rehype"),
+        import("hastscript")
     ]);
+
+    let plugins = [        
+        "rehype-slug",
+        "rehype-highlight",
+        [
+            "rehype-autolink-headings",
+            {
+                behavior: "append",
+                content: [h("i.icon", "insert_link")],
+            },
+        ],
+        ["rehype-external-links", { target: "_blank", rel: ["noopener"] }],
+    ]
+
+    const importPlugin = async (p) => {
+        if (typeof p === "string") {
+            return await import(p);
+        }
+
+        return await p;
+    }
+
+    plugins = plugins.map((p) => {
+        return new Promise((resolve, reject) => {
+            const [plugin, opts] = [].concat(p);
+            return importPlugin(plugin)
+                .then((m) => {
+                    return resolve([m.default, opts]);
+                })
+                .catch((e) => reject(e));
+        });
+    });
+
+    const loadedPlugins = await Promise.all(plugins);     
     return stream(`${pugFolder}/*.pug`, {
         pipes: [
             plumber(),
@@ -44,6 +95,26 @@ task("html", async () => {
                 basedir: pugFolder,
                 self: true,
             }),
+            posthtml([
+                (() => {
+                    return async (tree) => {
+                        const content = render(tree);
+                        const engine = rehype();
+
+                        try {
+                            loadedPlugins.forEach(([plugin, opts]) => {
+                                engine.use(plugin, opts);
+                            });
+                        } catch (e) {
+                            console.warn(e);
+                        }
+
+                        const value = String(await engine.process(content));
+                        return parser(value);
+                    };
+                })()
+            ]),
+            
         ],
         dest: htmlFolder,
     });

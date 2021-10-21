@@ -2,8 +2,6 @@ import { App } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet } from "./scripts/theme";
-
-import { hljs } from "./modules/highlightjs";
 import * as Accordion from "./modules/accordion";
 
 import { Workbox } from "workbox-window";
@@ -181,9 +179,6 @@ window.addEventListener("load", () => {
         hasNetwork(false);
     });
 });
-
-// highlight.js for code highlighting
-hljs.highlightAll();
 
 // Accordion
 Accordion.run();
