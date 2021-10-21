@@ -77,6 +77,8 @@ import {
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import WebWorker from "../util/WebWorker";
+import { parseInput } from "../components/SearchResults";
+
 import { mediaTheme, themeGet } from "../scripts/theme";
 
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
