@@ -118,7 +118,7 @@ BundleEvents.on({
                     setState(
                         // registry.npmjs.com -> result?.objects
                         // api.npms.io -> result?.results
-                        result?.results.map((obj) => {
+                        result?.objects.map((obj) => {
                             const { name, description, date, publisher } =
                                 obj.package;
                             return {

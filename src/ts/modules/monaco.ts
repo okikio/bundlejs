@@ -234,19 +234,21 @@ export const build = () => {
                     if (!FetchCache.has(url)) {
                         response = await fetch(url);
                         result = await response.json();
-                        FetchCache.set(url, result);
+                        FetchCache.set(url, await response.text());
                     } else {
-                        result = FetchCache.get(url);
+                        result = JSON.parse(FetchCache.get(url));
                     }
                 } catch (e) {
                     console.warn(e);
                     return;
                 }
+                
+                // result?.results   ->   api.npms.io
+                if (result?.objects.length <= 0) return;
 
-                if (result?.results.length <= 0) return;
-
+                // result?.results   ->   api.npms.io
                 const { name, description, version, date, publisher, links } =
-                    result?.results?.[0]?.package ?? {};
+                    result?.objects?.[0]?.package ?? {};
                 let author = publisher?.username;
                 let _date = new Date(date).toLocaleDateString(undefined, {
                     year: "numeric",
