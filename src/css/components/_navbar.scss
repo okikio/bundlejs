@@ -85,7 +85,7 @@
 
     @screen lt-md {
         --height: 100vh;
-        transition: height ease-out 0.35s, transform ease-out 0.35s;
+        transition: height ease-out 0.35s, transform ease-out 0.35s, opacity ease 0.35s;
         @apply flex-grow;
         flex-basis: 100%;
         overflow-y: hidden;
@@ -95,12 +95,12 @@
         &.show {
             height: 100%;
             height: var(--height, 100vh);
-            @apply scale-100;
+            @apply scale-100 opacity-100;
         }
 
         &.collapse {
             height: 0;
-            @apply scale-[0.8];
+            @apply scale-[0.8] opacity-0;
         }
     }
 }
