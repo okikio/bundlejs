@@ -195,6 +195,10 @@ main {
         @apply text-4xl font-bold my-8;
     }
 
+    h2#faq {
+        @apply pl-0;
+    }
+
     h4 {
         @apply text-2xl font-bold mb-2;
     }
@@ -293,8 +297,11 @@ footer.footer {
     }
 }
 
-.btn, button, #product-hunt a {
-    transition: opacity ease 0.25s, transform ease-in-out 0.125s, box-shadow ease 0.25s;
+.btn,
+button,
+#product-hunt a {
+    transition: opacity ease 0.25s, transform ease-in-out 0.125s,
+        box-shadow ease 0.25s;
     @apply transform scale-100;
     @apply active:bg-blue-200 dark:active:bg-gray-700;
 
@@ -376,77 +383,77 @@ footer.footer {
     // color-scheme: light;
 }
 details {
-  .content {
-    padding-left: 2ch;
-    @apply py-4;
-  }
-  summary::marker {
-    content: "";
-  }
-  summary {
-      --text-shadow-color: transparent;
-    @apply relative cursor-pointer font-light;
-    // letter-spacing: .1em;
-    padding-left: 2ch;
-    transition: text-shadow ease 0.4s;
-    text-shadow: 0 0 .6px var(--text-shadow-color), 
-                 0 0 .6px var(--text-shadow-color), 
-                 0 0 .6px var(--text-shadow-color);
-    &:active {
-        --text-shadow-color: currentColor;
+    .content {
+        padding-left: 2ch;
+        @apply py-4;
     }
-
-    &:before {
-        font-family: 'Material Icons Round';
-        font-size: 24px;
-        font-weight: normal;
-        font-style: normal;
-        line-height: 1;
-        letter-spacing: normal;
-        text-transform: none;
-        display: inline-block;
-        white-space: nowrap;
-        word-wrap: normal;
-        direction: ltr;
-        -webkit-font-smoothing: antialiased;
-        text-shadow: none;
-
-        content: "► ";
-        content: "chevron_right";
-        @apply absolute top-1/2;
-        left: 0.25ch;
-        @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
-        transform: translate(0, -50%);
+    summary::marker {
+        content: "";
     }
-    &:active,
-    &:active:before {
-        @apply text-gray-800 dark:text-gray-100;
-    }
-  }
-  
-  summary:before {
-      transition: transform 0.2s ease-in-out, color ease 0.2s;
-      transform: translate(0, -50%) rotateZ(0deg);
-  }
-
-  &[open] > summary {
-    --text-shadow-color: currentColor;
-
-    &:active {
+    summary {
         --text-shadow-color: transparent;
+        @apply relative cursor-pointer font-light;
+        // letter-spacing: .1em;
+        padding-left: 2ch;
+        transition: text-shadow ease 0.4s;
+        text-shadow: 0 0 0.6px var(--text-shadow-color),
+            0 0 0.6px var(--text-shadow-color),
+            0 0 0.6px var(--text-shadow-color);
+        &:active {
+            --text-shadow-color: currentColor;
+        }
+
+        &:before {
+            font-family: "Material Icons Round";
+            font-size: 24px;
+            font-weight: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-shadow: none;
+
+            content: "► ";
+            content: "chevron_right";
+            @apply absolute top-1/2;
+            left: 0.25ch;
+            @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
+            transform: translate(0, -50%);
+        }
+        &:active,
+        &:active:before {
+            @apply text-gray-800 dark:text-gray-100;
+        }
     }
 
-    &:before {
-        @apply text-gray-600/60 dark:text-gray-400/60;
-      // content: "▼ ";
-      // content: "\f2a2";
-      transform: translate(0, -50%) rotateZ(90deg);
+    summary:before {
+        transition: transform 0.2s ease-in-out, color ease 0.2s;
+        transform: translate(0, -50%) rotateZ(0deg);
     }
 
-    &:active:before {
-        @apply text-gray-800 dark:text-gray-100;
+    &[open] > summary {
+        --text-shadow-color: currentColor;
+
+        &:active {
+            --text-shadow-color: transparent;
+        }
+
+        &:before {
+            @apply text-gray-600/60 dark:text-gray-400/60;
+            // content: "▼ ";
+            // content: "\f2a2";
+            transform: translate(0, -50%) rotateZ(90deg);
+        }
+
+        &:active:before {
+            @apply text-gray-800 dark:text-gray-100;
+        }
     }
-  }
 }
 
 // html.dark .theme-options {
