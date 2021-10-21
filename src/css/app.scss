@@ -192,7 +192,8 @@ main {
     }
 
     h2#usage {
-        @apply text-4xl font-bold my-8;
+        @apply text-4xl font-bold;
+        // my-8
     }
 
     h2#faq {
@@ -201,6 +202,10 @@ main {
 
     h4 {
         @apply text-2xl font-bold mb-2;
+    }
+
+    .list-disc {
+        @apply list-disc list-inside;
     }
 }
 

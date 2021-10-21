@@ -1,7 +1,8 @@
 .flex-wrapper {
     --cols: 1fr;
-    @apply w-full relative pb-6 mb-8;
+    @apply w-full relative pb-6;
     @apply grid gap-3;
+    //  mb-8
     // grid-template-columns: auto;
     height: (400px - 56px);
     resize: vertical;

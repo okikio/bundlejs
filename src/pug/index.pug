@@ -68,25 +68,26 @@ block content
         +editor-btns
 
   .container  
+    h2#usage Usage
     p * Check the console for error messages.
     p * Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.
     br
-    h2#usage Usage
 
     p You can use custom protocols to specify which CDN the module should come from.
     br
     p
-      | * esm.run:react   ->   #[a(href="https://esm.run/react" target="_blank" rel="noopener") https://esm.run/react] 
-      br
-      | * esm.sh:react    ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
-      br
-      | * esm:react       ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
-      br
-      | * skypack:react   ->   #[a(href="https://cdn.skypack.dev/react" target="_blank" rel="noopener") https://cdn.skypack.dev/react] 
-      br
-      | * unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
-      br
-      | * jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react] 
+      ul.list-disc
+        li esm.run:react   ->   #[a(href="https://esm.run/react" target="_blank" rel="noopener") https://esm.run/react] 
+        //- br
+        li esm.sh:react    ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
+        //- br
+        li esm:react       ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
+        //- br
+        li skypack:react   ->   #[a(href="https://cdn.skypack.dev/react" target="_blank" rel="noopener") https://cdn.skypack.dev/react] 
+        //- br
+        li unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
+        //- br
+        li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react] 
     br
     p e.g.
     :markdown-it(linkify langPrefix='language-')
