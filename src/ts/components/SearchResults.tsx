@@ -70,7 +70,7 @@ export const Card = ({
     let btnEl: HTMLButtonElement;
     return (
         <div class="card">
-            <section class="content">
+            <section class={`content ${type ? "special" : "}`}>
                 <h3 class={`font-semibold text-lg`}>
                 {
                     type ? 
