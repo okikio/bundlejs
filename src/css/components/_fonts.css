@@ -174,7 +174,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.material-icons-round {
+.material-icons-round, .icon {
   font-family: 'Material Icons Round';
   font-weight: normal;
   font-style: normal;

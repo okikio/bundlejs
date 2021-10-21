@@ -13,6 +13,7 @@ html,
 body {
     scroll-behavior: smooth;
     scrollbar-gutter: stable both-edges;
+    scroll-padding-top: 15vh;
 }
 
 html {
@@ -30,6 +31,32 @@ body {
     @apply font-manrope;
     font-size: 1rem;
     line-height: 1.5;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    .icon {
+        visibility: hidden;
+        @apply text-3xl;
+        line-height: 1;
+    }
+
+    a {
+        @apply p-2;
+    }
+
+    &:hover .icon {
+        visibility: visible;
+        border-bottom-color: transparent;
+    }
+
+    a:is(:hover, :focus) {
+        visibility: visible;
+        border-bottom-color: transparent;
+    }
 }
 
 .no-overflow-x {

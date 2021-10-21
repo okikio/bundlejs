@@ -20,20 +20,20 @@ block content
       | ?
     p 
       :markdown-it(linkify langPrefix='language-')
-        There are a couple reasons for this but the main one is that `bundlephobia` wasn't reliable enough. 
+        There are a couple reasons for this, but the main one is that #[code bundlephobia] wasn't reliable enough. 
     br
     h4 What do you mean wasn't reliable enough? 
-    p It can treeshake bundles accurately. Right now `bundlephobia`, is a bit hit or miss when it comes to treeshaking.
+    p Right now #[code bundlephobia], is a bit hit or miss when it comes to treeshaking. So, I built #[strong bundle.js.org], which can treeshake bundles accurately. 
       br
       br
       :markdown-it(linkify langPrefix='language-')
-        For example, try treeshaking the `Event` class from `@okikio/emitter` using [bundlephobia](https://bundlephobia.com/package/@okikio/emitter) and try pasting this, 
+        For example, try treeshaking the `Event` class from `@okikio/emitter` using [bundlephobia](https://bundlephobia.com/package/@okikio/emitter) and try pasting this into [bundle.js.org](https://bundle.js.org).
         ```ts
         export { Event } from "@okikio/emitter";
         ``` 
       br
       :markdown-it(linkify langPrefix='language-')
-        into [bundle.js.org](https://bundle.js.org). You will notice a major package size disparity. This is only one example and I am sure others exist, I hope the above example illustrates my point. 
+        You will notice a major package size disparity. This is only one example and I am sure others exist, I hope the above example illustrates my point. 
       br
       :markdown-it(linkify langPrefix='language-')
         Another problem with `bundlephobia` is the lack of good error reporting if (for whatever reason) `bundlephobia` isn't able to bundle your package, it logs this to the console,
@@ -47,16 +47,16 @@ block content
         }
         ```
 
-        this just isn't very useful for debugging. `bundle.js.org` run locally.  
+        this just isn't very useful for debugging. 
       br
       :markdown-it(linkify langPrefix='language-')
-        On the other hand, since, `bundle.js.org` runs locally right on your computer, when an error occurs it logs the exact error you would see when using [esbuild](https://esbuild.github.io/) or other bundlers in your build process, making it much easier to know what is wrong with your js bundle.
+        On the other hand, since, `bundle.js.org` runs locally right on your computer, when an error occurs it logs the exact error you would see when using [esbuild](https://esbuild.github.io/) or other bundlers in your build process, making it much easier to know exactly what is wrong with your js bundle.
     br
     h4 Wait, locally as in no external servers? 
     p
     
       :markdown-it(linkify langPrefix='language-')
-        Yes, locally right on your browser, I used [esbuild-wasm](https://esbuild.github.io/getting-started/#wasm) for the main bundler and [rollup](https://rollupjs.org/guide/en/) for more accurate treeshaking, and it enables you to download the bundled code right from the browser console (**note**: the bundled code is available in the console).
+        Yes, locally right on your browser, I used [esbuild-wasm](https://esbuild.github.io/getting-started/#wasm) for the main bundler and [rollup](https://rollupjs.org/guide/en/) for more accurate treeshaking.
     br
     h4 Can it bundle multiple packages and treeshake them? 
     p
