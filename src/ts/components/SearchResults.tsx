@@ -1,19 +1,63 @@
 import { createSignal } from "solid-js";
 import { For, render } from "solid-js/web";
 import { EventEmitter } from "@okikio/emitter";
-import { animate, timeline } from "@okikio/animate";
+import { timeline } from "@okikio/animate";
 
 export const ResultEvents = new EventEmitter();
 export const [getState, setState] = createSignal([]);
+export const [isInitial, setIsInitial] = createSignal(true);
+
+/**
+const parseInput = (value: string) => {
+    // const host = "https://api.npms.io/v2/search?q";
+    const host = "https://registry.npmjs.com/-/v1/search?text"
+    let urlScheme = `${host}=${encodeURIComponent(
+        value
+    )}&size=30`;
+    let version = "";
+
+    let exec = /([\S]+)@([\S]+)/g.exec(value);
+    if (exec) {
+        let [, pkg, ver] = exec;
+        version = ver;
+        urlScheme = `${host}=${encodeURIComponent(
+            pkg
+        )}&size=30`;
+    }
+
+    return { url: urlScheme, version };
+};
+ */
+
+export const parseInput = (value: string) => {
+    // const host = "https://registry.npmjs.com/-/v1/search?text";
+    const host = "https://api.npms.io/v2/search?q";
+    let urlScheme = `${host}=${encodeURIComponent(
+        value
+    )}&size=30`;
+    let version = "";
+
+    let exec = /([\S]+)@([\S]+)/g.exec(value);
+    if (exec) {
+        let [, pkg, ver] = exec;
+        version = ver;
+        urlScheme = `${host}=${encodeURIComponent(
+            pkg
+        )}&size=30`;
+    }
+
+    return { url: urlScheme, version };
+};
 
 export const Card = ({
+    type = "",
     name = "@okikio/native",
     description = "Lorem Ipsium...",
     date = "2021-01-23T07:29:32.575Z",
     author = "okikio",
-    version,
+    version = ""
 }) => {
-    let _date = new Date(date).toLocaleDateString(undefined, {
+    let _date = type ? "" : new Date(date).toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -27,89 +71,101 @@ export const Card = ({
     return (
         <div class="card">
             <section class="content">
-                <h3 class="font-semibold text-lg">
-                    <a href={_packageHref} target="_blank">
-                        {name}
-                    </a>
+                <h3 class={`font-semibold text-lg`}>
+                {
+                    type ? 
+                        (<div class="text-center">{type}</div>) : 
+                        (<a href={_packageHref} target="_blank">{type || name}</a>)
+                }
                 </h3>
-                <p>{description}</p>
+                <p class={type ? "text-center" : ""}>{description}</p>
                 <p class="updated-time">
-                    Updated {_date} 
-                    {author ? (<>
-                        by 
+                    {type || (_date == undefined && author == undefined) ? "" : `Updated ${_date} `}
+                    {author && !type ? (<>
+                        by
                         <a href={_authorHref} target="_blank">
                             @{author}
                         </a>
+                        .
                     </>) : ""}
-                    .
                 </p>
             </section>
-            <section class="add">
-                <button ref={btnEl}
-                    class="btn"
-                    onclick={() => {
-                        let text = btnTextEl.innerText;
-                        
-                        timeline()
-                            .add({
-                                target: btnTextEl,
-                                opacity: [1, 0],
-                                duration: 400,
-                                fillMode: "forwards",
-                                onfinish() {
-                                    btnTextEl.innerText = "Added!";
-                                    ResultEvents.emit(
-                                        "add-module",
-                                        `export * from "${_package}";`
-                                    );
-                                }
-                            })
-                            .add({
-                                target: btnTextEl,
-                                opacity: [0, 1],
-                                duration: 400,
-                                fillMode: "forwards",
-                                onfinish() {
-                                    // btnEl.blur();
-                                }
-                            })
-                            .add({
-                                target: btnTextEl,
-                                opacity: [1, 0],
-                                duration: 400,
-                                fillMode: "forwards",
-                                onfinish() {
-                                    btnTextEl.innerText = text;
-                                }
-                            })
-                            .add({
-                                target: btnTextEl,
-                                opacity: [0, 1],
-                                duration: 400,
-                                fillMode: "forwards",
-                                onfinish() {
-                                    ResultEvents.emit("complete");
-                                }
-                            });
+            {type ? "" :
+                (<section class="add">
+                    <button ref={btnEl}
+                        class="btn"
+                        onclick={() => {
+                            let text = btnTextEl.innerText;
 
-                    }}
-                >
-                    <span class="btn-text" ref={btnTextEl}>
-                        Add Module
-                    </span>
-                </button>
-            </section>
+                            timeline()
+                                .add({
+                                    target: btnTextEl,
+                                    opacity: [1, 0],
+                                    duration: 400,
+                                    fillMode: "forwards",
+                                    onfinish() {
+                                        btnTextEl.innerText = "Added!";
+                                        ResultEvents.emit(
+                                            "add-module",
+                                            `export * from "${_package}";`
+                                        );
+                                    }
+                                })
+                                .add({
+                                    target: btnTextEl,
+                                    opacity: [0, 1],
+                                    duration: 400,
+                                    fillMode: "forwards",
+                                    onfinish() {
+                                        // btnEl.blur();
+                                    }
+                                })
+                                .add({
+                                    target: btnTextEl,
+                                    opacity: [1, 0],
+                                    duration: 400,
+                                    fillMode: "forwards",
+                                    onfinish() {
+                                        btnTextEl.innerText = text;
+                                    }
+                                })
+                                .add({
+                                    target: btnTextEl,
+                                    opacity: [0, 1],
+                                    duration: 400,
+                                    fillMode: "forwards",
+                                    onfinish() {
+                                        ResultEvents.emit("complete");
+                                    }
+                                });
+
+                        }}
+                    >
+                        <span class="btn-text" ref={btnTextEl}>
+                            Add Module
+                        </span>
+                    </button>
+                </section>
+                )
+            }
         </div>
     );
 };
 
 export const SearchResults = () => {
     return (
-        <div class={`search-results` + (getState().length ? "" : "empty")}>
+        <div class={`search-results`}>
+            {getState().length == 0 ? (
+                <Card 
+                    type="No results..."
+                    description=""
+                ></Card>
+            ) : ""}
             <For each={getState()}>
-                {({ name, description, version, author, date }) => {
+                {({ name, description, version, author, date, type }) => {
                     return (
                         <Card
+                            type={type ?? ""}
                             name={name}
                             description={description}
                             author={author}

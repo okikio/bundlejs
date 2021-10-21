@@ -1,7 +1,8 @@
 module.exports = {
   darkMode: 'class',
   purge: [
-    './src/pug/**/*.pug'
+    './src/pug/**/*.pug',
+    './src/ts/**/*.tsx'
   ],
   mode: "jit",
   theme: {
