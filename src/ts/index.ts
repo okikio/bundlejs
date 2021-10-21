@@ -8,6 +8,7 @@ import {
     ResultEvents,
     renderComponent,
     setState,
+    parseInput
 } from "./components/SearchResults";
 
 import type { editor as Editor } from "monaco-editor";
@@ -35,6 +36,9 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
 
 let monacoLoadedFirst = false;
 let initialized = false;
+
+// The editor's content hasn't changed 
+let isInitial = true;
 
 // Bundle Events
 BundleEvents.on({
@@ -66,6 +70,8 @@ BundleEvents.on({
                     fileSizeEl.textContent = `Wait...`;
                     BundleEvents.emit("bundle");
                 }
+                
+                isInitial = false;
             }
         }
     },
@@ -95,25 +101,6 @@ BundleEvents.on({
 
 // SearchResults solidjs component
 (async () => {
-    const parseInput = (value: string) => {
-        const host = "https://api.npms.io";
-        let urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-            value
-        )}&size=30`;
-        let version = "";
-
-        let exec = /([\S]+)@([\S]+)/g.exec(value);
-        if (exec) {
-            let [, pkg, ver] = exec;
-            version = ver;
-            urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-                pkg
-            )}&size=30`;
-        }
-
-        return { url: urlScheme, version };
-    };
-
     const searchInput = document.querySelector(
         ".search input"
     ) as HTMLInputElement;
@@ -125,24 +112,33 @@ BundleEvents.on({
 
             let { url, version } = parseInput(value);
             (async () => {
-                let response = await fetch(url);
-                let result = await response.json();
-                setState(
-                    // result.objects
-                    result?.results.map((obj) => {
-                        const { name, description, date, publisher } =
-                            obj.package;
-                        return {
-                            name,
-                            description,
-                            date,
-                            version,
-                            author: publisher?.username,
-                        };
-                    }) ?? []
-                );
+                try {
+                    let response = await fetch(url);
+                    let result = await response.json();
+                    setState(
+                        // registry.npmjs.com -> result?.objects
+                        // api.npms.io -> result?.results
+                        result?.results.map((obj) => {
+                            const { name, description, date, publisher } =
+                                obj.package;
+                            return {
+                                name,
+                                description,
+                                date,
+                                version,
+                                author: publisher?.username,
+                            };
+                        }) ?? []
+                    );
+                } catch (e) {
+                    console.error(e);
+                    setState([{
+                        type: "Error...",
+                        description: e?.message
+                    }]);
+                }
             })();
-        }, 125)
+        }, 250)
     );
 
     const SearchContainerEl = document.querySelector(
@@ -179,6 +175,7 @@ BundleEvents.on({
 
     // Emit bundle events based on WebWorker messages
     BundleWorker.addEventListener(
+        // @ts-ignore
         "message",
         ({ data }: MessageEvent<{ event: string; details: any }>) => {
             let { event, details } = data;
@@ -275,7 +272,8 @@ import * as Monaco from "./modules/monaco";
     editor.onDidChangeModelContent(
         debounce((e) => {
             window.history.replaceState({}, "", generateShareLink());
-        }, 300)
+            isInitial = false;
+        }, 1000)
     );
 
     const shareBtn = document.querySelector(
@@ -316,7 +314,7 @@ import * as Monaco from "./modules/monaco";
 
     // Listen to events for the results
     ResultEvents.on("add-module", (v) => {
-        value = `` + editor?.getValue();
+        value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + editor?.getValue();
         editor.setValue(value + "\n" + v);
     });
 

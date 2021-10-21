@@ -70,6 +70,10 @@
     @apply grid gap-6 sm:grid-cols-12;
     @apply p-5;
 
+    .text-center {
+        @apply text-center;
+    }
+
     section {
         @apply col-span-12;
 

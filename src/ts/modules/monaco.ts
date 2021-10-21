@@ -199,25 +199,6 @@ export const build = () => {
 
     languages.typescript.javascriptDefaults.setEagerModelSync(true);
 
-    const parseInput = (value: string) => {
-        const host = "https://api.npms.io";
-        let urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-            value
-        )}&size=30`;
-        let version = "";
-
-        let exec = /([\S]+)@([\S]+)/g.exec(value);
-        if (exec) {
-            let [, pkg, ver] = exec;
-            version = ver;
-            urlScheme = `${host}/v2/search?q=${encodeURIComponent(
-                pkg
-            )}&size=30`;
-        }
-
-        return { url: urlScheme, version };
-    };
-
     const IMPORTS_REXPORTS_REQUIRE_REGEX =
         /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
     const FetchCache = new Map();
