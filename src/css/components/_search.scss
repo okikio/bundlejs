@@ -79,6 +79,10 @@
 
         &.content {
             @apply sm:col-span-9;
+            
+            &.special {
+                @apply sm:col-span-12;
+            }
         }
 
         p,
