@@ -48,7 +48,7 @@
             ]
         },
         {
-            "source": "/*.html",
+            "source": "/(.*).html",
             "headers": [
                 {
                     "key": "Link",
@@ -77,7 +77,7 @@
             ]
         },
         {
-            "source": "/*.css",
+            "source": "/(.*).css",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -90,7 +90,7 @@
             ]
         },
         {
-            "source": "/*.ttf",
+            "source": "/(.*).ttf",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -103,7 +103,25 @@
             ]
         },
         {
-            "source": "/js/*.js",
+            "source": "/js/(.*).js",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=604800, stale-while-revalidate=4880"
+                }
+            ]
+        },
+        {
+            "source": "/favicon/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=604800, stale-while-revalidate=4880"
+                }
+            ]
+        },
+        {
+            "source": "/(.*).svg",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -131,24 +149,6 @@
         },
         {
             "source": "/manifest.json",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=4880"
-                }
-            ]
-        },
-        {
-            "source": "/favicon/*",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=4880"
-                }
-            ]
-        },
-        {
-            "source": "/*.svg",
             "headers": [
                 {
                     "key": "Cache-Control",
