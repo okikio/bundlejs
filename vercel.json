@@ -44,12 +44,7 @@
                 {
                     "key": "Permissions-Policy",
                     "value": "geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()"
-                }
-            ]
-        },
-        {
-            "source": "/(.*).html",
-            "headers": [
+                },
                 {
                     "key": "Link",
                     "value": "<https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous"
@@ -57,10 +52,15 @@
                 {
                     "key": "Link",
                     "value": "<https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous"
-                },
+                }
+            ]
+        },
+        {
+            "source": "/",
+            "headers": [
                 {
                     "key": "Link",
-                    "value": "</js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin"
+                    "value": "</js/codicon.ttf>; rel=preload; as=font; type=font/ttf; importance=low; crossorigin"
                 },
                 {
                     "key": "Link",

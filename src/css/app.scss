@@ -18,10 +18,11 @@ body {
 
 html {
     accent-color: theme("colors.blue.500");
+    color-scheme: light;
 }
 
 html.dark {
-    color-scheme: dark light;
+    color-scheme: dark;
     accent-color: theme("colors.blue.400");
 }
 
