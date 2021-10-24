@@ -1,7 +1,7 @@
 extends /layouts/layout.pug
 
 block styles
-  link(rel="stylesheet", href="./js/index.min.css")
+  link(rel="stylesheet", href="/js/index.min.css" importance="low")
 
 block content
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
@@ -177,6 +177,6 @@ block content
     +product-hunt.place-content-center
 
 block script 
-  script(src='./js/index.min.js' type='module' async)
+  script(src='/js/index.min.js' type='module' async)
 
   

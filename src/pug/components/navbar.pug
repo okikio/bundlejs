@@ -1,7 +1,7 @@
 mixin nav-list
   .navbar-list
-    a(href='./about' data-path='/about(.html)?') About
-    a(href='./faq.html' data-path='/faq(.html)?') FAQ
+    a(href='/about' data-path='/about(.html)?') About
+    a(href='/faq.html' data-path='/faq(.html)?') FAQ
     block
 
 mixin navbar
@@ -14,8 +14,8 @@ mixin navbar
         .navbar-border
     .container
       .navbar-frame
-        a.navbar-logo(href='./').flex.gap-2
-          img(src="/favicon/favicon.svg", alt="The bundle.js.org logo" width="24" height="28" loading="eager")
+        a.navbar-logo(href='/').flex.gap-2
+          img(src="/favicon/favicon.svg", alt="The bundle.js.org logo" width="24" height="28" loading="eager" importance="medium")
           span(aria-hidden="true") bundle
         .mobile
           .flex.gap-1.w-full.space-x-0.items-center

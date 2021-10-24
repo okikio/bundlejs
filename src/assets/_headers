@@ -9,19 +9,17 @@
   X-UA-Compatible: IE=edge
   Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com data:; script-src 'self' https://cdn.polyfill.io 'unsafe-eval'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-ancestors 'self' https:;
   Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
-
-/*.html
   Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
   Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+
+/*.html
   Link: </css/app.min.css>; rel=preload; as=style
-  Link: </js/theme.min.js>; rel=modulepreload
+  Link: </js/theme.min.js>; rel=modulepreload; importance=high
   # Link: <https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback>; rel=preload; as=script
   Link: </js/critical.min.js>; rel=modulepreload
 
 /
-  Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
-  Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
-  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; crossorigin
+  Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; importance=low; crossorigin
   Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/esbuild.worker.js>; rel=prefetch
   Link: </js/typescript.worker.js>; rel=prefetch
