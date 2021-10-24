@@ -46,8 +46,6 @@ html.dark(lang="en")
     link(rel='stylesheet' href='/css/app.min.css')
     block styles
 
-    script(src='/js/theme.min.js' type='module' async importance="high")
-
     -
       let defaults = {
         url: "/",
@@ -92,7 +90,9 @@ html.dark(lang="en")
     block footer
       +footer
     
-    script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async importance="high")
+    //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async importance="high")
+    script(src='/js/theme.min.js' type='module' async importance="high")
+
     script(src="/js/load-webanimation-polyfill.min.js" type='module' async)
     script(src='/js/critical.min.js' type='module' async)
 
