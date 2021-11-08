@@ -3,8 +3,8 @@
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
-export const debounce = (func: (...args: any[]) => any, wait: number, immediate?: boolean) => {
-	let timeout: number;
+export const debounce = (func: (...args: any[]) => any, wait: number = 300, immediate?: boolean) => {
+	let timeout: number | null;
 	return function(...args: any[]) {
 		let context = this;
 		let later = () => {
@@ -14,6 +14,8 @@ export const debounce = (func: (...args: any[]) => any, wait: number, immediate?
         
 		let callNow = immediate && !timeout;
 		clearTimeout(timeout);
+
+		// @ts-ignore
 		timeout = setTimeout(later, wait);
 		if (callNow) func.apply(context, args);
 	};

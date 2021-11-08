@@ -1,4 +1,4 @@
-import { initialize, build, BuildResult, OutputFile, BuildIncremental } from "esbuild-wasm/esm/browser";
+import { initialize, build, type BuildResult, type OutputFile, type BuildIncremental, type Message } from "esbuild-wasm/esm/browser";
 import { EventEmitter } from "@okikio/emitter";
 
 import path from "path";
@@ -19,9 +19,10 @@ import { CDN } from "../plugins/cdn";
 import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
-const InitEvent = new EventEmitter();
+import { encode, decode } from "../util/encode-decode";
+
 let _initialized = false;
-vol.fromJSON({}, "/");
+const initEvent = new EventEmitter();
 
 (async () => {
     try {
@@ -31,102 +32,131 @@ vol.fromJSON({}, "/");
                 wasmURL: `./esbuild.wasm`
             });
 
-            InitEvent.emit("init", {
-                event: "init",
-                details: {},
-            });
             _initialized = true;
+            initEvent.emit("init");  
         }
     } catch (error) {
-        InitEvent.emit("init", {
-            event: "error",
-            details: {
-                type: `initialize esbuild error`,
-                error,
-            }
-        })
+        initEvent.emit("error", error);   
     }
 })();
 
-const encoder = new TextEncoder();
 const start = (port) => {
-    InitEvent.on("init", (data) => {
-        port.postMessage(data);
+    const BuildEvents = new EventEmitter();
+    vol.fromJSON({}, "/");
+
+    const postMessage = (obj: any) => {
+        let messageStr = JSON.stringify(obj);
+        let encodedMessage = encode(messageStr);
+        port.postMessage(encodedMessage , [encodedMessage.buffer]); 
+    };  
+
+    initEvent.on({
+        // When the SharedWorker first loads, tell the page that esbuild has initialized  
+        init() {
+            postMessage({
+                event: "init",
+                details: {}
+            });
+        },
+        error(err) {         
+            postMessage({
+                event: "error",
+                details: {
+                    type: `Error initializing, you may need to close and reopen all currently open pages pages`,
+                    error: err,
+                }
+            });
+        }
     });
 
-    if (_initialized) {
-        port.postMessage({
-            event: "init",
-            details: {}
-        });
-    }
+    // If another page loads while SharedWorker is still active, tell that page that esbuild is initialized
+    if (_initialized) 
+        initEvent.emit("init");
 
     let result: BuildResult & {
         outputFiles: OutputFile[];
     } | BuildIncremental;
 
-    port.onmessage = ({ data }) => {
-        let input: string = `${data}`; // Ensure input is a string
+    BuildEvents.on("build", (details) => {
+        if (!_initialized) {
+            postMessage({
+                event: "warn",
+                details: {
+                    type: `esbuild worker not initialized`,
+                    message: [`You need to wait for a little bit before trying to bundle files`]
+                }
+            });
+
+            return;
+        }
+
+        let input: string = `${details}`; // Ensure input is a string
 
         (async () => {
-            let content: string;
-            if (!_initialized) {
-                port.postMessage({
-                    event: "warn",
-                    details: {
-                        type: `esbuild not initialized`,
-                        message: `You need to wait for the promise returned from "initialize" to be resolved before trying to bundle`
-                    }
-                });
-
-                return;
-            }
+            // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
+            let externalContent = [];
+            let content: string = "";
 
             // use esbuild to bundle files
             try {
                 await fs.promises.writeFile("input.ts", `${input}`);
-                
-                if (result?.rebuild) {
-                    result = await result?.rebuild();
-                } else {
-                    result = await build({
-                        entryPoints: ['<stdin>'],
-                        bundle: true,
-                        minify: true,
-                        color: true,
-                        treeShaking: true,
-                        incremental: true,
-                        target: ["esnext"],
-                        logLevel: 'info',
-                        write: false,
-                        outfile: "/bundle.js",
-                        platform: "browser",
-                        format: "esm",
-                        loader: {
-                            '.png': 'file',
-                            '.jpeg': 'file',
-                            '.ttf': 'file',
-                            '.svg': 'text',
-                            '.html': 'text',
-                            '.scss': 'css'
-                        },
-                        define: {
-                            "__NODE__": `false`,
-                            "process.env.NODE_ENV": `"production"`
-                        },
-                        plugins: [
-                            EXTERNAL(),
-                            ENTRY(`/input.ts`),
-                            JSON_PLUGIN(),
 
-                            BARE(),
-                            HTTP(),
-                            CDN(),
-                            VIRTUAL_FS(),
-                            WASM(),
-                        ],
-                        globalName: 'bundler',
+                let formatMessages = (messages: any[]) => {
+                    return messages.map((err) => {
+                        let { location, text } = err as Message;
+                        return "> " + location.file + ` line ${location.line}, column ${location.column}` + "\n" + 
+                                `Warning: ${text}` + "\n" + "\n" +
+                                `    ${location.line} │ ${location.lineText}` + "\n" +
+                                "         " + `^`.padStart(location.column, " ").padEnd(location.column + location.length - 1, "^") + "\n";
                     });
+                }
+                
+                try {
+                    if (result?.rebuild) {
+                        result = await result?.rebuild();
+                    } else {
+                        result = await build({
+                            entryPoints: ['<stdin>'],
+                            bundle: true,
+                            minify: true,
+                            color: true,
+                            treeShaking: true,
+                            incremental: true,
+                            target: ["esnext"],
+                            logLevel: 'info',
+                            write: false,
+                            outfile: "/bundle.js",
+                            platform: "browser",
+                            format: "esm",
+                            loader: {
+                                '.png': 'file',
+                                '.jpeg': 'file',
+                                '.ttf': 'file',
+                                '.svg': 'text',
+                                '.html': 'text',
+                                '.scss': 'css'
+                            },
+                            define: {
+                                "__NODE__": `false`,
+                                "process.env.NODE_ENV": `"production"`
+                            },
+                            plugins: [
+                                EXTERNAL(),
+                                ENTRY(`/input.ts`),
+                                JSON_PLUGIN(),
+
+                                BARE(),
+                                HTTP(),
+                                CDN(),
+                                VIRTUAL_FS(),
+                                WASM(),
+                            ],
+                            globalName: 'bundler',
+                        });
+                    }
+                } catch (error) {
+                    let err = error?.message;
+                    throw Array.isArray(err) ? formatMessages(err) : [err];
                 }
 
                 result?.outputFiles?.forEach((x) => {
@@ -135,7 +165,23 @@ const start = (port) => {
                     }
 
                     fs.writeFileSync(x.path, x.text);
+                    if (x.path != "/bundle.js" && typeof x.text == "string") {
+                        externalContent.push(x.text?.trim?.());
+                    }
                 });
+
+                if (result?.warnings.length > 0) {
+                    postMessage({
+                        event: "warn",
+                        details: {
+                            type: `esbuild build warning`,
+                            message: formatMessages(result.warnings)
+                        }
+                    });
+                }
+
+                if (result?.errors.length > 0) 
+                    throw formatMessages(result.errors);
 
                 content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
                 content = content?.trim?.(); // Remove unesscary space
@@ -143,11 +189,12 @@ const start = (port) => {
                 // Reset memfs
                 vol.reset();
             } catch (error) {
-                port.postMessage({
+                let err = Array.isArray(error) ? error : error?.message;
+                postMessage({
                     event: "error",
                     details: {
                         type: `esbuild build error`,
-                        error
+                        error: Array.isArray(err) ? err : [err]
                     }
                 });
 
@@ -177,7 +224,7 @@ const start = (port) => {
                 // // Closes the bundle
                 // await bundle.close();
             } catch (error) {
-                port.postMessage({
+                postMessage({
                     event: "error",
                     details: {
                         type: `rollup treeshaking error`,
@@ -191,15 +238,22 @@ const start = (port) => {
             // use pako & pretty-bytes for gzipping
             try {
                 // @ts-ignore
-                let { byteLength } = encoder.encode(content);
-                let { length } = await gzip(content, { level: 9 });
+                let totalByteLength = 0;
+                let totalCompressedSize = 0;
+                for (let value of [content, ...externalContent]) {
+                    let { byteLength } = encode(value);
+                    let { length } = await gzip(value, { level: 9 });
 
-                port.postMessage({
+                    totalByteLength += byteLength;
+                    totalCompressedSize += length;
+                };
+
+                postMessage({
                     event: "result",
-                    details: { content, size: prettyBytes(byteLength) + " -> " + prettyBytes(length) }
+                    details: { content, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
                 });
             } catch (error) {
-                port.postMessage({
+                postMessage({
                     event: "error",
                     details: {
                         type: `gzip error`,
@@ -208,6 +262,11 @@ const start = (port) => {
                 });
             }
         })();
+    });
+
+    port.onmessage = ({ data }: MessageEvent<BufferSource>) => {
+        let { event, details } = JSON.parse(decode(data)); 
+        BuildEvents.emit(event, details);
     };
 }
 
