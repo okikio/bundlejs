@@ -117,6 +117,23 @@ a {
     @apply rounded-md focus:outline-none;
 }
 
+blockquote {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 1em;
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+    padding-right: 0.8em;
+    border-left: 5px solid;
+    margin-bottom: theme("spacing.6");
+    // background-color: lighten($color-bg-alt, 24%);
+    @apply bg-blue-600/20 border-blue-500 rounded-lg;
+}
+
+blockquote p {
+    margin-bottom: 0;
+}
+
 @screen sm {
     .desktop {
         display: block;

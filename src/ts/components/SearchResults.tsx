@@ -8,11 +8,11 @@ export const [getState, setState] = createSignal([]);
 export const [isInitial, setIsInitial] = createSignal(true);
 
 export const parseInput = (value: string) => {
-    const host = "https://registry.npmjs.com/-/v1/search?text";
-    // const host = "https://api.npms.io/v2/search?q";
+    // const host = "https://registry.npmjs.com/-/v1/search?text";
+    const host = "https://api.npms.io/v2/search?q";
     let urlScheme = `${host}=${encodeURIComponent(
         value
-    )}&size=30&popularity=0.5`;
+    )}&size=30`; // &popularity=0.5
     let version = "";
 
     let exec = /([\S]+)@([\S]+)/g.exec(value);
@@ -21,7 +21,7 @@ export const parseInput = (value: string) => {
         version = ver;
         urlScheme = `${host}=${encodeURIComponent(
             pkg
-        )}&size=30&popularity=0.5`;
+        )}&size=30`; // &popularity=0.5
     }
 
     return { url: urlScheme, version };

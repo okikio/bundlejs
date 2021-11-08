@@ -69,9 +69,9 @@ block content
 
   .container  
     h2#usage Usage
-    p * Check the console for error messages.
-    p * Note: Treeshaking is available, but since esbuild and rollup doesn't have access to each packages package.json, it assumes that there are sideEffects.
-    br
+    blockquote #[em.font-extrabold Note:] When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
+    blockquote #[em.font-extrabold Note:] Treeshaking is available, but since esbuild and rollup don't have direct access to each packages package.json, there might be slight package version conflicts.
+    blockquote #[em.font-extrabold Note:] Check the console for error messages and warnings.
 
     p You can use custom protocols to specify which CDN the module should come from.
     br
@@ -177,6 +177,6 @@ block content
     +product-hunt.place-content-center
 
 block script 
-  script(src='/js/index.min.js' type='module' async)
+  //- script(src='/js/index.min.js' type='module' async)
 
   

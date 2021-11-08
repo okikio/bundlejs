@@ -1,5 +1,7 @@
-import { App } from "@okikio/native";
+import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router, type ITransition } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
+
+import indexRun from "./index";
 
 import { themeSet, themeGet } from "./scripts/theme";
 import * as Accordion from "./modules/accordion";
@@ -154,7 +156,61 @@ window.addEventListener(
 
 try {
     const app = new App();
-    app.add(new Navbar());
+
+    //= Fade Transition
+    const Fade: ITransition = {
+        name: "default",
+
+        // Fade Out Old Page
+        out({ from }) {
+            let fromWrapper = from.wrapper;
+
+            return animate({
+                target: fromWrapper,
+                opacity: [1, 0],
+                duration: 500,
+            })
+        },
+
+        // Fade In New Page
+        async in({ to, scroll }) {
+            let toWrapper = to.wrapper;
+            window.scroll(scroll.x, scroll.y);
+
+            await animate({
+                target: toWrapper,
+                opacity: [0, 1],
+                duration: 500
+            });
+        }
+    };
+
+    app
+        .add(new Navbar())
+
+        // Note only these 3 Services must be set under the names specified
+        .set("HistoryManager", new HistoryManager())
+        .set("PageManager", new PageManager())
+        .set("TransitionManager", new TransitionManager([
+            ["default", Fade],
+        ]))
+
+        .set("Router", new Router())
+        .add(new PJAX());
+    
+    app.emitter.once("index", () => {
+        indexRun();
+    });
+
+    let router = app.get("Router") as Router;
+    router
+        .add({
+            path: /^\/(index)?(\.html)?$/,
+            method() {
+                app.emitter.emit("index");
+            }
+        });
+
     app.boot();
 } catch (err) {
     console.warn("[App] boot failed,", err);

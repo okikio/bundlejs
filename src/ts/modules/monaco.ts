@@ -151,16 +151,6 @@ export const initialValue =
 // Click Run for the Bundled + Minified + Gzipped package size
 export * from "@okikio/animate";`;
 
-export const debounce = (func: Function, timeout = 300) => {
-    let timer: any;
-    return (...args: any) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            func.apply(this, args);
-        }, timeout);
-    };
-};
-
 export const build = () => {
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
@@ -244,11 +234,13 @@ export const build = () => {
                 }
                 
                 // result?.results   ->   api.npms.io
-                if (result?.objects.length <= 0) return;
+                // result?.objects   ->   registry.npmjs.com
+                if (result?.results.length <= 0) return;
 
                 // result?.results   ->   api.npms.io
+                // result?.objects   ->   registry.npmjs.com
                 const { name, description, version, date, publisher, links } =
-                    result?.objects?.[0]?.package ?? {};
+                    result?.results?.[0]?.package ?? {};
                 let author = publisher?.username;
                 let _date = new Date(date).toLocaleDateString(undefined, {
                     year: "numeric",
