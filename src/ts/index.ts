@@ -21,6 +21,7 @@ import type { editor as Editor } from "monaco-editor";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker from "./util/WebWorker";
 
+export let oldShareURL = new URL(String(document.location));    
 const BundleEvents = new EventEmitter();
 
 let fileSizeEl = document.querySelector(".file-size");
@@ -45,52 +46,7 @@ let initialized = false;
 // The editor's content hasn't changed 
 let isInitial = true;
 
-// Bundle worker
-(() => {
-    const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
-    const postMessage = (obj: any) => {
-        let messageStr = JSON.stringify(obj);
-        let encodedMessage = encode(messageStr);
-        BundleWorker.postMessage(encodedMessage , [encodedMessage.buffer]); 
-    };  
-
-    // bundles using esbuild and returns the result
-    BundleEvents.on("bundle", () => {
-        if (!initialized) return;
-        console.log("Bundle");
-        value = `` + editor?.getValue();
-
-        fileSizeEl.innerHTML = `<div class="loading"></div>`;
-        bundleTime.textContent = `Bundled in ...`;
-
-        start = Date.now();
-        postMessage({ event: "build", details: value });
-    });
-
-    // Emit bundle events based on WebWorker messages
-    BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
-        let { event, details } = JSON.parse(decode(data)); 
-        BundleEvents.emit(event, details);
-    });
-
-    window.addEventListener("pageshow", function (event) {
-        if (!event.persisted) {
-            BundleWorker?.start();
-        }
-    });
-
-    window.addEventListener("pagehide", function (event) {
-        if (event.persisted === true) {
-            console.log("This page *might* be entering the bfcache.");
-        } else {
-            console.log("This page will unload normally and be discarded.");
-            BundleWorker?.terminate();
-        }
-    });
-})();
-
 // Bundle Events
-export let oldShareURL = new URL(String(document.location));
 BundleEvents.on({
     loaded() {
         monacoLoadedFirst = true;
@@ -152,7 +108,51 @@ BundleEvents.on({
     },
 });
 
-export default () => { 
+// Bundle worker
+const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);    
+const postMessage = (obj: any) => {
+    let messageStr = JSON.stringify(obj);
+    let encodedMessage = encode(messageStr);
+    BundleWorker.postMessage(encodedMessage , [encodedMessage.buffer]); 
+};  
+
+// bundles using esbuild and returns the result
+BundleEvents.on("bundle", () => {
+    if (!initialized) return;
+    console.log("Bundle");
+    value = `` + editor?.getValue();
+
+    fileSizeEl.innerHTML = `<div class="loading"></div>`;
+    bundleTime.textContent = `Bundled in ...`;
+
+    start = Date.now();
+    postMessage({ event: "build", details: value });
+});
+
+// Emit bundle events based on WebWorker messages
+BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
+    let { event, details } = JSON.parse(decode(data)); 
+    BundleEvents.emit(event, details);
+});
+
+window.addEventListener("pageshow", function (event) {
+    if (!event.persisted) {
+        BundleWorker?.start();
+    }
+});
+
+window.addEventListener("pagehide", function (event) {
+    if (event.persisted === true) {
+        console.log("This page *might* be entering the bfcache.");
+    } else {
+        console.log("This page will unload normally and be discarded.");
+        BundleWorker?.terminate();
+    }
+});
+
+export default () => {  
+    BundleWorker.start();
+
     // Fix PJAX, force replacing the original shared URL
     if (oldShareURL) {
         window.history.replaceState({}, "", oldShareURL);
@@ -335,6 +335,8 @@ export default () => {
 
         RunBtn.addEventListener("click", () => {
             window.history.pushState({}, "", generateShareLink());
+            if (!initialized)
+                fileSizeEl.textContent = `Wait...`;
             BundleEvents.emit("bundle");
         });
     })();
