@@ -40,6 +40,16 @@ const initEvent = new EventEmitter();
     }
 })();
 
+let formatMessages = (messages: any[]) => {
+    return messages.map((err) => {
+        let { location, text } = err as Message;
+        return "> " + location.file + ` line ${location.line}, column ${location.column}` + "\n" + 
+                `Warning: ${text}` + "\n" + "\n" +
+                `    ${location.line} │ ${location.lineText}` + "\n" +
+                "         " + `^`.padStart(location.column, " ").padEnd(location.column + location.length - 1, "^") + "\n";
+    });
+}
+
 const start = (port) => {
     const BuildEvents = new EventEmitter();
     vol.fromJSON({}, "/");
@@ -100,16 +110,6 @@ const start = (port) => {
             // use esbuild to bundle files
             try {
                 await fs.promises.writeFile("input.ts", `${input}`);
-
-                let formatMessages = (messages: any[]) => {
-                    return messages.map((err) => {
-                        let { location, text } = err as Message;
-                        return "> " + location.file + ` line ${location.line}, column ${location.column}` + "\n" + 
-                                `Warning: ${text}` + "\n" + "\n" +
-                                `    ${location.line} │ ${location.lineText}` + "\n" +
-                                "         " + `^`.padStart(location.column, " ").padEnd(location.column + location.length - 1, "^") + "\n";
-                    });
-                }
                 
                 try {
                     if (result?.rebuild) {
