@@ -1,8 +1,6 @@
 import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router, type ITransition } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
-import indexRun from "./index";
-
 import { themeSet, themeGet } from "./scripts/theme";
 import * as Accordion from "./modules/accordion";
 
@@ -197,8 +195,13 @@ try {
 
         .set("Router", new Router())
         .add(new PJAX());
+
+    let indexRun = async () => {
+        const { default: index } = await import("./index");
+        index();
+    }
     
-    app.emitter.once("index", () => {
+    app.emitter.once("index", async () => {
         indexRun();
     });
 

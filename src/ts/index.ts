@@ -45,8 +45,6 @@ let initialized = false;
 // The editor's content hasn't changed 
 let isInitial = true;
 
-
-
 // Bundle worker
 (() => {
     const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);

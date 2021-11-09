@@ -1,9 +1,7 @@
 extends /layouts/layout.pug
 
-block styles
-  link(rel="stylesheet", href="/js/index.min.css" importance="low")
-
 block content
+  link(rel="stylesheet", href="/js/index.min.css" importance="low")
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
 
   .container
