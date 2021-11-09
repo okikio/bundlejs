@@ -224,7 +224,7 @@ export const build = () => {
                     if (!FetchCache.has(url)) {
                         response = await fetch(url);
                         result = await response.json();
-                        FetchCache.set(url, await response.text());
+                        FetchCache.set(url, JSON.stringify(result));
                     } else {
                         result = JSON.parse(FetchCache.get(url));
                     }
