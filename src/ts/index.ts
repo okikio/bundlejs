@@ -370,7 +370,7 @@ export default (shareURL: URL, app: App) => {
             [
                 '// Click Run for the Bundled + Minified + Gzipped package size',
                 'export * from "@okikio/animate";'
-            ].join("")
+            ].join("\n")
         );
 
         editorBtns(output, `// Output`);
