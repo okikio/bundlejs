@@ -136,7 +136,6 @@ const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
             let url = new URL(self.location.origin.toString());
             if (modules.length > 0) url.searchParams.set("q", modules);
             if (treeshake.replace(/\[\*\]|\,/g, "").length > 0) {
-                console.log(treeshake, treeshake.replace(/\[\*\]|\,/g, ""))
                 url.searchParams.set("treeshake", treeshake);
             }
 
