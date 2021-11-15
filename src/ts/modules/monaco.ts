@@ -419,7 +419,7 @@ export const build = (oldShareURL: URL) => {
         [
             '// Click Run for the Bundled + Minified + Gzipped package size',
             'export * from "@okikio/animate";',
-        ].join("")
+        ].join("\n")
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     let outputEl = document.querySelector(".app#output #editor") as HTMLElement;

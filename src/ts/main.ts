@@ -24,6 +24,7 @@ window.addEventListener(
     { passive: true }
 );
 
+let oldShareURL = new URL(String(document.location)); 
 try {
     const app = new App();
 
@@ -68,7 +69,6 @@ try {
         .set("Router", new Router())
         .add(new PJAX());
 
-    let oldShareURL = new URL(String(document.location)); 
     let indexRun = async () => {
         const { default: index } = await import("./index");
         index(oldShareURL, app);
