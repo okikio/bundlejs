@@ -147,9 +147,9 @@ export const parseTreeshakeExports = (str: string) =>
  * - `treeshake` represents the exports to treeshake. Read more about this here, {@link parseTreeshakeExports}
  * - `share` represents all other code that isn't export/import
  */
-export const parseSearchQuery = (oldShareURL: URL) => {
+export const parseSearchQuery = (shareURL: URL) => {
     try {
-        const searchParams = oldShareURL.searchParams;
+        const searchParams = shareURL.searchParams;
         let plaintext = searchParams.get("text");
         if (plaintext) return plaintext;
 
@@ -158,7 +158,7 @@ export const parseSearchQuery = (oldShareURL: URL) => {
         let treeshake = searchParams.get("treeshake");
         if (query) {
             let queryArr = query.trim().split(",");
-            let treeshakeArr = parseTreeshakeExports(treeshake.trim());
+            let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
             result += (
                 "// Click Run for the Bundled + Minified + Gzipped package size\n" +
                 queryArr
@@ -432,7 +432,7 @@ export const build = (oldShareURL: URL) => {
         [
             '// Click Run for the Bundled + Minified + Gzipped package size',
             'export * from "@okikio/animate";',
-        ].join("\n")
+        ].join("\n");
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
