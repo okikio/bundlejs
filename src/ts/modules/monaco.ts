@@ -96,7 +96,7 @@ import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 (window as any).MonacoEnvironment = {
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
-            let WorkerArgs = { name: `${label}-worker` }; 
+            let WorkerArgs = { name: `${label}-worker` };
             return new WebWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
         }
 
@@ -167,7 +167,7 @@ export const parseSearchQuery = (oldShareURL: URL) => {
                             treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
                                 ? treeshakeArr[i].trim().split(",").join(", ")
                                 : "*";
-                        let [,,
+                        let [, ,
                             declaration = "export",
                             module
                         ] = /^(\((.*)\))?(.*)/.exec(q);
@@ -182,7 +182,7 @@ export const parseSearchQuery = (oldShareURL: URL) => {
         let share = searchParams.get("share");
         if (share) result += "\n" + decompressFromURL(share.trim());
         return result;
-    } catch (e) {}
+    } catch (e) { }
 };
 
 languages.typescript.typescriptDefaults.setWorkerOptions({
@@ -190,9 +190,14 @@ languages.typescript.typescriptDefaults.setWorkerOptions({
 });
 
 languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
-    noSyntaxValidation: false,
-    noSuggestionDiagnostics: false,
+    // noSemanticValidation: true,
+    // noSyntaxValidation: false,
+    // noSuggestionDiagnostics: false,
+
+    ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
+    noSemanticValidation: false,
+    // This is when tslib is not found
+    diagnosticCodesToIgnore: [2354],
 });
 
 // Compiler options
@@ -209,6 +214,14 @@ languages.typescript.typescriptDefaults.setCompilerOptions({
     noResolve: true,
     allowSyntheticDefaultImports: true,
     isolatedModules: true,
+    
+    skipLibCheck: false,
+    declaration: true,
+    
+    experimentalDecorators: true,
+    emitDecoratorMetadata: true,
+
+    jsx: languages.typescript.JsxEmit.React,
 });
 
 // @ts-ignore
@@ -232,7 +245,7 @@ languages.registerHoverProvider("typescript", {
     provideHover(model, position) {
         let content = model.getLineContent(position.lineNumber);
         if (typeof content != "string" || content.length == 0) return;
-        
+
         let matches =
             Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ??
             [];
@@ -440,7 +453,7 @@ export const build = (oldShareURL: URL) => {
     // See https://github.com/microsoft/pxt/pull/7099 for this, and the long
     // read is in https://github.com/microsoft/monaco-editor/issues/563
     const isAndroid = navigator && /android/i.test(navigator.userAgent)
-    
+
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
         // @ts-ignore
         bracketPairColorization: {
@@ -454,6 +467,11 @@ export const build = (oldShareURL: URL) => {
             "typescript",
             Uri.parse("file://input.ts")
         ),
+        quickSuggestions: {
+            other: !isAndroid,
+            comments: !isAndroid,
+            strings: !isAndroid,
+        },
         acceptSuggestionOnCommitCharacter: !isAndroid,
         acceptSuggestionOnEnter: !isAndroid ? "on" : "off",
         accessibilitySupport: !isAndroid ? "on" : "off",

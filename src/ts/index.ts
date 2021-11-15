@@ -379,12 +379,11 @@ export default (shareURL: URL, app: App) => {
         await FadeLoadingScreen;
         
         typeAcquisition();
-
-        let timer: number;
-        editor.onDidChangeModelContent(() => {
-            window.clearTimeout(timer);
-            timer = window.setTimeout(() => typeAcquisition(), 1000);
-        });
+        
+        // Debounced type acquisition to once every second
+        editor.onDidChangeModelContent(debounce(() => {
+            typeAcquisition();
+        }, 1000));
 
         app.on("POPSTATE", () => {
             editor.setValue(Monaco.parseSearchQuery(new URL(decodeURI(document.location.toString()))))
