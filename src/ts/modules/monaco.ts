@@ -150,9 +150,6 @@ export const parseTreeshakeExports = (str: string) =>
 export const parseSearchQuery = (shareURL: URL) => {
     try {
         const searchParams = shareURL.searchParams;
-        let plaintext = searchParams.get("text");
-        if (plaintext) return plaintext;
-
         let result = "";
         let query = searchParams.get("query") || searchParams.get("q");
         let treeshake = searchParams.get("treeshake");
@@ -181,7 +178,11 @@ export const parseSearchQuery = (shareURL: URL) => {
 
         let share = searchParams.get("share");
         if (share) result += "\n" + decompressFromURL(share.trim());
-        return result;
+
+        let plaintext = searchParams.get("text");
+        if (plaintext) result += "\n" + plaintext;
+
+        return result.trim();
     } catch (e) { }
 };
 
