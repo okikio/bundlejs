@@ -108,7 +108,7 @@ BundleEvents.on({
 });
 
 // Bundle worker
-const BundleWorker = new Worker(ESBUILD_WORKER_URL, WorkerArgs);  // WebWorker   
+const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);     
 const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -136,7 +136,7 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
-        // BundleWorker?.start();
+        BundleWorker?.start();
     }
 });
 
@@ -165,7 +165,7 @@ const getShareableURL = async (editor: Editor.IStandaloneCodeEditor) => {
 
 export default (shareURL: URL, app: App) => {
     oldShareURL = shareURL;
-    // BundleWorker?.start();
+    BundleWorker?.start();
 
     let historyManager = app.get("HistoryManager") as HistoryManager;
     let replaceState = (url) => {

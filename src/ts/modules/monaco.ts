@@ -97,7 +97,7 @@ import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
             let WorkerArgs = { name: `${label}-worker` }; 
-            return new Worker(TYPESCRIPT_WORKER_URL, WorkerArgs);
+            return new WebWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
         }
 
         return (() => {
