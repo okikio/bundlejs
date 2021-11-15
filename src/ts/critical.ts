@@ -3,7 +3,7 @@ import { themeSet, themeGet } from "./scripts/theme";
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
 
-export const ENABLE_SW = false;
+export const ENABLE_SW = true;
 
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
