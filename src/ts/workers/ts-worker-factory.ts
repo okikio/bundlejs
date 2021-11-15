@@ -139,8 +139,13 @@ const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
                 url.searchParams.set("treeshake", treeshake);
 
             // If there is any remaining code convert it to a share URL
-            if (remainingCode.length > 0)
-                url.searchParams.set("share", compressToURL(remainingCode));
+            if (remainingCode.length > 0) {
+                let compressedURL = compressToURL(remainingCode);
+                if (compressedURL.length > remainingCode.length)
+                    url.searchParams.set("text", remainingCode);
+                else
+                    url.searchParams.set("share", compressToURL(remainingCode));
+            }
             return decodeURIComponent(url.toString());
         }
     };
