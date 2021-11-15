@@ -190,12 +190,12 @@ languages.typescript.typescriptDefaults.setWorkerOptions({
 });
 
 languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    // noSemanticValidation: true,
-    // noSyntaxValidation: false,
-    // noSuggestionDiagnostics: false,
-
     ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
-    noSemanticValidation: false,
+    // noSemanticValidation: false,
+    
+    noSemanticValidation: true,
+    noSyntaxValidation: false,
+    noSuggestionDiagnostics: false,
     // This is when tslib is not found
     diagnosticCodesToIgnore: [2354],
 });
