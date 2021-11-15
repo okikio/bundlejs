@@ -97,7 +97,7 @@ import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
             let WorkerArgs = { name: `${label}-worker` };
-            return new WebWorker(TYPESCRIPT_WORKER_URL, WorkerArgs);
+            return new Worker(TYPESCRIPT_WORKER_URL, WorkerArgs); // WebWorker
         }
 
         return (() => {
@@ -180,7 +180,28 @@ export const parseSearchQuery = (shareURL: URL) => {
         if (share) result += "\n" + decompressFromURL(share.trim());
 
         let plaintext = searchParams.get("text");
-        if (plaintext) result += "\n" + plaintext;
+        if (plaintext) {
+            result += "\n" + JSON.parse(
+                /**  
+                 * Support users wrapping/not-wrapping plaintext in a string, 
+                 * e.g. 
+                 * ```md
+                 * 
+                 * /?text="console.log(document)\nconsole.log(window)"
+                 * and
+                 * /?text=console.log(document)\nconsole.log(window)
+                 * 
+                 * are the same, they result in 
+                 * ```ts
+                 * console.log(document)
+                 * console.log(window)
+                 * ```
+                 * 
+                 * ```
+                */
+                /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\")
+            );
+        }
 
         return result.trim();
     } catch (e) { }
