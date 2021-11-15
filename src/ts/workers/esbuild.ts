@@ -1,4 +1,4 @@
-import { initialize, build, type BuildResult, type OutputFile, type BuildIncremental, type Message } from "esbuild-wasm/esm/browser";
+import { initialize, build } from "esbuild-wasm/esm/browser";
 import { EventEmitter } from "@okikio/emitter";
 
 import path from "path";
@@ -20,6 +20,8 @@ import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
 import { encode, decode } from "../util/encode-decode";
+
+import type { BuildResult, OutputFile, BuildIncremental, Message} from "esbuild-wasm/esm/browser";
 
 let _initialized = false;
 const initEvent = new EventEmitter();
@@ -54,7 +56,7 @@ const start = (port) => {
     const BuildEvents = new EventEmitter();
     vol.fromJSON({}, "/");
 
-    const postMessage = (obj: any) => {
+    const postMessage = (obj: { event: string, details: any }) => {
         let messageStr = JSON.stringify(obj);
         let encodedMessage = encode(messageStr);
         port.postMessage(encodedMessage , [encodedMessage.buffer]); 

@@ -66,6 +66,10 @@
     font-feature-settings: "liga" 0, "calt" 0;
     line-height: 19px;
     letter-spacing: 0px;
+
+    .monaco-hover-content h3 {
+        @apply text-lg font-bold;
+    }
 }
 
 .flex-wrapper.loaded .app {
@@ -254,7 +258,7 @@
         @apply flex items-center justify-center;
         @apply bg-gray-100 border dark:border-gray-500 dark:bg-gray-600 text-blue-400 dark:text-white;
         @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600;
-        @apply px-3 py-2 rounded-md z-10;
+        @apply px-3 py-2 rounded-md z-[12];
         @apply flex items-center justify-center;
         pointer-events: auto;
 
@@ -271,8 +275,11 @@
     }
 
     .copy-container {
-        @apply relative z-[5];
+        @apply relative z-[10];
         // z-index: 5;
+        button.copy-btn {
+            @apply z-[12];
+        }
     }
 
     .editor-info {

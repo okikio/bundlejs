@@ -26,7 +26,7 @@ You can now use search queries in **bundle**, all you need to do is add this to 
 e.g.  
 You want `react`, `react-dom`, `vue`, and `@okikio/animate`, but only want the `Animate` and `toStr` methods exported from `@okikio/animate`.  
 
-You would add this to the url [bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[\*],[\*],[\*],[Animate,toStr]](https://bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr])  
+You would add this to the url [bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[\*],[\*],[\*],[{Animate,toStr}]](https://bundle.js.org/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}])  
 
 If you only want a couple packages and don't care to treeshake, then all you need is something like this, [bundle.js.org?q=react,react-dom,vue,@okikio/animate](https://bundle.js.org/?q=react,react-dom,vue,@okikio/animate)
 

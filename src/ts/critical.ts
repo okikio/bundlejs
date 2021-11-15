@@ -1,11 +1,9 @@
-import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router, type ITransition } from "@okikio/native";
-import { Navbar } from "./services/Navbar";
-
 import { themeSet, themeGet } from "./scripts/theme";
-import * as Accordion from "./modules/accordion";
 
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
+
+export const ENABLE_SW = false;
 
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
@@ -25,7 +23,7 @@ try {
 
 // Check that service workers are supported
 (async () => {
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator && ENABLE_SW) {
         let reloadDialog = document.querySelector(
             ".info-prompt.reload"
         ) as HTMLElement;
@@ -134,113 +132,4 @@ try {
     }
 })();
 
-// navbar focus on scroll effect
-let canScroll = true;
-const navbar = document.querySelector(".navbar") as HTMLElement;
-window.addEventListener(
-    "scroll",
-    () => {
-        if (canScroll) {
-            canScroll = false;
-            requestAnimationFrame(() => {
-                navbar.classList.toggle("shadow", window.scrollY >= 5);
-
-                canScroll = true;
-            });
-        }
-    },
-    { passive: true }
-);
-
-try {
-    const app = new App();
-
-    //= Fade Transition
-    const Fade: ITransition = {
-        name: "default",
-
-        // Fade Out Old Page
-        out({ from }) {
-            let fromWrapper = from.wrapper;
-
-            return animate({
-                target: fromWrapper,
-                opacity: [1, 0],
-                duration: 500,
-            })
-        },
-
-        // Fade In New Page
-        async in({ to, scroll }) {
-            let toWrapper = to.wrapper;
-            window.scroll(scroll.x, scroll.y);
-
-            await animate({
-                target: toWrapper,
-                opacity: [0, 1],
-                duration: 500
-            });
-        }
-    };
-
-    app
-        .add(new Navbar())
-
-        // Note only these 3 Services must be set under the names specified
-        .set("HistoryManager", new HistoryManager())
-        .set("PageManager", new PageManager())
-        .set("TransitionManager", new TransitionManager([
-            ["default", Fade],
-        ]))
-
-        .set("Router", new Router())
-        .add(new PJAX());
-
-    let indexRun = async () => {
-        const { default: index } = await import("./index");
-        index();
-    }
-    
-    app.emitter.once("index", async () => {
-        indexRun();
-    });
-
-    let router = app.get("Router") as Router;
-    router
-        .add({
-            path: /^\/(index)?(\.html)?$/,
-            method() {
-                app.emitter.emit("index");
-            }
-        });
-
-    app.boot();
-} catch (err) {
-    console.warn("[App] boot failed,", err);
-}
-
-const offlineIcons = Array.from(document.querySelectorAll(".offline-icon"));
-const hasNetwork = (online: boolean) => {
-    offlineIcons.forEach(el => {
-        el?.classList?.toggle("online", online);
-    });
-};
-
-hasNetwork(navigator.onLine);
-window.addEventListener("load", () => {
-    hasNetwork(navigator.onLine);
-
-    window.addEventListener("online", () => {
-        // Set hasNetwork to online when they change to online.
-        hasNetwork(true);
-    });
-
-    window.addEventListener("offline", () => {
-        // Set hasNetwork to offline when they change to offline.
-        hasNetwork(false);
-    });
-});
-
-// Accordion
-Accordion.run();
 export { };

@@ -122,8 +122,8 @@ block content
       | e.g. #[br]
       | You want #[code react], #[code react-dom], #[code vue], and #[code @okikio/animate], but only want the #[code Animate] and #[code toStr] methods exported from #[code @okikio/animate].
       | #[br] #[br] You would add this to the url 
-      a(href="/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]" rel="noopener")
-        | ?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[Animate,toStr]
+      a(href="/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]" rel="noopener")
+        | ?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]
       br 
       br
       | If you only want a couple packages and don't care to treeshake, then all you need is something like this,

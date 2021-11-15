@@ -123,7 +123,7 @@ task("html", async () => {
 // CSS Tasks
 task("css", async () => {
     const [
-        { default: fiber },
+        // { default: fiber },
 
         { default: postcss },
         { default: tailwind },
@@ -132,7 +132,7 @@ task("css", async () => {
 
         { default: rename },
     ] = await Promise.all([
-        import("fibers"),
+        // import("fibers"),
 
         import("gulp-postcss"),
         import("tailwindcss"),
@@ -148,7 +148,7 @@ task("css", async () => {
             // Minify scss to css
             postcss(
                 [
-                    sass({ outputStyle: "compressed", fiber }),
+                    sass({ outputStyle: "compressed",  }), // fiber
                     tailwind("./tailwind.config.cjs"),
                 ],
                 { syntax: scss }
@@ -414,6 +414,7 @@ task("watch", async () => {
         { delay: 750 },
         series("html", "css", "service-worker", "reload")
     );
+    
     watch(
         [`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`],
         { delay: 250 },
@@ -434,7 +435,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "minify-js",
+        // "minify-js",
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );
