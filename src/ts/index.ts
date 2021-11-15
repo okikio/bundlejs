@@ -2,8 +2,6 @@ import { animate } from "@okikio/animate";
 import { EventEmitter } from "@okikio/emitter";
 
 import { debounce } from "./util/debounce";
-import { compressToURL } from "@amoutonbrady/lz-string";
-
 import {
     ResultEvents,
     renderComponent,
@@ -17,11 +15,12 @@ import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
 import type { editor as Editor } from "monaco-editor";
+import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker from "./util/WebWorker";
 
-export let oldShareURL = new URL(String(document.location));    
+export let oldShareURL = new URL(String(document.location));
 const BundleEvents = new EventEmitter();
 
 let fileSizeEl = document.querySelector(".file-size");
@@ -76,7 +75,7 @@ BundleEvents.on({
                     fileSizeEl.textContent = `Wait...`;
                     BundleEvents.emit("bundle");
                 }
-                
+
                 isInitial = false;
             }
         }
@@ -105,16 +104,16 @@ BundleEvents.on({
             "seconds"
         )}`;
         fileSizeEl.textContent = `` + size;
-    },
+    }
 });
 
 // Bundle worker
-const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);    
-const postMessage = (obj: any) => {
+const BundleWorker = new Worker(ESBUILD_WORKER_URL, WorkerArgs);  // WebWorker   
+const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
-    BundleWorker.postMessage(encodedMessage , [encodedMessage.buffer]); 
-};  
+    BundleWorker.postMessage(encodedMessage, [encodedMessage.buffer]);
+};
 
 // bundles using esbuild and returns the result
 BundleEvents.on("bundle", () => {
@@ -131,13 +130,13 @@ BundleEvents.on("bundle", () => {
 
 // Emit bundle events based on WebWorker messages
 BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
-    let { event, details } = JSON.parse(decode(data)); 
+    let { event, details } = JSON.parse(decode(data));
     BundleEvents.emit(event, details);
 });
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
-        BundleWorker?.start();
+        // BundleWorker?.start();
     }
 });
 
@@ -150,12 +149,60 @@ window.addEventListener("pagehide", function (event) {
     }
 });
 
-export default () => {  
-    BundleWorker.start();
+const { languages } = Monaco;
+const getShareableURL = async (editor: Editor.IStandaloneCodeEditor) => {
+    try {
+        const model = editor.getModel();
+        const worker = await languages.typescript.getTypeScriptWorker();
+        const thisWorker = await worker(model.uri);
 
-    // Fix PJAX, force replacing the original shared URL
-    if (oldShareURL) {
-        window.history.replaceState({}, "", oldShareURL);
+        // @ts-ignore
+        return await thisWorker.getShareableURL(model.uri.toString());
+    } catch (e) {
+        console.warn(e)
+    }
+};
+
+export default (shareURL: URL, app: App) => {
+    oldShareURL = shareURL;
+    // BundleWorker?.start();
+
+    let historyManager = app.get("HistoryManager") as HistoryManager;
+    let replaceState = (url) => {
+        let { last } = historyManager;
+        let state = {
+            ...last,
+            url: url.toString()
+        }
+        
+        historyManager.states.pop();
+		historyManager.states.push({ ...state });
+
+		let item: IHistoryItem = {
+			index: historyManager.pointer,
+			states: [...historyManager.states]
+		};
+        
+        window.history.replaceState(item, "", state.url);
+    }
+
+    let pushState = (url) => {
+        let { last } = historyManager;
+        let state = {
+            ...last,
+            url: url.toString()
+        }
+        
+		let len = historyManager.length;
+		historyManager.states.push({ ...state });
+		historyManager.pointer = len;
+
+		let item: IHistoryItem = {
+			index: historyManager.pointer,
+			states: [...historyManager.states]
+		};
+        
+        window.history.pushState(item, "", state.url);
     }
 
     // SearchResults solidjs component
@@ -174,7 +221,7 @@ export default () => {
                     try {
                         let response = await fetch(url);
                         let result = await response.json();
-                        setState(                        
+                        setState(
                             // result?.results   ->   api.npms.io
                             // result?.objects   ->   registry.npmjs.com
                             result?.results.map((obj) => {
@@ -231,11 +278,117 @@ export default () => {
         });
 
         // Monaco Code Editor
-        // let Monaco = await import("./modules/monaco");
-        [editor, output] = Monaco.build();
+        [editor, output] = Monaco.build(oldShareURL);
+
+        const editorBtns = (editor: typeof output, reset: string) => {
+            let el = editor.getDomNode();
+            let parentEl = el?.closest(".app").querySelector(".editor-btns");
+            if (parentEl) {
+                let clearBtn = parentEl.querySelector(".clear-btn");
+                let prettierBtn = parentEl.querySelector(".prettier-btn");
+                let resetBtn = parentEl.querySelector(".reset-btn");
+                let copyBtn = parentEl.querySelector(".copy-btn");
+                let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
+                let editorInfo = parentEl.querySelector(".editor-info");
+
+                clearBtn.addEventListener("click", () => {
+                    editor.setValue("");
+                });
+
+                prettierBtn.addEventListener("click", () => {
+                    (async () => {
+                        try {
+                            const model = editor.getModel();
+                            const worker = await languages.typescript.getTypeScriptWorker();
+                            const thisWorker = await worker(model.uri);
+
+                            // @ts-ignore
+                            const formattedCode = await thisWorker.format(model.uri.toString());
+                            editor.setValue(formattedCode);
+                        } catch (e) {
+                            console.warn(e)
+                        }
+                    })();
+
+                    editor.getAction("editor.action.formatDocument").run();
+                });
+
+                resetBtn.addEventListener("click", () => {
+                    editor.setValue(reset);
+                });
+
+                copyBtn.addEventListener("click", () => {
+                    const range = editor.getModel().getFullModelRange();
+                    editor.setSelection(range);
+                    editor
+                        .getAction(
+                            "editor.action.clipboardCopyWithSyntaxHighlightingAction"
+                        )
+                        .run();
+
+                    (async () => {
+                        await animate({
+                            target: editorInfo,
+                            translateY: [100, "-100%"],
+                            fillMode: "both",
+                            duration: 500,
+                            easing: "ease-out",
+                        });
+
+                        await animate({
+                            target: editorInfo,
+                            translateY: ["-100%", 100],
+                            fillMode: "both",
+                            delay: 1000,
+                        });
+                    })();
+                });
+
+                codeWrapBtn.addEventListener("click", () => {
+                    let wordWrap: "on" | "off" =
+                        editor.getRawOptions()["wordWrap"] == "on" ? "off" : "on";
+                    editor.updateOptions({ wordWrap });
+                });
+            }
+        };
+
+        const typeAcquisition = async () => {
+            try {
+                const model = editor.getModel();
+                const worker = await languages.typescript.getTypeScriptWorker();
+                const thisWorker = await worker(model.uri);
+
+                // @ts-ignore
+                await thisWorker.typeAcquisition(model.uri.toString());
+            } catch (e) {
+                console.warn(e)
+            }
+        };
+
+        editorBtns(
+            editor,
+            [
+                '// Click Run for the Bundled + Minified + Gzipped package size',
+                'export * from "@okikio/animate";'
+            ].join("")
+        );
+
+        editorBtns(output, `// Output`);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
+        
+        typeAcquisition();
+
+        let timer: number;
+        editor.onDidChangeModelContent(() => {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => typeAcquisition(), 1000);
+        });
+
+        app.on("POPSTATE", () => {
+            editor.setValue(Monaco.parseSearchQuery(new URL(decodeURI(document.location.toString()))))
+        });
 
         [editor.getDomNode(), output.getDomNode()].forEach((el) => {
             el?.parentElement?.classList.add("show");
@@ -246,13 +399,13 @@ export default () => {
 
         flexWrapper.classList.add("loaded");
 
-        const editorBtns = Array.from(
+        const allEditorBtns = Array.from(
             document.querySelectorAll(".editor-btns")
         );
-        if (editorBtns) {
-            editorBtns?.[1].classList.add("delay");
+        if (allEditorBtns) {
+            allEditorBtns?.[1].classList.add("delay");
             setTimeout(() => {
-                editorBtns?.[1].classList.remove("delay");
+                allEditorBtns?.[1].classList.remove("delay");
             }, 1600);
         }
 
@@ -261,33 +414,12 @@ export default () => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
-        let oldShareLink: string;
-        let generateShareLink = () => {
-            if (value == editor?.getValue()) {
-                return (
-                    oldShareLink ??
-                    String(
-                        new URL(
-                            `/?share=${compressToURL(value)}`,
-                            document.location.origin
-                        )
-                    )
-                );
-            }
-
-            value = `` + editor?.getValue();
-            return (oldShareLink = String(
-                new URL(
-                    `/?share=${compressToURL(value)}`,
-                    document.location.origin
-                )
-            ));
-        };
-
         editor.onDidChangeModelContent(
             debounce((e) => {
-                window.history.replaceState({}, "", generateShareLink());
-                isInitial = false;
+                (async () => {
+                    replaceState(await getShareableURL(editor));
+                    isInitial = false;
+                })();
             }, 1000)
         );
 
@@ -298,33 +430,37 @@ export default () => {
             "#copy-input"
         ) as HTMLInputElement;
         shareBtn?.addEventListener("click", () => {
-            if (navigator.share) {
-                let shareBtnValue = shareBtn.innerText;
+            (async () => {
+                try {
+                    if (navigator.share) {
+                        let shareBtnValue = shareBtn.innerText;
+                        isInitial = false;
+                        await navigator.share({
+                            title: 'bundle',
+                            text: '',
+                            url: await getShareableURL(editor),
+                        });
 
-                navigator.share({
-                    title: 'bundle',
-                    text: '',
-                    url: generateShareLink(),
-                })
-                    .then(() => {
                         shareBtn.innerText = "Shared!";
                         setTimeout(() => {
                             shareBtn.innerText = shareBtnValue;
                         }, 600);
-                    })
-                    .catch((error) => console.log('Error sharing', error));
-            } else {
-                shareInput.value = generateShareLink();
-                shareInput.select();
-                document.execCommand("copy");
+                    } else {
+                        shareInput.value = await getShareableURL(editor);
+                        shareInput.select();
+                        document.execCommand("copy");
 
-                let shareBtnValue = shareBtn.innerText;
+                        let shareBtnValue = shareBtn.innerText;
 
-                shareBtn.innerText = "Copied!";
-                setTimeout(() => {
-                    shareBtn.innerText = shareBtnValue;
-                }, 600);
-            }
+                        shareBtn.innerText = "Copied!";
+                        setTimeout(() => {
+                            shareBtn.innerText = shareBtnValue;
+                        }, 600);
+                    }
+                } catch (error) {
+                    console.log('Error sharing', error);
+                }
+            })();
         });
 
         // Listen to events for the results
@@ -334,10 +470,12 @@ export default () => {
         });
 
         RunBtn.addEventListener("click", () => {
-            window.history.pushState({}, "", generateShareLink());
-            if (!initialized)
-                fileSizeEl.textContent = `Wait...`;
-            BundleEvents.emit("bundle");
+            (async () => {
+                pushState(await getShareableURL(editor));
+                if (!initialized)
+                    fileSizeEl.textContent = `Wait...`;
+                BundleEvents.emit("bundle");
+            })();
         });
     })();
 
