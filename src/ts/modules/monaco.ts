@@ -496,7 +496,7 @@ export const build = (oldShareURL: URL) => {
         },
         acceptSuggestionOnCommitCharacter: !isAndroid,
         acceptSuggestionOnEnter: !isAndroid ? "on" : "off",
-        accessibilitySupport: !isAndroid ? "on" : "off",
+        // accessibilitySupport: !isAndroid ? "on" : "off",
         minimap: {
             enabled: false,
         },
