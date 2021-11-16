@@ -1,16 +1,28 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
 import type { Plugin } from 'esbuild';
 
-export async function fetchPkg(url: string) {
-    const res = await fetch(url);
+export async function fetchPkg(url: string, FetchCache = new Set()) {
+    let response: Response;
+
+    let cache = await caches.open('EXTERNAL_FETCHES');
+    let request = new Request(url);
+
+    if (!FetchCache.has(url)) {
+        await cache.add(request);
+        FetchCache.add(url);
+    }
+    
+    response = await cache.match(request, {});
+    
+    // const res = await fetch(url);
     return {
-        url: res.url,
-        content: await res.text(),
+        url: response.url,
+        content: await response.text(),
     };
 }
 
 export const HTTP_NAMESPACE = 'http-url';
-export const HTTP = (): Plugin => {
+export const HTTP = (FetchCache: Set<string>): Plugin => {
     return {
         name: 'http',
         setup(build) {
@@ -42,7 +54,7 @@ export const HTTP = (): Plugin => {
             // handle the example import from https://cdn.esm.sh/ but in reality this
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
-                const { content, url } = await fetchPkg(args.path);
+                const { content, url } = await fetchPkg(args.path, FetchCache);
                 return {
                     contents: content,
                     loader: 'ts',

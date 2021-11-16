@@ -5,13 +5,13 @@ import { fetchPkg } from './http';
 import type { Plugin } from 'esbuild';
 
 export const JSON_NAMESPACE = 'json-file';
-export const JSON_PLUGIN = (): Plugin => {
+export const JSON_PLUGIN = (FetchCache: Set<string>): Plugin => {
     return {
         name: 'json',
         setup(build) {
             build.onLoad({ namespace: CDN_NAMESPACE, filter: /\.json$/ }, async (args) => {
                 const pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
-                const { content, url } = await fetchPkg(pathUrl);
+                const { content, url } = await fetchPkg(pathUrl, FetchCache);
 
                 return {
                     contents: `

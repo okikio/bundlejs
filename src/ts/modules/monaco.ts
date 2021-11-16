@@ -273,7 +273,7 @@ languages.typescript.typescriptDefaults.addExtraLib(
 // (?:(?:import|export|require)(?:\s?(.*)?\s?)(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?
 const IMPORTS_REXPORTS_REQUIRE_REGEX =
     /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
-const FetchCache = new Map();
+const FetchCache = new Set();
 
 languages.registerHoverProvider("typescript", {
     provideHover(model, position) {
@@ -302,14 +302,17 @@ languages.registerHoverProvider("typescript", {
             let { url, version: inputedVersion } = parseInput(pkg);
             let response: Response, result: any;
 
+            let cache = await caches.open('EXTERNAL_FETCHES');
+            let request = new Request(url);
+
             try {
                 if (!FetchCache.has(url)) {
-                    response = await fetch(url);
-                    result = await response.json();
-                    FetchCache.set(url, JSON.stringify(result));
-                } else {
-                    result = JSON.parse(FetchCache.get(url));
+                    await cache.add(request);
+                    FetchCache.add(url);
                 }
+                
+                response = await cache.match(request, {});
+                result = await response.json();
             } catch (e) {
                 console.warn(e);
                 return;

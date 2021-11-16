@@ -22,10 +22,6 @@ import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
 
-let fileSizeEl = document.querySelector(".file-size");
-let RunBtn = document.querySelector("#run");
-let bundleTime = document.querySelector("#bundle-time");
-
 let value = "";
 let start = Date.now();
 
@@ -41,6 +37,38 @@ let initialized = false;
 // The editor's content hasn't changed 
 let isInitial = true;
 
+// Bundle worker
+export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
+export const postMessage = (obj: { event: string, details: any }) => {
+    let messageStr = JSON.stringify(obj);
+    let encodedMessage = encode(messageStr);
+    BundleWorker.postMessage(encodedMessage, [encodedMessage.buffer]);
+};
+
+// Emit bundle events based on WebWorker messages
+BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
+    let { event, details } = JSON.parse(decode(data));
+    BundleEvents.emit(event, details);
+});
+
+window.addEventListener("pageshow", function (event) {
+    if (!event.persisted) {
+        BundleWorker?.start?.();
+    }
+});
+
+window.addEventListener("pagehide", function (event) {
+    if (event.persisted === true) {
+        console.log("This page *might* be entering the bfcache.");
+    } else {
+        console.log("This page will unload normally and be discarded.");
+        BundleWorker?.terminate?.();
+    }
+});
+
+
+let fileSizeEl: HTMLElement;
+
 // Bundle Events
 BundleEvents.on({
     loaded() {
@@ -52,7 +80,8 @@ BundleEvents.on({
     init() {
         console.log("Initalized");
         initialized = true;
-        fileSizeEl.textContent = `...`;
+        if (fileSizeEl)
+            fileSizeEl.textContent = `...`;
 
         if (monacoLoadedFirst)
             BundleEvents.emit("ready");
@@ -93,37 +122,12 @@ BundleEvents.on({
     },
 });
 
-// Bundle worker
-export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
-export const postMessage = (obj: { event: string, details: any }) => {
-    let messageStr = JSON.stringify(obj);
-    let encodedMessage = encode(messageStr);
-    BundleWorker.postMessage(encodedMessage, [encodedMessage.buffer]);
-};
-
-// Emit bundle events based on WebWorker messages
-BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
-    let { event, details } = JSON.parse(decode(data));
-    BundleEvents.emit(event, details);
-});
-
-window.addEventListener("pageshow", function (event) {
-    if (!event.persisted) {
-        BundleWorker?.start?.();
-    }
-});
-
-window.addEventListener("pagehide", function (event) {
-    if (event.persisted === true) {
-        console.log("This page *might* be entering the bfcache.");
-    } else {
-        console.log("This page will unload normally and be discarded.");
-        BundleWorker?.terminate?.();
-    }
-});
-
 // Load all heavy main content
 export default (app: App) => {
+    let RunBtn = document.querySelector("#run");
+    let bundleTime = document.querySelector("#bundle-time");
+    fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
+
     let editor: Editor.IStandaloneCodeEditor;
     let output: Editor.IStandaloneCodeEditor;
 
@@ -133,16 +137,16 @@ export default (app: App) => {
             if (!initialized) return;
             console.log("Bundle");
             value = `` + editor?.getValue();
-    
+
             fileSizeEl.innerHTML = `<div class="loading"></div>`;
             bundleTime.textContent = `Bundled in ...`;
-    
+
             start = Date.now();
             postMessage({ event: "build", details: value });
         },
         result(details) {
             let { size, content } = details;
-    
+
             output?.setValue?.(content);
             bundleTime.textContent = `Bundled ${timeFormatter.format(
                 (Date.now() - start) / 1000,
@@ -159,15 +163,15 @@ export default (app: App) => {
             ...last,
             url: url.toString()
         }
-        
-        historyManager.states.pop();
-		historyManager.states.push({ ...state });
 
-		let item: IHistoryItem = {
-			index: historyManager.pointer,
-			states: [...historyManager.states]
-		};
-        
+        historyManager.states.pop();
+        historyManager.states.push({ ...state });
+
+        let item: IHistoryItem = {
+            index: historyManager.pointer,
+            states: [...historyManager.states]
+        };
+
         window.history.replaceState(item, "", state.url);
     }
 
@@ -177,16 +181,16 @@ export default (app: App) => {
             ...last,
             url: url.toString()
         }
-        
-		let len = historyManager.length;
-		historyManager.states.push({ ...state });
-		historyManager.pointer = len;
 
-		let item: IHistoryItem = {
-			index: historyManager.pointer,
-			states: [...historyManager.states]
-		};
-        
+        let len = historyManager.length;
+        historyManager.states.push({ ...state });
+        historyManager.pointer = len;
+
+        let item: IHistoryItem = {
+            index: historyManager.pointer,
+            states: [...historyManager.states]
+        };
+
         window.history.pushState(item, "", state.url);
     }
 
@@ -218,7 +222,7 @@ export default (app: App) => {
                 const model = editor.getModel();
                 const worker = await languages.typescript.getTypeScriptWorker();
                 const thisWorker = await worker(model.uri);
-        
+
                 // @ts-ignore
                 return await thisWorker.getShareableURL(model.uri.toString());
             } catch (e) {
@@ -329,9 +333,9 @@ export default (app: App) => {
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
-        
+
         typeAcquisition(editor);
-        
+
         // Debounced type acquisition to once every second
         editor.onDidChangeModelContent(debounce(() => {
             typeAcquisition(editor);
@@ -430,7 +434,11 @@ export default (app: App) => {
 // To speed up rendering, delay Monaco on the main page, only load none critical code
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
+    fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
     BundleWorker?.start?.();
+
+    if (initialized && fileSizeEl)
+        fileSizeEl.textContent = `...`;
 
     // SearchResults solidjs component
     (async () => {
