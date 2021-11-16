@@ -1,6 +1,7 @@
 import { initialize, build } from "esbuild-wasm/esm/browser";
 import { EventEmitter } from "@okikio/emitter";
 
+// import { install, BFSRequire, FileSystem } from "browserfs";
 import path from "path";
 import { fs, vol } from "memfs";
 
@@ -56,7 +57,7 @@ let formatMessages = (messages: any[]) => {
     });
 }
 
-const start = (port) => {
+const start = async (port) => {
     const BuildEvents = new EventEmitter();
     vol.fromJSON({}, "/");
 
@@ -114,10 +115,18 @@ const start = (port) => {
             let externalContent = [];
             let content: string = "";
 
-            // use esbuild to bundle files
+            // Use esbuild to bundle files
             try {
                 await fs.promises.writeFile("input.ts", `${input}`);
+                // await new Promise<void>((resolve, reject) => {
+                //     fs.writeFile("input.ts", `${input}`, (err) => {
+                //         if (err) return reject(err);
+                //         resolve();
+                //     });
+                // });
                 
+                const FetchCache = new Set<string>();
+
                 try {
                     if (result?.rebuild) {
                         result = await result?.rebuild();
@@ -150,11 +159,11 @@ const start = (port) => {
                             plugins: [
                                 EXTERNAL(),
                                 ENTRY(`/input.ts`),
-                                JSON_PLUGIN(),
+                                JSON_PLUGIN(FetchCache),
 
                                 BARE(),
-                                HTTP(),
-                                CDN(),
+                                HTTP(FetchCache),
+                                CDN(FetchCache),
                                 VIRTUAL_FS(),
                                 WASM(),
                             ],
