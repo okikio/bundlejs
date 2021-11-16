@@ -1,10 +1,33 @@
 import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
+import { themeSet, themeGet, runTheme } from "./modules/theme";
+
+import { InitialRender } from "./index";
+import RegisterServiceWorker from "./register-sw";
+
 import * as Accordion from "./modules/accordion";
 import { animate } from "@okikio/animate";
 
 import type { ITransition, IHistoryItem } from "@okikio/native";
+
+runTheme();
+
+try {
+    // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
+    let themeSwitch = Array.from(document.querySelectorAll(".theme-options")) as HTMLSelectElement[];
+    if (themeSwitch[0]) {
+        for (let el of themeSwitch) {
+            el.value = themeGet();
+            el.addEventListener("change", () => {
+                themeSet(el.value);
+                el.value = themeGet();
+            });
+        }
+    }
+} catch (e) {
+    console.warn("Theming seems to break on this browser.", e);
+}
 
 // Navbar focus on scroll effect
 let canScroll = true;
@@ -70,14 +93,19 @@ try {
         .add(new PJAX());
 
     let indexRun = async () => {
+        InitialRender(oldShareURL);
+
         const { default: index } = await import("./index");
-        index(oldShareURL, app);
+        index(app);
     }
     
     app.emitter.once("index", async () => {
         indexRun();
     });
 
+    if (/^\/(\#.*)?(index)?(\.html)?$/.test(oldShareURL.toString()))
+        app.emitter.emit("index");
+        
     let router = app.get("Router") as Router;
     router
         .add({
@@ -136,4 +164,6 @@ window.addEventListener("load", () => {
 
 // Accordion
 Accordion.run();
+
+RegisterServiceWorker();
 export { };

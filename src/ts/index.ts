@@ -5,23 +5,22 @@ import { debounce } from "./util/debounce";
 import {
     ResultEvents,
     renderComponent,
-    setState,
-    parseInput
+    setState
 } from "./components/SearchResults";
-
-import * as Monaco from "./modules/monaco";
 
 import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
-import type { editor as Editor } from "monaco-editor";
-import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+import { parseInput, parseSearchQuery } from "./util/parse-query";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker from "./util/WebWorker";
 
+import type { editor as Editor } from "monaco-editor";
+import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+
 export let oldShareURL = new URL(String(document.location));
-const BundleEvents = new EventEmitter();
+export const BundleEvents = new EventEmitter();
 
 let fileSizeEl = document.querySelector(".file-size");
 let RunBtn = document.querySelector("#run");
@@ -29,9 +28,6 @@ let bundleTime = document.querySelector("#bundle-time");
 
 let value = "";
 let start = Date.now();
-
-let editor: Editor.IStandaloneCodeEditor;
-let output: Editor.IStandaloneCodeEditor;
 
 const WorkerArgs = { name: "esbuild-worker" };
 const timeFormatter = new Intl.RelativeTimeFormat("en", {
@@ -95,38 +91,15 @@ BundleEvents.on({
         });
         fileSizeEl.textContent = `Error`;
     },
-    result(details) {
-        let { size, content } = details;
-
-        output?.setValue?.(content);
-        bundleTime.textContent = `Bundled ${timeFormatter.format(
-            (Date.now() - start) / 1000,
-            "seconds"
-        )}`;
-        fileSizeEl.textContent = `` + size;
-    }
 });
 
 // Bundle worker
-const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);     
-const postMessage = (obj: { event: string, details: any }) => {
+export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);     
+export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
     BundleWorker.postMessage(encodedMessage, [encodedMessage.buffer]);
 };
-
-// bundles using esbuild and returns the result
-BundleEvents.on("bundle", () => {
-    if (!initialized) return;
-    console.log("Bundle");
-    value = `` + editor?.getValue();
-
-    fileSizeEl.innerHTML = `<div class="loading"></div>`;
-    bundleTime.textContent = `Bundled in ...`;
-
-    start = Date.now();
-    postMessage({ event: "build", details: value });
-});
 
 // Emit bundle events based on WebWorker messages
 BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) => {
@@ -149,23 +122,35 @@ window.addEventListener("pagehide", function (event) {
     }
 });
 
-const { languages } = Monaco;
-const getShareableURL = async (editor: Editor.IStandaloneCodeEditor) => {
-    try {
-        const model = editor.getModel();
-        const worker = await languages.typescript.getTypeScriptWorker();
-        const thisWorker = await worker(model.uri);
+// Load all heavy main content
+export default (app: App) => {
+    let editor: Editor.IStandaloneCodeEditor;
+    let output: Editor.IStandaloneCodeEditor;
 
-        // @ts-ignore
-        return await thisWorker.getShareableURL(model.uri.toString());
-    } catch (e) {
-        console.warn(e)
-    }
-};
-
-export default (shareURL: URL, app: App) => {
-    oldShareURL = shareURL;
-    BundleWorker?.start();
+    // bundles using esbuild and returns the result
+    BundleEvents.on({
+        bundle() {
+            if (!initialized) return;
+            console.log("Bundle");
+            value = `` + editor?.getValue();
+    
+            fileSizeEl.innerHTML = `<div class="loading"></div>`;
+            bundleTime.textContent = `Bundled in ...`;
+    
+            start = Date.now();
+            postMessage({ event: "build", details: value });
+        },
+        result(details) {
+            let { size, content } = details;
+    
+            output?.setValue?.(content);
+            bundleTime.textContent = `Bundled ${timeFormatter.format(
+                (Date.now() - start) / 1000,
+                "seconds"
+            )}`;
+            fileSizeEl.textContent = `` + size;
+        }
+    });
 
     let historyManager = app.get("HistoryManager") as HistoryManager;
     let replaceState = (url) => {
@@ -205,62 +190,9 @@ export default (shareURL: URL, app: App) => {
         window.history.pushState(item, "", state.url);
     }
 
-    // SearchResults solidjs component
-    (async () => {
-        const searchInput = document.querySelector(
-            ".search input"
-        ) as HTMLInputElement;
-        searchInput?.addEventListener?.(
-            "keydown",
-            debounce(() => {
-                let { value } = searchInput;
-                if (value.length <= 0) return;
-
-                let { url, version } = parseInput(value);
-                (async () => {
-                    try {
-                        let response = await fetch(url);
-                        let result = await response.json();
-                        setState(
-                            // result?.results   ->   api.npms.io
-                            // result?.objects   ->   registry.npmjs.com
-                            result?.results.map((obj) => {
-                                const { name, description, date, publisher } =
-                                    obj.package;
-                                return {
-                                    name,
-                                    description,
-                                    date,
-                                    version,
-                                    author: publisher?.username,
-                                };
-                            }) ?? []
-                        );
-                    } catch (e) {
-                        console.error(e);
-                        setState([{
-                            type: "Error...",
-                            description: e?.message
-                        }]);
-                    }
-                })();
-            }, 250)
-        );
-
-        const SearchContainerEl = document.querySelector(
-            ".search-container"
-        ) as HTMLElement;
-        const SearchResultContainerEl = SearchContainerEl.querySelector(
-            ".search-results-container"
-        ) as HTMLElement;
-        if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
-
-        const clearBtn = document.querySelector(".search .clear");
-        clearBtn?.addEventListener("click", () => {
-            searchInput.value = "";
-            setState([]);
-        });
-    })();
+    // app.on("POPSTATE", () => {
+    //     editor?.setValue(parseSearchQuery(new URL(decodeURI(document.location.toString()))))
+    // });
 
     // Monaco
     (async () => {
@@ -277,8 +209,22 @@ export default (shareURL: URL, app: App) => {
             fillMode: "both",
         });
 
-        // Monaco Code Editor
-        [editor, output] = Monaco.build(oldShareURL);
+        // Monaco Code Editor Module
+        const Monaco = await import("./modules/monaco");
+
+        const { languages } = Monaco;
+        const getShareableURL = async (editor: typeof output) => {
+            try {
+                const model = editor.getModel();
+                const worker = await languages.typescript.getTypeScriptWorker();
+                const thisWorker = await worker(model.uri);
+        
+                // @ts-ignore
+                return await thisWorker.getShareableURL(model.uri.toString());
+            } catch (e) {
+                console.warn(e)
+            }
+        };
 
         const editorBtns = (editor: typeof output, reset: string) => {
             let el = editor.getDomNode();
@@ -355,7 +301,7 @@ export default (shareURL: URL, app: App) => {
             }
         };
 
-        const typeAcquisition = async () => {
+        const typeAcquisition = async (editor: typeof output) => {
             try {
                 const model = editor.getModel();
                 const worker = await languages.typescript.getTypeScriptWorker();
@@ -368,6 +314,10 @@ export default (shareURL: URL, app: App) => {
             }
         };
 
+        // Build the Code Editor
+        [editor, output] = Monaco.build(oldShareURL);
+
+        // Add editor buttons to both editors
         editorBtns(
             editor,
             [
@@ -375,22 +325,17 @@ export default (shareURL: URL, app: App) => {
                 'export * from "@okikio/animate";'
             ].join("\n")
         );
-
         editorBtns(output, `// Output`);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
         
-        typeAcquisition();
+        typeAcquisition(editor);
         
         // Debounced type acquisition to once every second
         editor.onDidChangeModelContent(debounce(() => {
-            typeAcquisition();
+            typeAcquisition(editor);
         }, 1000));
-
-        app.on("POPSTATE", () => {
-            editor.setValue(Monaco.parseSearchQuery(new URL(decodeURI(document.location.toString()))))
-        });
 
         [editor.getDomNode(), output.getDomNode()].forEach((el) => {
             el?.parentElement?.classList.add("show");
@@ -480,6 +425,69 @@ export default (shareURL: URL, app: App) => {
             })();
         });
     })();
+};
+
+// To speed up rendering, delay Monaco on the main page, only load none critical code
+export const InitialRender = (shareURL: URL) => {
+    oldShareURL = shareURL;
+    BundleWorker?.start();
+
+    // SearchResults solidjs component
+    (async () => {
+        const searchInput = document.querySelector(
+            ".search input"
+        ) as HTMLInputElement;
+        searchInput?.addEventListener?.(
+            "keydown",
+            debounce(() => {
+                let { value } = searchInput;
+                if (value.length <= 0) return;
+
+                let { url, version } = parseInput(value);
+                (async () => {
+                    try {
+                        let response = await fetch(url);
+                        let result = await response.json();
+                        setState(
+                            // result?.results   ->   api.npms.io
+                            // result?.objects   ->   registry.npmjs.com
+                            result?.results.map((obj) => {
+                                const { name, description, date, publisher } =
+                                    obj.package;
+                                return {
+                                    name,
+                                    description,
+                                    date,
+                                    version,
+                                    author: publisher?.username,
+                                };
+                            }) ?? []
+                        );
+                    } catch (e) {
+                        console.error(e);
+                        setState([{
+                            type: "Error...",
+                            description: e?.message
+                        }]);
+                    }
+                })();
+            }, 250)
+        );
+
+        const SearchContainerEl = document.querySelector(
+            ".search-container"
+        ) as HTMLElement;
+        const SearchResultContainerEl = SearchContainerEl.querySelector(
+            ".search-results-container"
+        ) as HTMLElement;
+        if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
+
+        const clearBtn = document.querySelector(".search .clear");
+        clearBtn?.addEventListener("click", () => {
+            searchInput.value = "";
+            setState([]);
+        });
+    })();
 
     // countapi-js hit counter. It counts the number of time the website is loaded
     (async () => {
@@ -495,4 +503,4 @@ export default (shareURL: URL, app: App) => {
             );
         }
     })();
-};
+}
