@@ -1,7 +1,7 @@
 {
   "name": "bundle",
   "short_name": "bundle",
-  "id": "/",
+  "id": "bundle",
   "start_url": "/",
   "dir": "ltr",
   "display": "standalone",
