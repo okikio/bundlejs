@@ -42,7 +42,7 @@ task("html", async () => {
         { parser },
 
         { rehype },
-        { h }
+        { h },
     ] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
@@ -52,10 +52,10 @@ task("html", async () => {
         import("posthtml-parser"),
 
         import("rehype"),
-        import("hastscript")
+        import("hastscript"),
     ]);
 
-    let plugins = [        
+    let plugins = [
         "rehype-slug",
         "rehype-highlight",
         [
@@ -66,7 +66,7 @@ task("html", async () => {
             },
         ],
         ["rehype-external-links", { target: "_blank", rel: ["noopener"] }],
-    ]
+    ];
 
     const importPlugin = async (p) => {
         if (typeof p === "string") {
@@ -74,7 +74,7 @@ task("html", async () => {
         }
 
         return await p;
-    }
+    };
 
     plugins = plugins.map((p) => {
         return new Promise((resolve, reject) => {
@@ -87,7 +87,7 @@ task("html", async () => {
         });
     });
 
-    const loadedPlugins = await Promise.all(plugins);     
+    const loadedPlugins = await Promise.all(plugins);
     return stream(`${pugFolder}/*.pug`, {
         pipes: [
             plumber(),
@@ -112,9 +112,8 @@ task("html", async () => {
                         const value = String(await engine.process(content));
                         return parser(value);
                     };
-                })()
+                })(),
             ]),
-            
         ],
         dest: htmlFolder,
     });
@@ -148,7 +147,7 @@ task("css", async () => {
             // Minify scss to css
             postcss(
                 [
-                    sass({ outputStyle: "compressed",  }), // fiber
+                    sass({ outputStyle: "compressed" }), // fiber
                     tailwind("./tailwind.config.cjs"),
                 ],
                 { syntax: scss }
@@ -161,12 +160,15 @@ task("css", async () => {
 });
 
 task("minify-css", async () => {
-    const [{ default: postcss }, { default: autoprefixer }, { default: csso }] =
-        await Promise.all([
-            import("gulp-postcss"),
-            import("autoprefixer"),
-            import("postcss-csso"),
-        ]);
+    const [
+        { default: postcss },
+        { default: autoprefixer },
+        { default: csso },
+    ] = await Promise.all([
+        import("gulp-postcss"),
+        import("autoprefixer"),
+        import("postcss-csso"),
+    ]);
 
     return stream(`${destFolder}/**/*.css`, {
         pipes: [
@@ -199,7 +201,7 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
-        import("gulp-better-rollup")
+        import("gulp-better-rollup"),
         // import("gulp-rename"),
 
         // import("gulp-replace"),
@@ -241,8 +243,11 @@ task("js", async () => {
                         ".ttf": "file",
                         ".wasm": "file",
                     },
-                    
-                    plugins: [WEB_WORKER(), solid()],
+
+                    plugins: [
+                        WEB_WORKER(),
+                        solid()
+                    ],
                 }),
 
                 gulpif(
@@ -265,13 +270,13 @@ task("minify-js", async () => {
         { default: gulpif },
 
         { default: rollup },
-        { terser }
+        { terser },
     ] = await Promise.all([
         import("gulp-size"),
         import("gulp-if"),
 
         import("gulp-better-rollup"),
-        import("rollup-plugin-terser")
+        import("rollup-plugin-terser"),
     ]);
 
     return stream([`${jsFolder}/**/*.js`], {
@@ -284,7 +289,6 @@ task("minify-js", async () => {
             //     entryFileNames: '[name].js',
             //     chunkFileNames: 'chunk-[hash].js',
             // }),
-
             // size({
             //     gzip: true,
             //     showFiles: true,
@@ -301,7 +305,12 @@ task("service-worker", async () => {
 
     return generateSW({
         globDirectory: destFolder,
-        globPatterns: ["**/*.{html,js,css}", "/js/*.ttf", "/favicon/*.svg", "!/js/index.min.css"],
+        globPatterns: [
+            "**/*.{html,js,css}",
+            "/js/*.ttf",
+            "/favicon/*.svg",
+            "!/js/index.min.css",
+        ],
         swDest: `${destFolder}/sw.js`,
 
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
@@ -414,7 +423,7 @@ task("watch", async () => {
         { delay: 750 },
         series("html", "css", "service-worker", "reload")
     );
-    
+
     watch(
         [`${cssSrcFolder}/**/*`, `./tailwind.config.cjs`],
         { delay: 250 },
@@ -427,7 +436,11 @@ task("watch", async () => {
         series("js", "service-worker", "reload")
     );
 
-    watch([`${assetsFolder}/**/*`], { delay: 750 }, series("assets", "service-worker", "reload"));
+    watch(
+        [`${assetsFolder}/**/*`],
+        { delay: 750 },
+        series("assets", "service-worker", "reload")
+    );
 });
 
 task(

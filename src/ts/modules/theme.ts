@@ -67,5 +67,3 @@ export let runTheme = () => {
         console.warn("Theming isn't available on this browser.", e);
     }
 };
-
-runTheme();
