@@ -187,7 +187,7 @@ import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codi
 import {
     editor as Editor,
     languages,
-    Uri,
+    Uri
 } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api.js";
 import type { Environment } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api";
 
@@ -346,7 +346,7 @@ languages.registerHoverProvider("typescript", {
     },
 });
 
-export { languages, Editor };
+export { languages, Editor, Uri };
 export const build = (oldShareURL: URL) => {
     const initialValue =
         parseSearchQuery(oldShareURL) ||

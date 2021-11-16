@@ -20,6 +20,7 @@ import { VIRTUAL_FS } from "../plugins/virtual-fs";
 import { WASM } from "../plugins/wasm";
 
 import { encode, decode } from "../util/encode-decode";
+// import initSwc, { transformSync } from "@swc/wasm-web";
 
 import type { BuildResult, OutputFile, BuildIncremental, Message} from "esbuild-wasm/esm/browser";
 
@@ -34,6 +35,7 @@ const initEvent = new EventEmitter();
                 wasmURL: `./esbuild.wasm`
             });
 
+            // await initSwc(new URL("wasm_bg.wasm", globalThis.location.toString()));
             _initialized = true;
             initEvent.emit("init");  
         }
@@ -45,6 +47,8 @@ const initEvent = new EventEmitter();
 let formatMessages = (messages: any[]) => {
     return messages.map((err) => {
         let { location, text } = err as Message;
+        let startIndx = Math.max(location.column - 10, 0);
+        let len = Math.min(location.length + 10, location.lineText.length - startIndx);
         return "> " + location.file + ` line ${location.line}, column ${location.column}` + "\n" + 
                 `Warning: ${text}` + "\n" + "\n" +
                 `    ${location.line} │ ${location.lineText}` + "\n" +
@@ -70,12 +74,13 @@ const start = (port) => {
                 details: {}
             });
         },
-        error(err) {         
+        error(error) { 
+            let err = Array.isArray(error) ? error : error?.message;       
             postMessage({
                 event: "error",
                 details: {
                     type: `Error initializing, you may need to close and reopen all currently open pages pages`,
-                    error: err,
+                    error: Array.isArray(err) ? err : [err],
                 }
             });
         }
@@ -203,8 +208,8 @@ const start = (port) => {
                 return;
             }
 
-            // esbuild doesn't treeshake files very well, so, I choose to use rollup for treeshaking files. 
-            try {
+            // esbuild doesn't treeshake files very well, so, I choose to use rollup for treeshaking files.
+            try { 
                 const bundle = await rollup({
                     input: "entry",
                     treeshake: true,
@@ -225,6 +230,29 @@ const start = (port) => {
 
                 // // Closes the bundle
                 // await bundle.close();
+
+                // esbuild doesn't treeshake files very well, so, I choose to use swc for treeshaking & minifying files. 
+                // let transformOptions = {
+                //     "jsc": {
+                //         "parser": {
+                //             "syntax": "typescript",
+                //             "tsx": false
+                //         },
+                //         "target": "es2021",
+                //         "loose": false,
+                //         "minify": {
+                //           "compress": true,
+                //           "mangle": true
+                //         }
+                //     },
+                //     "module": {
+                //         "type": "es6"
+                //     },
+                //     "minify": true,
+                //     "isModule": true
+                // };
+                // let { code } = transformSync(content, transformOptions);
+                // content = code.trim();
             } catch (error) {
                 postMessage({
                     event: "error",
