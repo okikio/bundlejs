@@ -315,6 +315,9 @@ export default (shareURL: URL, app: App) => {
 
                 resetBtn.addEventListener("click", () => {
                     editor.setValue(reset);
+                    if (editor != output) {
+                        isInitial = true;
+                    }
                 });
 
                 copyBtn.addEventListener("click", () => {
@@ -465,7 +468,7 @@ export default (shareURL: URL, app: App) => {
         // Listen to events for the results
         ResultEvents.on("add-module", (v) => {
             value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + editor?.getValue();
-            editor.setValue(value + "\n" + v);
+            editor.setValue((value + "\n" + v).trim());
         });
 
         RunBtn.addEventListener("click", () => {
