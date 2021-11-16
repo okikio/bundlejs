@@ -79,14 +79,14 @@ BundleEvents.on({
     warn(details) {
         let { type, message } = details;
         console.warn(`${message.length} ${type}(s)`);
-        message.forEach(msg => {
+        (Array.isArray(message) ? message : [message]).forEach(msg => {
             console.warn(msg);
         });
     },
     error(details) {
         let { type, error } = details;
         console.error(`${error.length} ${type}(s) (if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)`);
-        error.forEach(err => {
+        (Array.isArray(error) ? error : [error]).forEach(err => {
             console.error(err);
         });
         fileSizeEl.textContent = `Error`;
@@ -94,7 +94,7 @@ BundleEvents.on({
 });
 
 // Bundle worker
-export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);     
+export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -109,7 +109,7 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
-        BundleWorker?.start();
+        BundleWorker?.start?.();
     }
 });
 
@@ -118,7 +118,7 @@ window.addEventListener("pagehide", function (event) {
         console.log("This page *might* be entering the bfcache.");
     } else {
         console.log("This page will unload normally and be discarded.");
-        BundleWorker?.terminate();
+        BundleWorker?.terminate?.();
     }
 });
 
@@ -430,7 +430,7 @@ export default (app: App) => {
 // To speed up rendering, delay Monaco on the main page, only load none critical code
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
-    BundleWorker?.start();
+    BundleWorker?.start?.();
 
     // SearchResults solidjs component
     (async () => {

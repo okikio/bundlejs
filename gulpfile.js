@@ -220,6 +220,7 @@ task("js", async () => {
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
             `node_modules/esbuild-wasm/esbuild.wasm`,
+            `node_modules/@swc/wasm-web/wasm_bg.wasm`
         ],
         {
             pipes: [

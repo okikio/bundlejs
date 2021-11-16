@@ -10,6 +10,7 @@ specifiers:
   '@okikio/native': ^3.0.1
   '@okikio/sharedworker': ^1.0.3
   '@rollup/plugin-virtual': ^2.0.3
+  '@swc/wasm-web': ^1.2.107
   '@types/node': ^16.11.7
   '@typescript/ata': ^0.9.3
   assert: ^2.0.0
@@ -77,6 +78,7 @@ dependencies:
   '@okikio/native': 3.0.1
   '@okikio/sharedworker': 1.0.3
   '@rollup/plugin-virtual': 2.0.3_rollup@2.60.0
+  '@swc/wasm-web': 1.2.107
   '@typescript/ata': 0.9.3_typescript@4.4.4
   assert: 2.0.0
   browser-builtins: 3.3.1
@@ -1674,6 +1676,10 @@ packages:
       ejs: 2.7.4
       magic-string: 0.25.7
     dev: true
+
+  /@swc/wasm-web/1.2.107:
+    resolution: {integrity: sha512-BZO13Z8WqflmoKo9Nd7lOGhdAycA9KWvmWtl6p8di9MRdxkOhTzZWXQr3nd/Imv2VQ7NXxUx5YMeDfSy3IYW3g==}
+    dev: false
 
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}

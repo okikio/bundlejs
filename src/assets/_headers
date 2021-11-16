@@ -23,7 +23,6 @@
   Link: </js/index.min.js>; rel=modulepreload
   Link: </js/main.min.js>; rel=modulepreload; importance=high
   Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; importance=low; crossorigin
-  Link: </js/esbuild.wasm>; rel=prefetch
   Link: </js/esbuild.worker.js>; rel=prefetch; importance=high
   Link: </js/typescript.worker.js>; rel=prefetch; importance=high
 
