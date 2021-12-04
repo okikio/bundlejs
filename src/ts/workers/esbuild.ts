@@ -118,26 +118,26 @@ const start = async (port) => {
             // Use esbuild to bundle files
             try {
                 await fs.promises.writeFile("input.ts", `${input}`);
+                input = null; // Try to 
                 // await new Promise<void>((resolve, reject) => {
                 //     fs.writeFile("input.ts", `${input}`, (err) => {
                 //         if (err) return reject(err);
                 //         resolve();
                 //     });
                 // });
-                
-                const FetchCache = new Set<string>();
 
                 try {
-                    if (result?.rebuild) {
-                        result = await result?.rebuild();
-                    } else {
+                    // if (result?.rebuild) {
+                    //     result = await result?.rebuild();
+                    // } else {
                         result = await build({
                             entryPoints: ['<stdin>'],
                             bundle: true,
                             minify: true,
                             color: true,
                             treeShaking: true,
-                            incremental: true,
+                            incremental: false,
+                            // incremental: true,
                             target: ["esnext"],
                             logLevel: 'info',
                             write: false,
@@ -159,17 +159,17 @@ const start = async (port) => {
                             plugins: [
                                 EXTERNAL(),
                                 ENTRY(`/input.ts`),
-                                JSON_PLUGIN(FetchCache),
+                                JSON_PLUGIN(),
 
                                 BARE(),
-                                HTTP(FetchCache),
-                                CDN(FetchCache),
-                                VIRTUAL_FS(),
-                                WASM(),
+                                HTTP(),
+                                CDN(),
+                                VIRTUAL_FS(fs),
+                                WASM(fs),
                             ],
                             globalName: 'bundler',
                         });
-                    }
+                    // }
                 } catch (error) {
                     let err = error?.message;
                     throw Array.isArray(err) ? formatMessages(err) : [err];
@@ -237,8 +237,8 @@ const start = async (port) => {
 
                 content = output[0].code?.trim?.() ?? content; // Remove unesscary space
 
-                // // Closes the bundle
-                // await bundle.close();
+                // Closes the bundle
+                await bundle.close();
 
                 // esbuild doesn't treeshake files very well, so, I choose to use swc for treeshaking & minifying files. 
                 // let transformOptions = {
@@ -291,6 +291,11 @@ const start = async (port) => {
                     event: "result",
                     details: { content, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
                 });
+
+                content = "";
+                totalByteLength = 0;
+                totalCompressedSize = 0;
+                externalContent = [];
             } catch (error) {
                 postMessage({
                     event: "error",
@@ -312,10 +317,11 @@ const start = async (port) => {
 // @ts-ignore
 self.onconnect = (e) => {
     let [port] = e.ports;
-    start(port)
+    start(port);
 }
 
 if (!("SharedWorkerGlobalScope" in self)) {
     start(self);
 }
 
+export { };

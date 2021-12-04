@@ -201,6 +201,8 @@ import { parseSearchQuery, parseInput } from "../util/parse-query";
 import TS_WORKER_FACTORY_URL from "worker:../workers/ts-worker-factory.ts";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
+        
+export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: `ts-worker` });
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -208,13 +210,12 @@ import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 (window as any).MonacoEnvironment = {
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
-            let WorkerArgs = { name: `${label}-worker` };
-            return new WebWorker(TYPESCRIPT_WORKER_URL, WorkerArgs); 
+            return TS_WORKER; 
         }
 
         return (() => {
             let WorkerArgs = { name: `editor-worker` };
-            let EditorWorker = new WebWorker(EDITOR_WORKER_URL, WorkerArgs);
+            let EditorWorker = new Worker(EDITOR_WORKER_URL, WorkerArgs);
             EditorWorker?.terminate();
             return EditorWorker;
         })();
@@ -354,7 +355,7 @@ export const build = (oldShareURL: URL) => {
     const initialValue =
         parseSearchQuery(oldShareURL) ||
         [
-            '// Click Run for the Bundled + Minified + Gzipped package size',
+            '// Click Run for the Bundled, Minified & Gzipped package size',
             'export * from "@okikio/animate";',
         ].join("\n");
 

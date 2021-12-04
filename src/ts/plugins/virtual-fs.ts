@@ -1,22 +1,22 @@
 import path from 'path';
-import { fs } from "memfs";
+import type { IFs } from "memfs";
 
 import type { Plugin } from 'esbuild';
 
 export const VIRTUAL_FS_NAMESPACE = 'virtualfs';
-export const resolve = ({ id, importer }: { id: string; importer: string }) => {
-    let resolvedPath = id;
-    if (importer && id.startsWith('.'))
-        resolvedPath = path.resolve(path.dirname(importer), id);
-    for (const x of ['', '.ts', '.js', '.css']) {
-        const realPath = resolvedPath + x;
-        if (fs.existsSync(realPath)) return realPath;
-    }
+export const VIRTUAL_FS = (fs: IFs): Plugin => {
+    const resolve = ({ id, importer }: { id: string; importer: string }) => {
+        let resolvedPath = id;
+        if (importer && id.startsWith('.'))
+            resolvedPath = path.resolve(path.dirname(importer), id);
+        for (const x of ['', '.ts', '.js', '.css']) {
+            const realPath = resolvedPath + x;
+            if (fs.existsSync(realPath)) return realPath;
+        }
 
-    throw new Error(`${resolvedPath} not exists`);
-};
-
-export const VIRTUAL_FS = (): Plugin => {
+        throw new Error(`${resolvedPath} not exists`);
+    };
+    
     return {
         name: VIRTUAL_FS_NAMESPACE,
         setup(build) {

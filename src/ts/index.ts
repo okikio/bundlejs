@@ -81,13 +81,16 @@ BundleEvents.on({
         console.log("Initalized");
         initialized = true;
         if (fileSizeEl)
-            fileSizeEl.textContent = `...`;
+            fileSizeEl.textContent = `Wait...`;
 
         if (monacoLoadedFirst)
             BundleEvents.emit("ready");
     },
     ready() {
         console.log("Ready");
+        if (fileSizeEl)
+            fileSizeEl.textContent = `...`;
+
         if (oldShareURL.search) {
             const searchParams = oldShareURL
                 .searchParams;
@@ -325,7 +328,7 @@ export default (app: App) => {
         editorBtns(
             editor,
             [
-                '// Click Run for the Bundled + Minified + Gzipped package size',
+                '// Click Run for the Bundled, Minified & Gzipped package size',
                 'export * from "@okikio/animate";'
             ].join("\n")
         );
@@ -335,6 +338,7 @@ export default (app: App) => {
         await FadeLoadingScreen;
 
         typeAcquisition(editor);
+        // getShareableURL(editor);
 
         // Debounced type acquisition to once every second
         editor.onDidChangeModelContent(debounce(() => {

@@ -23,7 +23,6 @@ const formatCode = async (code: string) => {
     });
 };
 
-
 const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
     return class MonacoTSWorker extends TypeScriptWorker {
         async typeAcquisition(fileName) {
@@ -71,17 +70,16 @@ const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
             // Collect the first few import and export statements
             let ImportExportStatements = [];
             let BackToBackImportExport = true; // Back to Back Import
-            ts.forEachChild(
-                source,
+            source.forEachChild(
                 (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
                     let isImport =
-                        node.kind == ts.SyntaxKind["ImportDeclaration"];
+                        node.kind == ts.SyntaxKind.ImportDeclaration - 1;
                     let isExport =
-                        node.kind == ts.SyntaxKind["ExportDeclaration"];
+                        node.kind == ts.SyntaxKind.ExportDeclaration - 1;
                     if (!BackToBackImportExport) return;
 
-                    BackToBackImportExport = isImport || isExport;
-                    if (isImport || isExport) {
+                    BackToBackImportExport = isImport || isExport || Boolean(node.moduleSpecifier);
+                    if (BackToBackImportExport) {
                         ImportExportStatements.push({
                             kind: isImport ? "import" : "export",
                             clause:
@@ -142,7 +140,7 @@ const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
             // If there is any remaining code convert it to a share URL
             if (remainingCode.length > 0) {
                 let compressedURL = compressToURL(remainingCode);
-                console.log(remainingCode, compressedURL)
+                // console.log(remainingCode, compressedURL)
                 if (compressedURL.length > remainingCode.length)
                     url.searchParams.set("text", JSON.stringify(remainingCode));
                 else
