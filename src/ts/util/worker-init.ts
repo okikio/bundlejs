@@ -1,5 +1,5 @@
-import { SimpleWorkerServer } from '../../../node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js';
-import { EditorSimpleWorker } from '../../../node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js';
+import { SimpleWorkerServer } from 'monaco-editor/esm/vs/base/common/worker/simpleWorker';
+import { EditorSimpleWorker } from 'monaco-editor/esm/vs/editor/common/services/editorSimpleWorker';
 export function initialize(foreignModule, port, initialized) {
     if (initialized) {
         return;

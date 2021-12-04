@@ -5,13 +5,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 // 'use strict';
-import { initialize } from "./worker-init";
+import { initialize } from "../util/worker-init";
 import { create } from '../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js';
 
 export const connect = (port) => {
     let initialized = false;
     port.onmessage = (e) => {
-        // ignore the first message
         initialize(function (ctx, createData) {
             return create(ctx, createData);
         }, port, initialized);

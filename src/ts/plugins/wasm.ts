@@ -1,11 +1,11 @@
 import path from 'path';
-import { fs } from "memfs";
 
+import type { IFs } from "memfs";
 import type { Plugin } from 'esbuild';
 
 export const WASM_STUB_NAMESPACE = 'wasm-stub';
 export const WASM_BINARY_NAMESPACE = 'wasm-binary';
-export const WASM = (): Plugin => {
+export const WASM = (fs: IFs): Plugin => {
     return {
         name: 'wasm',
         setup(build) {
