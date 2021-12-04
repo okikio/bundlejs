@@ -308,18 +308,18 @@ export default (app: App) => {
             }
         };
 
-        const typeAcquisition = async (editor: typeof output) => {
-            try {
-                const model = editor.getModel();
-                const worker = await languages.typescript.getTypeScriptWorker();
-                const thisWorker = await worker(model.uri);
+        // const typeAcquisition = async (editor: typeof output) => {
+        //     try {
+        //         const model = editor.getModel();
+        //         const worker = await languages.typescript.getTypeScriptWorker();
+        //         const thisWorker = await worker(model.uri);
 
-                // @ts-ignore
-                await thisWorker.typeAcquisition(model.uri.toString());
-            } catch (e) {
-                console.warn(e)
-            }
-        };
+        //         // @ts-ignore
+        //         await thisWorker.typeAcquisition(model.uri.toString());
+        //     } catch (e) {
+        //         console.warn(e)
+        //     }
+        // };
 
         // Build the Code Editor
         [editor, output] = Monaco.build(oldShareURL);
@@ -337,13 +337,13 @@ export default (app: App) => {
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
 
-        typeAcquisition(editor);
-        // getShareableURL(editor);
+        // typeAcquisition(editor);
+        // // getShareableURL(editor);
 
-        // Debounced type acquisition to once every second
-        editor.onDidChangeModelContent(debounce(() => {
-            typeAcquisition(editor);
-        }, 1000));
+        // // Debounced type acquisition to once every second
+        // editor.onDidChangeModelContent(debounce(() => {
+        //     typeAcquisition(editor);
+        // }, 1000));
 
         [editor.getDomNode(), output.getDomNode()].forEach((el) => {
             el?.parentElement?.classList.add("show");

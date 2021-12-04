@@ -6,7 +6,7 @@
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
 import type { CustomTSWebWorkerFactory } from "../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js";
-import { setupTypeAcquisition } from "@typescript/ata";
+// import { setupTypeAcquisition } from "@typescript/ata";
 
 // @ts-ignore
 import prettier from "prettier/esm/standalone.mjs";
@@ -14,7 +14,12 @@ import prettier from "prettier/esm/standalone.mjs";
 import parserBabel from "prettier/esm/parser-babel.mjs";
 
 import { compressToURL } from "@amoutonbrady/lz-string";
-import ts from "typescript";
+import type ts from "typescript";
+
+const SyntaxKind = {
+    ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
+    ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
+};
 
 const formatCode = async (code: string) => {
     return prettier.format(code, {
@@ -26,35 +31,35 @@ const formatCode = async (code: string) => {
 const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
     return class MonacoTSWorker extends TypeScriptWorker {
         async typeAcquisition(fileName) {
-            const program = this._languageService.getProgram() as ts.Program;
-            const source = program.getSourceFile(fileName);
+            // const program = this._languageService.getProgram() as ts.Program;
+            // const source = program.getSourceFile(fileName);
 
-            const extraLib = new Map<string, string>();
-            const TypeAquisition = setupTypeAcquisition({
-                projectName: "My ATA Project",
-                typescript: ts,
-                logger: console,
-                delegate: {
-                    receivedFile: (code: string, path: string) => {
-                        // Add code to your runtime at the path...
-                        extraLib.set(path, code);
-                    },
-                    started: () => {
-                        console.log("ATA start")
-                    },
-                    progress: (downloaded: number, total: number) => {
-                        console.log(`Got ${downloaded} out of ${total}`)
-                    },
-                    finished: vfs => {
-                        console.log("ATA done", Array.from(vfs.keys()))
-                        this.updateExtraLibs(Object.entries(extraLib).map(([k, v]) => {
-                            return ({ filePath: k, content: v });
-                        }));
-                    },
-                },
-            });
+            // const extraLib = new Map<string, string>();
+            // const TypeAquisition = setupTypeAcquisition({
+            //     projectName: "My ATA Project",
+            //     typescript: ts,
+            //     logger: console,
+            //     delegate: {
+            //         receivedFile: (code: string, path: string) => {
+            //             // Add code to your runtime at the path...
+            //             extraLib.set(path, code);
+            //         },
+            //         started: () => {
+            //             console.log("ATA start")
+            //         },
+            //         progress: (downloaded: number, total: number) => {
+            //             console.log(`Got ${downloaded} out of ${total}`)
+            //         },
+            //         finished: vfs => {
+            //             console.log("ATA done", Array.from(vfs.keys()))
+            //             this.updateExtraLibs(Object.entries(extraLib).map(([k, v]) => {
+            //                 return ({ filePath: k, content: v });
+            //             }));
+            //         },
+            //     },
+            // });
 
-            TypeAquisition(source.getFullText());
+            // TypeAquisition(source.getFullText());
         }
 
         async format(fileName) {
@@ -73,9 +78,9 @@ const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
             source.forEachChild(
                 (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
                     let isImport =
-                        node.kind == ts.SyntaxKind.ImportDeclaration - 1;
+                        node.kind == SyntaxKind.ImportDeclaration - 1;
                     let isExport =
-                        node.kind == ts.SyntaxKind.ExportDeclaration - 1;
+                        node.kind == SyntaxKind.ExportDeclaration - 1;
                     if (!BackToBackImportExport) return;
 
                     BackToBackImportExport = isImport || isExport || Boolean(node.moduleSpecifier);
