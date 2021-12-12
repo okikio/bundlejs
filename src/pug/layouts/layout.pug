@@ -44,6 +44,28 @@ html.dark(lang="en")
     //- link(href='https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Round&display=block' rel='stylesheet' async)
 
     link(rel='stylesheet' href='/css/app.min.css')
+
+    -
+      let defaults = {
+        url: "/",
+        websiteURL: "https://bundle.js.org",
+        title: "bundle - a quick npm package size checker",
+        description: "bundle is a quick and easy way to bundle your js projects, minify and see their gzip size, it's similar to bundlephobia but does all the work locally on your computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
+        keywords: "bundle, rollup, esbuild, gzip, minify, es2020, monaco-editor, typescript"
+      };
+
+    block pageInfo
+      - let page = {};
+
+    -
+      page = Object.assign({}, defaults, page, {
+        keywords: ("keywords" in page) ? page.keywords : defaults.keywords
+      });
+
+    block seo
+      +seo(page, defaults)
+
+    block preload
     
   body
     +navbar
@@ -64,23 +86,6 @@ html.dark(lang="en")
     .navbar-offset
     main#main(data-wrapper)
       block styles
-
-      -
-        let defaults = {
-          url: "/",
-          websiteURL: "https://bundle.js.org",
-          title: "bundle - a quick npm package size checker",
-          description: "bundle is a quick and easy way to bundle your js projects, minify and see their gzip size, it's similar to bundlephobia but does all the work locally on your computer and can treeshake and bundle multiple packages (both commonjs and esm) together.",
-          keywords: "bundle, rollup, esbuild, gzip, minify, es2020, monaco-editor, typescript"
-        };
-
-      block pageInfo
-        - let page = {};
-
-      -
-        page = Object.assign({}, defaults, page, {
-          keywords: ("keywords" in page) ? page.keywords : defaults.keywords
-        });
 
       block seo
         +seo(page, defaults)

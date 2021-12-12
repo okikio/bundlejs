@@ -42,7 +42,7 @@ task("html", async () => {
         { parser },
 
         { rehype },
-        { h },
+        { h }
     ] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
@@ -52,7 +52,7 @@ task("html", async () => {
         import("posthtml-parser"),
 
         import("rehype"),
-        import("hastscript"),
+        import("hastscript")
     ]);
 
     let plugins = [
@@ -112,7 +112,7 @@ task("html", async () => {
                         const value = String(await engine.process(content));
                         return parser(value);
                     };
-                })(),
+                })()
             ]),
         ],
         dest: htmlFolder,
@@ -263,6 +263,58 @@ task("js", async () => {
             dest: jsFolder, // Output
         }
     );
+});
+
+task("preload-monaco", async () => {
+    const [
+        { default: plumber },
+        { default: posthtml },
+        
+        { default: glob }
+    ] = await Promise.all([
+        import("gulp-plumber"),
+        import("gulp-posthtml"),
+        
+        import("tiny-glob")
+    ]);
+
+    let [monaco] = await glob(`${jsFolder}/monaco-*.js`);
+    monaco = monaco.replace(`${destFolder}`, "");
+
+    let linkEl = {
+        tag: "link",
+        attrs: {
+            src: monaco,
+            type: 'modulepreload', 
+            as: "script", 
+            importance: "high",
+            id: "monaco-preload"
+        }
+    };
+
+    return stream(`${htmlFolder}/index.html`, {
+        pipes: [
+            plumber(),
+            posthtml([
+                async (tree) => {
+                    tree.match({ tag: 'head' }, (node) => {
+                        let indexOf = node?.content.indexOf(linkEl);
+                        
+                        if (Array.isArray(node?.content)) 
+                            if (indexOf > -1) 
+                                node.content[indexOf] = linkEl;
+                            else
+                                node.content.push(linkEl);
+                        else 
+                            node.content = [linkEl];
+                    
+                        return node;
+                    });
+                }
+            ]),
+        ],
+        dest: htmlFolder,
+    });
 });
 
 task("minify-js", async () => {
@@ -432,9 +484,15 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
+        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/modules/monaco.ts`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
         series("js", "service-worker", "reload")
+    );
+
+    watch(
+        [`${tsFolder}/modules/monaco.ts`, `!${tsFolder}/**/*.d.ts`],
+        { delay: 850 },
+        series("js", "preload-monaco", "service-worker", "reload")
     );
 
     watch(
@@ -450,6 +508,7 @@ task(
         "clean",
         parallel("html", "css", "assets", "js"),
         // "minify-js",
+        "preload-monaco", 
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );
@@ -458,6 +517,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
+        "preload-monaco", 
         "service-worker",
         "watch"
     )

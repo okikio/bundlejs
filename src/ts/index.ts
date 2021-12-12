@@ -324,16 +324,6 @@ export default (app: App) => {
         // Build the Code Editor
         [editor, output] = Monaco.build(oldShareURL);
 
-        // Add editor buttons to both editors
-        editorBtns(
-            editor,
-            [
-                '// Click Run for the Bundled, Minified & Gzipped package size',
-                'export * from "@okikio/animate";'
-            ].join("\n")
-        );
-        editorBtns(output, `// Output`);
-
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
 
@@ -348,6 +338,16 @@ export default (app: App) => {
         [editor.getDomNode(), output.getDomNode()].forEach((el) => {
             el?.parentElement?.classList.add("show");
         });
+
+        // Add editor buttons to both editors
+        editorBtns(
+            editor,
+            [
+                '// Click Run for the Bundled, Minified & Gzipped package size',
+                'export * from "@okikio/animate";'
+            ].join("\n")
+        );
+        editorBtns(output, `// Output`);
 
         FadeLoadingScreen.stop();
         loadingContainerEl.forEach((x) => x?.remove());
@@ -426,10 +426,10 @@ export default (app: App) => {
 
         RunBtn.addEventListener("click", () => {
             (async () => {
-                pushState(await getShareableURL(editor));
                 if (!initialized)
                     fileSizeEl.textContent = `Wait...`;
                 BundleEvents.emit("bundle");
+                pushState(await getShareableURL(editor));
             })();
         });
     })();
