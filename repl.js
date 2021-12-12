@@ -1,3 +1,13 @@
+import glob from "tiny-glob";
+
+
+const destFolder = `docs`;
+const jsFolder = `${destFolder}/js`;
+const cssFolder = `${destFolder}/css`;
+const htmlFolder = `${destFolder}`;
+let indexPage = await glob(`${jsFolder}/monaco-*.js`);
+console.log(indexPage[0].replace(`${destFolder}/`, ""))
+
 const theme = {
     $schema: "vscode://schemas/color-theme",
     type: "dark",
@@ -946,4 +956,4 @@ let result = theme.tokenColors.map(o => {
     }))
 }).flat()
 
-console.log(result)
+// console.log(result)

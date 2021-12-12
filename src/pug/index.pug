@@ -1,7 +1,10 @@
 extends /layouts/layout.pug
 
-block content
+block preload 
+  link(src='/js/index.min.js' type='modulepreload' as="script" importance="high")
   link(rel="stylesheet", href="/js/index.min.css" importance="low")
+
+block content
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
 
   .container

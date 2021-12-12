@@ -1,6 +1,6 @@
 module.exports = {
   darkMode: 'class',
-  purge: [
+  content: [
     './src/pug/**/*.pug',
     './src/ts/**/*.tsx'
   ],
