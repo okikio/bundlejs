@@ -232,80 +232,80 @@ export default (app: App) => {
         //     }
         // };
 
-        const editorBtns = (editor: typeof output, reset: string) => {
-            let el = editor.getDomNode();
-            let parentEl = el?.closest(".app").querySelector(".editor-btns");
-            if (parentEl) {
-                let clearBtn = parentEl.querySelector(".clear-btn");
-                let prettierBtn = parentEl.querySelector(".prettier-btn");
-                let resetBtn = parentEl.querySelector(".reset-btn");
-                let copyBtn = parentEl.querySelector(".copy-btn");
-                let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
-                let editorInfo = parentEl.querySelector(".editor-info");
+        // const editorBtns = (editor: typeof output, reset: string) => {
+        //     let el = editor.getDomNode();
+        //     let parentEl = el?.closest(".app").querySelector(".editor-btns");
+        //     if (parentEl) {
+        //         let clearBtn = parentEl.querySelector(".clear-btn");
+        //         let prettierBtn = parentEl.querySelector(".prettier-btn");
+        //         let resetBtn = parentEl.querySelector(".reset-btn");
+        //         let copyBtn = parentEl.querySelector(".copy-btn");
+        //         let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
+        //         let editorInfo = parentEl.querySelector(".editor-info");
 
-                clearBtn.addEventListener("click", () => {
-                    editor.setValue("");
-                });
+        //         clearBtn.addEventListener("click", () => {
+        //             editor.setValue("");
+        //         });
 
-                prettierBtn.addEventListener("click", () => {
-                    (async () => {
-                        try {
-                            const model = editor.getModel();
-                            const worker = await languages.typescript.getTypeScriptWorker();
-                            const thisWorker = await worker(model.uri);
+        //         prettierBtn.addEventListener("click", () => {
+        //             (async () => {
+        //                 try {
+        //                     const model = editor.getModel();
+        //                     const worker = await languages.typescript.getTypeScriptWorker();
+        //                     const thisWorker = await worker(model.uri);
 
-                            // @ts-ignore
-                            const formattedCode = await thisWorker.format(model.uri.toString());
-                            editor.setValue(formattedCode);
-                        } catch (e) {
-                            console.warn(e)
-                        }
-                    })();
+        //                     // @ts-ignore
+        //                     const formattedCode = await thisWorker.format(model.uri.toString());
+        //                     editor.setValue(formattedCode);
+        //                 } catch (e) {
+        //                     console.warn(e)
+        //                 }
+        //             })();
 
-                    editor.getAction("editor.action.formatDocument").run();
-                });
+        //             editor.getAction("editor.action.formatDocument").run();
+        //         });
 
-                resetBtn.addEventListener("click", () => {
-                    editor.setValue(reset);
-                    if (editor != output) {
-                        isInitial = true;
-                    }
-                });
+        //         resetBtn.addEventListener("click", () => {
+        //             editor.setValue(reset);
+        //             if (editor != output) {
+        //                 isInitial = true;
+        //             }
+        //         });
 
-                copyBtn.addEventListener("click", () => {
-                    const range = editor.getModel().getFullModelRange();
-                    editor.setSelection(range);
-                    editor
-                        .getAction(
-                            "editor.action.clipboardCopyWithSyntaxHighlightingAction"
-                        )
-                        .run();
+        //         copyBtn.addEventListener("click", () => {
+        //             const range = editor.getModel().getFullModelRange();
+        //             editor.setSelection(range);
+        //             editor
+        //                 .getAction(
+        //                     "editor.action.clipboardCopyWithSyntaxHighlightingAction"
+        //                 )
+        //                 .run();
 
-                    (async () => {
-                        await animate({
-                            target: editorInfo,
-                            translateY: [100, "-100%"],
-                            fillMode: "both",
-                            duration: 500,
-                            easing: "ease-out",
-                        });
+        //             (async () => {
+        //                 await animate({
+        //                     target: editorInfo,
+        //                     translateY: [100, "-100%"],
+        //                     fillMode: "both",
+        //                     duration: 500,
+        //                     easing: "ease-out",
+        //                 });
 
-                        await animate({
-                            target: editorInfo,
-                            translateY: ["-100%", 100],
-                            fillMode: "both",
-                            delay: 1000,
-                        });
-                    })();
-                });
+        //                 await animate({
+        //                     target: editorInfo,
+        //                     translateY: ["-100%", 100],
+        //                     fillMode: "both",
+        //                     delay: 1000,
+        //                 });
+        //             })();
+        //         });
 
-                codeWrapBtn.addEventListener("click", () => {
-                    let wordWrap: "on" | "off" =
-                        editor.getRawOptions()["wordWrap"] == "on" ? "off" : "on";
-                    editor.updateOptions({ wordWrap });
-                });
-            }
-        };
+        //         codeWrapBtn.addEventListener("click", () => {
+        //             let wordWrap: "on" | "off" =
+        //                 editor.getRawOptions()["wordWrap"] == "on" ? "off" : "on";
+        //             editor.updateOptions({ wordWrap });
+        //         });
+        //     }
+        // };
 
         // const typeAcquisition = async (editor: typeof output) => {
         //     try {
