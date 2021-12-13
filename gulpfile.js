@@ -280,7 +280,7 @@ task("preload-monaco", async () => {
 
     let [monaco] = await glob(`${jsFolder}/monaco-*.js`);
     let [esbuildUrl] = await glob(`${jsFolder}/esbuild*.mjs`);
-    // monaco = monaco.replace(`${destFolder}`, "");
+    monaco = monaco.replace(`${destFolder}`, "");
     esbuildUrl = esbuildUrl.replace(`${destFolder}`, "");
 
     let linkEl = {
@@ -310,20 +310,18 @@ task("preload-monaco", async () => {
             posthtml([
                 async (tree) => {
                     tree.match({ tag: 'head' }, (node) => {
-                        let indexOf = node?.content.indexOf(linkEsbuildEl); // linkEl
+                        let indexOf = node?.content.indexOf(linkEl);
                         
                         if (Array.isArray(node?.content)) 
                             if (indexOf > -1) {
-                                // node.content[indexOf] = linkEl;
-                                node.content[indexOf] = linkEsbuildEl;
-                                //  + 1
+                                node.content[indexOf] = linkEl;
+                                node.content[indexOf + 1] = linkEsbuildEl;
                             } else {
-                                // node.content.push(linkEl);
+                                node.content.push(linkEl);
                                 node.content.push(linkEsbuildEl);
                             }
                         else 
-                            node.content = [linkEsbuildEl];
-                            // linkEl, 
+                            node.content = [linkEl, linkEsbuildEl];
                     
                         return node;
                     });
