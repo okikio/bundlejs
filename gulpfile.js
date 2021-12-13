@@ -237,7 +237,7 @@ task("js", async () => {
                     minify: true,
                     color: true,
                     format: "esm",
-                    sourcemap: false,
+                    sourcemap: true,
                     splitting: true,
 
                     loader: {
@@ -279,7 +279,9 @@ task("preload-monaco", async () => {
     ]);
 
     let [monaco] = await glob(`${jsFolder}/monaco-*.js`);
+    let [esbuildUrl] = await glob(`${jsFolder}/esbuild-*.mjs`);
     monaco = monaco.replace(`${destFolder}`, "");
+    esbuildUrl = esbuildUrl.replace(`${destFolder}`, "");
 
     let linkEl = {
         tag: "link",
@@ -288,6 +290,16 @@ task("preload-monaco", async () => {
             type: 'modulepreload', 
             as: "script", 
             importance: "high",
+            id: "monaco-preload"
+        }
+    };
+
+    let linkEsbuildEl = {
+        tag: "link",
+        attrs: {
+            src: esbuildUrl,
+            type: 'modulepreload', 
+            as: "script", 
             id: "monaco-preload"
         }
     };
@@ -301,12 +313,15 @@ task("preload-monaco", async () => {
                         let indexOf = node?.content.indexOf(linkEl);
                         
                         if (Array.isArray(node?.content)) 
-                            if (indexOf > -1) 
+                            if (indexOf > -1) {
                                 node.content[indexOf] = linkEl;
-                            else
+                                node.content[indexOf + 1] = linkEsbuildEl;
+                            } else {
                                 node.content.push(linkEl);
+                                node.content.push(linkEsbuildEl);
+                            }
                         else 
-                            node.content = [linkEl];
+                            node.content = [linkEl, linkEsbuildEl];
                     
                         return node;
                     });

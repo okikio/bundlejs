@@ -14,7 +14,7 @@ import { decode, encode } from "./util/encode-decode";
 import { parseInput, parseSearchQuery } from "./util/parse-query";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
-import WebWorker from "./util/WebWorker";
+import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
@@ -25,7 +25,6 @@ export const BundleEvents = new EventEmitter();
 let value = "";
 let start = Date.now();
 
-const WorkerArgs = { name: "esbuild-worker" };
 const timeFormatter = new Intl.RelativeTimeFormat("en", {
     style: "narrow",
     numeric: "auto",
@@ -38,7 +37,7 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new WebWorker(ESBUILD_WORKER_URL, WorkerArgs);
+export const BundleWorker = new Worker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -53,7 +52,7 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
-        BundleWorker?.start?.();
+        // BundleWorker?.start?.();
     }
 });
 
@@ -439,7 +438,7 @@ export default (app: App) => {
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
     fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
-    BundleWorker?.start?.();
+    // BundleWorker?.start?.();
 
     if (initialized && fileSizeEl)
         fileSizeEl.textContent = `...`;

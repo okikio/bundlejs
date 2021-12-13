@@ -22,6 +22,7 @@ export const WEB_WORKER = () => {
                     pluginData: { importer: args.importer },
                 };
             });
+
             build.onLoad(
                 { filter: /.*/, namespace: "web-worker" },
                 async (args) => {
@@ -53,36 +54,72 @@ export const WEB_WORKER = () => {
 
                     try {
                         const __dirname = path.resolve();
-                        await esbuild.build({
-                            target: ["chrome84"],
-                            platform: "browser",
+                        await Promise.allSettled([
+                            /empty/.test(workerFileName) ? Promise.resolve() : esbuild.build({
+                                target: ["chrome84"],
+                                platform: "browser",
 
-                            entryPoints: [workerWithFullPath],
-                            outfile: outFileWithRelativePath,
+                                entryPoints: [workerWithFullPath],
+                                outfile: outFileWithRelativePath,
 
-                            sourcemap: true,
-                            assetNames: "[name]",
+                                sourcemap: true,
+                                assetNames: "[name]",
 
-                            // fix(#4): Firefox/Safari (below v15) do not support ESM workers
-                            // This works around that by bundling everything to an iife!
-                            format: "iife",
+                                // fix(#4): Firefox/Safari (below v15) do not support ESM workers
+                                // This works around that by bundling everything to an iife!
+                                format: "iife",
 
-                            minify: true,
-                            bundle: true,
-                            treeShaking: true,
+                                minify: true,
+                                bundle: true,
+                                treeShaking: true,
 
-                            loader: {
-                                ".ttf": "file",
-                                ".wasm": "file",
-                            },
+                                loader: {
+                                    ".ttf": "file",
+                                    ".wasm": "file",
+                                },
 
-                            define: {
-                                global: "globalThis"
-                            },
-                            inject: /esbuild/.test(workerFileName)
-                                ? ["./shims/node-shim.js"]
-                                : [],
-                        });
+                                define: {
+                                    global: "globalThis"
+                                },
+                                inject: /esbuild/.test(workerFileName)
+                                    ? ["./shims/node-shim.js"]
+                                    : [],
+                            }),
+
+                            /esbuild|empty/.test(workerFileName) ? esbuild.build({
+                                target: ["es2020"],
+                                platform: "browser",
+
+                                entryPoints: [workerWithFullPath],
+                                outdir: "docs/js",
+
+                                assetNames: "[name]",
+                                entryNames: "[name].worker",
+                                outExtension: { '.js': '.mjs' },
+
+                                format: "esm",
+
+                                minify: true,
+                                bundle: true,
+                                treeShaking: true,
+
+                                color: true,
+                                sourcemap: true,
+                                splitting: true,
+
+                                loader: {
+                                    ".ttf": "file",
+                                    ".wasm": "file",
+                                },
+
+                                define: {
+                                    global: "globalThis"
+                                },
+                                inject: /esbuild/.test(workerFileName)
+                                    ? ["./shims/node-shim.js"]
+                                    : [],
+                            }) : Promise.resolve() 
+                        ]);
 
                         return {
                             contents: `
