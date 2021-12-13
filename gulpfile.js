@@ -279,7 +279,7 @@ task("preload-monaco", async () => {
     ]);
 
     let [monaco] = await glob(`${jsFolder}/monaco-*.js`);
-    let [esbuildUrl] = await glob(`${jsFolder}/esbuild-*.mjs`);
+    let [esbuildUrl] = await glob(`${jsFolder}/esbuild*.mjs`);
     monaco = monaco.replace(`${destFolder}`, "");
     esbuildUrl = esbuildUrl.replace(`${destFolder}`, "");
 
