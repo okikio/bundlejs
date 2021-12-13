@@ -37,7 +37,7 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new Worker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
+export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
