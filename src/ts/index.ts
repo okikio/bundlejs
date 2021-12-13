@@ -52,7 +52,7 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
-        // BundleWorker?.start?.();
+        BundleWorker?.start?.();
     }
 });
 
@@ -321,7 +321,7 @@ export default (app: App) => {
         // };
 
         // Build the Code Editor
-        [editor, output] = Monaco.build(oldShareURL);
+        // [editor, output] = Monaco.build(oldShareURL);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
@@ -334,19 +334,19 @@ export default (app: App) => {
         //     typeAcquisition(editor);
         // }, 1000));
 
-        [editor.getDomNode(), output.getDomNode()].forEach((el) => {
-            el?.parentElement?.classList.add("show");
-        });
+        // [editor.getDomNode(), output.getDomNode()].forEach((el) => {
+        //     el?.parentElement?.classList.add("show");
+        // });
 
         // Add editor buttons to both editors
-        editorBtns(
-            editor,
-            [
-                '// Click Run for the Bundled, Minified & Gzipped package size',
-                'export * from "@okikio/animate";'
-            ].join("\n")
-        );
-        editorBtns(output, `// Output`);
+        // editorBtns(
+        //     editor,
+        //     [
+        //         '// Click Run for the Bundled, Minified & Gzipped package size',
+        //         'export * from "@okikio/animate";'
+        //     ].join("\n")
+        // );
+        // editorBtns(output, `// Output`);
 
         FadeLoadingScreen.stop();
         loadingContainerEl.forEach((x) => x?.remove());
@@ -368,59 +368,59 @@ export default (app: App) => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
-        editor.onDidChangeModelContent(
-            debounce((e) => {
-                (async () => {
-                    replaceState(await getShareableURL(editor));
-                    isInitial = false;
-                })();
-            }, 1000)
-        );
+        // editor.onDidChangeModelContent(
+        //     debounce((e) => {
+        //         (async () => {
+        //             replaceState(await getShareableURL(editor));
+        //             isInitial = false;
+        //         })();
+        //     }, 1000)
+        // );
 
-        const shareBtn = document.querySelector(
-            ".btn-share#share"
-        ) as HTMLButtonElement;
-        const shareInput = document.querySelector(
-            "#copy-input"
-        ) as HTMLInputElement;
-        shareBtn?.addEventListener("click", () => {
-            (async () => {
-                try {
-                    if (navigator.share) {
-                        let shareBtnValue = shareBtn.innerText;
-                        isInitial = false;
-                        await navigator.share({
-                            title: 'bundle',
-                            text: '',
-                            url: await getShareableURL(editor),
-                        });
+        // const shareBtn = document.querySelector(
+        //     ".btn-share#share"
+        // ) as HTMLButtonElement;
+        // const shareInput = document.querySelector(
+        //     "#copy-input"
+        // ) as HTMLInputElement;
+        // shareBtn?.addEventListener("click", () => {
+        //     (async () => {
+        //         try {
+        //             if (navigator.share) {
+        //                 let shareBtnValue = shareBtn.innerText;
+        //                 isInitial = false;
+        //                 await navigator.share({
+        //                     title: 'bundle',
+        //                     text: '',
+        //                     url: await getShareableURL(editor),
+        //                 });
 
-                        shareBtn.innerText = "Shared!";
-                        setTimeout(() => {
-                            shareBtn.innerText = shareBtnValue;
-                        }, 600);
-                    } else {
-                        shareInput.value = await getShareableURL(editor);
-                        shareInput.select();
-                        document.execCommand("copy");
+        //                 shareBtn.innerText = "Shared!";
+        //                 setTimeout(() => {
+        //                     shareBtn.innerText = shareBtnValue;
+        //                 }, 600);
+        //             } else {
+        //                 shareInput.value = await getShareableURL(editor);
+        //                 shareInput.select();
+        //                 document.execCommand("copy");
 
-                        let shareBtnValue = shareBtn.innerText;
+        //                 let shareBtnValue = shareBtn.innerText;
 
-                        shareBtn.innerText = "Copied!";
-                        setTimeout(() => {
-                            shareBtn.innerText = shareBtnValue;
-                        }, 600);
-                    }
-                } catch (error) {
-                    console.log('Error sharing', error);
-                }
-            })();
-        });
+        //                 shareBtn.innerText = "Copied!";
+        //                 setTimeout(() => {
+        //                     shareBtn.innerText = shareBtnValue;
+        //                 }, 600);
+        //             }
+        //         } catch (error) {
+        //             console.log('Error sharing', error);
+        //         }
+        //     })();
+        // });
 
         // Listen to events for the results
         ResultEvents.on("add-module", (v) => {
             value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + editor?.getValue();
-            editor.setValue((value + "\n" + v).trim());
+            // editor.setValue((value + "\n" + v).trim());
         });
 
         RunBtn.addEventListener("click", () => {
@@ -428,7 +428,7 @@ export default (app: App) => {
                 if (!initialized)
                     fileSizeEl.textContent = `Wait...`;
                 BundleEvents.emit("bundle");
-                pushState(await getShareableURL(editor));
+                // pushState(await getShareableURL(editor));
             })();
         });
     })();
@@ -438,7 +438,7 @@ export default (app: App) => {
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
     fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
-    // BundleWorker?.start?.();
+    BundleWorker?.start?.();
 
     if (initialized && fileSizeEl)
         fileSizeEl.textContent = `...`;
