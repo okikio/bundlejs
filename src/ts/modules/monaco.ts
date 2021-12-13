@@ -193,7 +193,7 @@ import type { Environment } from "../../../node_modules/monaco-editor/esm/vs/edi
 
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
-import WebWorker from "../util/WebWorker";
+import WebWorker, { WorkerConfig } from "../util/WebWorker";
 
 import { mediaTheme, themeGet } from "./theme";
 import { parseSearchQuery, parseInput } from "../util/parse-query";
@@ -203,7 +203,7 @@ import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 import { CACHE_NAME } from "../plugins/http.js";
         
-export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: `ts-worker` });
+export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -215,8 +215,7 @@ export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: `ts-worker
         }
 
         return (() => {
-            let WorkerArgs = { name: `editor-worker` };
-            let EditorWorker = new Worker(EDITOR_WORKER_URL, WorkerArgs);
+            let EditorWorker = new Worker(EDITOR_WORKER_URL, { name: "editor-worker" });
             EditorWorker?.terminate();
             return EditorWorker;
         })();

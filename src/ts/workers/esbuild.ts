@@ -26,7 +26,7 @@ import { encode, decode } from "../util/encode-decode";
 import type { BuildResult, OutputFile, BuildIncremental, Message} from "esbuild-wasm/esm/browser";
 
 let _initialized = false;
-const initEvent = new EventEmitter();
+export const initEvent = new EventEmitter();
 
 (async () => {
     try {
@@ -45,7 +45,7 @@ const initEvent = new EventEmitter();
     }
 })();
 
-let formatMessages = (messages: any[]) => {
+export let formatMessages = (messages: any[]) => {
     return messages.map((err) => {
         let { location, text } = err as Message;
         let startIndx = Math.max(location.column - 10, 0);
@@ -57,7 +57,7 @@ let formatMessages = (messages: any[]) => {
     });
 }
 
-const start = async (port) => {
+export const start = async (port) => {
     const BuildEvents = new EventEmitter();
     vol.fromJSON({}, "/");
 
