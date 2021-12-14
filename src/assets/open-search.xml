@@ -5,6 +5,6 @@
     <Image width="16" height="16" type="image/x-icon">https://bundle.js.org/favicon/favicon.ico</Image>
     <InputEncoding>UTF-8</InputEncoding>
     <Contact>opensearch@test.org</Contact>
-    <Url type="text/html" template="https://bundle.js.org/?q={searchTerms}&bundle;"/>
+    <Url type="text/html" template="https://bundle.js.org/?q={searchTerms}&amp;bundle"/>
     <moz:SearchForm>https://bundle.js.org</moz:SearchForm>
 </OpenSearchDescription>
