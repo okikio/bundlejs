@@ -48,7 +48,7 @@ export const WorkerType: WorkerOptions["type"] = ModuleWorkerSupported
     : "classic";
 
 export const WorkerConfig = (url: URL | string, name?: WorkerOptions["name"]) => {
-    return [url.toString().replace(/\.js$/, ".mjs"), {
+    return [url.toString().replace(/\.js$/, WorkerType == "module" ? ".mjs" : ".js"), {
         name,
         type: WorkerType
     }] as [string | URL, WorkerOptions];
