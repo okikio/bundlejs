@@ -65,7 +65,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=480"
+                    "value": "public, max-age=4800, stale-while-revalidate=480"
                 },
                 {
                     "key": "Content-Type",
@@ -78,7 +78,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=64880"
+                    "value": "public, max-age=4800, stale-while-revalidate=360"
                 },
                 {
                     "key": "Content-Type",
@@ -91,7 +91,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=480"
+                    "value": "public, max-age=480, stale-while-revalidate=360"
                 }
             ]
         },
@@ -127,7 +127,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=4880"
+                    "value": "public, max-age=480, stale-while-revalidate=360"
                 }
             ]
         },
@@ -136,7 +136,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=480"
+                    "value": "public, max-age=4800, stale-while-revalidate=480"
                 }
             ]
         }
