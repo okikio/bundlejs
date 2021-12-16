@@ -41,7 +41,6 @@ import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordPartOperat
 import "../../../node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js";
 import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js"; // The codicons are defined here and must be loaded
 
-// import { editor as Editor, languages } from "monaco-editor";
 // import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/html/monaco.contribution';
@@ -67,122 +66,6 @@ import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codi
 // import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToCommands.js";
 // import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js";
 // import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js";
-
-// import { setupTypeAcquisition } from "@typescript/ata";
-// import ts from "typescript";
-
-// const addLibraryToRuntime = (code: string, _path: string) => {
-//     const path = "file://" + _path
-//     languages.typescript.typescriptDefaults.addExtraLib(code, path)
-//     const uri = Uri.file(path)
-//     if (Editor.getModel(uri) === null) {
-//       Editor.createModel(code, "typescript", uri)
-//     }
-//     console.log(`[ATA] Adding ${path} to runtime`, { code })
-// }
-
-// const TypeAquisition = setupTypeAcquisition({
-//     projectName: "My ATA Project",
-//     typescript: ts,
-//     logger: console,
-//     delegate: {
-//       receivedFile: addLibraryToRuntime,
-//       started: () => {
-//         console.log("ATA start")
-//       },
-//       progress: (downloaded: number, total: number) => {
-//         console.log(`Got ${downloaded} out of ${total}`)
-//       },
-//       finished: vfs => {
-//         console.log("ATA done", Array.from(vfs.keys()))
-//       },
-//     },
-// })
-
-// const REGEX_DETECT_IMPORT =
-// /(?:(?:(?:import)|(?:export))(?:.)*?from\s+["']([^"']+)["'])|(?:\/+\s+<reference\s+path=["']([^"']+)["']\s+\/>)/g;
-// const FetchedURLs = new Set();
-// const TypeAquisition = (value: string, origin?: string, pkg?: string) => {
-//     [...value.matchAll(REGEX_DETECT_IMPORT)].forEach(([, imports]) => {
-//         (async () => {
-//             let content: string,
-//                 URLScheme = "";
-//             let http = /^http(s)?\:/.test(imports);
-//             let original = imports;
-
-//             if (imports == undefined || imports == "") return;
-
-//             try {
-//                 if (origin) {
-//                     let url = http
-//                         ? imports
-//                         : new URL(imports, origin).toString();
-//                     if (FetchedURLs.has(url)) return;
-//                     FetchedURLs.add(url);
-
-//                     if (!/^\./.test(imports)) return TypeAquisition(value);
-
-//                     let response = await fetch(url);
-//                     content = await response.text();
-
-//                     FetchedURLs.add(response.url);
-
-//                     // To avoid infinite loops, we limit type aquisition to 2 steps
-//                     // onEdit(content, response.url, pkg ?? imports);
-//                 } else {
-//                     [URLScheme] =
-//                         /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.exec(
-//                             pkg ?? imports
-//                         ) ?? [""];
-//                     imports = imports.replace(
-//                         /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/,
-//                         ""
-//                     );
-
-//                     if (http) {
-//                         let { pathname } = new URL(imports);
-//                         imports = pathname;
-//                     }
-
-//                     let url = new URL(
-//                         imports,
-//                         `https://cdn.esm.sh/`
-//                     ).toString();
-
-//                     if (FetchedURLs.has(url)) return;
-//                     FetchedURLs.add(url);
-
-//                     let response = await fetch(url);
-//                     let dts = response.headers.get("X-TypeScript-Types");
-//                     FetchedURLs.add(response.url);
-
-//                     let types = await fetch(dts);
-//                     content = await types.text();
-//                     FetchedURLs.add(types.url);
-
-//                     TypeAquisition(content, types.url, imports);
-//                 }
-//             } catch (e) {
-//                 console.warn(`[Monaco - Type Aquisition] Missing Types`, e);
-//                 return;
-//             }
-
-//             content = content.split(/\n/).join("\n\t");
-//             languages.typescript.typescriptDefaults.addExtraLib(
-//                 `declare module '${pkg ?? imports}' {\n\t${content}\n}\n` +
-//                 (URLScheme
-//                     ? `declare module '${URLScheme}${pkg ?? imports
-//                     }' {\n\t${content}\n}\n`
-//                     : "") +
-//                 (http
-//                     ? `declare module '${original}' {\n\t${content}\n}`
-//                     : ""),
-//                 `file://node_modules/${/(\.ts)$/.test(imports) ? imports : imports + ".d.ts"
-//                 }`
-//             );
-//         })();
-//     });
-// };
 
 import {
     editor as Editor,
@@ -221,137 +104,6 @@ export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker
         })();
     },
 } as Environment;
-
-languages.typescript.typescriptDefaults.setWorkerOptions({
-    customWorkerPath: new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
-});
-
-languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
-    // noSemanticValidation: false,
-    
-    noSemanticValidation: true,
-    noSyntaxValidation: false,
-    noSuggestionDiagnostics: false,
-
-    // This is when tslib is not found
-    diagnosticCodesToIgnore: [2354],
-});
-
-// Compiler options
-languages.typescript.typescriptDefaults.setCompilerOptions({
-    moduleResolution: languages.typescript.ModuleResolutionKind.NodeJs,
-    target: languages.typescript.ScriptTarget.Latest,
-    module: languages.typescript.ModuleKind.ES2015,
-    noEmit: true,
-    lib: ["es2021", "dom", "dom.iterable", "webworker", "esnext", "node"],
-    exclude: ["node_modules"],
-    resolveJsonModule: true,
-    allowNonTsExtensions: true,
-    esModuleInterop: true,
-    noResolve: true,
-    allowSyntheticDefaultImports: true,
-    isolatedModules: true,
-    
-    experimentalDecorators: true,
-    emitDecoratorMetadata: true,
-
-    jsx: languages.typescript.JsxEmit.React,
-});
-
-// @ts-ignore
-languages.typescript.typescriptDefaults.setInlayHintsOptions({
-    includeInlayParameterNameHints: "literals",
-    includeInlayParameterNameHintsWhenArgumentMatchesName: true
-});
-
-languages.typescript.typescriptDefaults.setEagerModelSync(true);
-languages.typescript.typescriptDefaults.addExtraLib(
-    "declare module 'https://*' {\n\texport * from \"https://cdn.esm.sh/*\";\n}",
-    `file://node_modules/@types/https.d.ts`
-);
-
-// (?:(?:import|export|require)(?:\s?(.*)?\s?)(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?
-const IMPORTS_REXPORTS_REQUIRE_REGEX =
-    /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
-const FetchCache = new Set();
-
-languages.registerHoverProvider("typescript", {
-    provideHover(model, position) {
-        let content = model.getLineContent(position.lineNumber);
-        if (typeof content != "string" || content.length == 0) return;
-
-        let matches =
-            Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ??
-            [];
-        if (matches.length <= 0) return;
-
-        let matchArr = matches.map(([, pkg]) => pkg);
-        let pkg = matchArr[0];
-
-        if (/\.|http(s)?\:/.test(pkg)) return;
-        else if (
-            /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg)
-        ) {
-            pkg = pkg.replace(
-                /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/,
-                ""
-            );
-        }
-
-        return (async () => {
-            let { url, version: inputedVersion } = parseInput(pkg);
-            let result: any;
-
-            let cache = await caches.open(CACHE_NAME);
-            let request = new Request(url);
-
-            try {
-                let cacheResponse = await cache.match(request);
-                let response = cacheResponse;
-
-                if (!cacheResponse) {
-                    let networkResponse = await fetch(request);
-                    cache.put(request, networkResponse.clone());
-                    response = networkResponse;
-                }
-
-                result = await response.json();
-            } catch (e) {
-                console.warn(e);
-                return;
-            }
-
-            // result?.results   ->   api.npms.io
-            // result?.objects   ->   registry.npmjs.com
-            if (result?.results.length <= 0) return;
-
-            // result?.results   ->   api.npms.io
-            // result?.objects   ->   registry.npmjs.com
-            const { name, description, version, date, publisher, links } =
-                result?.results?.[0]?.package ?? {};
-            let author = publisher?.username;
-            let _date = new Date(date).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-            });
-
-            return {
-                contents: [].concat({
-                    value: `### [${name}](${links?.npm
-                        }) v${inputedVersion || version}\n${description}\n\n\nPublished on ${_date} ${author
-                            ? `by [@${author}](https://www.npmjs.com/~${author})`
-                            : ""
-                        }\n\n${links?.repository
-                            ? `[GitHub](${links?.repository})  |`
-                            : ""
-                        }  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
-                }),
-            };
-        })();
-    },
-});
 
 export { languages, Editor, Uri };
 export const build = (oldShareURL: URL) => {
@@ -441,6 +193,137 @@ export const build = (oldShareURL: URL) => {
     document.addEventListener("theme-change", () => {
         let theme = themeGet();
         Editor.setTheme(theme == "system" ? mediaTheme() : theme);
+    });
+
+    languages.typescript.typescriptDefaults.setWorkerOptions({
+        customWorkerPath: new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
+    });
+    
+    languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
+        // noSemanticValidation: false,
+        
+        noSemanticValidation: true,
+        noSyntaxValidation: false,
+        noSuggestionDiagnostics: false,
+    
+        // This is when tslib is not found
+        diagnosticCodesToIgnore: [2354],
+    });
+    
+    // Compiler options
+    languages.typescript.typescriptDefaults.setCompilerOptions({
+        moduleResolution: languages.typescript.ModuleResolutionKind.NodeJs,
+        target: languages.typescript.ScriptTarget.Latest,
+        module: languages.typescript.ModuleKind.ES2015,
+        noEmit: true,
+        lib: ["es2021", "dom", "dom.iterable", "webworker", "esnext", "node"],
+        exclude: ["node_modules"],
+        resolveJsonModule: true,
+        allowNonTsExtensions: true,
+        esModuleInterop: true,
+        noResolve: true,
+        allowSyntheticDefaultImports: true,
+        isolatedModules: true,
+        
+        experimentalDecorators: true,
+        emitDecoratorMetadata: true,
+    
+        jsx: languages.typescript.JsxEmit.React,
+    });
+    
+    // @ts-ignore
+    languages.typescript.typescriptDefaults.setInlayHintsOptions({
+        includeInlayParameterNameHints: "literals",
+        includeInlayParameterNameHintsWhenArgumentMatchesName: true
+    });
+    
+    languages.typescript.typescriptDefaults.setEagerModelSync(true);
+    languages.typescript.typescriptDefaults.addExtraLib(
+        "declare module 'https://*' {\n\texport * from \"https://cdn.esm.sh/*\";\n}",
+        `file://node_modules/@types/https.d.ts`
+    );
+
+    // (?:(?:import|export|require)(?:\s?(.*)?\s?)(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?
+    const IMPORTS_REXPORTS_REQUIRE_REGEX =
+        /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
+    const FetchCache = new Set();
+    
+    languages.registerHoverProvider("typescript", {
+        provideHover(model, position) {
+            let content = model.getLineContent(position.lineNumber);
+            if (typeof content != "string" || content.length == 0) return;
+    
+            let matches =
+                Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ??
+                [];
+            if (matches.length <= 0) return;
+    
+            let matchArr = matches.map(([, pkg]) => pkg);
+            let pkg = matchArr[0];
+    
+            if (/\.|http(s)?\:/.test(pkg)) return;
+            else if (
+                /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg)
+            ) {
+                pkg = pkg.replace(
+                    /^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/,
+                    ""
+                );
+            }
+    
+            return (async () => {
+                let { url, version: inputedVersion } = parseInput(pkg);
+                let result: any;
+    
+                let cache = await caches.open(CACHE_NAME);
+                let request = new Request(url);
+    
+                try {
+                    let cacheResponse = await cache.match(request);
+                    let response = cacheResponse;
+    
+                    if (!cacheResponse) {
+                        let networkResponse = await fetch(request);
+                        cache.put(request, networkResponse.clone());
+                        response = networkResponse;
+                    }
+    
+                    result = await response.json();
+                } catch (e) {
+                    console.warn(e);
+                    return;
+                }
+    
+                // result?.results   ->   api.npms.io
+                // result?.objects   ->   registry.npmjs.com
+                if (result?.results.length <= 0) return;
+    
+                // result?.results   ->   api.npms.io
+                // result?.objects   ->   registry.npmjs.com
+                const { name, description, version, date, publisher, links } =
+                    result?.results?.[0]?.package ?? {};
+                let author = publisher?.username;
+                let _date = new Date(date).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                });
+    
+                return {
+                    contents: [].concat({
+                        value: `### [${name}](${links?.npm
+                            }) v${inputedVersion || version}\n${description}\n\n\nPublished on ${_date} ${author
+                                ? `by [@${author}](https://www.npmjs.com/~${author})`
+                                : ""
+                            }\n\n${links?.repository
+                                ? `[GitHub](${links?.repository})  |`
+                                : ""
+                            }  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
+                    }),
+                };
+            })();
+        },
     });
 
     return [inputEditor, outputEditor];

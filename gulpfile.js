@@ -189,7 +189,7 @@ task("js", async () => {
 
         { WEB_WORKER },
         { solidPlugin: solid },
-        { default: rollup },
+        // { default: rollup },
         // { default: rename },
 
         // { default: replace },
@@ -201,7 +201,7 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
-        import("gulp-better-rollup"),
+        // import("gulp-better-rollup"),
         // import("gulp-rename"),
 
         // import("gulp-replace"),
@@ -265,63 +265,50 @@ task("js", async () => {
     );
 });
 
-task("preload-monaco", async () => {
+task("preload-chunks", async () => {
     const [
-        { default: plumber },
         { default: posthtml },
         
         { default: glob }
     ] = await Promise.all([
-        import("gulp-plumber"),
         import("gulp-posthtml"),
-        
         import("tiny-glob")
     ]);
 
-    let [monaco] = await glob(`${jsFolder}/monaco-*.js`);
-    let [esbuildUrl] = await glob(`${jsFolder}/esbuild*.mjs`);
-    monaco = monaco.replace(`${destFolder}`, "");
-    esbuildUrl = esbuildUrl.replace(`${destFolder}`, "");
-
-    let linkEl = {
+    let chunks = await glob(`${jsFolder}/chunk-*.js`);
+    chunks = chunks.map((x, i) => ({
         tag: "link",
         attrs: {
-            src: monaco,
+            src: x.replace(`${destFolder}`, ""),
             type: 'modulepreload', 
             as: "script", 
-            importance: "high",
-            id: "monaco-preload"
+            id: `chunk-preload-${i}`
         }
-    };
+    }));
 
-    let linkEsbuildEl = {
-        tag: "link",
+    let chunkPreloadEl = {
+        tag: "div",
         attrs: {
-            src: esbuildUrl,
-            type: 'modulepreload', 
-            as: "script", 
-            id: "monaco-preload"
-        }
+            id: "chunk-preload",
+        },
+        content: chunks
     };
 
     return stream(`${htmlFolder}/index.html`, {
         pipes: [
-            plumber(),
             posthtml([
                 async (tree) => {
                     tree.match({ tag: 'head' }, (node) => {
-                        let indexOf = node?.content.indexOf(linkEl);
+                        let indexOf = node?.content.indexOf(chunkPreloadEl);
                         
                         if (Array.isArray(node?.content)) 
                             if (indexOf > -1) {
-                                node.content[indexOf] = linkEl;
-                                node.content[indexOf + 1] = linkEsbuildEl;
+                                node.content[indexOf] = chunkPreloadEl;
                             } else {
-                                node.content.push(linkEl);
-                                node.content.push(linkEsbuildEl);
+                                node.content.push(chunkPreloadEl);
                             }
                         else 
-                            node.content = [linkEl, linkEsbuildEl];
+                            node.content = [chunkPreloadEl];
                     
                         return node;
                     });
@@ -334,17 +321,17 @@ task("preload-monaco", async () => {
 
 task("minify-js", async () => {
     const [
-        { default: size },
-        { default: gulpif },
+        // { default: size },
+        // { default: gulpif },
 
-        { default: rollup },
-        { terser },
+        // { default: rollup },
+        // { terser },
     ] = await Promise.all([
-        import("gulp-size"),
-        import("gulp-if"),
+        // import("gulp-size"),
+        // import("gulp-if"),
 
-        import("gulp-better-rollup"),
-        import("rollup-plugin-terser"),
+        // import("gulp-better-rollup"),
+        // import("rollup-plugin-terser"),
     ]);
 
     return stream([`${jsFolder}/**/*.js`], {
@@ -499,15 +486,9 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/modules/monaco.ts`, `!${tsFolder}/**/*.d.ts`],
+        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`], 
         { delay: 850 },
-        series("js", "service-worker", "reload")
-    );
-
-    watch(
-        [`${tsFolder}/modules/monaco.ts`, `!${tsFolder}/**/*.d.ts`],
-        { delay: 850 },
-        series("js", "preload-monaco", "service-worker", "reload")
+        series("js", "preload-chunks", "service-worker", "reload")
     );
 
     watch(
@@ -523,7 +504,7 @@ task(
         "clean",
         parallel("html", "css", "assets", "js"),
         // "minify-js",
-        "preload-monaco", 
+        "preload-chunks", 
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );
@@ -532,7 +513,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "preload-monaco", 
+        "preload-chunks", 
         "service-worker",
         "watch"
     )

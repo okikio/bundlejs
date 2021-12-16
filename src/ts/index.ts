@@ -16,6 +16,8 @@ import { parseInput, parseSearchQuery } from "./util/parse-query";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
+import * as Monaco from "./modules/monaco";
+
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
 
@@ -125,7 +127,7 @@ BundleEvents.on({
 });
 
 // Load all heavy main content
-export default (app: App) => {
+export const build = (app: App) => {
     let RunBtn = document.querySelector("#run");
     let bundleTime = document.querySelector("#bundle-time");
     fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
@@ -216,7 +218,7 @@ export default (app: App) => {
         });
 
         // Monaco Code Editor Module
-        const Monaco = await import("./modules/monaco");
+        // const Monaco = await import("./modules/monaco");
 
         const { languages } = Monaco;
         const getShareableURL = async (editor: typeof output) => {
