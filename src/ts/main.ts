@@ -3,7 +3,7 @@ import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet, runTheme } from "./modules/theme";
 
-import { build, InitialRender } from "./index";
+// import { build, InitialRender } from "./index";
 import RegisterServiceWorker from "./register-sw";
 
 import * as Accordion from "./modules/accordion";
@@ -93,7 +93,7 @@ try {
         .add(new PJAX());
 
     let indexRun = async () => {
-        // const { build, InitialRender } = await import("./index");
+        const { build, InitialRender } = await import("./index");
         // const Monaco = await import("./modules/monaco");
         // const [
         //     Monaco,
