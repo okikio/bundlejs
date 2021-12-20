@@ -122,17 +122,14 @@ task("html", async () => {
 // CSS Tasks
 task("css", async () => {
     const [
-        // { default: fiber },
-
         { default: postcss },
         { default: tailwind },
+        
         { default: scss },
         { default: sass },
 
         { default: rename },
     ] = await Promise.all([
-        // import("fibers"),
-
         import("gulp-postcss"),
         import("tailwindcss"),
 
@@ -188,24 +185,14 @@ task("js", async () => {
         { default: gulpif },
 
         { WEB_WORKER },
-        { solidPlugin: solid },
-        // { default: rollup },
-        // { default: rename },
-
-        // { default: replace },
-        // { basename },
+        { solidPlugin: solid }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
         import("gulp-if"),
 
         import("./plugins/worker.js"),
-        import("esbuild-plugin-solid"),
-        // import("gulp-better-rollup"),
-        // import("gulp-rename"),
-
-        // import("gulp-replace"),
-        // import("path"),
+        import("esbuild-plugin-solid")
     ]);
 
     let monacoFilename;
@@ -219,8 +206,7 @@ task("js", async () => {
             `${tsFolder}/*.ts`,
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
-            `node_modules/esbuild-wasm/esbuild.wasm`,
-            `node_modules/@swc/wasm-web/wasm_bg.wasm`
+            `node_modules/esbuild-wasm/esbuild.wasm`
         ],
         {
             pipes: [
@@ -319,41 +305,6 @@ task("preload-chunks", async () => {
     });
 });
 
-task("minify-js", async () => {
-    const [
-        // { default: size },
-        // { default: gulpif },
-
-        // { default: rollup },
-        // { terser },
-    ] = await Promise.all([
-        // import("gulp-size"),
-        // import("gulp-if"),
-
-        // import("gulp-better-rollup"),
-        // import("rollup-plugin-terser"),
-    ]);
-
-    return stream([`${jsFolder}/**/*.js`], {
-        pipes: [
-            // rollup({
-            //     preserveModules: true,
-            //     plugins: [terser()],
-            // }, {
-            //     format: "esm",
-            //     entryFileNames: '[name].js',
-            //     chunkFileNames: 'chunk-[hash].js',
-            // }),
-            // size({
-            //     gzip: true,
-            //     showFiles: true,
-            //     showTotal: false,
-            // })
-        ],
-        dest: jsFolder, // Output
-    });
-});
-
 // Service Worker
 task("service-worker", async () => {
     const { generateSW } = await import("workbox-build");
@@ -370,10 +321,6 @@ task("service-worker", async () => {
 
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
         cleanupOutdatedCaches: true,
-        // inlineWorkboxRuntime: true,
-        // navigationPreload: true,
-        // skipWaiting: true,
-        // clientsClaim: true,
 
         // Define runtime caching rules.
         runtimeCaching: [
@@ -503,7 +450,6 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        // "minify-js",
         "preload-chunks", 
         parallelFn("minify-css", "service-worker", "sitemap")
     )

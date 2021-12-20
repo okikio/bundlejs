@@ -55,10 +55,10 @@ export const WorkerConfig = (url: URL | string, name?: WorkerOptions["name"]) =>
 }; 
 
 console.log(
-    `This browser uses ${WorkerType} workers!`
+    `This browser supports ${WorkerType} workers!`
 );
 console.log(
-    `This browser uses ${
+    `This browser supports ${
         SharedWorkerSupported ? "Shared Web Workers" : "Normal Web Workers"
     }!`
 );

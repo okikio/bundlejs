@@ -1,7 +1,8 @@
-import path from 'path';
 import type { IFs } from "memfs";
-
 import type { Plugin } from 'esbuild';
+
+import path from 'path';
+import { RESOLVE_EXTENSIONS, inferLoader } from "../util/loader";
 
 export const VIRTUAL_FS_NAMESPACE = 'virtualfs';
 export const VIRTUAL_FS = (fs: IFs): Plugin => {
@@ -9,14 +10,15 @@ export const VIRTUAL_FS = (fs: IFs): Plugin => {
         let resolvedPath = id;
         if (importer && id.startsWith('.'))
             resolvedPath = path.resolve(path.dirname(importer), id);
-        for (const x of ['', '.ts', '.js', '.css']) {
+
+        for (const x of ['', ...RESOLVE_EXTENSIONS]) {
             const realPath = resolvedPath + x;
             if (fs.existsSync(realPath)) return realPath;
         }
 
         throw new Error(`${resolvedPath} not exists`);
     };
-    
+
     return {
         name: VIRTUAL_FS_NAMESPACE,
         setup(build) {
@@ -34,8 +36,8 @@ export const VIRTUAL_FS = (fs: IFs): Plugin => {
                     id: args.path,
                     importer: args.pluginData.importer
                 });
-                
-                if (!resolvePath) throw new Error('not found');
+
+                if (!resolvePath) throw new Error(`File "${resolvePath}" not found`);
                 realPath = resolvePath;
 
                 const content = (await fs.promises.readFile(realPath)).toString();
@@ -44,7 +46,7 @@ export const VIRTUAL_FS = (fs: IFs): Plugin => {
                     pluginData: {
                         importer: realPath,
                     },
-                    loader: path.extname(realPath).slice(1) as 'ts',
+                    loader: inferLoader(realPath),
                 };
             });
         },

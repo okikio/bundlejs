@@ -84,7 +84,7 @@ import { parseSearchQuery, parseInput } from "../util/parse-query";
 import TS_WORKER_FACTORY_URL from "worker:../workers/ts-worker-factory.ts";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
-import { CACHE_NAME } from "../plugins/http.js";
+import { getRequest } from "../util/cache.js";
         
 export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
 
@@ -276,19 +276,8 @@ export const build = (oldShareURL: URL) => {
                 let { url, version: inputedVersion } = parseInput(pkg);
                 let result: any;
     
-                let cache = await caches.open(CACHE_NAME);
-                let request = new Request(url);
-    
                 try {
-                    let cacheResponse = await cache.match(request);
-                    let response = cacheResponse;
-    
-                    if (!cacheResponse) {
-                        let networkResponse = await fetch(request);
-                        cache.put(request, networkResponse.clone());
-                        response = networkResponse;
-                    }
-    
+                    let response = await getRequest(url, true);
                     result = await response.json();
                 } catch (e) {
                     console.warn(e);
