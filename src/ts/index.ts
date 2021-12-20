@@ -39,7 +39,7 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
+export const BundleWorker = new Worker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker")); // WebWorker
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -198,10 +198,6 @@ export const build = (app: App) => {
         window.history.pushState(item, "", state.url);
     }
 
-    // app.on("POPSTATE", () => {
-    //     editor?.setValue(parseSearchQuery(new URL(decodeURI(document.location.toString()))))
-    // });
-
     // Monaco
     (async () => {
         let flexWrapper = document.querySelector(".flex-wrapper") as HTMLElement;
@@ -309,32 +305,11 @@ export const build = (app: App) => {
             }
         };
 
-        // const typeAcquisition = async (editor: typeof output) => {
-        //     try {
-        //         const model = editor.getModel();
-        //         const worker = await languages.typescript.getTypeScriptWorker();
-        //         const thisWorker = await worker(model.uri);
-
-        //         // @ts-ignore
-        //         await thisWorker.typeAcquisition(model.uri.toString());
-        //     } catch (e) {
-        //         console.warn(e)
-        //     }
-        // };
-
         // Build the Code Editor
         [editor, output] = Monaco.build(oldShareURL);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
-
-        // typeAcquisition(editor);
-        // // getShareableURL(editor);
-
-        // // Debounced type acquisition to once every second
-        // editor.onDidChangeModelContent(debounce(() => {
-        //     typeAcquisition(editor);
-        // }, 1000));
 
         [editor.getDomNode(), output.getDomNode()].forEach((el) => {
             el?.parentElement?.classList.add("show");

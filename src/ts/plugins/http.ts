@@ -1,19 +1,14 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
 import type { Plugin } from 'esbuild';
 
-export const CACHE_NAME = 'EXTERNAL_FETCHES';
+import { extname } from "path";
+import { getRequest } from '../util/cache';
+import { inferLoader } from '../util/loader';
 export async function fetchPkg(url: string) {
-    let cache = await caches.open(CACHE_NAME);
-    let request = new Request(url);
-    
-    let cacheResponse = await cache.match(request);
-    let networkResponse = await fetch(request);
-    cache.put(request, networkResponse.clone());
-
-    let response = cacheResponse || networkResponse;
+    let response = await getRequest(url);
     return {
         url: response.url,
-        content: await response.text(),
+        content: new Uint8Array(await response.arrayBuffer()),
     };
 }
 
@@ -39,8 +34,10 @@ export const HTTP = (): Plugin => {
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
             build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, args => {
+                let importer = args.importer;
+                let pathUrl = args.path.replace(/\/$/, "/index"); // Some packages use "../../" which this is supposed to fix
                 return {
-                    path: new URL(args.path, args.importer).toString(),
+                    path: new URL(pathUrl, importer).toString(),
                     namespace: HTTP_NAMESPACE,
                 };
             });
@@ -53,7 +50,7 @@ export const HTTP = (): Plugin => {
                 const { content, url } = await fetchPkg(args.path);
                 return {
                     contents: content,
-                    loader: 'ts',
+                    loader: inferLoader(url),
                     resolveDir: `/${url}`, // a hack fix resolveDir problem
                 };
             });
