@@ -1,7 +1,7 @@
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
 
-export const ENABLE_SW = false;
+export const ENABLE_SW = true;
 export default () => {
     // Check that service workers are supported
     (async () => {
