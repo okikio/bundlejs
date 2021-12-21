@@ -14,7 +14,7 @@ export async function fetchPkg(url: string) {
 export const HTTP_NAMESPACE = 'http-url';
 export const HTTP = (): Plugin => {
     return {
-        name: 'http',
+        name: HTTP_NAMESPACE,
         setup(build) {
             // Intercept import paths starting with "http:" and "https:" so
             // esbuild doesn't attempt to map them to a file system location.

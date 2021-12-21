@@ -1,5 +1,15 @@
 import type { Loader } from 'esbuild';
-import { extname, isAbsolute } from "path";
+
+// Based on https://github.com/sindresorhus/path-is-absolute/blob/main/index.js
+export const isAbsolute = (path: string) => {
+  return path.length > 0 && path.charAt(0) === '/';
+}
+
+// Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/path.ts
+export const extname = (path: string) => {
+    const m = /(\.[a-zA-Z0-9]+)$/.exec(path);
+    return m ? m[1] : "";
+  }
 
 // Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];

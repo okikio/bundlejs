@@ -4,7 +4,7 @@ import type { Plugin } from 'esbuild';
 import { fetchPkg } from './http';
 import { inferLoader, isBareImport, getCDNHost } from '../util/loader';
 
-export const CDN_NAMESPACE = 'cdn';
+export const CDN_NAMESPACE = 'cdn-url';
 export const CDN = (): Plugin => {
     return {
         name: CDN_NAMESPACE,
