@@ -1,7 +1,6 @@
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
-import path from "path";
 import { fs, vol } from "memfs";
 
 import prettyBytes from "pretty-bytes";
@@ -94,16 +93,15 @@ export const start = async (port) => {
             return;
         }
 
-        let input: string = `${details}`; // Ensure input is a string
+        let input: Uint8Array = details; // Ensure input is a string
 
         (async () => {
             // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-            let externalContent = [];
-            let content: string = "";
+            let content: Uint8Array[] = [];
 
             // Use esbuild to bundle files
             try {
-                await fs.promises.writeFile("input.ts", `${input}`);
+                await fs.promises.writeFile("input.ts", input);
                 input = null;
 
                 try {
@@ -148,32 +146,20 @@ export const start = async (port) => {
                     } else throw e;
                 }
 
-                result?.outputFiles?.forEach((x) => {
-                    if (!fs.existsSync(path.dirname(x.path))) {
-                        fs.mkdirSync(path.dirname(x.path));
-                    }
-
-                    fs.writeFileSync(x.path, x.text);
-                    if (x.path != "/bundle.js" && typeof x.text == "string") {
-                        externalContent.push(x.text?.trim?.());
-                    }
-                });
+                content = result?.outputFiles?.map(({ contents }) => contents);
 
                 if (result?.warnings.length > 0) {
                     postMessage({
                         event: "warn",
                         details: {
                             type: `esbuild build warning`,
-                            message: await createNotice(result.warnings, "warning")
+                            message: [await createNotice(result.warnings, "warning")]
                         }
                     });
                 }
 
                 if (result?.errors.length > 0)
                     throw [await createNotice(result.errors, "error")];
-
-                content = await fs.promises.readFile("/bundle.js", "utf-8") as string;
-                content = content?.trim?.(); // Remove unesscary space
 
                 // Reset memfs
                 vol.reset();
@@ -193,25 +179,19 @@ export const start = async (port) => {
             // Use pako & pretty-bytes for gzipping
             try {
                 // @ts-ignore
-                let totalByteLength = 0;
-                let totalCompressedSize = 0;
-                for (let value of [content, ...externalContent]) {
-                    let { byteLength } = encode(value);
-                    let { length } = await gzip(value, { level: 9 });
-
-                    totalByteLength += byteLength;
-                    totalCompressedSize += length;
-                };
+                let totalByteLength = content.reduce((acc, { byteLength }) => acc + byteLength, 0);
+                let totalCompressedSize = (await Promise.all(
+                    content.map((v: Uint8Array) => gzip(v, { level: 9 }))
+                )).reduce((acc, { length }) => acc + length, 0) as number;
 
                 postMessage({
                     event: "result",
                     details: { content, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
                 });
 
-                content = "";
-                totalByteLength = 0;
-                totalCompressedSize = 0;
-                externalContent = [];
+                content = null;
+                totalByteLength = null;
+                totalCompressedSize = null;
             } catch (error) {
                 postMessage({
                     event: "error",

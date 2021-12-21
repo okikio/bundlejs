@@ -1,7 +1,6 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
 import type { Plugin } from 'esbuild';
 
-import { extname } from "path";
 import { getRequest } from '../util/cache';
 import { inferLoader } from '../util/loader';
 export async function fetchPkg(url: string) {
@@ -22,8 +21,9 @@ export const HTTP = (): Plugin => {
             // Tag them with the "http-url" namespace to associate them with
             // this plugin.
             build.onResolve({ filter: /^https?:\/\// }, args => {
+                let resolveDir = args.resolveDir.replace(/^\//, '');
                 return {
-                    path: new URL(args.path, args.resolveDir.replace(/^\//, '')).toString(),
+                    path: resolveDir.length > 0 ? new URL(args.path, resolveDir).toString() : args.path,
                     namespace: HTTP_NAMESPACE,
                 };
             });
