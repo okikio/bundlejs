@@ -1,7 +1,7 @@
 import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
-import { themeSet, themeGet, runTheme } from "./modules/theme";
+import { themeSet, themeGet } from "./modules/theme";
 
 // import { build, InitialRender } from "./index";
 import RegisterServiceWorker from "./register-sw";
@@ -10,8 +10,6 @@ import * as Accordion from "./modules/accordion";
 import { animate } from "@okikio/animate";
 
 import type { ITransition, IHistoryItem } from "@okikio/native";
-
-runTheme();
 
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
