@@ -1,7 +1,7 @@
 import { App, PJAX, HistoryManager, TransitionManager, PageManager, Router } from "@okikio/native";
 import { Navbar } from "./services/Navbar";
 
-import { themeSet, themeGet } from "./modules/theme";
+import { themeSet, themeGet } from "./scripts/theme";
 
 // import { build, InitialRender } from "./index";
 import RegisterServiceWorker from "./register-sw";

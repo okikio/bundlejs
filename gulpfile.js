@@ -212,7 +212,7 @@ task("js", async () => {
             pipes: [
                 // Bundle Modules
                 esbuild({
-                    target: ["es2018"],
+                    target: ["es2019"],
                     platform: "browser",
                     treeShaking: true,
 
