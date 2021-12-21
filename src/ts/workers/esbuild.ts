@@ -1,16 +1,12 @@
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
-import { fs, vol } from "memfs";
-
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 
 import { EXTERNAL } from "../plugins/external";
-import { ENTRY } from "../plugins/entry";
 import { HTTP } from "../plugins/http";
 import { CDN } from "../plugins/cdn";
-import { VIRTUAL_FS } from "../plugins/virtual-fs";
 
 import { encode, decode } from "../util/encode-decode";
 
@@ -44,7 +40,6 @@ export const createNotice = async (errors: PartialMessage[], kind: "error" | "wa
 
 export const start = async (port) => {
     const BuildEvents = new EventEmitter();
-    vol.fromJSON({}, "/");
 
     const postMessage = (obj: { event: string, details: any }) => {
         let messageStr = JSON.stringify(obj);
@@ -93,7 +88,8 @@ export const start = async (port) => {
             return;
         }
 
-        let input: Uint8Array = details; // Ensure input is a string
+        let input: string = `${details}`; // Ensure input is a string
+        let output = "";
 
         (async () => {
             // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
@@ -101,15 +97,16 @@ export const start = async (port) => {
 
             // Use esbuild to bundle files
             try {
-                await fs.promises.writeFile("input.ts", input);
-                input = null;
-
                 try {
                     result = await build({
-                        entryPoints: ['<stdin>'],
+                        stdin: {
+                            contents: input,
+                            loader: 'ts',
+                        },
                         bundle: true,
                         minify: true,
                         color: true,
+                        sourcemap: false,
                         treeShaking: true,
                         incremental: false,
                         target: ["esnext"],
@@ -132,11 +129,8 @@ export const start = async (port) => {
                         },
                         plugins: [
                             EXTERNAL(),
-                            ENTRY(`/input.ts`),
-
                             HTTP(),
                             CDN(),
-                            VIRTUAL_FS(fs),
                         ],
                         globalName: 'bundler',
                     });
@@ -146,7 +140,11 @@ export const start = async (port) => {
                     } else throw e;
                 }
 
-                content = result?.outputFiles?.map(({ contents }) => contents);
+                content = result?.outputFiles?.map(({ path, text, contents }) => {
+                    if (path == "/bundle.js")
+                        output = text;
+                    return contents;
+                });
 
                 if (result?.warnings.length > 0) {
                     postMessage({
@@ -160,9 +158,6 @@ export const start = async (port) => {
 
                 if (result?.errors.length > 0)
                     throw [await createNotice(result.errors, "error")];
-
-                // Reset memfs
-                vol.reset();
             } catch (error) {
                 let err = Array.isArray(error) ? error : error?.message;
                 postMessage({
@@ -186,12 +181,14 @@ export const start = async (port) => {
 
                 postMessage({
                     event: "result",
-                    details: { content, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
+                    details: { content: output, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
                 });
 
                 content = null;
                 totalByteLength = null;
                 totalCompressedSize = null;
+                output = null;
+                input = null;
             } catch (error) {
                 postMessage({
                     event: "error",

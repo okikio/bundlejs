@@ -1,9 +1,8 @@
 // This plugin lets you use web worker scripts the same way you do with Webpack's worker-loader.
 // Based on https://github.com/endreymarcell/esbuild-plugin-webworker/
-import path from "path";
+import { join, dirname, basename } from "path";
 import esbuild from "esbuild";
 
-const { join, dirname, basename } = path;
 export const WEB_WORKER = () => {
     /**
      * @type {import('esbuild').Plugin}
@@ -53,7 +52,6 @@ export const WEB_WORKER = () => {
                     );
 
                     try {
-                        const __dirname = path.resolve();
                         await Promise.allSettled([
                             /empty/.test(workerFileName) ? Promise.resolve() : esbuild.build({
                                 target: ["chrome84"],
@@ -77,13 +75,6 @@ export const WEB_WORKER = () => {
                                     ".ttf": "file",
                                     ".wasm": "file",
                                 },
-
-                                define: {
-                                    global: "globalThis"
-                                },
-                                inject: /esbuild/.test(workerFileName)
-                                    ? ["./shims/node-shim.js"]
-                                    : [],
                             }),
 
                             /esbuild|empty/.test(workerFileName) ? esbuild.build({
@@ -111,13 +102,6 @@ export const WEB_WORKER = () => {
                                     ".ttf": "file",
                                     ".wasm": "file",
                                 },
-
-                                define: {
-                                    global: "globalThis"
-                                },
-                                inject: /esbuild/.test(workerFileName)
-                                    ? ["./shims/node-shim.js"]
-                                    : [],
                             }) : Promise.resolve() 
                         ]);
 

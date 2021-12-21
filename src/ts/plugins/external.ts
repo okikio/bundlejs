@@ -1,5 +1,8 @@
 import type { Plugin } from 'esbuild';
 
+import { encode } from "../util/encode-decode";
+export const EMPTY_EXPORT = encode(`export default {}`);
+
 export const PolyfillMap = {
     "console": 'console-browserify',
     "constants": 'constants-browserify',
@@ -56,7 +59,7 @@ export const EXTERNAL = (): Plugin => {
             build.onResolve({ filter: /^node\:.*/ }, (args) => {
                 return {
                     path: args.path,
-                    namespace: 'external',
+                    namespace: EXTERNALS_NAMESPACE,
                     external: true
                 };
             });
@@ -66,15 +69,15 @@ export const EXTERNAL = (): Plugin => {
                 if (ExternalPackages.includes(path)) {
                     return {
                         path,
-                        namespace: 'external',
+                        namespace: EXTERNALS_NAMESPACE,
                         external: true
                     };
                 }
             });
 
-            build.onLoad({ filter: /.*/, namespace: 'external' }, (args) => {
+            build.onLoad({ filter: /.*/, namespace: EXTERNALS_NAMESPACE }, (args) => {
                 return {
-                    contents: `export default {}`,
+                    contents: EMPTY_EXPORT,
                     warnings: [
                         {
                             pluginName: EXTERNALS_NAMESPACE,

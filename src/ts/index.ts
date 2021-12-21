@@ -39,7 +39,7 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new Worker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker")); // WebWorker
+export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker")); 
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -146,7 +146,7 @@ export const build = (app: App) => {
             bundleTime.textContent = `Bundled in ...`;
 
             start = Date.now();
-            postMessage({ event: "build", details: encode(value) });
+            postMessage({ event: "build", details: value });
         },
         result(details) {
             let { size, content } = details;
@@ -212,9 +212,6 @@ export const build = (app: App) => {
             autoplay: false,
             fillMode: "both",
         });
-
-        // Monaco Code Editor Module
-        // const Monaco = await import("./modules/monaco");
 
         const { languages } = Monaco;
         const getShareableURL = async (editor: typeof output) => {
