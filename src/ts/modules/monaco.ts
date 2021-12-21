@@ -78,7 +78,7 @@ import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import WebWorker, { WorkerConfig } from "../util/WebWorker";
 
-import { mediaTheme, themeGet } from "./theme";
+import { mediaTheme, themeGet } from "../scripts/theme";
 import { parseSearchQuery, parseInput } from "../util/parse-query";
 
 import TS_WORKER_FACTORY_URL from "worker:../workers/ts-worker-factory.ts";
