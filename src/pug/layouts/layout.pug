@@ -22,6 +22,9 @@ html.dark(lang="en")
 
     meta(name='msapplication-TileColor', content='#3b82f6')
     meta(name='msapplication-config', content='/favicon/browserconfig.xml')
+    
+    // Theme set
+    script(type='module' src="/js/theme.min.js" async importance="high")
 
     meta(name='theme-color', content='#ffffff' media="(prefers-color-scheme: light)")
     meta(name='theme-color', content='#000000' media="(prefers-color-scheme: dark)")
@@ -66,7 +69,6 @@ html.dark(lang="en")
       +seo(page, defaults)
 
     block preload
-    
   body
     +navbar
 
@@ -98,13 +100,6 @@ html.dark(lang="en")
       +footer
     
     //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async importance="high")
-    //- script(src='/js/theme.min.js' type='module' async importance="high")
-
-    //- script(src="/js/load-webanimation-polyfill.min.js" type='module' async)
-    //- script(src='/js/critical.min.js' type='module' async)
-
-    //- script(src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2018%2CIntl%2CArray.prototype.includes%2CPromise" async)
-    //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback" async)
     
     script(src='/js/main.min.js' type='module' async)
 
