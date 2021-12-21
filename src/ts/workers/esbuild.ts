@@ -71,11 +71,7 @@ export const start = async (port) => {
     if (_initialized)
         initEvent.emit("init");
 
-    let result: BuildResult & {
-        outputFiles: OutputFile[];
-    } | BuildIncremental;
-
-    BuildEvents.on("build", (details) => {
+    BuildEvents.on("build", (input: string) => {
         if (!_initialized) {
             postMessage({
                 event: "warn",
@@ -88,19 +84,23 @@ export const start = async (port) => {
             return;
         }
 
-        let input: string = `${details}`; // Ensure input is a string
-        let output = "";
 
         (async () => {
+            let output = "";
+            
             // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
             let content: Uint8Array[] = [];
+            let result: BuildResult & {
+                outputFiles: OutputFile[];
+            } | BuildIncremental;
 
             // Use esbuild to bundle files
             try {
                 try {
                     result = await build({
                         stdin: {
-                            contents: input,
+                            // Ensure input is a string
+                            contents: `${input}`,
                             loader: 'ts',
                         },
                         bundle: true,
@@ -188,7 +188,6 @@ export const start = async (port) => {
                 totalByteLength = null;
                 totalCompressedSize = null;
                 output = null;
-                input = null;
             } catch (error) {
                 postMessage({
                     event: "error",
