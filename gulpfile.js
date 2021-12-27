@@ -185,7 +185,7 @@ task("js", async () => {
         { default: gulpif },
 
         { WEB_WORKER },
-        { solidPlugin: solid }
+        { solidPlugin: SOLID }
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -195,7 +195,6 @@ task("js", async () => {
         import("esbuild-plugin-solid")
     ]);
 
-    let monacoFilename;
     const esbuild =
         mode == "watch"
             ? createGulpEsbuild({ incremental: true })
@@ -233,7 +232,7 @@ task("js", async () => {
 
                     plugins: [
                         WEB_WORKER(),
-                        solid()
+                        SOLID()
                     ],
                 }),
 
