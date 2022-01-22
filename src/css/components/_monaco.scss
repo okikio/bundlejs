@@ -139,6 +139,25 @@
     min-height: theme("spacing.14");
 }
 
+.input-file-size {
+    @apply tabular-nums;
+    @apply inline-block px-4 py-2 rounded-md;
+    @apply text-center flex justify-center items-center;
+    @apply text-gray-500 dark:text-secondary;
+    @apply bg-white border border-gray-300;
+    @apply dark:bg-elevated dark:border-gray-700;
+    min-width: 10ch;
+    white-space: nowrap;
+    line-height: 1;
+
+    .loading {
+        height: 100%;
+        width: auto;
+        aspect-ratio: auto 1;
+        border-width: 0.1rem
+    }
+}
+
 #editor {
     transition: opacity ease 0.6s;
     height: 100%;
@@ -254,6 +273,34 @@
 }
 
 .editor-btns {
+    @apply sm:overflow-hidden justify-end;
+    .editor-btn-container {
+        @apply transition-all duration-700;
+        @apply translate-x-0 opacity-100; 
+
+        .fading-editor-btns {
+            @apply transition-all duration-[650ms];
+            @apply opacity-100; 
+        }
+
+        &.hide {
+            @apply translate-x-full;
+
+            .fading-editor-btns {
+                @apply opacity-0; 
+            }
+
+            button.hide-btns {
+                @apply transition-all duration-[500ms] delay-[250ms];
+                &:active {
+                    @apply delay-[0ms];
+                }
+
+                @apply -translate-x-full;
+            }
+        }
+    }
+
     button {
         @apply flex items-center justify-center;
         @apply bg-gray-100 border dark:border-gray-500 dark:bg-gray-600 text-blue-400 dark:text-white;
@@ -265,6 +312,14 @@
         @supports (backdrop-filter: blur(5px)) {
             @apply bg-opacity-50 dark:bg-opacity-50 backdrop-filter backdrop-blur-sm;
         }
+
+        &.hide-btns {
+            @apply transition-transform duration-[300ms];
+            @apply bg-white border border-opacity-50 dark:border-gray-700/50 dark:bg-gray-800/70 text-blue-400 dark:text-white;
+            @apply hover:bg-gray-200/60 dark:hover:bg-gray-700 dark:hover:border-gray-600;
+            @apply rounded-full p-2 z-10;
+            transition-property: transform, color, background-color, border-color, text-decoration-color, fill, stroke;
+        } 
 
         svg {
             @apply text-lg;
