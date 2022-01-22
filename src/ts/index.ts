@@ -12,6 +12,7 @@ import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
 import { parseInput, parseSearchQuery } from "./util/parse-query";
+import prettyBytes from "pretty-bytes";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
@@ -231,12 +232,18 @@ export const build = (app: App) => {
             let el = editor.getDomNode();
             let parentEl = el?.closest(".app").querySelector(".editor-btns");
             if (parentEl) {
+                let btnContainer = parentEl.querySelector(".editor-btn-container");
+                let hideBtn = parentEl.querySelector(".hide-btns");
                 let clearBtn = parentEl.querySelector(".clear-btn");
                 let prettierBtn = parentEl.querySelector(".prettier-btn");
                 let resetBtn = parentEl.querySelector(".reset-btn");
                 let copyBtn = parentEl.querySelector(".copy-btn");
                 let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
                 let editorInfo = parentEl.querySelector(".editor-info");
+
+                hideBtn.addEventListener("click", () => {
+                    btnContainer.classList.toggle("hide");
+                });
 
                 clearBtn.addEventListener("click", () => {
                     editor.setValue("");
@@ -342,6 +349,33 @@ export const build = (app: App) => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
+        let el = editor.getDomNode();
+        let parentEl = el?.closest(".app").querySelector(".editor-btns");
+        let inputSizeEl = parentEl.querySelector(".input-file-size") as HTMLDivElement;
+        let calculated = false;
+        const setInputFileSize = () => { 
+            if (parentEl) { 
+                inputSizeEl && (inputSizeEl.textContent = prettyBytes(encode(editor.getValue()).byteLength));
+                calculated = true;
+            }
+        }
+
+        setInputFileSize();
+        editor.onDidChangeModelContent(
+            debounce((e) => {
+                if (parentEl && calculated) { 
+                    inputSizeEl && (inputSizeEl.innerHTML = `<div class="loading"></div>`);
+                    calculated = false;
+                }
+            }, 100)
+        );
+        
+        editor.onDidChangeModelContent(
+            debounce((e) => {
+                setInputFileSize();
+            }, 500)
+        );
+                
         editor.onDidChangeModelContent(
             debounce((e) => {
                 (async () => {
