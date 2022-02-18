@@ -40,7 +40,7 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker")); 
+export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -52,6 +52,10 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
     let { event, details } = JSON.parse(decode(data));
     BundleEvents.emit(event, details);
 });
+
+BundleWorker.addEventListener("error", (err) => {
+    console.log(err)
+})
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
@@ -353,8 +357,8 @@ export const build = (app: App) => {
         let parentEl = el?.closest(".app").querySelector(".editor-btns");
         let inputSizeEl = parentEl.querySelector(".input-file-size") as HTMLDivElement;
         let calculated = false;
-        const setInputFileSize = () => { 
-            if (parentEl) { 
+        const setInputFileSize = () => {
+            if (parentEl) {
                 inputSizeEl && (inputSizeEl.textContent = prettyBytes(encode(editor.getValue()).byteLength));
                 calculated = true;
             }
@@ -363,19 +367,19 @@ export const build = (app: App) => {
         setInputFileSize();
         editor.onDidChangeModelContent(
             debounce((e) => {
-                if (parentEl && calculated) { 
+                if (parentEl && calculated) {
                     inputSizeEl && (inputSizeEl.innerHTML = `<div class="loading"></div>`);
                     calculated = false;
                 }
             }, 100)
         );
-        
+
         editor.onDidChangeModelContent(
             debounce((e) => {
                 setInputFileSize();
             }, 500)
         );
-                
+
         editor.onDidChangeModelContent(
             debounce((e) => {
                 (async () => {

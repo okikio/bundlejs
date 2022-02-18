@@ -5,7 +5,7 @@
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
-import type { CustomTSWebWorkerFactory } from "../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js";
+// import type { CustomTSWebWorkerFactory } from "../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js";
 // import { setupTypeAcquisition } from "@typescript/ata";
 
 // @ts-ignore
@@ -28,7 +28,7 @@ const formatCode = async (code: string) => {
     });
 };
 
-const worker: CustomTSWebWorkerFactory = (TypeScriptWorker) => {
+const worker = (TypeScriptWorker, fileMap) => {
     return class MonacoTSWorker extends TypeScriptWorker {
         async typeAcquisition(fileName) {
             // const program = this._languageService.getProgram() as ts.Program;

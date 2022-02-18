@@ -4,42 +4,44 @@ import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/ty
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/browser/controller/coreCommands.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/bracketMatching/bracketMatching.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/caretOperations.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/clipboard/clipboard.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codeAction/codeActionContributions.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/comment/comment.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/cursorUndo/cursorUndo.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/dnd/dnd.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/find/findController.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/folding/folding.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/fontZoom/fontZoom.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/format/formatActions.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/link/goToDefinitionAtPosition.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/hover/hover.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/indentation/indentation.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlayHints/inlayHintsController.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/linesOperations/linesOperations.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/links/links.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/multicursor/multicursor.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/parameterHints/parameterHints.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/rename/rename.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/smartSelect/smartSelect.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/suggest/suggestController.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/tokenization/tokenization.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/unusualLineTerminators/unusualLineTerminators.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/viewportSemanticTokens/viewportSemanticTokens.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordHighlighter/wordHighlighter.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordOperations/wordOperations.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordPartOperations/wordPartOperations.js";
+import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
+
+// import "../../../node_modules/monaco-editor/esm/vs/editor/browser/controller/coreCommands.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/bracketMatching/bracketMatching.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/caretOperations/caretOperations.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/clipboard/clipboard.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/codeAction/codeActionContributions.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/comment/comment.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/cursorUndo/cursorUndo.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/dnd/dnd.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/find/findController.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/folding/folding.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/fontZoom/fontZoom.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/format/formatActions.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/link/goToDefinitionAtPosition.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/hover/hover.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/indentation/indentation.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/inlayHints/inlayHintsController.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/linesOperations/linesOperations.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/links/links.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/multicursor/multicursor.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/parameterHints/parameterHints.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/rename/rename.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/smartSelect/smartSelect.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/suggest/suggestController.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/tokenization/tokenization.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/unusualLineTerminators/unusualLineTerminators.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/viewportSemanticTokens/viewportSemanticTokens.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordHighlighter/wordHighlighter.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordOperations/wordOperations.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordPartOperations/wordPartOperations.js";
 
 // Load up these strings even in VSCode, even if they are not used
 // in order to get them translated
-import "../../../node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js";
-import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js"; // The codicons are defined here and must be loaded
+// import "../../../node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js";
+// import "../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js"; // The codicons are defined here and must be loaded
 
 // import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/json/monaco.contribution';
