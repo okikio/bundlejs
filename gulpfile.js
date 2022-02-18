@@ -1,5 +1,6 @@
 // Import external modules
 const mode = process.argv.includes("--watch") ? "watch" : "build";
+export const ENABLE_SW = true;
 
 // Gulp utilities
 import {
@@ -42,7 +43,7 @@ task("html", async () => {
         { parser },
 
         { rehype },
-        { h }
+        { h },
     ] = await Promise.all([
         import("gulp-pug"),
         import("gulp-plumber"),
@@ -52,7 +53,7 @@ task("html", async () => {
         import("posthtml-parser"),
 
         import("rehype"),
-        import("hastscript")
+        import("hastscript"),
     ]);
 
     let plugins = [
@@ -112,7 +113,7 @@ task("html", async () => {
                         const value = String(await engine.process(content));
                         return parser(value);
                     };
-                })()
+                })(),
             ]),
         ],
         dest: htmlFolder,
@@ -124,7 +125,7 @@ task("css", async () => {
     const [
         { default: postcss },
         { default: tailwind },
-        
+
         { default: scss },
         { default: sass },
 
@@ -157,15 +158,12 @@ task("css", async () => {
 });
 
 task("minify-css", async () => {
-    const [
-        { default: postcss },
-        { default: autoprefixer },
-        { default: csso },
-    ] = await Promise.all([
-        import("gulp-postcss"),
-        import("autoprefixer"),
-        import("postcss-csso"),
-    ]);
+    const [{ default: postcss }, { default: autoprefixer }, { default: csso }] =
+        await Promise.all([
+            import("gulp-postcss"),
+            import("autoprefixer"),
+            import("postcss-csso"),
+        ]);
 
     return stream(`${destFolder}/**/*.css`, {
         pipes: [
@@ -185,14 +183,14 @@ task("js", async () => {
         { default: gulpif },
 
         { WEB_WORKER },
-        { solidPlugin: SOLID }
+        { solidPlugin: SOLID },
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
         import("gulp-if"),
 
         import("./plugins/worker.js"),
-        import("esbuild-plugin-solid")
+        import("esbuild-plugin-solid"),
     ]);
 
     const esbuild =
@@ -205,7 +203,7 @@ task("js", async () => {
             `${tsFolder}/*.ts`,
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
-            `node_modules/esbuild-wasm/esbuild.wasm`
+            `node_modules/esbuild-wasm/esbuild.wasm`,
         ],
         {
             pipes: [
@@ -230,10 +228,7 @@ task("js", async () => {
                         ".wasm": "file",
                     },
 
-                    plugins: [
-                        WEB_WORKER(),
-                        SOLID()
-                    ],
+                    plugins: [WEB_WORKER(), SOLID()],
                 }),
 
                 gulpif(
@@ -251,13 +246,9 @@ task("js", async () => {
 });
 
 task("preload-chunks", async () => {
-    const [
-        { default: posthtml },
-        
-        { default: glob }
-    ] = await Promise.all([
+    const [{ default: posthtml }, { default: glob }] = await Promise.all([
         import("gulp-posthtml"),
-        import("tiny-glob")
+        import("tiny-glob"),
     ]);
 
     let chunks = await glob(`${jsFolder}/chunk-*.js`);
@@ -265,10 +256,10 @@ task("preload-chunks", async () => {
         tag: "link",
         attrs: {
             src: x.replace(`${destFolder}`, ""),
-            type: 'modulepreload', 
-            as: "script", 
-            id: `chunk-preload-${i}`
-        }
+            type: "modulepreload",
+            as: "script",
+            id: `chunk-preload-${i}`,
+        },
     }));
 
     let chunkPreloadEl = {
@@ -276,28 +267,27 @@ task("preload-chunks", async () => {
         attrs: {
             id: "chunk-preload",
         },
-        content: chunks
+        content: chunks,
     };
 
     return stream(`${htmlFolder}/index.html`, {
         pipes: [
             posthtml([
                 async (tree) => {
-                    tree.match({ tag: 'head' }, (node) => {
+                    tree.match({ tag: "head" }, (node) => {
                         let indexOf = node?.content.indexOf(chunkPreloadEl);
-                        
-                        if (Array.isArray(node?.content)) 
+
+                        if (Array.isArray(node?.content))
                             if (indexOf > -1) {
                                 node.content[indexOf] = chunkPreloadEl;
                             } else {
                                 node.content.push(chunkPreloadEl);
                             }
-                        else 
-                            node.content = [chunkPreloadEl];
-                    
+                        else node.content = [chunkPreloadEl];
+
                         return node;
                     });
-                }
+                },
             ]),
         ],
         dest: htmlFolder,
@@ -306,41 +296,47 @@ task("preload-chunks", async () => {
 
 // Service Worker
 task("service-worker", async () => {
-    const { generateSW } = await import("workbox-build");
+    if (ENABLE_SW) {
+        const { generateSW } = await import("workbox-build");
 
-    return generateSW({
-        globDirectory: destFolder,
-        globPatterns: [
-            "**/*.{html,js,css}",
-            "/js/*.ttf",
-            "/favicon/*.svg",
-            "!/js/index.min.css",
-        ],
-        swDest: `${destFolder}/sw.js`,
+        return generateSW({
+            globDirectory: destFolder,
+            globPatterns: [
+                "**/*.{html,js,css}",
+                "/js/*.ttf",
+                "/favicon/*.svg",
+                "!/js/index.min.css",
+            ],
+            swDest: `${destFolder}/sw.js`,
 
-        ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
-        cleanupOutdatedCaches: true,
+            ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
+            cleanupOutdatedCaches: true,
 
-        // Define runtime caching rules.
-        runtimeCaching: [
-            {
-                // Match any request that starts with https://api.producthunt.com and https://api.countapi.xyz
-                urlPattern: /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz))/,
+            // Define runtime caching rules.
+            runtimeCaching: [
+                {
+                    // Match any request that starts with https://api.producthunt.com and https://api.countapi.xyz
+                    urlPattern:
+                        /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz))/,
 
-                // Apply a network-first strategy.
-                handler: "NetworkFirst",
-                method: "GET",
-            },
-            {
-                // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
-                urlPattern: /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+                    // Apply a network-first strategy.
+                    handler: "NetworkFirst",
+                    method: "GET",
+                },
+                {
+                    // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
+                    urlPattern:
+                        /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
 
-                // Apply a stale-while-revalidate strategy.
-                handler: "StaleWhileRevalidate",
-                method: "GET",
-            },
-        ],
-    });
+                    // Apply a stale-while-revalidate strategy.
+                    handler: "StaleWhileRevalidate",
+                    method: "GET",
+                },
+            ],
+        });
+    }
+
+    return;
 });
 
 // Other assets
@@ -432,7 +428,7 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`], 
+        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
         series("js", "preload-chunks", "service-worker", "reload")
     );
@@ -449,7 +445,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "preload-chunks", 
+        "preload-chunks",
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );
@@ -458,7 +454,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "preload-chunks", 
+        "preload-chunks",
         "service-worker",
         "watch"
     )

@@ -6,7 +6,7 @@
  *--------------------------------------------------------------------------------------------*/
 // 'use strict';
 import { initialize } from "../util/worker-init";
-import { create } from '../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js';
+import { create } from '../../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js';
 
 export const connect = (port) => {
     let initialized = false;

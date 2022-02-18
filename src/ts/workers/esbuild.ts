@@ -160,6 +160,13 @@ export const start = async (port) => {
                     throw [await createNotice(result.errors, "error")];
             } catch (error) {
                 let err = Array.isArray(error) ? error : error?.message;
+                throw {
+                    event: "error",
+                    details: {
+                        type: `esbuild build error`,
+                        error: Array.isArray(err) ? err : [err]
+                    }
+                };
                 postMessage({
                     event: "error",
                     details: {
@@ -189,6 +196,13 @@ export const start = async (port) => {
                 totalCompressedSize = null;
                 output = null;
             } catch (error) {
+                throw {
+                    event: "error",
+                    details: {
+                        type: `gzip error`,
+                        error
+                    }
+                };
                 postMessage({
                     event: "error",
                     details: {
