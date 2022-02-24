@@ -9,6 +9,7 @@ import { HTTP } from "../plugins/http";
 import { CDN } from "../plugins/cdn";
 
 import { encode, decode } from "../util/encode-decode";
+import { render as ansi } from "../util/ansi";
 
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
 
@@ -33,9 +34,9 @@ export const initEvent = new EventEmitter();
 
 // Inspired by https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
 // I didn't even know this was exported by esbuild, great job @egoist
-export const createNotice = async (errors: PartialMessage[], kind: "error" | "warning" = "error") => {
-    let res = await formatMessages(errors, { kind });
-    return res.join("\n\n");
+export const createNotice = async (errors: PartialMessage[], kind: "error" | "warning" = "error", color = true) => {
+    let notices = await formatMessages(errors, { color, kind });
+    return notices.map((msg) => !color ? msg : ansi(msg.replace(/(\s+)(\d+)(\s+)\│/, "\n$1$2$3│")));
 }
 
 export const start = async (port) => {
@@ -47,23 +48,39 @@ export const start = async (port) => {
         port.postMessage(encodedMessage, [encodedMessage.buffer]);
     };
 
+    const logger = (messages: string[] | any, type?: "error" | "warning" | any) => {
+        let msgs = Array.isArray(messages) ? messages : [messages];
+        if (type == "init") {
+            postMessage({
+                event: "init",
+                details: {
+                    type: `init`,
+                    message: msgs,
+                }
+            });
+        }
+
+        if (type == "error" || type == "warning") {
+            postMessage({
+                event: "log",
+                details: { messages: [`${msgs.length} ${type}(s) ${type == "error" ? "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)" : ""}`] }
+            });
+        }
+
+        postMessage({
+            event: "log",
+            details: { type, messages: msgs }
+        });
+    };
+
     initEvent.on({
         // When the SharedWorker first loads, tell the page that esbuild has initialized  
         init() {
-            postMessage({
-                event: "init",
-                details: {}
-            });
+            logger("Initialized 🚀✨", "init");
         },
         error(error) {
             let err = Array.isArray(error) ? error : error?.message;
-            postMessage({
-                event: "error",
-                details: {
-                    type: `Error initializing, you may need to close and reopen all currently open pages pages`,
-                    error: Array.isArray(err) ? err : [err],
-                }
-            });
+            logger([`Error initializing, you may need to close and reopen all currently open pages pages`, ...(Array.isArray(err) ? err : [err])], "error")
         }
     });
 
@@ -72,22 +89,16 @@ export const start = async (port) => {
         initEvent.emit("init");
 
     BuildEvents.on("build", (input: string) => {
-        if (!_initialized) {
-            postMessage({
-                event: "warn",
-                details: {
-                    type: `esbuild worker not initialized`,
-                    message: [`You need to wait for a little bit before trying to bundle files`]
-                }
-            });
+        logger("Bundling 🚀");
 
+        if (!_initialized) {
+            logger([`esbuild worker not initialized\nYou need to wait for a little bit before trying to bundle files`], "warning");
             return;
         }
 
-
         (async () => {
             let output = "";
-            
+
             // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
             let content: Uint8Array[] = [];
             let result: BuildResult & {
@@ -110,7 +121,7 @@ export const start = async (port) => {
                         treeShaking: true,
                         incremental: false,
                         target: ["esnext"],
-                        logLevel: 'info',
+                        logLevel: 'silent',// 'info',
                         write: false,
                         outfile: "/bundle.js",
                         platform: "browser",
@@ -129,14 +140,21 @@ export const start = async (port) => {
                         },
                         plugins: [
                             EXTERNAL(),
-                            HTTP(),
+                            HTTP(logger),
                             CDN(),
                         ],
                         globalName: 'bundler',
                     });
                 } catch (e) {
                     if (e.errors) {
-                        throw [await createNotice(e.errors, "error")];
+                        postMessage({
+                            event: "error",
+                            details: {
+                                type: `error`,
+                                error: [...await createNotice(e.errors, "error", false)]
+                            }
+                        });
+                        return logger([...await createNotice(e.errors, "error")], "error");
                     } else throw e;
                 }
 
@@ -150,30 +168,36 @@ export const start = async (port) => {
                     postMessage({
                         event: "warn",
                         details: {
-                            type: `esbuild build warning`,
-                            message: [await createNotice(result.warnings, "warning")]
+                            type: `warning`,
+                            message: [...await createNotice(result.warnings, "warning", false)]
                         }
                     });
+
+                    logger([...await createNotice(result.warnings, "warning")], "warning");
                 }
 
-                if (result?.errors.length > 0)
-                    throw [await createNotice(result.errors, "error")];
+                if (result?.errors.length > 0) {
+                    postMessage({
+                        event: "error",
+                        details: {
+                            type: `error`,
+                            error: [...await createNotice(result.errors, "error", false)]
+                        }
+                    });
+                    return logger([...await createNotice(result.errors, "error")], "error");
+                }
+                
+                logger("Done ✨", "info");
             } catch (error) {
                 let err = Array.isArray(error) ? error : error?.message;
-                throw {
-                    event: "error",
-                    details: {
-                        type: `esbuild build error`,
-                        error: Array.isArray(err) ? err : [err]
-                    }
-                };
                 postMessage({
                     event: "error",
                     details: {
-                        type: `esbuild build error`,
-                        error: Array.isArray(err) ? err : [err]
+                        type: `error`,
+                        error: "notColor" in error ? error?.notColor : Array.isArray(err) ? err : [err]
                     }
                 });
+                logger(Array.isArray(err) ? err : [err], "error");
 
                 return;
             }
@@ -196,20 +220,14 @@ export const start = async (port) => {
                 totalCompressedSize = null;
                 output = null;
             } catch (error) {
-                throw {
-                    event: "error",
-                    details: {
-                        type: `gzip error`,
-                        error
-                    }
-                };
-                postMessage({
-                    event: "error",
-                    details: {
-                        type: `gzip error`,
-                        error
-                    }
-                });
+                // postMessage({
+                //     event: "error",
+                //     details: {
+                //         type: `error`,
+                //         error
+                //     }
+                // });
+                logger([error], "error");
             }
         })();
     });

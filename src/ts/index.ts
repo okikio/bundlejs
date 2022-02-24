@@ -4,9 +4,13 @@ import { EventEmitter } from "@okikio/emitter";
 import { debounce } from "./util/debounce";
 import {
     ResultEvents,
-    renderComponent,
+    renderComponent as renderSearchResults,
     setState
 } from "./components/SearchResults";
+import {
+    renderComponent as renderConsole,
+    getLogs, setLogs
+} from "./components/Console";
 
 import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
@@ -16,6 +20,8 @@ import prettyBytes from "pretty-bytes";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
+
+import { USE_SHAREDWORKER } from "../../env";
 
 import * as Monaco from "./modules/monaco";
 
@@ -40,7 +46,8 @@ let initialized = false;
 let isInitial = true;
 
 // Bundle worker
-export const BundleWorker = new WebWorker(...WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker"));
+const BundleWorkerConfig = WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker");
+export const BundleWorker = USE_SHAREDWORKER ? new WebWorker(...BundleWorkerConfig) : new Worker(...BundleWorkerConfig) as WebWorker;
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
     let encodedMessage = encode(messageStr);
@@ -52,10 +59,6 @@ BundleWorker.addEventListener("message", ({ data }: MessageEvent<BufferSource>) 
     let { event, details } = JSON.parse(decode(data));
     BundleEvents.emit(event, details);
 });
-
-BundleWorker.addEventListener("error", (err) => {
-    console.log(err)
-})
 
 window.addEventListener("pageshow", function (event) {
     if (!event.persisted) {
@@ -74,6 +77,7 @@ window.addEventListener("pagehide", function (event) {
 
 
 let fileSizeEl: HTMLElement;
+let errorOccured = false;
 
 // Bundle Events
 BundleEvents.on({
@@ -83,8 +87,11 @@ BundleEvents.on({
         if (initialized)
             BundleEvents.emit("ready");
     },
-    init() {
-        console.log("Initalized");
+    init(details) {
+        let { type, message } = details;
+        (Array.isArray(message) ? message : [message]).forEach(msg => {
+            console.log(msg);
+        });
         initialized = true;
         if (fileSizeEl)
             fileSizeEl.textContent = `Wait...`;
@@ -113,6 +120,16 @@ BundleEvents.on({
                 isInitial = false;
             }
         }
+    },
+    log(details) {  
+        let { type, messages } = details;
+        let logs = [].concat(messages ?? []).map(msg => {
+            msg = msg.replace(/(https?:\/\/(?:[^\s\:\)])+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
+            let [title, ...message] = msg.split(/\n/);
+            return ({ type, title, message: message.join("\n") });
+        });
+        
+        setLogs([...getLogs(), ...logs]);   
     },
     warn(details) {
         let { type, message } = details;
@@ -144,11 +161,11 @@ export const build = (app: App) => {
     BundleEvents.on({
         bundle() {
             if (!initialized) return;
-            console.log("Bundle");
             value = `` + editor?.getValue();
 
             fileSizeEl.innerHTML = `<div class="loading"></div>`;
             bundleTime.textContent = `Bundled in ...`;
+            // if (!isInitial) setLogs?.([]);
 
             start = Date.now();
             postMessage({ event: "build", details: value });
@@ -185,22 +202,24 @@ export const build = (app: App) => {
     }
 
     let pushState = (url) => {
-        let { last } = historyManager;
-        let state = {
-            ...last,
-            url: url.toString()
+        if (url) {
+            let { last } = historyManager;
+            let state = {
+                ...last,
+                url: url.toString()
+            }
+
+            let len = historyManager.length;
+            historyManager.states.push({ ...state });
+            historyManager.pointer = len;
+
+            let item: IHistoryItem = {
+                index: historyManager.pointer,
+                states: [...historyManager.states]
+            };
+
+            window.history.pushState(item, "", state.url);
         }
-
-        let len = historyManager.length;
-        historyManager.states.push({ ...state });
-        historyManager.pointer = len;
-
-        let item: IHistoryItem = {
-            index: historyManager.pointer,
-            states: [...historyManager.states]
-        };
-
-        window.history.pushState(item, "", state.url);
     }
 
     // Monaco
@@ -438,7 +457,7 @@ export const build = (app: App) => {
         RunBtn.addEventListener("click", () => {
             (async () => {
                 if (!initialized)
-                    fileSizeEl.textContent = `Wait...`;
+                    fileSizeEl.textContent = `Wait!`;
                 BundleEvents.emit("bundle");
                 pushState(await getShareableURL(editor));
             })();
@@ -503,12 +522,43 @@ export const InitialRender = (shareURL: URL) => {
         const SearchResultContainerEl = SearchContainerEl.querySelector(
             ".search-results-container"
         ) as HTMLElement;
-        if (SearchResultContainerEl) renderComponent(SearchResultContainerEl);
+        if (SearchResultContainerEl) renderSearchResults(SearchResultContainerEl);
 
         const clearBtn = document.querySelector(".search .clear");
         clearBtn?.addEventListener("click", () => {
             searchInput.value = "";
             setState([]);
+        });
+    })();
+
+    // Console solidjs component
+    (async () => {
+        const ConsoleEl = document.querySelector(
+            ".console"
+        ) as HTMLElement;
+        if (ConsoleEl) {
+            ConsoleEl.innerHTML = "";
+            renderConsole(ConsoleEl);
+        }
+
+        const clearBtn = document.querySelector(".console-btns .clear-console-btn");
+        clearBtn?.addEventListener("click", () => {
+            setLogs([]);
+        });
+
+        const foldBtn = document.querySelector(".console-btns .fold-unfold-console-btn");
+        foldBtn?.addEventListener("click", () => {
+            const details = Array.from(document.querySelectorAll(".console details"));
+            details.forEach((el) => {
+                el.toggleAttribute("open");
+            });
+        });
+
+        const scrollDownBtn = document.querySelector(".console-btns .console-to-bottom-btn");
+        scrollDownBtn?.addEventListener("click", () => {
+            if (ConsoleEl) { 
+                ConsoleEl.scrollTo(0, ConsoleEl.scrollHeight);
+            }
         });
     })();
 

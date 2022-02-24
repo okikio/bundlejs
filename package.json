@@ -37,29 +37,31 @@
         "@okikio/native": "^3.0.1",
         "@okikio/sharedworker": "^1.0.3",
         "countapi-js": "^1.0.2",
-        "esbuild-wasm": "^0.14.22",
+        "esbuild-wasm": "^0.14.23",
         "monaco-editor": "^0.32.1",
         "pako": "^2.0.4",
+        "parse-package-name": "^1.0.0",
         "prettier": "^2.5.1",
         "pretty-bytes": "^6.0.0",
-        "solid-js": "^1.3.7",
+        "resolve.exports": "^1.1.0",
+        "solid-js": "^1.3.8",
         "typescript": "^4.5.5",
         "web-animations-js": "^2.3.2",
-        "workbox-window": "^6.4.2"
+        "workbox-window": "^6.5.0"
     },
     "devDependencies": {
         "@commitlint/cli": "^16.2.1",
         "@commitlint/config-conventional": "^16.2.1",
         "@csstools/postcss-sass": "^5.0.0",
-        "@types/node": "^17.0.18",
+        "@types/node": "^17.0.21",
         "autoprefixer": "^10.4.2",
         "browser-sync": "^2.27.7",
         "commitizen": "^4.2.4",
         "del": "^6.0.0",
-        "esbuild": "^0.14.22",
+        "esbuild": "^0.14.23",
         "esbuild-plugin-solid": "^0.4.2",
         "gulp": "^4.0.2",
-        "gulp-esbuild": "^0.10.1",
+        "gulp-esbuild": "^0.10.2",
         "gulp-if": "^3.0.0",
         "gulp-plumber": "^1.2.1",
         "gulp-postcss": "^9.0.1",
@@ -86,6 +88,6 @@
         "tailwindcss": "^3.0.23",
         "tiny-glob": "^0.2.9",
         "tsm": "^2.2.1",
-        "workbox-build": "^6.4.2"
+        "workbox-build": "^6.5.0"
     }
 }

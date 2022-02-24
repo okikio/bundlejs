@@ -1,5 +1,6 @@
 // Based on https://css-tricks.com/how-to-animate-the-details-element-using-waapi/
-class Accordion {
+export const detailsEls = new WeakMap<HTMLDetailsElement, Accordion>();
+export class Accordion {
     constructor(el) {
         // Store the <details> element
         this.el = el;
@@ -15,7 +16,8 @@ class Accordion {
         // Store if the element is expanding
         this.isExpanding = false;
         // Detect user clicks on the summary element
-        this.summary.addEventListener("click", (e) => this.onClick(e));
+        this.onClick = this.onClick.bind(this);
+        this.summary.addEventListener("click", this.onClick);
     }
 
     onClick(e) {
@@ -117,13 +119,36 @@ class Accordion {
         // Remove the overflow hidden and the fixed height
         this.el.style.height = this.el.style.overflow = "";
     }
+
+    stop() {
+        if (this.el) {
+            detailsEls.delete(this.el);
+            this.summary?.removeEventListener?.("click", this.onClick);
+            this.animation?.cancel?.();
+
+            // Store the <details> element
+            this.el = null;
+            // Store the <summary> element
+            this.summary = null;
+            // Store the <div class="content"> element
+            this.content = null;
+
+            // Store the animation object (so we can cancel it if needed)
+            this.animation = null;
+            // Store if the element is closing
+            this.isClosing = null;
+            // Store if the element is expanding
+            this.isExpanding = null;
+        }
+    }
 }
 
 export const run = () => {
     let details = Array.from(document.querySelectorAll("details"));
     if (details.length > 0) {
         details.forEach((el) => {
-            new Accordion(el);
+            if (el && !detailsEls.has(el)) 
+                detailsEls.set(el, new Accordion(el));
         });
     }
 }
