@@ -11,6 +11,9 @@ export const getRequest = async (url: RequestInfo, permanent: boolean = false) =
         let cacheResponse = await cache.match(request);
         response = cacheResponse;
 
+        // If permanent is true, primarily use the cache, and only go to network
+        // if there is nothing in cache, 
+        // otherwise, use network request
         if (permanent) {
             if (!cacheResponse) {
                 let networkResponse = await fetch(request);
@@ -26,6 +29,9 @@ export const getRequest = async (url: RequestInfo, permanent: boolean = false) =
         let cacheResponse = CACHE.get(request);
         let response = cacheResponse;
 
+        // If permanent is true, primarily use the cache, and only go to network
+        // if there is nothing in cache, 
+        // otherwise, use network request
         if (permanent) {
             if (!cacheResponse) {
                 let networkResponse = await fetch(request);

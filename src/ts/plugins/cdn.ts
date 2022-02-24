@@ -13,7 +13,7 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
     return async (args) => {
         if (isBareImport(args.path)) {
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-            const parsed = parsePackageName(args.path);
+            let parsed = parsePackageName(args.path);
             let subpath = parsed.path;
             let pkg = args.pluginData?.pkg ?? {};
             let path;
@@ -37,6 +37,15 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
                         pluginData: { pkg }
                     };
                 }
+            } else if (("dependencies" in pkg || "devDependencies" in pkg) && !/\S+@\S+/.test(args.path)) { 
+                let { devDependencies = {}, dependencies = {} } = pkg;
+                let deps = Object.assign({}, devDependencies, dependencies);
+                let keys = Object.keys(deps);
+
+                if (keys.includes(args.path)) {
+                    parsed = parsePackageName(args.path + "@" + deps[args.path]);
+                    subpath = parsed.path;
+                }
             }
 
             if (!subpath) {
@@ -55,7 +64,7 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
             if (subpath && subpath[0] !== "/")
                 subpath = `/${subpath}`;
 
-            let { url } = getCDNHost(`${parsed.name}@${parsed.version}${subpath}`);
+            let { url } = getCDNHost(`${parsed.name}@${parsed.version}${subpath}`, host);
             return {
                 namespace: HTTP_NAMESPACE,
                 path: url,

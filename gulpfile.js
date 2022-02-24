@@ -1,6 +1,6 @@
 // Import external modules
 const mode = process.argv.includes("--watch") ? "watch" : "build";
-export const ENABLE_SW = true;
+import { ENABLE_SW } from "./env.js";
 
 // Gulp utilities
 import {

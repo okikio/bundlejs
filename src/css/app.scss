@@ -214,6 +214,13 @@ main {
         // my-8
     }
 
+    h3#console {
+        @apply text-xl pb-0;
+        text-decoration: underline;
+        text-decoration-style: wavy;
+        text-underline-offset: 0.4rem;
+    }
+
     h2#faq {
         @apply pl-0;
     }
@@ -408,7 +415,6 @@ button,
 details {
     .content {
         padding-left: 2ch;
-        @apply py-4;
     }
     summary::marker {
         content: "";
@@ -447,9 +453,14 @@ details {
             left: 0.25ch;
             @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
             transform: translate(0, -50%);
+            @apply cursor-pointer;
         }
-        &:active,
-        &:active:before {
+
+        &.console-summary:before {
+            @apply text-current;
+        }
+        &:not(.console-summary):active,
+        &:not(.console-summary):active:before {
             @apply text-gray-800 dark:text-gray-100;
         }
     }
@@ -473,8 +484,12 @@ details {
             transform: translate(0, -50%) rotateZ(90deg);
         }
 
-        &:active:before {
+        &:not(.console-summary):active:before {
             @apply text-gray-800 dark:text-gray-100;
+        }
+        
+        &.console-summary:before {
+            @apply text-current;
         }
     }
 }

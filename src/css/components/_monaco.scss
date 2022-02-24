@@ -1,6 +1,6 @@
 .flex-wrapper {
     --cols: 1fr;
-    @apply w-full relative pb-6;
+    @apply w-full relative;
     @apply grid gap-3;
     //  mb-8
     // grid-template-columns: auto;
@@ -272,6 +272,35 @@
     pointer-events: none;
 }
 
+
+button.icon-btn {
+    @apply flex items-center justify-center;
+    @apply bg-gray-100 border dark:border-gray-500 dark:bg-gray-600 text-blue-400 dark:text-white;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600;
+    @apply px-3 py-2 rounded-md z-[12];
+    @apply flex items-center justify-center;
+    pointer-events: auto;
+
+    @supports (backdrop-filter: blur(5px)) {
+        @apply bg-opacity-50 dark:bg-opacity-50 backdrop-filter backdrop-blur-sm;
+    }
+
+    &.hide-btns {
+        @apply transition-transform duration-[300ms];
+        @apply bg-white border border-opacity-50 dark:border-gray-700/50 dark:bg-gray-800/70 text-blue-400 dark:text-white;
+        @apply hover:bg-gray-200/60 dark:hover:bg-gray-700 dark:hover:border-gray-600;
+        @apply rounded-full p-2 z-10;
+        transition-property: transform, color, background-color, border-color, text-decoration-color, fill, stroke;
+    } 
+
+    svg {
+        @apply text-lg;
+        vertical-align: middle;
+        fill: currentColor;
+        width: 1em;
+    }
+}
+
 .editor-btns {
     @apply sm:overflow-hidden justify-end;
     .editor-btn-container {
@@ -301,33 +330,6 @@
         }
     }
 
-    button {
-        @apply flex items-center justify-center;
-        @apply bg-gray-100 border dark:border-gray-500 dark:bg-gray-600 text-blue-400 dark:text-white;
-        @apply hover:bg-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600;
-        @apply px-3 py-2 rounded-md z-[12];
-        @apply flex items-center justify-center;
-        pointer-events: auto;
-
-        @supports (backdrop-filter: blur(5px)) {
-            @apply bg-opacity-50 dark:bg-opacity-50 backdrop-filter backdrop-blur-sm;
-        }
-
-        &.hide-btns {
-            @apply transition-transform duration-[300ms];
-            @apply bg-white border border-opacity-50 dark:border-gray-700/50 dark:bg-gray-800/70 text-blue-400 dark:text-white;
-            @apply hover:bg-gray-200/60 dark:hover:bg-gray-700 dark:hover:border-gray-600;
-            @apply rounded-full p-2 z-10;
-            transition-property: transform, color, background-color, border-color, text-decoration-color, fill, stroke;
-        } 
-
-        svg {
-            @apply text-lg;
-            vertical-align: middle;
-            fill: currentColor;
-            width: 1em;
-        }
-    }
 
     .copy-container {
         @apply relative z-[10];

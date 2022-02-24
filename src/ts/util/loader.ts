@@ -1,15 +1,9 @@
 import type { Loader } from 'esbuild';
+import { isAbsolute, extname } from './path';
 
-// Based on https://github.com/sindresorhus/path-is-absolute/blob/main/index.js
-export const isAbsolute = (path: string) => {
-  return path.length > 0 && path.charAt(0) === '/';
+export const isBareImport = (url: string) => {
+    return /^(?!\.).*/.test(url) && !isAbsolute(url);
 }
-
-// Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/path.ts
-export const extname = (path: string) => {
-    const m = /(\.[a-zA-Z0-9]+)$/.exec(path);
-    return m ? m[1] : "";
-  }
 
 // Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];
@@ -30,28 +24,25 @@ export const inferLoader = (url: string): Loader => {
     return ext.length ? "text" : "ts";
 }
 
-export const isBareImport = (url: string) => {
-    return /^(?!\.).*/.test(url) && !isAbsolute(url);
-}
-
-export const HOST = 'https://cdn.skypack.dev/';
-export const getCDNHost = (url: string) => {
+export const HOST = 'https://unpkg.com';
+export const getCDNHost = (url: string, host = HOST) => {
     let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
-    let host = HOST;
     if (/^skypack\:/.test(url)) {
-        host = `https://cdn.skypack.dev/`;
+        host = `https://cdn.skypack.dev`;
     } else if (/^(esm\.sh|esm)\:/.test(url)) {
-        host = `https://cdn.esm.sh/`;
+        host = `https://cdn.esm.sh`;
     } else if (/^unpkg\:/.test(url)) {
-        host = `https://unpkg.com/`;
+        host = `https://unpkg.com`;
     } else if (/^(jsdelivr|esm\.run)\:/.test(url)) {
-        host = `https://cdn.jsdelivr.net/npm/`;
+        host = `https://cdn.jsdelivr.net/npm`;
     }
 
     // typescript will only work on esm.sh
     else if (/^typescript/.test(url)) {
-        host = `https://unpkg.com/`;
+        host = `https://unpkg.com`;
     }
-
-    return { argPath, host };
+    
+    host = /\/$/.test(host) ? host : `${host}/`;
+    return { argPath, host, url: host + argPath.replace(/^\//, "") };
 }
+

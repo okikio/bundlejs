@@ -18,6 +18,8 @@ If there is something I missed, a mistake, or a feature you would like added ple
 
 You can join the discussion on [github discussions](https://github.com/okikio/bundle/discussions).
 
+> Some of bundle.js.org's latest features were inspired by [egoist/play-esbuild](https://github.com/egoist/play-esbuild) and [hyrious/esbuild-repl](https://github.com/hyrious/esbuild-repl), check them out they each use esbuild in different ways.
+
 ## URL Queries & Shareable Links
 
 You can now use search queries in **bundle**, all you need to do is add this to the url  
@@ -53,3 +55,4 @@ All you need to do is to add this to your `README.md`
 ```
 
 You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
+
