@@ -1,8 +1,69 @@
 
-import type { Plugin } from 'esbuild';
+import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
-import { fetchPkg } from './http';
-import { inferLoader, isBareImport, getCDNHost } from '../util/loader';
+import { HTTP_NAMESPACE } from './http';
+import { isBareImport, getCDNHost } from '../util/loader';
+import { resolveImports } from '../util/resolve-imports';
+
+import { resolve, legacy } from "resolve.exports";
+import { parse as parsePackageName } from "parse-package-name";
+import { getRequest } from '../util/cache';
+
+export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+    return async (args) => {
+        if (isBareImport(args.path)) {
+            // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
+            const parsed = parsePackageName(args.path);
+            let subpath = parsed.path;
+            let pkg = args.pluginData?.pkg ?? {};
+            let path;
+
+            // Resolving imports from package.json, if a package starts with "#" 
+            if (args.path[0] == "#") {
+                let path = resolveImports({ ...pkg, exports: pkg.imports }, args.path, {
+                    require: args.kind === "require-call" || args.kind === "require-resolve"
+                });
+
+                if (typeof path === "string") {
+                    subpath = path.replace(/^\.?\/?/, "/");
+
+                    if (subpath && subpath[0] !== "/")
+                        subpath = `/${subpath}`;
+
+                    let { url } = getCDNHost(`${pkg.name}@${pkg.version}${subpath}`);
+                    return {
+                        namespace: HTTP_NAMESPACE,
+                        path: url,
+                        pluginData: { pkg }
+                    };
+                }
+            }
+
+            if (!subpath) {
+                let { url } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
+
+                // Strongly cache package.json files
+                pkg = await getRequest(url, true).then((res) => res.json());
+                path = resolve(pkg, ".", {
+                    require: args.kind === "require-call" || args.kind === "require-resolve",
+                }) || legacy(pkg);
+
+                if (typeof path === "string")
+                    subpath = path.replace(/^\.?\/?/, "/");
+            }
+
+            if (subpath && subpath[0] !== "/")
+                subpath = `/${subpath}`;
+
+            let { url } = getCDNHost(`${parsed.name}@${parsed.version}${subpath}`);
+            return {
+                namespace: HTTP_NAMESPACE,
+                path: url,
+                pluginData: { pkg }
+            };
+        }
+    };
+}
 
 export const CDN_NAMESPACE = 'cdn-url';
 export const CDN = (): Plugin => {
@@ -10,42 +71,7 @@ export const CDN = (): Plugin => {
         name: CDN_NAMESPACE,
         setup(build) {
             // Resolve bare imports to the CDN required using different URL schemes
-            build.onResolve({ filter: /.*/ }, (args) => {
-                if (isBareImport(args.path)) {
-                    let { host, argPath } = getCDNHost(args.path);
-                    return {
-                        namespace: CDN_NAMESPACE,
-                        path: argPath,
-                        pluginData: {
-                            parentUrl: host,
-                        },
-                    };
-                }
-            });
-
-            // Pass on the info from the bare import
-            build.onResolve({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
-                return {
-                    path: args.path,
-                    namespace: CDN_NAMESPACE,
-                    pluginData: args.pluginData,
-                };
-            });
-
-            // On load 
-            build.onLoad({ namespace: CDN_NAMESPACE, filter: /.*/ }, async (args) => {
-                let pathUrl = new URL(args.path, args.pluginData.parentUrl).toString();
-                pathUrl = pathUrl.replace(/\/$/, "/index"); // Some packages use "../../" which this is supposed to fix
-
-                const { content, url } = await fetchPkg(pathUrl);
-                return Object.assign({
-                    contents: content,
-                    pluginData: {
-                        parentUrl: url,
-                    },
-                    loader: inferLoader(pathUrl)
-                });
-            });
+            build.onResolve({ filter: /.*/ }, CDN_RESOLVE());
         },
     };
 };

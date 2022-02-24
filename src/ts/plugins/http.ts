@@ -2,9 +2,15 @@
 import type { Plugin } from 'esbuild';
 
 import { getRequest } from '../util/cache';
-import { inferLoader } from '../util/loader';
+import { getCDNHost, inferLoader, isBareImport } from '../util/loader';
+
+import { urlJoin } from "../util/path";
+import { CDN_RESOLVE } from './cdn';
+
 export async function fetchPkg(url: string) {
     let response = await getRequest(url);
+    if (!response.ok)
+        throw new Error(`[getRequest] Failed to load ${response.url}: ${response.status}`)
     return {
         url: response.url,
         content: new Uint8Array(await response.arrayBuffer()),
@@ -12,7 +18,7 @@ export async function fetchPkg(url: string) {
 }
 
 export const HTTP_NAMESPACE = 'http-url';
-export const HTTP = (): Plugin => {
+export const HTTP = (logger: (messages: string[] | any, type?: "error" | "warning" | any) => void): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -21,9 +27,8 @@ export const HTTP = (): Plugin => {
             // Tag them with the "http-url" namespace to associate them with
             // this plugin.
             build.onResolve({ filter: /^https?:\/\// }, args => {
-                let resolveDir = args.resolveDir.replace(/^\//, '');
                 return {
-                    path: resolveDir.length > 0 ? new URL(args.path, resolveDir).toString() : args.path,
+                    path: args.path,
                     namespace: HTTP_NAMESPACE,
                 };
             });
@@ -34,11 +39,24 @@ export const HTTP = (): Plugin => {
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
             build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, args => {
-                let importer = args.importer;
-                let pathUrl = args.path.replace(/\/$/, "/index"); // Some packages use "../../" which this is supposed to fix
+                let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
+                if (!argPath.startsWith(".")) {
+                    let { origin } = new URL(urlJoin(args.pluginData?.url, "../", argPath));
+                    if (isBareImport(argPath)) {
+                        return CDN_RESOLVE(origin)(args);
+                    } else {
+                        return {
+                            path: getCDNHost(argPath, origin).url,
+                            namespace: HTTP_NAMESPACE,
+                            pluginData: { pkg: args.pluginData?.pkg },
+                        };
+                    }
+                }
+
                 return {
-                    path: new URL(pathUrl, importer).toString(),
+                    path: urlJoin(args.pluginData.url, "../", argPath), 
                     namespace: HTTP_NAMESPACE,
+                    pluginData: { pkg: args.pluginData?.pkg },
                 };
             });
 
@@ -48,10 +66,11 @@ export const HTTP = (): Plugin => {
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 const { content, url } = await fetchPkg(args.path);
+                logger("Fetch " + url, "info");
                 return {
                     contents: content,
                     loader: inferLoader(url),
-                    resolveDir: `/${url}`, // a hack fix resolveDir problem
+                    pluginData: { url, pkg: args.pluginData?.pkg }
                 };
             });
         },
