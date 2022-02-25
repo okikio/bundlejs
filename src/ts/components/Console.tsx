@@ -10,7 +10,7 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
   if (parentEl) { 
     parentEl?.addEventListener("scroll", debounce((e) => { 
       setStickToBottom(parentEl.scrollTop + parentEl.clientHeight >= parentEl.scrollHeight - 50);
-    }, 10));
+    }, 50), { passive: true });
   }
 
   createEffect(() => {
@@ -19,16 +19,22 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
     }
     return getLogs();
   });
-
+   
   return (
-    <For each={getLogs()} fallback={<span class="hljs-literal">No logs...</span>}>
+    <For each={getLogs()} fallback={
+      <div class={"py-3 "}>
+        <div class="content">
+          <p class="px-4 hljs-literal">No logs...</p>
+        </div>
+      </div>
+    }>
       {({ title, message, type }, index) => {
         let styleType = {
           "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
           "warn": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md"
         };
         
-        let staticClassName = "whitespace-normal overflow-auto overscroll-x-contain ";
+        let staticClassName = "whitespace-normal overflow-auto overscroll-x-contain "; 
         let [getClassName, setClassName] = createSignal(staticClassName);
         createEffect(() => { 
           setClassName(staticClassName + (styleType[type ?? "default"] ?? (Math.abs(index() - len() - 1) > 2 ? " border-b border-gray-300/60 dark:border-gray-600/60" : "")));

@@ -173,7 +173,7 @@ main {
     }
 
     header {
-        @apply p-6 text-center;
+        @apply py-6 text-center;
 
         h1 {
             @apply text-5xl font-bold mb-2;
@@ -214,11 +214,11 @@ main {
         // my-8
     }
 
-    h3#console {
-        @apply text-xl pb-0;
+    .tab-style {
+        // @apply text-lg;
         text-decoration: underline;
         text-decoration-style: wavy;
-        text-underline-offset: 0.4rem;
+        text-underline-offset: 0.2rem;
     }
 
     h2#faq {

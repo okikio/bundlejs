@@ -1,82 +1,96 @@
 .flex-wrapper {
-    --cols: 1fr;
-    @apply w-full relative;
-    @apply grid gap-3;
-    //  mb-8
-    // grid-template-columns: auto;
-    height: (400px - 56px);
-    resize: vertical;
-    overflow: hidden;
+    @apply w-full relative block;
+    @apply flex gap-1;
 
-    @screen lt-sm {
-        grid-template-rows: auto auto;
-        grid-template-rows: var(--cols) var(--cols);
-        // grid-flow: rows;
+    height: 350px;
+    min-height: 350px;
 
-        // @apply grid-flow-row;
-    }
-
-    @screen sm {
-        min-height: 350px - 56px;
-        grid-template-columns: auto auto;
-        grid-template-columns: var(--cols) var(--cols);
-
-        @apply grid-rows-1;
-    }
-
-    // @screen md {
-    //     min-height: 400px - 56px;
-    // }
-
-    &.loaded {
-        --cols: auto;
-    }
+    @apply lt-sm:flex-col;
 }
 
-.emulate-monaco {
-    font-family: Consolas, "Courier New", monospace;
-    font-weight: normal;
-    font-size: 14px;
-    font-feature-settings: "liga" 0, "calt" 0;
-    line-height: 19px;
-    letter-spacing: 0px;
-    word-break: break-word;
-    padding-left: 64px;
-    padding-right: 14px;
+.tab-btns { 
+    .action-btns {
+    @apply flex;
+    }
+    .active {
+    @apply bg-gray-100 dark:bg-quaternary dark:hover:bg-gray-800;
+}
+}
+
+.drag-section {
+    &,
+    &.drag-handle {
+        touch-action: none;
+    }
+
+    &.dynamic {
+        @apply flex lt-sm:flex-row items-center justify-center sm:h-full lt-sm:pt-2 lt-sm:pb-1;
+
+        .drag-handle {
+            @apply w-12 h-1 sm:w-1 sm:h-12 rounded-full;
+            @apply bg-slate-500/30 hover:bg-gray-600/40 dark:hover:bg-gray-400/40 cursor-ns-resize sm:cursor-ew-resize;
+
+            @media (pointer: coarse) {
+                @apply w-12 h-2 sm:w-2 sm:h-12;
+            }
+        }
+    }
+
+    &.horizontal {
+        @apply flex flex-row items-center justify-center h-full px-2;
+
+        .drag-handle {
+            @apply w-1 h-12 rounded-full;
+            @apply bg-slate-500/30 hover:bg-gray-600/40 dark:hover:bg-gray-400/40 cursor-ew-resize;
+
+            @media (pointer: coarse) {
+                @apply w-2 h-12;
+            }
+        }
+    }
+
+    &.vertical {
+        @apply flex items-center justify-center w-full py-2;
+
+        .drag-handle {
+            @apply w-12 h-1 rounded-full;
+            @apply bg-slate-500/30 hover:bg-gray-600/40 dark:hover:bg-gray-400/40 cursor-ns-resize;
+
+            @media (pointer: coarse) {
+                @apply w-12 h-2;
+            }
+        }
+    }
 }
 
 .app {
-    @apply bg-white border border-gray-300;
-    @apply dark:bg-elevated dark:border-gray-700;
-    @apply rounded-lg shadow-lg;
-    @apply relative block;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    height: 100%;
+    @apply relative block w-full;
+    height: 170px;
 
-    // width: 100%;
-    // min-width: theme("spacing.3");
-    // max-width: calc(100% - theme("spacing.3"));
-
-    overflow: hidden;
-
-    font-family: Consolas, "Courier New", monospace;
-    font-weight: normal;
-    font-size: 14px;
-    font-feature-settings: "liga" 0, "calt" 0;
-    line-height: 19px;
-    letter-spacing: 0px;
-
-    .monaco-hover-content h3 {
-        @apply text-lg font-bold;
+    @screen sm {
+        height: 100%;
     }
-}
 
-.flex-wrapper.loaded .app {
-    resize: horizontal;
+    .editor-container {
+        @apply bg-white border border-gray-300;
+        @apply dark:bg-elevated dark:border-gray-700;
+        @apply rounded-lg shadow-lg;
+        @apply relative block w-full;
+        height: 100%;
 
-    @screen lt-sm {
-        resize: vertical;
+        padding-top: 15px;
+        padding-bottom: 15px;
+
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: normal;
+        font-size: 14px;
+        font-feature-settings: "liga" 0, "calt" 0;
+        line-height: 19px;
+        letter-spacing: 0px;
+
+        .monaco-hover-content h3 {
+            @apply text-lg font-bold;
+        }
     }
 }
 
@@ -86,17 +100,41 @@
         --spacing: calc(theme("spacing.10") + env(safe-area-inset-right) + env(safe-area-inset-left));
     }
 
-    min-width: 25px;
-    max-width: calc(theme("screens.lg") - theme("spacing.3") - 25px - var(--spacing));
+    min-height: 80px;
+    min-width: 200px;
+    // max-width: calc(theme("screens.lg") - theme("spacing.3") - 25px - var(--spacing));
 }
 
-.app#output {
-    resize: none;
-    height: 100%;
+.app#console {
+    height: 140px;
+    flex: 1 1 0%;
+    @screen sm {
+        height: 100%;
+    }
+    
+    pre.console {
+        @apply h-full relative;
+        max-height: 100%;
+        @apply flex flex-col;
+    }
+
+    pre.console code {
+        @apply overflow-auto overscroll-y-contain relative;
+    }
+
+    .console-btns {
+        @apply flex flex-wrap p-2 gap-2;
+        .btn {
+            @apply mr-0;
+        }
+        .icon {
+            @apply text-sm;
+        }
+    }
 }
 
 .info-pane {
-    @apply flex w-full lt-sm:flex-col align-middle gap-2 lt-sm:gap-3;
+    @apply flex w-full lt-sm:flex-col gap-2 lt-sm:gap-3;
     flex-wrap: nowrap;
 
     #bundle-time {
@@ -110,13 +148,12 @@
     }
 
     .action-btns-overflow {
-        @apply py-1;
+        @apply flex-grow py-1;
         overflow-x: auto;
-        width: 100%;
     }
 
     .action-btns {
-        @apply flex w-full align-middle gap-2;
+        @apply flex flex-grow align-middle gap-2;
         position: relative;
     }
 
@@ -186,7 +223,7 @@
     animation: spin 1s linear infinite;
 }
 
-.dark .app {
+.dark .app .editor-container {
     background-color: #0d1117;
     border: 1px solid #30363D;
 }
@@ -265,8 +302,8 @@
     opacity: 1;
 }
 
-.app:hover .editor-btns,
-.app:focus-within .editor-btns {
+.app .editor-container:hover .editor-btns,
+.app .editor-container:focus-within .editor-btns {
     transition: opacity ease-out 0.5s;
     opacity: 1;
     pointer-events: none;

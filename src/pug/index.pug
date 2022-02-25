@@ -21,18 +21,21 @@ block content
           i.icon clear
 
       .search-results-container
-    .flex.w-full.gap-2
-      .info-pane
-        .flex-grow#bundle-time Bundled in ...
+     
+  .container.editor-section(class="!max-w-screen-lg relative !pt-0 pb-6")
+    .container.info-pane
+      .tab-btns.flex.flex-nowrap
+        .action-btns
+          button.btn.tab-style.input-btn.active(type="button") Input
+          button.btn.tab-style.output-btn(type="button") Output
+    
+       
+      .action-btns-overflow.flex.flex-grow
         .flex-grow
-          .action-btns-overflow
-            .action-btns
-              .flex-grow
-              button.btn#run(type='button') Run
-              button.btn.btn-share#share(type='button') Share
-              .file-size(title="Ungzipped Bundled size -> Gzipped Bundle size") Wait...
-      
-  .container(class="!max-w-screen-lg relative  pb-6")
+        .action-btns.justify-end
+          button.btn#run(type='button') Run
+          button.btn.btn-share#share(type='button') Share
+          .file-size(title="Ungzipped Bundled size -> Gzipped Bundle size") Wait...
     .flex-wrapper
       mixin editor-btns
         .editor-btns&attributes(attributes)
@@ -63,39 +66,45 @@ block content
                     path(d='M2.75 5a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5H2.75ZM2.75 11.5a.75.75 0 0 0 0 1.5H19a2.5 2.5 0 0 1 0 5h-4.44l.72-.72a.75.75 0 1 0-1.06-1.06l-2 2a.75.75 0 0 0 0 1.06l2 2a.75.75 0 1 0 1.06-1.06l-.72-.72H19a4 4 0 0 0 0-8H2.75Z')
                     path(d='M2 18.75a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75Z')
           block
-
       .app#input
-        .center-container
-          .loading
-        #editor
-        +editor-btns
-          .input-file-size 0 Kb 
-        
-      .app#output
-        .center-container
-          .loading
-        #editor 
-        +editor-btns
+              
+        .editor-container
+          .center-container
+            .loading
+          #editor
+          +editor-btns 
 
-    .container 
-      .console-btns.flex.items-center.pt-4
-        h3#console Console
-        .flex-grow
-        .flex.flex-wrap.gap-2
-          button.btn.console-to-bottom-btn(type="button" title="Scroll to Bottom" class="text-xl flex items-center justify-center border border-gray-300 dark:border-gray-600")
-            svg.icon.text-xl(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
-              path(d='M19.79 13.267a.75.75 0 0 0-1.086-1.034l-5.954 6.251V3.75a.75.75 0 1 0-1.5 0v14.734l-5.955-6.251a.75.75 0 0 0-1.086 1.034l7.067 7.42c.16.168.366.268.58.3a.753.753 0 0 0 .29-.001.995.995 0 0 0 .578-.3l7.067-7.419Z', fill='currentColor')
-          button.btn.fold-unfold-console-btn(type="button" title="Fold/Unfold Console Lines" class="text-xl flex items-center justify-center border border-gray-300 dark:border-gray-600")
-            svg.icon.text-xl(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
-              path(d='M13.22 6.781a.75.75 0 0 1-.073-.976l.073-.085 2.367-2.37a.77.77 0 0 1 .664-.35c.252 0 .475.109.611.276l.053.075 2.367 2.37.073.084a.75.75 0 0 1 .007.882l-.08.094-.084.073a.75.75 0 0 1-.883.007l-.094-.08L17 5.56v3.784l-.007.089c-.05.32-.363.567-.743.567s-.694-.247-.743-.567l-.007-.09V5.56l-1.22 1.221-.084.073a.75.75 0 0 1-.976-.073ZM13.223 17.219a.75.75 0 0 1 .976-.073l.084.073 1.22 1.221v-3.784c0-.362.336-.656.75-.656.38 0 .693.247.743.567l.007.09v3.783l1.221-1.221a.75.75 0 0 1 .977-.073l.084.073a.75.75 0 0 1 .073.976l-.073.084-2.367 2.37a.77.77 0 0 1-.664.351.77.77 0 0 1-.664-.35l-2.367-2.37a.75.75 0 0 1 0-1.061ZM6.25 3.992A2.25 2.25 0 0 0 4 6.242v11.5a2.25 2.25 0 0 0 2.25 2.25h4a.75.75 0 0 0 0-1.5h-4a.75.75 0 0 1-.75-.75v-11.5a.75.75 0 0 1 .75-.75h4a.75.75 0 0 0 0-1.5h-4Z', fill='currentColor')
-          button.btn.clear-console-btn(type="button" title="Clear Console" class="text-xl flex items-center justify-center border border-gray-300 dark:border-gray-600")
-            svg.icon.text-xl(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
-              path(d='M12 1.75a3.25 3.25 0 0 1 3.245 3.066L15.25 5h5.25a.75.75 0 0 1 .102 1.493L20.5 6.5h-.796l-1.28 13.02a2.75 2.75 0 0 1-2.561 2.474l-.176.006H8.313a2.75 2.75 0 0 1-2.714-2.307l-.023-.174L4.295 6.5H3.5a.75.75 0 0 1-.743-.648L2.75 5.75a.75.75 0 0 1 .648-.743L3.5 5h5.25A3.25 3.25 0 0 1 12 1.75Zm6.197 4.75H5.802l1.267 12.872a1.25 1.25 0 0 0 1.117 1.122l.127.006h7.374c.6 0 1.109-.425 1.225-1.002l.02-.126L18.196 6.5ZM13.75 9.25a.75.75 0 0 1 .743.648L14.5 10v7a.75.75 0 0 1-1.493.102L13 17v-7a.75.75 0 0 1 .75-.75Zm-3.5 0a.75.75 0 0 1 .743.648L11 10v7a.75.75 0 0 1-1.493.102L9.5 17v-7a.75.75 0 0 1 .75-.75Zm1.75-6a1.75 1.75 0 0 0-1.744 1.606L10.25 5h3.5A1.75 1.75 0 0 0 12 3.25Z', fill='currentColor')
+      .drag-section.dynamic
+        .drag-handle
 
-        
-      pre.pt-0 
-        code.console.p-2(class="resize-y max-h-72 min-h-10 overscroll-y-contain")
-          span.hljs-literal No logs...
+      .app#console   
+        pre.console.pt-0(class="leading-[0]")
+          .console-btns
+            p.tab-style.text-sm#console Console
+            .flex-grow
+            .action-btns-overflow
+              .flex.flex-nowrap.action-btns.gap-1
+                button.btn.console-to-top-btn(type="button" title="Scroll to Top" class="flex items-center justify-center border border-gray-300 dark:border-gray-600")
+                  svg.icon(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
+                    path(d='M4.21 10.733a.75.75 0 0 0 1.086 1.034l5.954-6.251V20.25a.75.75 0 0 0 1.5 0V5.516l5.955 6.251a.75.75 0 0 0 1.086-1.034l-7.067-7.42a.995.995 0 0 0-.58-.3.754.754 0 0 0-.29.001.995.995 0 0 0-.578.3L4.21 10.733Z', fill='currentColor')
+                button.btn.console-to-bottom-btn(type="button" title="Scroll to Bottom" class="flex items-center justify-center border border-gray-300 dark:border-gray-600")
+                  svg.icon(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
+                    path(d='M19.79 13.267a.75.75 0 0 0-1.086-1.034l-5.954 6.251V3.75a.75.75 0 1 0-1.5 0v14.734l-5.955-6.251a.75.75 0 0 0-1.086 1.034l7.067 7.42c.16.168.366.268.58.3a.753.753 0 0 0 .29-.001.995.995 0 0 0 .578-.3l7.067-7.419Z', fill='currentColor')
+                button.btn.fold-unfold-console-btn(type="button" title="Fold/Unfold Console Lines" class="flex items-center justify-center border border-gray-300 dark:border-gray-600")
+                  svg.icon(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
+                    path(d='M13.22 6.781a.75.75 0 0 1-.073-.976l.073-.085 2.367-2.37a.77.77 0 0 1 .664-.35c.252 0 .475.109.611.276l.053.075 2.367 2.37.073.084a.75.75 0 0 1 .007.882l-.08.094-.084.073a.75.75 0 0 1-.883.007l-.094-.08L17 5.56v3.784l-.007.089c-.05.32-.363.567-.743.567s-.694-.247-.743-.567l-.007-.09V5.56l-1.22 1.221-.084.073a.75.75 0 0 1-.976-.073ZM13.223 17.219a.75.75 0 0 1 .976-.073l.084.073 1.22 1.221v-3.784c0-.362.336-.656.75-.656.38 0 .693.247.743.567l.007.09v3.783l1.221-1.221a.75.75 0 0 1 .977-.073l.084.073a.75.75 0 0 1 .073.976l-.073.084-2.367 2.37a.77.77 0 0 1-.664.351.77.77 0 0 1-.664-.35l-2.367-2.37a.75.75 0 0 1 0-1.061ZM6.25 3.992A2.25 2.25 0 0 0 4 6.242v11.5a2.25 2.25 0 0 0 2.25 2.25h4a.75.75 0 0 0 0-1.5h-4a.75.75 0 0 1-.75-.75v-11.5a.75.75 0 0 1 .75-.75h4a.75.75 0 0 0 0-1.5h-4Z', fill='currentColor')
+                button.btn.clear-console-btn(type="button" title="Clear Console" class="flex items-center justify-center border border-gray-300 dark:border-gray-600")
+                  svg.icon(xmlns='http://www.w3.org/2000/svg', width='24', height='24', fill='none', viewbox='0 0 24 24')
+                    path(d='M12 1.75a3.25 3.25 0 0 1 3.245 3.066L15.25 5h5.25a.75.75 0 0 1 .102 1.493L20.5 6.5h-.796l-1.28 13.02a2.75 2.75 0 0 1-2.561 2.474l-.176.006H8.313a2.75 2.75 0 0 1-2.714-2.307l-.023-.174L4.295 6.5H3.5a.75.75 0 0 1-.743-.648L2.75 5.75a.75.75 0 0 1 .648-.743L3.5 5h5.25A3.25 3.25 0 0 1 12 1.75Zm6.197 4.75H5.802l1.267 12.872a1.25 1.25 0 0 0 1.117 1.122l.127.006h7.374c.6 0 1.109-.425 1.225-1.002l.02-.126L18.196 6.5ZM13.75 9.25a.75.75 0 0 1 .743.648L14.5 10v7a.75.75 0 0 1-1.493.102L13 17v-7a.75.75 0 0 1 .75-.75Zm-3.5 0a.75.75 0 0 1 .743.648L11 10v7a.75.75 0 0 1-1.493.102L9.5 17v-7a.75.75 0 0 1 .75-.75Zm1.75-6a1.75 1.75 0 0 0-1.744 1.606L10.25 5h3.5A1.75 1.75 0 0 0 12 3.25Z', fill='currentColor')
+
+          code.p-2(class="leading-normal min-h-10 no-highlight")
+            .py-3
+              .content
+                p.px-4.hljs-literal No logs...
+    
+      
+    .drag-section.vertical#handle-2
+      .drag-handle
 
   .container  
     h2#usage Usage

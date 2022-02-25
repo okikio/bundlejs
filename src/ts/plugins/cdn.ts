@@ -37,9 +37,9 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
                         pluginData: { pkg }
                     };
                 }
-            } else if (("dependencies" in pkg || "devDependencies" in pkg) && !/\S+@\S+/.test(args.path)) { 
-                let { devDependencies = {}, dependencies = {} } = pkg;
-                let deps = Object.assign({}, devDependencies, dependencies);
+            } else if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(args.path)) { 
+                let { devDependencies = {}, dependencies = {}, peerDependencies = {} } = pkg;
+                let deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
                 let keys = Object.keys(deps);
 
                 if (keys.includes(args.path)) {

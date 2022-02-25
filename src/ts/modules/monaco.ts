@@ -108,7 +108,7 @@ export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker
 } as Environment;
 
 export { languages, Editor, Uri };
-export const build = (oldShareURL: URL) => {
+export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
         parseSearchQuery(oldShareURL) ||
         [
@@ -117,13 +117,7 @@ export const build = (oldShareURL: URL) => {
         ].join("\n");
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
-    let outputEl = document.querySelector(".app#output #editor") as HTMLElement;
-
     inputEl.textContent = "";
-    outputEl.textContent = "";
-
-    let inputEditor: Editor.IStandaloneCodeEditor;
-    let outputEditor: Editor.IStandaloneCodeEditor;
 
     // @ts-ignore
     Editor.defineTheme("dark", GithubDark);
@@ -134,8 +128,20 @@ export const build = (oldShareURL: URL) => {
     // Basically android and monaco is pretty bad, this makes it less bad
     // See https://github.com/microsoft/pxt/pull/7099 for this, and the long
     // read is in https://github.com/microsoft/monaco-editor/issues/563
-    const isAndroid = navigator && /android/i.test(navigator.userAgent)
+    const isAndroid = navigator && /android/i.test(navigator.userAgent);
+    let inputModel = Editor.createModel(
+        initialValue,
+        "typescript",
+        Uri.parse("file://input.ts")
+    );
+    let outputModel = Editor.createModel(
+        `// Output`,
+        "typescript",
+        Uri.parse("file://output.ts")
+    );
+
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
+        model: null,
         // @ts-ignore
         bracketPairColorization: {
             enabled: true,
@@ -143,11 +149,6 @@ export const build = (oldShareURL: URL) => {
         parameterHints: {
             enabled: true,
         },
-        model: Editor.createModel(
-            initialValue,
-            "typescript",
-            Uri.parse("file://input.ts")
-        ),
         quickSuggestions: {
             other: !isAndroid,
             comments: !isAndroid,
@@ -182,15 +183,8 @@ export const build = (oldShareURL: URL) => {
         lineNumbers: "on",
     };
 
-    inputEditor = Editor.create(inputEl, editorOpts);
-    outputEditor = Editor.create(outputEl, {
-        ...editorOpts,
-        model: Editor.createModel(
-            `// Output`,
-            "typescript",
-            Uri.parse("file://output.ts")
-        ),
-    });
+    let editor = Editor.create(inputEl, editorOpts);
+    editor.setModel(inputModel);
 
     document.addEventListener("theme-change", () => {
         let theme = themeGet();
@@ -249,7 +243,6 @@ export const build = (oldShareURL: URL) => {
     // (?:(?:import|export|require)(?:\s?(.*)?\s?)(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?
     const IMPORTS_REXPORTS_REQUIRE_REGEX =
         /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
-    const FetchCache = new Set();
     
     languages.registerHoverProvider("typescript", {
         provideHover(model, position) {
@@ -317,5 +310,5 @@ export const build = (oldShareURL: URL) => {
         },
     });
 
-    return [inputEditor, outputEditor];
+    return [editor, inputModel, outputModel];
 };
