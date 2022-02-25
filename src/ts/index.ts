@@ -27,6 +27,7 @@ import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+import Module from "module";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -151,20 +152,21 @@ BundleEvents.on({
 // Load all heavy main content
 export const build = (app: App) => {
     let RunBtn = document.querySelector("#run");
-    let bundleTime = document.querySelector("#bundle-time");
+    // let bundleTime = document.querySelector("#bundle-time");
     fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
 
     let editor: Editor.IStandaloneCodeEditor;
-    let output: Editor.IStandaloneCodeEditor;
+    let inputModel: Editor.ITextModel;
+    let outputModel: Editor.ITextModel;
 
     // bundles using esbuild and returns the result
     BundleEvents.on({
         bundle() {
             if (!initialized) return;
-            value = `` + editor?.getValue();
+            value = `` + inputModel?.getValue();
 
             fileSizeEl.innerHTML = `<div class="loading"></div>`;
-            bundleTime.textContent = `Bundled in ...`;
+            // bundleTime.textContent = `Bundled in ...`;
             // if (!isInitial) setLogs?.([]);
 
             start = Date.now();
@@ -173,32 +175,45 @@ export const build = (app: App) => {
         result(details) {
             let { size, content } = details;
 
-            output?.setValue?.(content);
-            bundleTime.textContent = `Bundled ${timeFormatter.format(
-                (Date.now() - start) / 1000,
-                "seconds"
-            )}`;
+            outputModel?.setValue?.(content);
+            // bundleTime.textContent = `Bundled ${timeFormatter.format(
+            //     (Date.now() - start) / 1000,
+            //     "seconds"
+            // )}`;
+            
+            setLogs([
+                ...getLogs(),
+                {
+                    title: `⌛ Bundled ${timeFormatter.format(
+                        (Date.now() - start) / 1000,
+                        "seconds"
+                    )}`,
+                    message: ""
+                }
+            ]); 
             fileSizeEl.textContent = `` + size;
         }
     });
 
     let historyManager = app.get("HistoryManager") as HistoryManager;
     let replaceState = (url) => {
-        let { last } = historyManager;
-        let state = {
-            ...last,
-            url: url.toString()
+        if (url) {
+            let { last } = historyManager;
+            let state = {
+                ...last,
+                url: url.toString()
+            }
+
+            historyManager.states.pop();
+            historyManager.states.push({ ...state });
+
+            let item: IHistoryItem = {
+                index: historyManager.pointer,
+                states: [...historyManager.states]
+            };
+
+            window.history.replaceState(item, "", state.url);
         }
-
-        historyManager.states.pop();
-        historyManager.states.push({ ...state });
-
-        let item: IHistoryItem = {
-            index: historyManager.pointer,
-            states: [...historyManager.states]
-        };
-
-        window.history.replaceState(item, "", state.url);
     }
 
     let pushState = (url) => {
@@ -238,9 +253,8 @@ export const build = (app: App) => {
         });
 
         const { languages } = Monaco;
-        const getShareableURL = async (editor: typeof output) => {
+        const getShareableURL = async (model: typeof inputModel) => {
             try {
-                const model = editor.getModel();
                 const worker = await languages.typescript.getTypeScriptWorker();
                 const thisWorker = await worker(model.uri);
 
@@ -251,9 +265,10 @@ export const build = (app: App) => {
             }
         };
 
-        const editorBtns = (editor: typeof output, reset: string) => {
+        const editorBtns = (editor: Editor.IStandaloneCodeEditor) => {
             let el = editor.getDomNode();
-            let parentEl = el?.closest(".app").querySelector(".editor-btns");
+            let app = el?.closest(".app");
+            let parentEl = app.querySelector(".editor-btns");
             if (parentEl) {
                 let btnContainer = parentEl.querySelector(".editor-btn-container");
                 let hideBtn = parentEl.querySelector(".hide-btns");
@@ -291,8 +306,12 @@ export const build = (app: App) => {
                 });
 
                 resetBtn.addEventListener("click", () => {
-                    editor.setValue(reset);
-                    if (editor != output) {
+                    editor.setValue(
+                        editor.getModel() == inputModel ? [
+                            '// Click Run for the Bundled, Minified & Gzipped package size',
+                            'export * from "@okikio/animate";'
+                        ].join("\n") : `// Output`);
+                    if (editor.getModel() != outputModel) {
                         isInitial = true;
                     }
                 });
@@ -330,79 +349,48 @@ export const build = (app: App) => {
                     editor.updateOptions({ wordWrap });
                 });
             }
+            
+            let editorTabs = document.querySelector(".tab-btns");
+            if (editorTabs) {
+                let inputEditorBtn = editorTabs.querySelector(".input-btn");
+                let outputEditorBtn = editorTabs.querySelector(".output-btn");
+                inputEditorBtn.addEventListener("click", () => {
+                    outputEditorBtn.classList.remove("active");
+                    inputEditorBtn.classList.add("active");
+                    editor?.setModel(inputModel);
+                });
+                outputEditorBtn.addEventListener("click", () => {
+                    inputEditorBtn.classList.remove("active");
+                    outputEditorBtn.classList.add("active");
+                    editor?.setModel(outputModel);
+                });
+            }
         };
 
         // Build the Code Editor
-        [editor, output] = Monaco.build(oldShareURL);
+        [editor, inputModel, outputModel] = Monaco.build(oldShareURL);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
 
-        [editor.getDomNode(), output.getDomNode()].forEach((el) => {
-            el?.parentElement?.classList.add("show");
-        });
+        editor.getDomNode()?.parentElement?.classList.add("show");
 
         // Add editor buttons to both editors
-        editorBtns(
-            editor,
-            [
-                '// Click Run for the Bundled, Minified & Gzipped package size',
-                'export * from "@okikio/animate";'
-            ].join("\n")
-        );
-        editorBtns(output, `// Output`);
+        editorBtns(editor);
 
         FadeLoadingScreen.stop();
         loadingContainerEl.forEach((x) => x?.remove());
 
         flexWrapper.classList.add("loaded");
-
-        const allEditorBtns = Array.from(
-            document.querySelectorAll(".editor-btns")
-        );
-        if (allEditorBtns) {
-            allEditorBtns?.[1].classList.add("delay");
-            setTimeout(() => {
-                allEditorBtns?.[1].classList.remove("delay");
-            }, 1600);
-        }
-
         BundleEvents.emit("loaded");
 
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
-        let el = editor.getDomNode();
-        let parentEl = el?.closest(".app").querySelector(".editor-btns");
-        let inputSizeEl = parentEl.querySelector(".input-file-size") as HTMLDivElement;
-        let calculated = false;
-        const setInputFileSize = () => {
-            if (parentEl) {
-                inputSizeEl && (inputSizeEl.textContent = prettyBytes(encode(editor.getValue()).byteLength));
-                calculated = true;
-            }
-        }
-
-        setInputFileSize();
-        editor.onDidChangeModelContent(
-            debounce((e) => {
-                if (parentEl && calculated) {
-                    inputSizeEl && (inputSizeEl.innerHTML = `<div class="loading"></div>`);
-                    calculated = false;
-                }
-            }, 100)
-        );
-
-        editor.onDidChangeModelContent(
-            debounce((e) => {
-                setInputFileSize();
-            }, 500)
-        );
-
         editor.onDidChangeModelContent(
             debounce((e) => {
                 (async () => {
-                    replaceState(await getShareableURL(editor));
+                    replaceState(await getShareableURL(inputModel));
                     isInitial = false;
                 })();
             }, 1000)
@@ -423,7 +411,7 @@ export const build = (app: App) => {
                         await navigator.share({
                             title: 'bundle',
                             text: '',
-                            url: await getShareableURL(editor),
+                            url: await getShareableURL(inputModel),
                         });
 
                         shareBtn.innerText = "Shared!";
@@ -431,7 +419,7 @@ export const build = (app: App) => {
                             shareBtn.innerText = shareBtnValue;
                         }, 600);
                     } else {
-                        shareInput.value = await getShareableURL(editor);
+                        shareInput.value = await getShareableURL(inputModel);
                         shareInput.select();
                         document.execCommand("copy");
 
@@ -450,8 +438,8 @@ export const build = (app: App) => {
 
         // Listen to events for the results
         ResultEvents.on("add-module", (v) => {
-            value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + editor?.getValue();
-            editor.setValue((value + "\n" + v).trim());
+            value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + inputModel?.getValue();
+            inputModel?.setValue((value + "\n" + v).trim());
         });
 
         RunBtn.addEventListener("click", () => {
@@ -459,7 +447,7 @@ export const build = (app: App) => {
                 if (!initialized)
                     fileSizeEl.textContent = `Wait!`;
                 BundleEvents.emit("bundle");
-                pushState(await getShareableURL(editor));
+                pushState(await getShareableURL(inputModel));
             })();
         });
     })();
@@ -531,10 +519,154 @@ export const InitialRender = (shareURL: URL) => {
         });
     })();
 
+    // Drag handle - Resiable split editors
+    (() => { 
+        // Based on the tutorial at https://htmldom.dev/create-resizable-split-views/
+        // Honestly, I am surprised that native dragging doesn't work for this use case
+        const dragSection = document.querySelector(".drag-section") as HTMLElement;
+        const dragHandle = dragSection.querySelector(".drag-handle") as HTMLElement;
+
+        const parentEl = dragSection.parentElement as HTMLElement;
+        const leftSide = dragSection.previousElementSibling as HTMLElement;
+        const rightSide = dragSection.nextElementSibling as HTMLElement;
+
+        // The current position of mouse
+        let x = 0;
+        let y = 0;
+        
+        // Width & Height of left side
+        let leftWidth = 0;
+        let leftHeight = 0;
+        
+        let parentRect = parentEl.getBoundingClientRect();
+        let parentWidth = parentRect.width;
+        let parentHeight = parentRect.height;
+
+        window.matchMedia("(min-width: 640px)")
+            .addEventListener("change", (e) => {
+                leftSide.style.removeProperty(e.matches ? 'height' : 'width');
+        });
+        let drag = (e: MouseEvent) => { 
+            // How far the mouse has been moved
+            const dx = e.clientX - x;
+            const dy = e.clientY - y;
+            
+            if (window.matchMedia("(min-width: 640px)").matches) {
+                const newLeftWidth = ((leftWidth + dx) * 100) / parentWidth;
+                leftSide.style.width = `${newLeftWidth}%`;
+                document.body.style.cursor = 'col-resize';
+            } else { 
+                const newLeftHeight = ((leftHeight + dy) * 100) / parentHeight;
+                leftSide.style.height = `${newLeftHeight}%`;
+                document.body.style.cursor = 'row-resize';
+            }
+
+            leftSide.style.userSelect = 'none';
+            leftSide.style.pointerEvents = 'none';
+        
+            rightSide.style.userSelect = 'none';
+            rightSide.style.pointerEvents = 'none';
+        }
+
+        let stopDrag = () => { 
+            dragHandle.style.removeProperty('cursor');
+            document.body.style.removeProperty('cursor');
+        
+            leftSide.style.removeProperty('user-select');
+            leftSide.style.removeProperty('pointer-events');
+        
+            rightSide.style.removeProperty('user-select');
+            rightSide.style.removeProperty('pointer-events');
+            
+            document.removeEventListener('pointermove', drag);
+            document.removeEventListener('pointerup', stopDrag);
+        }
+        
+        // Handle the mousedown event
+        // that's triggered when user drags the resizer
+        const pointerDown = (e: MouseEvent) => {
+            // Get the current mouse position
+            x = e.clientX;
+            y = e.clientY;
+
+            let { width, height } = leftSide.getBoundingClientRect();
+            leftWidth = width;
+            leftHeight = height;
+
+            // Attach the listeners to `document`
+            document.addEventListener('pointermove', drag);
+            document.addEventListener('pointerup', stopDrag);
+        };
+        
+        dragHandle.addEventListener('pointerdown', pointerDown);
+
+        window.addEventListener('resize', debounce(() => { 
+            parentRect = parentEl.getBoundingClientRect();
+            parentWidth = parentRect.width;
+            parentHeight = parentRect.height;
+        }, 50));
+        
+        new ResizeObserver(debounce(() => {
+            parentRect = parentEl.getBoundingClientRect();
+            parentWidth = parentRect.width;
+            parentHeight = parentRect.height;
+        }, 50)).observe(parentEl);
+    })();
+
+    // Drag handle - Resizable Full height
+    (() => { 
+        // Based on the tutorial at https://htmldom.dev/create-resizable-split-views/
+        // Honestly, I am surprised that native dragging doesn't work for this use case
+        const dragSection = document.querySelector(".drag-section#handle-2") as HTMLElement;
+        const dragHandle = dragSection.querySelector(".drag-handle") as HTMLElement;
+        const targetEl = document.querySelector(".flex-wrapper") as HTMLElement;
+
+        // The current position of mouse
+        let y = 0;
+        
+        // Height of left side
+        let height = 0;
+        let drag = (e: MouseEvent) => { 
+            // How far the mouse has been moved
+            const dy = e.clientY - y;
+            const newHeight = height + dy;
+            targetEl.style.height = `${newHeight}px`;
+            document.body.style.cursor = 'row-resize';
+
+            targetEl.style.userSelect = 'none';
+            targetEl.style.pointerEvents = 'none';
+        }
+
+        let stopDrag = () => { 
+            dragHandle.style.removeProperty('cursor');
+            document.body.style.removeProperty('cursor');
+        
+            targetEl.style.removeProperty('user-select');
+            targetEl.style.removeProperty('pointer-events');
+            
+            document.removeEventListener('pointermove', drag);
+            document.removeEventListener('pointerup', stopDrag);
+        }
+        
+        // Handle the mousedown event
+        // that's triggered when user drags the resizer
+        const pointerDown = (e: MouseEvent) => {
+            // Get the current mouse position
+            y = e.clientY;
+            height = targetEl.getBoundingClientRect().height;
+
+            // Attach the listeners to `document`
+            document.addEventListener('pointermove', drag);
+            document.addEventListener('pointerup', stopDrag);
+        };
+        
+        dragHandle.addEventListener('pointerdown', pointerDown);
+    })();
+
     // Console solidjs component
     (async () => {
         const ConsoleEl = document.querySelector(
-            ".console"
+            ".console code"
         ) as HTMLElement;
         if (ConsoleEl) {
             ConsoleEl.innerHTML = "";
@@ -558,6 +690,13 @@ export const InitialRender = (shareURL: URL) => {
         scrollDownBtn?.addEventListener("click", () => {
             if (ConsoleEl) { 
                 ConsoleEl.scrollTo(0, ConsoleEl.scrollHeight);
+            }
+        });
+
+        const scrollUpBtn = document.querySelector(".console-btns .console-to-top-btn");
+        scrollUpBtn?.addEventListener("click", () => {
+            if (ConsoleEl) { 
+                ConsoleEl.scrollTo(0, 0);
             }
         });
     })();

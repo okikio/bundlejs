@@ -36,7 +36,7 @@ export const initEvent = new EventEmitter();
 // I didn't even know this was exported by esbuild, great job @egoist
 export const createNotice = async (errors: PartialMessage[], kind: "error" | "warning" = "error", color = true) => {
     let notices = await formatMessages(errors, { color, kind });
-    return notices.map((msg) => !color ? msg : ansi(msg.replace(/(\s+)(\d+)(\s+)\│/, "\n$1$2$3│")));
+    return notices.map((msg) => !color ? msg : ansi(msg.replace(/(\s+)(\d+)(\s+)\│/g, "\n$1$2$3│")));
 }
 
 export const start = async (port) => {
@@ -121,7 +121,7 @@ export const start = async (port) => {
                         treeShaking: true,
                         incremental: false,
                         target: ["esnext"],
-                        logLevel: 'silent',// 'info',
+                        logLevel: 'info',
                         write: false,
                         outfile: "/bundle.js",
                         platform: "browser",

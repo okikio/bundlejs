@@ -5,7 +5,7 @@
     // @apply bg-gray-200 dark:bg-quaternary;
     @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
     @apply  bg-white border border-gray-300;
-    @apply dark:bg-elevated dark:border-gray-700;
+    @apply dark:bg-black dark:border-gray-700;
 
     @apply flex items-center pl-4  rounded-lg;
 
@@ -29,7 +29,7 @@
 }
 
 .search-container {
-    @apply mb-5;
+    // @apply mb-5;
 }
 
 .search-container,
