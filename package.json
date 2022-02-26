@@ -12,7 +12,20 @@
         "build": "gulp build",
         "watch": "gulp --watch",
         "test": "pnpm build",
-        "release": "standard-version && git add -A && git commit -m 'chore(release): :rocket:'"
+        "pre-release": "pnpm test",
+        "semantic-release": "semantic-release"
+    },
+    "release": {
+        "branches": [
+            "main"
+        ],
+        "plugins": [
+            "@semantic-release/commit-analyzer",
+            "@semantic-release/release-notes-generator",
+            "@semantic-release/changelog",
+            "@semantic-release/git",
+            "@semantic-release/github"
+        ]
     },
     "changelog": {
         "repo": "bundle",
@@ -30,6 +43,15 @@
             "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
         }
     },
+    "author": {
+        "name": "Okiki Ojo",
+        "email": "hey@okikio.dev",
+        "url": "https://okikio.dev"
+    },
+    "bugs": {
+        "url": "https://github.com/okikio/bundle/issues"
+    },
+    "homepage": "https://bundle.js.org",
     "dependencies": {
         "@amoutonbrady/lz-string": "^0.0.1",
         "@okikio/animate": "^2.4.0",
@@ -52,6 +74,8 @@
     "devDependencies": {
         "@commitlint/cli": "^16.2.1",
         "@commitlint/config-conventional": "^16.2.1",
+        "@semantic-release/changelog": "^6.0.1",
+        "@semantic-release/git": "^10.0.1",
         "@csstools/postcss-sass": "^5.0.0",
         "@types/node": "^17.0.21",
         "autoprefixer": "^10.4.2",

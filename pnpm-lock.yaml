@@ -9,6 +9,8 @@ specifiers:
   '@okikio/emitter': ^2.1.7
   '@okikio/native': ^3.0.1
   '@okikio/sharedworker': ^1.0.3
+  '@semantic-release/changelog': ^6.0.1
+  '@semantic-release/git': ^10.0.1
   '@types/node': ^17.0.21
   autoprefixer: ^10.4.2
   browser-sync: ^2.27.7
@@ -81,6 +83,8 @@ devDependencies:
   '@commitlint/cli': 16.2.1
   '@commitlint/config-conventional': 16.2.1
   '@csstools/postcss-sass': 5.0.0_postcss@8.4.7
+  '@semantic-release/changelog': 6.0.1
+  '@semantic-release/git': 10.0.1
   '@types/node': 17.0.21
   autoprefixer: 10.4.2_postcss@8.4.7
   browser-sync: 2.27.7
@@ -1652,6 +1656,41 @@ packages:
       estree-walker: 1.0.1
       picomatch: 2.3.1
       rollup: 2.68.0
+    dev: true
+
+  /@semantic-release/changelog/6.0.1:
+    resolution: {integrity: sha512-FT+tAGdWHr0RCM3EpWegWnvXJ05LQtBkQUaQRIExONoXjVjLuOILNm4DEKNaV+GAQyJjbLRVs57ti//GypH6PA==}
+    engines: {node: '>=14.17'}
+    peerDependencies:
+      semantic-release: '>=18.0.0'
+    dependencies:
+      '@semantic-release/error': 3.0.0
+      aggregate-error: 3.1.0
+      fs-extra: 9.1.0
+      lodash: 4.17.21
+    dev: true
+
+  /@semantic-release/error/3.0.0:
+    resolution: {integrity: sha512-5hiM4Un+tpl4cKw3lV4UgzJj+SmfNIDCLLw0TepzQxz9ZGV5ixnqkzIVF+3tp0ZHgcMKE+VNGHJjEeyFG2dcSw==}
+    engines: {node: '>=14.17'}
+    dev: true
+
+  /@semantic-release/git/10.0.1:
+    resolution: {integrity: sha512-eWrx5KguUcU2wUPaO6sfvZI0wPafUKAMNC18aXY4EnNcrZL86dEmpNVnC9uMpGZkmZJ9EfCVJBQx4pV4EMGT1w==}
+    engines: {node: '>=14.17'}
+    peerDependencies:
+      semantic-release: '>=18.0.0'
+    dependencies:
+      '@semantic-release/error': 3.0.0
+      aggregate-error: 3.1.0
+      debug: 4.3.3
+      dir-glob: 3.0.1
+      execa: 5.1.1
+      lodash: 4.17.21
+      micromatch: 4.0.4
+      p-reduce: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@surma/rollup-plugin-off-main-thread/2.2.3:
@@ -6287,6 +6326,11 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       aggregate-error: 3.1.0
+    dev: true
+
+  /p-reduce/2.1.0:
+    resolution: {integrity: sha512-2USApvnsutq8uoxZBGbbWM0JIYLiEMJ9RlaN7fAzVNb9OZN0SHjjTTfIcb667XynS5Y1VhwDJVDa72TnPzAYWw==}
+    engines: {node: '>=8'}
     dev: true
 
   /p-try/1.0.0:
