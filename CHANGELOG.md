@@ -1,3 +1,85 @@
+# [0.1.0](https://github.com/okikio/bundle/compare/v0.0.5...v0.1.0) (2022-02-26)
+
+
+### Bug Fixes
+
+* add polyfill for older browser ([4653c19](https://github.com/okikio/bundle/commit/4653c1979c5105ae7630df7b5080b85556e33a57))
+* auto rotate when phone rotation is locked ([2c0a686](https://github.com/okikio/bundle/commit/2c0a68655a38261b26a786911f59310cf65cdbb7))
+* esbuild binary mismatch on firefox ([2326048](https://github.com/okikio/bundle/commit/23260486f155b80da01d7f23664fff532b42bda2))
+* esbuild@0.13.4 it isn't a perf regression ([42835c3](https://github.com/okikio/bundle/commit/42835c3f16a576143b09e0286d7170da85725632))
+* fix caching issue ([fac119e](https://github.com/okikio/bundle/commit/fac119e7326fe540c094915791350ad7f46c6920))
+* fix faq spacing ([857a3b6](https://github.com/okikio/bundle/commit/857a3b6192657868eacd67523b1ce762d1b31b45))
+* fix maximum width resize issue with the input editor ([3ad1926](https://github.com/okikio/bundle/commit/3ad19260eb222229491f75a3174b14d667f0b1f2))
+* fix misc. bugs ([8ea0943](https://github.com/okikio/bundle/commit/8ea09439e4b07e89ed05f33d3f8a93cdcc9d2277))
+* fix module worker errors on Firefox; ([9c05a42](https://github.com/okikio/bundle/commit/9c05a42b143ba4a34726741f7a4cf66388fb45aa))
+* fix parseInput error ([865a1d8](https://github.com/okikio/bundle/commit/865a1d86d1e3e91f7e8afecb9d97e691b765c060))
+* fix PJAX not updating SEO tags and CSS ([4633c23](https://github.com/okikio/bundle/commit/4633c2309b2d0324804f45d1759a81d14b6d9901))
+* fix search bugs ([8eb88eb](https://github.com/okikio/bundle/commit/8eb88eb30a7a18a407a51dbae6717364030360b3))
+* fix small bugs ([e84856b](https://github.com/okikio/bundle/commit/e84856ba93180021d8d7d1f4f871aadc1349633a))
+* fix vercel.json ([2534f60](https://github.com/okikio/bundle/commit/2534f60d829138d187d26f5f1e478cafcbf35596))
+* fix xml errors ([f4ae2a5](https://github.com/okikio/bundle/commit/f4ae2a5febd839b1182c1abfbbb0b19ac6058ea2))
+* fixed ([8969ed8](https://github.com/okikio/bundle/commit/8969ed80ec72e3be8cdb692b6eec3853208b0264))
+* forgot to renable sw for production 🛠 ([b260039](https://github.com/okikio/bundle/commit/b260039a8692c9ea8197fdf55530b19f9631bf02))
+* hide navbar theme toggle btn on mobile devices ([a1107ea](https://github.com/okikio/bundle/commit/a1107eaa7a178001407cc7eea87a79c8e917d13e))
+* light theme crashing monaco ([efbeb32](https://github.com/okikio/bundle/commit/efbeb3203b632d870038c5cb4a75b220521dbe8b))
+* monaco github theme not working ([b31fa8d](https://github.com/okikio/bundle/commit/b31fa8d5645404e78ee9699ce7151a8a38b857b5))
+* monaco resize issue and hit counter text font ([5053da7](https://github.com/okikio/bundle/commit/5053da75cc5a9cfcbc48409b27d821cc077f1e0e))
+* monaco types ([760ecf9](https://github.com/okikio/bundle/commit/760ecf966e9536ef3671e08d4c40f8f8bdcfcf4b))
+* preload bugs ([d2da8ec](https://github.com/okikio/bundle/commit/d2da8ece0258e48bef08ffd365d5646ab3e2efbb))
+* preload index.min.css ([b27698d](https://github.com/okikio/bundle/commit/b27698dc0100408f159fe8d6b2f15fe1576f176d))
+* preload-monaco gulp task ([7c4d3ce](https://github.com/okikio/bundle/commit/7c4d3ceb35b3069e334674929dc4c3a680374a41))
+* re-enable sw ([edeaa1e](https://github.com/okikio/bundle/commit/edeaa1e8125802c077644dfa683d801d99f708a8))
+* re-enable sw and SharedWorker ([26fd8a2](https://github.com/okikio/bundle/commit/26fd8a2d64d999faba62b9fa28d313754c271f8f))
+* reduce cache control header time ([3d4682f](https://github.com/okikio/bundle/commit/3d4682f9fa1ec8a1ec679e86bf5650a79b6e191d))
+* reduce cache control header time (for netlify) ([a6f1306](https://github.com/okikio/bundle/commit/a6f13068856d46318de28b08211b966cf90054bf))
+* remove webkit-touch-highlight on accordion ([ac2ffd4](https://github.com/okikio/bundle/commit/ac2ffd4209c8c11b93576811e7a53a181b0c3bd5))
+* renable hit counter ([077076a](https://github.com/okikio/bundle/commit/077076aa7a40145d25a125a00919862d34a18c02))
+* revert to esbuild@0.13.3, to fix perf regression with v0.13.4 ([59b789f](https://github.com/okikio/bundle/commit/59b789f81abacc66747b2bcd1189d424a81a70d9))
+* revert to prev orientation setting ([1a58b7c](https://github.com/okikio/bundle/commit/1a58b7c1a25c68d7f380c92805429977742c4311))
+* share btn ([9dfb0ee](https://github.com/okikio/bundle/commit/9dfb0ee4a1ad7cc8bfca80634e37c8106801915d))
+* share url not working properly ([3c0ae3f](https://github.com/okikio/bundle/commit/3c0ae3f3e0f502cb14bf3ee8d3fb80f7cc948d4e))
+* share url should only be compressed if it is smaller ([1a3a296](https://github.com/okikio/bundle/commit/1a3a2966f224397fa2f2451f97b0432e9395f871))
+* small bugs again ([19dc355](https://github.com/okikio/bundle/commit/19dc3556b732d2b2d02ef8ec962a12794ce31176))
+* spacing ([85da1f5](https://github.com/okikio/bundle/commit/85da1f5fc5f9bc74f94b8c0c08021f20adb2a7e5))
+* switch to npm registery ([27bb804](https://github.com/okikio/bundle/commit/27bb804561ff4c41af9aee7d8c26ca2f49096910))
+* text bugs ([6f23f33](https://github.com/okikio/bundle/commit/6f23f33c566750e35b450395bfc1df8ccde8ebec))
+* update open-search.xml ([3409fac](https://github.com/okikio/bundle/commit/3409fac4c4e230b370116268e4ab2951f1ecd3d0))
+* upgrade esbuild & fix monaco/ts share error ([d3fbdd5](https://github.com/okikio/bundle/commit/d3fbdd5d5a0df16b070c60d9bebfee31ad698a3d))
+* use cache storage ([923cbdc](https://github.com/okikio/bundle/commit/923cbdced2ef25c5a8a5d4eddcd771f0ad7350d1))
+* vercel preloading ([1a7692f](https://github.com/okikio/bundle/commit/1a7692fc402f573e3b60bacfe2941900de9ea45a))
+* wordwrap bug ([5e833fd](https://github.com/okikio/bundle/commit/5e833fdf9bee734b086bdabcbe342197d63f068a))
+* worker bugs, make product-hunt image load faster ([c4dcc5e](https://github.com/okikio/bundle/commit/c4dcc5ea378d9679eebb0897d4b23ad6f9a9b100))
+
+
+### Features
+
+* add clear editor btn ([bec90b7](https://github.com/okikio/bundle/commit/bec90b7b84e597dbfe836d50b6e27e73204c0fcc))
+* add editor btn hide & src code size ([5e05e02](https://github.com/okikio/bundle/commit/5e05e029200e95a81bda59d99dbc4d9f3c278207))
+* add opacity transition to navbar open and close ([ba6b852](https://github.com/okikio/bundle/commit/ba6b8525502dd010d7485039f61018ee57e79305))
+* add vercel.json for vercel ([79705b2](https://github.com/okikio/bundle/commit/79705b2d0636c4b6d1e3eb9f7b576138a78cdde2))
+* add virtual console for debugging ([cddb60e](https://github.com/okikio/bundle/commit/cddb60e9ebd98a998f4570005b484cb026dc2933))
+* force all deps to fetch their package.json even if not needed ([2cae3d9](https://github.com/okikio/bundle/commit/2cae3d92ce18b8d284f4ea21f5afd054894b5a5c))
+* pkg versioning using proper package.json ([c747ed9](https://github.com/okikio/bundle/commit/c747ed963874028de7a312e2051d9bfc4bfa156a))
+* push state on every run btn click ([98551cf](https://github.com/okikio/bundle/commit/98551cfbdcfe89d8142c2f9110fc3a8f78cc2f1b))
+* re-design site so the new console works better ([f3b386f](https://github.com/okikio/bundle/commit/f3b386fc44c3b0607313967cff4c8eb2d6bfedc1))
+* support text as a shared url search param ([84562d0](https://github.com/okikio/bundle/commit/84562d03d07e3c922af93aa44be7bb46f3f4fa13))
+* trunucate inline console logs if the number of logs is over 50 ([cd670b5](https://github.com/okikio/bundle/commit/cd670b587fe5668aa2674e268a17937afa2735e3))
+
+
+### Performance Improvements
+
+* add importance=high ([215d8e6](https://github.com/okikio/bundle/commit/215d8e60cec37c58e09da4ced365423a8c6c1576))
+* faster theme change ([67e89e0](https://github.com/okikio/bundle/commit/67e89e09505e4fdff788c6a1f327115a39d1e0f0))
+* preload chunks ([c05331d](https://github.com/okikio/bundle/commit/c05331d878eca449f822c10fd203bb2cc957d627))
+* preload index.min.js ([10c7eed](https://github.com/okikio/bundle/commit/10c7eed6a4026510a123f0a36fe2098450051291))
+* preload monaco's script ([58062d9](https://github.com/okikio/bundle/commit/58062d9d4457d861bb62aadd36808b6bef99a410))
+* preload stuff ([8960ec4](https://github.com/okikio/bundle/commit/8960ec47c907f9b862c6d732b6771b4d193465d9))
+* preload the theme change chunk ([73ad118](https://github.com/okikio/bundle/commit/73ad11808b12927c14fcc866b148e5fa2498ddae))
+* speed up load times ([d8e4b19](https://github.com/okikio/bundle/commit/d8e4b19be36a468aae7699b9c2534a85f5b79474))
+* try boosting perf on mobile devices ([3377f7f](https://github.com/okikio/bundle/commit/3377f7ff442b205c1624a0a2eb5d33cf6829b9d4))
+* update _headers ([ade8c92](https://github.com/okikio/bundle/commit/ade8c92f3c02aa23ab2125533a6c61e02e076100))
+* use module preload on esbuild ([584980a](https://github.com/okikio/bundle/commit/584980af12e59c5ad03abdc11b802e82eb199a77))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
