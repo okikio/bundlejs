@@ -3,7 +3,32 @@ import { For, render } from "solid-js/web";
 import { Accordion, detailsEls } from "../modules/accordion";
 import { debounce } from "../util/debounce";
 
-export const [getLogs, setLogs] = createSignal<{ title: string | any, message: string | any, type?: "error" | "warning" }[]>([]);
+let accLength = 0;
+type TypeLog = {
+  title: string | any;
+  message?: string | any;
+  type?: "error" | "warning";
+};
+
+export const MAX_LOGS = 50;
+export const [getLogs, setLogs] = createSignal<TypeLog[]>([]);
+export const addLogs = (logs: TypeLog[] = []) => { 
+  accLength += logs.length;
+
+  let newLogs = [...getLogs(), ...logs];
+  if (newLogs.length > MAX_LOGS) { 
+    newLogs = [{
+      title: `Logs have been truncated, showing only ${MAX_LOGS} of ${accLength - MAX_LOGS} logs...\nCheck the devtools console for a fully detailed log.`,
+    }, ...newLogs.slice(newLogs.length - MAX_LOGS)];
+  }
+  setLogs(newLogs);   
+}
+
+export const clearLogs = () => { 
+  accLength = 0;
+  setLogs([]);
+}
+
 export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
   let len = createMemo(() => getLogs().length);
   let [stickToBottom, setStickToBottom] = createSignal(true);
@@ -22,13 +47,13 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
    
   return (
     <For each={getLogs()} fallback={
-      <div class={"py-3 "}>
+      <div class="py-3">
         <div class="content">
           <p class="px-4 hljs-literal">No logs...</p>
         </div>
       </div>
     }>
-      {({ title, message, type }, index) => {
+      {({ title, message = "", type }, index) => {
         let styleType = {
           "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
           "warn": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md"

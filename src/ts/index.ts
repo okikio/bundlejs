@@ -1,3 +1,5 @@
+import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
+
 import { animate } from "@okikio/animate";
 import { EventEmitter } from "@okikio/emitter";
 
@@ -9,25 +11,21 @@ import {
 } from "./components/SearchResults";
 import {
     renderComponent as renderConsole,
-    getLogs, setLogs
+    addLogs, clearLogs
 } from "./components/Console";
 
 import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
-import { parseInput, parseSearchQuery } from "./util/parse-query";
-import prettyBytes from "pretty-bytes";
+import { parseInput } from "./util/parse-query";
 
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
-
-import { USE_SHAREDWORKER } from "../../env";
 
 import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
-import Module from "module";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -77,8 +75,7 @@ window.addEventListener("pagehide", function (event) {
 });
 
 
-let fileSizeEl: HTMLElement;
-let errorOccured = false;
+let fileSizeEl: HTMLElement[];
 
 // Bundle Events
 BundleEvents.on({
@@ -89,13 +86,9 @@ BundleEvents.on({
             BundleEvents.emit("ready");
     },
     init(details) {
-        let { type, message } = details;
-        (Array.isArray(message) ? message : [message]).forEach(msg => {
-            console.log(msg);
-        });
         initialized = true;
         if (fileSizeEl)
-            fileSizeEl.textContent = `Wait...`;
+            fileSizeEl.forEach(el => (el.textContent = `Wait...`));
 
         if (monacoLoadedFirst)
             BundleEvents.emit("ready");
@@ -103,7 +96,7 @@ BundleEvents.on({
     ready() {
         console.log("Ready");
         if (fileSizeEl)
-            fileSizeEl.textContent = `...`;
+            fileSizeEl.forEach(el => (el.textContent = `...`));
 
         if (oldShareURL.search) {
             const searchParams = oldShareURL
@@ -114,7 +107,7 @@ BundleEvents.on({
             let bundle = searchParams.get("bundle");
             if (query || share || plaintext) {
                 if (bundle != null) {
-                    fileSizeEl.textContent = `Wait...`;
+                    fileSizeEl.forEach(el => (el.textContent = `Wait!`));
                     BundleEvents.emit("bundle");
                 }
 
@@ -124,13 +117,16 @@ BundleEvents.on({
     },
     log(details) {  
         let { type, messages } = details;
-        let logs = [].concat(messages ?? []).map(msg => {
-            msg = msg.replace(/(https?:\/\/([^\s\)])+)/g, `<a href="$1" target="_blank" rel="noopener">$2</a>`);
+        messages = [].concat(messages ?? []);
+        if (!/error|warning/.test(type))
+            messages.forEach(log => console.log(log));
+        let logs = messages.map(msg => {
+            msg = msg.replace(/(https?:\/\/[^\s\)]+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
             let [title, ...message] = msg.split(/\n/);
             return ({ type, title, message: message.join("\n") });
         });
-        
-        setLogs([...getLogs(), ...logs]);   
+
+        addLogs(logs);
     },
     warn(details) {
         let { type, message } = details;
@@ -145,15 +141,13 @@ BundleEvents.on({
         (Array.isArray(error) ? error : [error]).forEach(err => {
             console.error(err);
         });
-        fileSizeEl.textContent = `Error`;
+        fileSizeEl.forEach(el => (el.textContent = `ERROR`));
     },
 });
 
 // Load all heavy main content
 export const build = (app: App) => {
-    let RunBtn = document.querySelector("#run");
-    // let bundleTime = document.querySelector("#bundle-time");
-    fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
+    fileSizeEl = fileSizeEl ?? Array.from(document.querySelectorAll(".file-size"));
 
     let editor: Editor.IStandaloneCodeEditor;
     let inputModel: Editor.ITextModel;
@@ -165,9 +159,7 @@ export const build = (app: App) => {
             if (!initialized) return;
             value = `` + inputModel?.getValue();
 
-            fileSizeEl.innerHTML = `<div class="loading"></div>`;
-            // bundleTime.textContent = `Bundled in ...`;
-            // if (!isInitial) setLogs?.([]);
+            fileSizeEl.forEach(el => (el.innerHTML = `<div class="loading"></div>`));
 
             start = Date.now();
             postMessage({ event: "build", details: value });
@@ -175,23 +167,19 @@ export const build = (app: App) => {
         result(details) {
             let { size, content } = details;
 
-            outputModel?.setValue?.(content);
-            // bundleTime.textContent = `Bundled ${timeFormatter.format(
-            //     (Date.now() - start) / 1000,
-            //     "seconds"
-            // )}`;
-            
-            setLogs([
-                ...getLogs(),
+            outputModel?.setValue?.(content);  
+            const bundleTime = `⌛ Bundled ${timeFormatter.format(
+                (Date.now() - start) / 1000,
+                "seconds"
+            )}`;
+            console.log(bundleTime);
+            console.log(`Bundled size is`, size);
+            addLogs([
                 {
-                    title: `⌛ Bundled ${timeFormatter.format(
-                        (Date.now() - start) / 1000,
-                        "seconds"
-                    )}`,
-                    message: ""
+                    title: bundleTime
                 }
-            ]); 
-            fileSizeEl.textContent = `` + size;
+            ])
+            fileSizeEl.forEach(el => (el.textContent = `` + size));
         }
     });
 
@@ -252,7 +240,7 @@ export const build = (app: App) => {
             fillMode: "both",
         });
 
-        const { languages } = Monaco;
+        const { languages, inputModelResetValue, outputModelResetValue } = Monaco;
         const getShareableURL = async (model: typeof inputModel) => {
             try {
                 const worker = await languages.typescript.getTypeScriptWorker();
@@ -264,6 +252,11 @@ export const build = (app: App) => {
                 console.warn(e)
             }
         };
+
+        const resetEditor = (editorModel = "input") => { 
+            editor.setValue(
+                editorModel == "input" ? inputModelResetValue : outputModelResetValue);
+        }
 
         const editorBtns = (editor: Editor.IStandaloneCodeEditor) => {
             let el = editor.getDomNode();
@@ -278,6 +271,12 @@ export const build = (app: App) => {
                 let copyBtn = parentEl.querySelector(".copy-btn");
                 let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
                 let editorInfo = parentEl.querySelector(".editor-info");
+
+                btnContainer.classList.toggle("hide", window.matchMedia("(max-width: 640px)").matches);
+                window.matchMedia("(max-width: 640px)")
+                    .addEventListener("change", (e) => {
+                        btnContainer.classList.toggle("hide", e.matches);
+                    });
 
                 hideBtn.addEventListener("click", () => {
                     btnContainer.classList.toggle("hide");
@@ -306,11 +305,7 @@ export const build = (app: App) => {
                 });
 
                 resetBtn.addEventListener("click", () => {
-                    editor.setValue(
-                        editor.getModel() == inputModel ? [
-                            '// Click Run for the Bundled, Minified & Gzipped package size',
-                            'export * from "@okikio/animate";'
-                        ].join("\n") : `// Output`);
+                    resetEditor(editor.getModel() == inputModel ? "input" : "output");
                     if (editor.getModel() != outputModel) {
                         isInitial = true;
                     }
@@ -396,44 +391,46 @@ export const build = (app: App) => {
             }, 1000)
         );
 
-        const shareBtn = document.querySelector(
+        const shareBtn = Array.from(document.querySelectorAll(
             ".btn-share#share"
-        ) as HTMLButtonElement;
+        )) as HTMLButtonElement[];
         const shareInput = document.querySelector(
             "#copy-input"
         ) as HTMLInputElement;
-        shareBtn?.addEventListener("click", () => {
-            (async () => {
-                try {
-                    if (navigator.share) {
-                        let shareBtnValue = shareBtn.innerText;
-                        isInitial = false;
-                        await navigator.share({
-                            title: 'bundle',
-                            text: '',
-                            url: await getShareableURL(inputModel),
-                        });
+        shareBtn.forEach(el => {
+            el?.addEventListener("click", () => {
+                (async () => {
+                    try {
+                        if (navigator.share) {
+                            let shareBtnValue = el.innerText;
+                            isInitial = false;
+                            await navigator.share({
+                                title: 'bundle',
+                                text: '',
+                                url: await getShareableURL(inputModel),
+                            });
 
-                        shareBtn.innerText = "Shared!";
-                        setTimeout(() => {
-                            shareBtn.innerText = shareBtnValue;
-                        }, 600);
-                    } else {
-                        shareInput.value = await getShareableURL(inputModel);
-                        shareInput.select();
-                        document.execCommand("copy");
+                            el.innerText = "Shared!";
+                            setTimeout(() => {
+                                el.innerText = shareBtnValue;
+                            }, 600);
+                        } else {
+                            shareInput.value = await getShareableURL(inputModel);
+                            shareInput.select();
+                            document.execCommand("copy");
 
-                        let shareBtnValue = shareBtn.innerText;
+                            let shareBtnValue = el.innerText;
 
-                        shareBtn.innerText = "Copied!";
-                        setTimeout(() => {
-                            shareBtn.innerText = shareBtnValue;
-                        }, 600);
+                            el.innerText = "Copied!";
+                            setTimeout(() => {
+                                el.innerText = shareBtnValue;
+                            }, 600);
+                        }
+                    } catch (error) {
+                        console.log('Error sharing', error);
                     }
-                } catch (error) {
-                    console.log('Error sharing', error);
-                }
-            })();
+                })();
+            });
         });
 
         // Listen to events for the results
@@ -442,13 +439,17 @@ export const build = (app: App) => {
             inputModel?.setValue((value + "\n" + v).trim());
         });
 
-        RunBtn.addEventListener("click", () => {
-            (async () => {
-                if (!initialized)
-                    fileSizeEl.textContent = `Wait!`;
-                BundleEvents.emit("bundle");
-                pushState(await getShareableURL(inputModel));
-            })();
+        let RunBtn = Array.from(document.querySelectorAll("#run")) as HTMLElement[];
+        RunBtn.forEach(btn => {
+            btn?.addEventListener("click", () => {
+                (async () => {
+                    if (!initialized)
+                        fileSizeEl.forEach(el => (el.textContent = `Wait!`));
+                    BundleEvents.emit("bundle");
+                    outputModel.setValue(outputModelResetValue);
+                    pushState(await getShareableURL(inputModel));
+                })();
+            });
         });
     })();
 };
@@ -456,53 +457,55 @@ export const build = (app: App) => {
 // To speed up rendering, delay Monaco on the main page, only load none critical code
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
-    fileSizeEl = fileSizeEl ?? document.querySelector(".file-size");
+    fileSizeEl = fileSizeEl ?? Array.from(document.querySelectorAll(".file-size"));
     BundleWorker?.start?.();
 
     if (initialized && fileSizeEl)
-        fileSizeEl.textContent = `...`;
+        fileSizeEl.forEach(el => (el.textContent = `...`));
 
     // SearchResults solidjs component
     (async () => {
         const searchInput = document.querySelector(
             ".search input"
         ) as HTMLInputElement;
-        searchInput?.addEventListener?.(
-            "keydown",
-            debounce(() => {
-                let { value } = searchInput;
-                if (value.length <= 0) return;
+        let searchFn = debounce(() => {
+            let { value } = searchInput;
+            if (value.length <= 0) return;
 
-                let { url, version } = parseInput(value);
-                (async () => {
-                    try {
-                        let response = await fetch(url);
-                        let result = await response.json();
-                        setState(
-                            // result?.results   ->   api.npms.io
-                            // result?.objects   ->   registry.npmjs.com
-                            result?.results.map((obj) => {
-                                const { name, description, date, publisher } =
-                                    obj.package;
-                                return {
-                                    name,
-                                    description,
-                                    date,
-                                    version,
-                                    author: publisher?.username,
-                                };
-                            }) ?? []
-                        );
-                    } catch (e) {
-                        console.error(e);
-                        setState([{
-                            type: "Error...",
-                            description: e?.message
-                        }]);
-                    }
-                })();
-            }, 250)
-        );
+            let { url, version } = parseInput(value);
+            (async () => {
+                try {
+                    let response = await fetch(url);
+                    let result = await response.json();
+                    setState(
+                        // result?.results   ->   api.npms.io
+                        // result?.objects   ->   registry.npmjs.com
+                        result?.results.map((obj) => {
+                            const { name, description, date, publisher } =
+                                obj.package;
+                            return {
+                                name,
+                                description,
+                                date,
+                                version,
+                                author: publisher?.username,
+                            };
+                        }) ?? []
+                    );
+                } catch (e) {
+                    console.error(e);
+                    setState([{
+                        type: "Error...",
+                        description: e?.message
+                    }]);
+                }
+            })();
+        }, 100)
+        searchInput?.addEventListener?.("keydown", (e) => {
+            // e.preventDefault();
+            e.stopPropagation();
+            searchFn(e);
+        });
 
         const SearchContainerEl = document.querySelector(
             ".search-container"
@@ -675,7 +678,7 @@ export const InitialRender = (shareURL: URL) => {
 
         const clearBtn = document.querySelector(".console-btns .clear-console-btn");
         clearBtn?.addEventListener("click", () => {
-            setLogs([]);
+            clearLogs();
         });
 
         const foldBtn = document.querySelector(".console-btns .fold-unfold-console-btn");
@@ -703,6 +706,7 @@ export const InitialRender = (shareURL: URL) => {
 
     // countapi-js hit counter. It counts the number of time the website is loaded
     (async () => {
+        if (!PRODUCTION_MODE) return;
         try {
             let { value } = await hit("bundle.js.org", "visits");
             let visitCounterEl = document.querySelector("#visit-counter");
