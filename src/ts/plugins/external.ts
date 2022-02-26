@@ -89,11 +89,13 @@ export const EXTERNAL = (): Plugin => {
 
             build.onLoad({ filter: /.*/, namespace: EXTERNALS_NAMESPACE }, (args) => {
                 return {
+                    pluginName: EXTERNALS_NAMESPACE,
                     contents: EMPTY_EXPORT,
                     warnings: [
                         {
-                            pluginName: EXTERNALS_NAMESPACE,
-                            text: `${args.path} is marked as an external module and will be ignored.`
+                            text: `${args.path} is marked as an external module and will be ignored.`,
+                            location: null,
+                            details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundle.js.org, sorry about that.`
                         }
                     ]
                 };

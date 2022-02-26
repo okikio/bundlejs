@@ -10,7 +10,7 @@ import { CDN_RESOLVE } from './cdn';
 export async function fetchPkg(url: string) {
     let response = await getRequest(url);
     if (!response.ok)
-        throw new Error(`[getRequest] Failed to load ${response.url}: ${response.status}`)
+        throw new Error(`[getRequest] Failed to load ${response.url} (${response.status} code)`)
     return {
         url: response.url,
         content: new Uint8Array(await response.arrayBuffer()),
@@ -40,8 +40,9 @@ export const HTTP = (logger: (messages: string[] | any, type?: "error" | "warnin
             // inside it will also be resolved as URLs recursively.
             build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, args => {
                 let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
+                let path = urlJoin(args.pluginData?.url, "../", argPath);
                 if (!argPath.startsWith(".")) {
-                    let { origin } = new URL(urlJoin(args.pluginData?.url, "../", argPath));
+                    let { origin } = new URL(path);
                     if (isBareImport(argPath)) {
                         return CDN_RESOLVE(origin)(args);
                     } else {
@@ -54,7 +55,7 @@ export const HTTP = (logger: (messages: string[] | any, type?: "error" | "warnin
                 }
 
                 return {
-                    path: urlJoin(args.pluginData.url, "../", argPath), 
+                    path, 
                     namespace: HTTP_NAMESPACE,
                     pluginData: { pkg: args.pluginData?.pkg },
                 };

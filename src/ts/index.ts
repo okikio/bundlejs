@@ -125,7 +125,7 @@ BundleEvents.on({
     log(details) {  
         let { type, messages } = details;
         let logs = [].concat(messages ?? []).map(msg => {
-            msg = msg.replace(/(https?:\/\/(?:[^\s\:\)])+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
+            msg = msg.replace(/(https?:\/\/([^\s\)])+)/g, `<a href="$1" target="_blank" rel="noopener">$2</a>`);
             let [title, ...message] = msg.split(/\n/);
             return ({ type, title, message: message.join("\n") });
         });
