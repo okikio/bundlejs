@@ -107,14 +107,16 @@ export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker
     },
 } as Environment;
 
+export const outputModelResetValue = "// Output";
+export const inputModelResetValue = [
+    '// Click Run for the Bundled, Minified & Gzipped package size',
+    'export * from "@okikio/animate";'
+].join("\n");
+
 export { languages, Editor, Uri };
 export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
-        parseSearchQuery(oldShareURL) ||
-        [
-            '// Click Run for the Bundled, Minified & Gzipped package size',
-            'export * from "@okikio/animate";',
-        ].join("\n");
+        parseSearchQuery(oldShareURL) || inputModelResetValue;
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     inputEl.textContent = "";
@@ -135,7 +137,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         Uri.parse("file://input.ts")
     );
     let outputModel = Editor.createModel(
-        `// Output`,
+        outputModelResetValue,
         "typescript",
         Uri.parse("file://output.ts")
     );

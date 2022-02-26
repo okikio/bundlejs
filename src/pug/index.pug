@@ -22,20 +22,23 @@ block content
 
       .search-results-container
      
-  .container.editor-section(class="!max-w-screen-lg relative !pt-0 pb-6")
-    .container.info-pane
-      .tab-btns.flex.flex-nowrap
-        .action-btns
-          button.btn.tab-style.input-btn.active(type="button") Input
-          button.btn.tab-style.output-btn(type="button") Output
-    
-       
-      .action-btns-overflow.flex.flex-grow
+  .container.editor-section(class="!max-w-screen-lg relative !pt-0 pb-12")
+    mixin code-info(classValue="")
+      .action-btns-overflow.flex.flex-grow(class=classValue)
         .flex-grow
         .action-btns.justify-end
           button.btn#run(type='button') Run
           button.btn.btn-share#share(type='button') Share
           .file-size(title="Ungzipped Bundled size -> Gzipped Bundle size") Wait...
+
+    .container.info-pane
+      .tab-btns.flex.flex-nowrap
+        .action-btns
+          button.btn.tab-style.input-btn.active(type="button") Input
+          button.btn.tab-style.output-btn(type="button") Output 
+      
+      +code-info("lt-sm:hidden")
+
     .flex-wrapper
       mixin editor-btns
         .editor-btns&attributes(attributes)
@@ -106,6 +109,11 @@ block content
     .drag-section.vertical#handle-2
       .drag-handle
 
+    .info-pane(class="!pt-0")
+      +code-info("sm:hidden")
+
+  br
+  br
   .container  
     h2#usage Usage
     blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.

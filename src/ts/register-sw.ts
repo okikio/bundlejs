@@ -2,6 +2,7 @@ import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
  
 import { ENABLE_SW } from "../../env";
+import { CACHE_NAME } from "./util/cache";
 
 export default () => {
     // Check that service workers are supported
@@ -94,7 +95,8 @@ export default () => {
                 // Assuming the user accepted the update, set up a listener
                 // that will reload the page as soon as the previously waiting
                 // service worker has taken control.
-                wb.addEventListener("controlling", (event) => {
+                wb.addEventListener("controlling", async (event) => {
+                    caches.delete(CACHE_NAME);
                     window.location.reload();
                 });
 
