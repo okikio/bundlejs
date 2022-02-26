@@ -8,13 +8,19 @@ import { urlJoin } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
 
 export async function fetchPkg(url: string) {
-    let response = await getRequest(url);
-    if (!response.ok)
-        throw new Error(`[getRequest] Failed to load ${response.url} (${response.status} code)`)
-    return {
-        url: response.url,
-        content: new Uint8Array(await response.arrayBuffer()),
-    };
+    try {
+        let response = await getRequest(url);
+        if (!response.ok)
+            throw new Error(`[getRequest] Failed to load ${response.url} (${response.status} code)`);
+        
+        return {
+            url: response.url,
+            content: new Uint8Array(await response.arrayBuffer()),
+        };
+    } catch (err) { 
+        throw new Error(`[getRequest] Failed at request (${url}) \n${err}`);
+
+    }
 }
 
 export const HTTP_NAMESPACE = 'http-url';
