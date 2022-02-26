@@ -26,6 +26,7 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
 
                 if (typeof path === "string") {
                     subpath = path.replace(/^\.?\/?/, "/");
+                    console.log("[CDN - Internal Import]", path, pkg);
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
@@ -46,22 +47,19 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
 
                 if (keys.includes(args.path)) {
                     parsed.version = deps[args.path];
-                    subpath = parsed.path;
                 }
             }
 
-            if (!subpath) {
-                let { url } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
+            let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
 
-                // Strongly cache package.json files
-                pkg = await getRequest(url, true).then((res) => res.json());
-                path = resolve(pkg, ".", {
-                    require: args.kind === "require-call" || args.kind === "require-resolve",
-                }) || legacy(pkg);
+            // Strongly cache package.json files
+            pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
+            path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+                require: args.kind === "require-call" || args.kind === "require-resolve",
+            }) || legacy(pkg);
 
-                if (typeof path === "string")
-                    subpath = path.replace(/^\.?\/?/, "/");
-            }
+            if (typeof path === "string")
+                subpath = path.replace(/^\.?\/?/, "/");
 
             if (subpath && subpath[0] !== "/")
                 subpath = `/${subpath}`;
