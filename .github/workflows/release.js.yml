@@ -40,13 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm semantic-release
-        
-      - name: Commit files
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -m "chore(gh-bot): :rocket: release" -a
+      
       - name: Push changes
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: ad-m/github-push-action@master
