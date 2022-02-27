@@ -430,7 +430,7 @@ task("watch", async () => {
     watch(
         [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
-        series("js", "preload-chunks", "service-worker", "reload")
+        series("js", /* "preload-chunks", */ "service-worker", "reload")
     );
 
     watch(
@@ -445,7 +445,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "preload-chunks",
+         /* "preload-chunks", */ 
         parallelFn("minify-css", "service-worker", "sitemap")
     )
 );
@@ -454,7 +454,7 @@ task(
     series(
         "clean",
         parallel("html", "css", "assets", "js"),
-        "preload-chunks",
+         /* "preload-chunks", */ 
         "service-worker",
         "watch"
     )

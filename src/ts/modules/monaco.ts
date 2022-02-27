@@ -87,8 +87,9 @@ import TS_WORKER_FACTORY_URL from "worker:../workers/ts-worker-factory.ts";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 import { getRequest } from "../util/cache.js";
-        
-export const TS_WORKER = new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
+    
+import { USE_SHAREDWORKER } from "../../../env";
+export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
