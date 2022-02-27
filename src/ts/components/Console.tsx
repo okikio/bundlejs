@@ -10,7 +10,7 @@ type TypeLog = {
   type?: "error" | "warning";
 };
 
-export const MAX_LOGS = 50;
+export const MAX_LOGS = 250;
 export const [getLogs, setLogs] = createSignal<TypeLog[]>([]);
 export const addLogs = (logs: TypeLog[] = []) => { 
   accLength += logs.length;
