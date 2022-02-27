@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 // Based on https://github.com/microsoft/monaco-typescript/pull/65
 
 // This example uses @typescript/vfs to create a virtual TS program
@@ -5,27 +6,90 @@
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
-// import type { CustomTSWebWorkerFactory } from "../../../node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js";
 // import { setupTypeAcquisition } from "@typescript/ata";
 
-// @ts-ignore
-import prettier from "prettier/esm/standalone.mjs";
-// @ts-ignore
-import parserBabel from "prettier/esm/parser-babel.mjs";
-
+import { createStreaming, Formatter } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
 import type ts from "typescript";
+import { sign } from "crypto";
+
+let formatter: Formatter;
+let config: Record<string, unknown> | undefined = {
+    // TypeScript & JavaScript config goes here
+    "lineWidth": 80,
+    "indentWidth": 4,
+    "useTabs": false,
+    "semiColons": "prefer",
+    "quoteStyle": "alwaysDouble",
+    "quoteProps": "preserve",
+    "newLineKind": "lf",
+    "useBraces": "whenNotSingleLine",
+    "bracePosition": "sameLineUnlessHanging",
+    "singleBodyPosition": "maintain",
+    "nextControlFlowPosition": "nextLine",
+    "trailingCommas": "onlyMultiLine",
+    "operatorPosition": "nextLine",
+    "preferHanging": false,
+    "preferSingleLine": false,
+    "arrowFunction.useParentheses": "maintain",
+    "binaryExpression.linePerExpression": false,
+    "jsx.quoteStyle": "preferDouble",
+    "jsx.multiLineParens": "prefer",
+    "memberExpression.linePerExpression": false,
+    "typeLiteral.separatorKind": "semiColon",
+    "enumDeclaration.memberSpacing": "maintain",
+    "spaceSurroundingProperties": true,
+    "objectExpression.spaceSurroundingProperties": true,
+    "objectPattern.spaceSurroundingProperties": true,
+    "typeLiteral.spaceSurroundingProperties": true,
+    "binaryExpression.spaceSurroundingBitwiseAndArithmeticOperator": true,
+    "commentLine.forceSpaceAfterSlashes": true,
+    "constructor.spaceBeforeParentheses": false,
+    "constructorType.spaceAfterNewKeyword": false,
+    "constructSignature.spaceAfterNewKeyword": false,
+    "doWhileStatement.spaceAfterWhileKeyword": true,
+    "exportDeclaration.spaceSurroundingNamedExports": true,
+    "forInStatement.spaceAfterForKeyword": true,
+    "forOfStatement.spaceAfterForKeyword": true,
+    "forStatement.spaceAfterForKeyword": true,
+    "forStatement.spaceAfterSemiColons": true,
+    "functionDeclaration.spaceBeforeParentheses": false,
+    "functionExpression.spaceBeforeParentheses": false,
+    "functionExpression.spaceAfterFunctionKeyword": false,
+    "getAccessor.spaceBeforeParentheses": false,
+    "ifStatement.spaceAfterIfKeyword": true,
+    "importDeclaration.spaceSurroundingNamedImports": true,
+    "jsxElement.spaceBeforeSelfClosingTagSlash": true,
+    "jsxExpressionContainer.spaceSurroundingExpression": false,
+    "method.spaceBeforeParentheses": false,
+    "setAccessor.spaceBeforeParentheses": false,
+    "taggedTemplate.spaceBeforeLiteral": true,
+    "typeAnnotation.spaceBeforeColon": false,
+    "typeAssertion.spaceBeforeExpression": true,
+    "whileStatement.spaceAfterWhileKeyword": true,
+    "ignoreNodeCommentText": "dprint-ignore",
+    "ignoreFileCommentText": "dprint-ignore-file"
+};
+const abortController = new AbortController();
+const signal = abortController.signal;
+const getFormatter = async () => {
+    try {
+        const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
+        const response = fetch(url, { signal });
+        const formatter = await createStreaming(response);
+        formatter.setConfig({}, config);
+        return formatter;
+    } catch (err) {
+        if (!signal.aborted)
+            throw err;
+    }
+}
+
+getFormatter().then(result => (formatter = result));
 
 const SyntaxKind = {
     ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
     ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
-};
-
-const formatCode = async (code: string) => {
-    return prettier.format(code, {
-        parser: "babel-ts",
-        plugins: [parserBabel],
-    });
 };
 
 const worker = (TypeScriptWorker, fileMap) => {
@@ -65,7 +129,8 @@ const worker = (TypeScriptWorker, fileMap) => {
         async format(fileName) {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
-            return await formatCode(source.getFullText());
+            if (!formatter) formatter = await getFormatter();
+            return await Promise.resolve(formatter.formatText(fileName, source.getFullText()));
         }
 
         async getShareableURL(fileName) {

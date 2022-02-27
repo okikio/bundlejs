@@ -287,6 +287,7 @@ export const build = (app: App) => {
                 });
 
                 prettierBtn.addEventListener("click", () => {
+                    editor.getAction("editor.action.formatDocument").run();
                     (async () => {
                         try {
                             const model = editor.getModel();
@@ -300,8 +301,6 @@ export const build = (app: App) => {
                             console.warn(e)
                         }
                     })();
-
-                    editor.getAction("editor.action.formatDocument").run();
                 });
 
                 resetBtn.addEventListener("click", () => {
