@@ -3,7 +3,7 @@ import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
-import * as brotli from "../util/brotli";
+import * as brotli from "../util/brotli-wasm.js";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";

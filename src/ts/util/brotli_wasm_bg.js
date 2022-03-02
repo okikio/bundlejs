@@ -1,5 +1,6 @@
 // Based on brotli-wasm (https://github.com/httptoolkit/brotli-wasm)
 // import loadWASM from './brotli_wasm_bg.wasm';
+
 async function loadWasm(module) {
     const imports = [
         {
