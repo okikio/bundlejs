@@ -3,7 +3,7 @@ import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
-import * as brotli from "../util/brotli-wasm.js";
+import { compress } from "../util/brotli-wasm.js";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";
@@ -20,7 +20,7 @@ export const initEvent = new EventEmitter();
 (async () => {
     try {
         if (!_initialized) {
-            console.log(brotli)
+            console.log(compress(encode("Cool")))
             await initialize({
                 worker: false,
                 wasmURL: `./esbuild.wasm`
@@ -207,28 +207,41 @@ export const start = async (port) => {
             // Use pako & pretty-bytes for gzipping
             try {
                 // @ts-ignore
-                let totalByteLength = content.reduce((acc, { byteLength }) => acc + byteLength, 0);
-                let totalCompressedSize = (await Promise.all(
-                    content.map((v: Uint8Array) => gzip(v, { level: 9 }))
-                )).reduce((acc, { length }) => acc + length, 0) as number;
+                let totalByteLength = prettyBytes(
+                    content.reduce((acc, { byteLength }) => acc + byteLength, 0)
+                );
+                let totalBrotliCompressedSize = prettyBytes(
+                    (await Promise.all(
+                        content.map((v: Uint8Array) => compress(v))
+                    )).reduce((acc, { length }) => acc + length, 0)
+                );
+                let totalGZIPCompressedSize = prettyBytes(
+                    (await Promise.all(
+                        content.map((v: Uint8Array) => gzip(v, { level: 9 }))
+                    )).reduce((acc, { length }) => acc + length, 0)
+                );
 
                 postMessage({
                     event: "result",
-                    details: { content: output, size: prettyBytes(totalByteLength) + " -> " + prettyBytes(totalCompressedSize) }
+                    details: { 
+                        content: output, 
+                        size: `${totalByteLength} -> ${totalGZIPCompressedSize} (gzip), ${totalBrotliCompressedSize} (brotli)` 
+                    }
                 });
 
                 content = null;
                 totalByteLength = null;
-                totalCompressedSize = null;
+                totalGZIPCompressedSize = null;
+                totalBrotliCompressedSize = null;
                 output = null;
             } catch (error) {
-                // postMessage({
-                //     event: "error",
-                //     details: {
-                //         type: `error`,
-                //         error
-                //     }
-                // });
+                postMessage({
+                    event: "error",
+                    details: {
+                        type: `error`,
+                        error
+                    }
+                });
                 logger([error], "error");
             }
         })();
