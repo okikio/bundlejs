@@ -3,7 +3,8 @@ import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
-import { compress } from "../util/brotli-wasm.js";
+// import { compress } from "../util/brotli-wasm.js";
+import { compress } from "../deno/brotli/mod";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";
@@ -212,7 +213,7 @@ export const start = async (port) => {
                 );
                 let totalBrotliCompressedSize = prettyBytes(
                     (await Promise.all(
-                        content.map((v: Uint8Array) => compress(v))
+                        content.map((v: Uint8Array) => compress(v, v.length, 8))
                     )).reduce((acc, { length }) => acc + length, 0)
                 );
                 let totalGZIPCompressedSize = prettyBytes(
@@ -225,7 +226,8 @@ export const start = async (port) => {
                     event: "result",
                     details: { 
                         content: output, 
-                        size: `${totalByteLength} -> ${totalGZIPCompressedSize} (gzip), ${totalBrotliCompressedSize} (brotli)` 
+                        intialSize: `${totalByteLength}`,
+                        size: `${totalGZIPCompressedSize} (gzip), ${totalBrotliCompressedSize} (brotli)` 
                     }
                 });
 

@@ -165,7 +165,7 @@ export const build = (app: App) => {
             postMessage({ event: "build", details: value });
         },
         result(details) {
-            let { size, content } = details;
+            let { initialSize, size, content } = details;
 
             outputModel?.setValue?.(content);  
             const bundleTime = `⌛ Bundled ${timeFormatter.format(
@@ -173,10 +173,13 @@ export const build = (app: App) => {
                 "seconds"
             )}`;
             console.log(bundleTime);
-            console.log(`Bundled size is`, size);
+            console.log(`Bundled size is`, initialSize + " -> ", size);
             addLogs([
                 {
                     title: bundleTime
+                },
+                {
+                    title: `Bundle size is ${initialSize} -> ${size}`
                 }
             ])
             fileSizeEl.forEach(el => (el.textContent = `` + size));
