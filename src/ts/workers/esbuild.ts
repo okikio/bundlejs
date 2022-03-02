@@ -226,7 +226,7 @@ export const start = async (port) => {
                     event: "result",
                     details: { 
                         content: output, 
-                        intialSize: `${totalByteLength}`,
+                        initialSize: `${totalByteLength}`,
                         size: `${totalGZIPCompressedSize} (gzip), ${totalBrotliCompressedSize} (brotli)` 
                     }
                 });
