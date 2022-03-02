@@ -201,6 +201,7 @@ task("js", async () => {
     return stream(
         [
             `${tsFolder}/*.ts`,
+            `${tsFolder}/*.js`,
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
             `node_modules/esbuild-wasm/esbuild.wasm`,
@@ -341,10 +342,7 @@ task("service-worker", async () => {
 
 // Other assets
 task("assets", () => {
-    return stream([`${assetsFolder}/**/*`], {
-        opts: {
-            base: assetsFolder,
-        },
+    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`], {
         dest: destFolder,
     });
 });
@@ -428,7 +426,7 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
+        [`${tsFolder}/**/*.{tsx,ts,js}`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
         series("js", /* "preload-chunks", */ "service-worker", "reload")
     );

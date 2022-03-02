@@ -56,7 +56,7 @@ specifiers:
   tailwindcss: ^3.0.23
   tiny-glob: ^0.2.9
   tsm: ^2.2.1
-  typescript: ^4.5.5
+  typescript: ^4.6.2
   web-animations-js: ^2.3.2
   workbox-build: ^6.5.0
   workbox-window: ^6.5.0
@@ -76,7 +76,7 @@ dependencies:
   pretty-bytes: 6.0.0
   resolve.exports: 1.1.0
   solid-js: 1.3.9
-  typescript: 4.5.5
+  typescript: 4.6.2
   web-animations-js: 2.3.2
   workbox-window: 6.5.0
 
@@ -1413,10 +1413,10 @@ packages:
       '@types/node': 17.0.21
       chalk: 4.1.2
       cosmiconfig: 7.0.1
-      cosmiconfig-typescript-loader: 1.0.5_99a448058f874aec2a353d0e974167cc
+      cosmiconfig-typescript-loader: 1.0.6_e79e62fe450383fd2d418267dc75e645
       lodash: 4.17.21
       resolve-from: 5.0.0
-      typescript: 4.5.5
+      typescript: 4.6.2
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -1858,8 +1858,8 @@ packages:
       - supports-color
     dev: true
 
-  /@semantic-release/npm/9.0.0_semantic-release@19.0.2:
-    resolution: {integrity: sha512-hj2jqayS2SPUmFtCMCOQMX975uMDfRoymj1HvMSwYdaoI6hVZvhrTFPBgJeM85O0C+G3IFviAUar5gel/1VGDQ==}
+  /@semantic-release/npm/9.0.1_semantic-release@19.0.2:
+    resolution: {integrity: sha512-I5nVZklxBzfMFwemhRNbSrkiN/dsH3c7K9+KSk6jUnq0rdLFUuJt7EBsysq4Ir3moajQgFkfEryEHPqiKJj20g==}
     engines: {node: '>=16 || ^14.17'}
     peerDependencies:
       semantic-release: '>=19.0.0'
@@ -2643,7 +2643,7 @@ packages:
       opn: 5.3.0
       portscanner: 2.1.1
       qs: 6.2.3
-      raw-body: 2.5.0
+      raw-body: 2.5.1
       resp-modifier: 6.0.2
       rx: 4.1.0
       send: 0.16.2
@@ -2666,7 +2666,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001312
-      electron-to-chromium: 1.4.73
+      electron-to-chromium: 1.4.75
       escalade: 3.1.1
       node-releases: 2.0.2
       picocolors: 1.0.0
@@ -3009,7 +3009,7 @@ packages:
       cz-conventional-changelog: 3.2.0
       dedent: 0.7.0
       detect-indent: 6.0.0
-      find-node-modules: 2.1.2
+      find-node-modules: 2.1.3
       find-root: 1.1.0
       fs-extra: 8.1.0
       glob: 7.1.4
@@ -3310,8 +3310,8 @@ packages:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
 
-  /cosmiconfig-typescript-loader/1.0.5_99a448058f874aec2a353d0e974167cc:
-    resolution: {integrity: sha512-FL/YR1nb8hyN0bAcP3MBaIoZravfZtVsN/RuPnoo6UVjqIrDxSNIpXHCGgJe0ZWy5yImpyD6jq5wCJ5f1nUv8g==}
+  /cosmiconfig-typescript-loader/1.0.6_e79e62fe450383fd2d418267dc75e645:
+    resolution: {integrity: sha512-2nEotziYJWtNtoTjKbchj9QrdTT6DBxCvqjNKoDKARw+e2yZmTQCa07uRrykLIZuvSgp69YXLH89UHc0WhdMfQ==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
       '@types/node': '*'
@@ -3319,8 +3319,8 @@ packages:
     dependencies:
       '@types/node': 17.0.21
       cosmiconfig: 7.0.1
-      ts-node: 10.5.0_99a448058f874aec2a353d0e974167cc
-      typescript: 4.5.5
+      ts-node: 10.6.0_e79e62fe450383fd2d418267dc75e645
+      typescript: 4.6.2
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -3781,8 +3781,8 @@ packages:
       jake: 10.8.2
     dev: true
 
-  /electron-to-chromium/1.4.73:
-    resolution: {integrity: sha512-RlCffXkE/LliqfA5m29+dVDPB2r72y2D2egMMfIy3Le8ODrxjuZNVo4NIC2yPL01N4xb4nZQLwzi6Z5tGIGLnA==}
+  /electron-to-chromium/1.4.75:
+    resolution: {integrity: sha512-LxgUNeu3BVU7sXaKjUDD9xivocQLxFtq6wgERrutdY/yIOps3ODOZExK1jg8DTEg4U8TUCb5MLGeWFOYuxjF3Q==}
     dev: true
 
   /emoji-regex/8.0.0:
@@ -3882,7 +3882,7 @@ packages:
       get-intrinsic: 1.1.1
       get-symbol-description: 1.0.0
       has: 1.0.3
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
       internal-slot: 1.0.3
       is-callable: 1.2.4
       is-negative-zero: 2.0.2
@@ -4387,8 +4387,8 @@ packages:
       unpipe: 1.0.0
     dev: true
 
-  /find-node-modules/2.1.2:
-    resolution: {integrity: sha512-x+3P4mbtRPlSiVE1Qco0Z4YLU8WFiFcuWTf3m75OV9Uzcfs2Bg+O9N+r/K0AnmINBW06KpfqKwYJbFlFq4qNug==}
+  /find-node-modules/2.1.3:
+    resolution: {integrity: sha512-UC2I2+nx1ZuOBclWVNdcnbDR5dlrOdVb7xNjmT/lHE+LsgztWks3dG7boJ37yTS/venXw84B/mAW9uHVoC5QRg==}
     dependencies:
       findup-sync: 4.0.0
       merge: 2.1.1
@@ -4654,7 +4654,7 @@ packages:
     dependencies:
       function-bind: 1.1.1
       has: 1.0.3
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
     dev: true
 
   /get-own-enumerable-property-symbols/3.0.2:
@@ -5083,8 +5083,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /has-symbols/1.0.2:
-    resolution: {integrity: sha512-chXa79rL/UC2KlX17jo3vRGz0azaWEx5tGqZg5pO3NUyEJVB17dMruQlzCCOfUvElghKcm5194+BCRvi2Rv/Gw==}
+  /has-symbols/1.0.3:
+    resolution: {integrity: sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==}
     engines: {node: '>= 0.4'}
     dev: true
 
@@ -5092,7 +5092,7 @@ packages:
     resolution: {integrity: sha512-kFjcSNhnlGV1kyoGk7OXKSawH5JOb/LzUc5w9B02hOTO0dfFRjbHQKvg1d6cf3HbeUmtU9VbbV3qzZ2Teh97WQ==}
     engines: {node: '>= 0.4'}
     dependencies:
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
     dev: true
 
   /has-value/0.3.1:
@@ -5756,7 +5756,7 @@ packages:
     resolution: {integrity: sha512-C/CPBqKWnvdcxqIARxyOh4v1UUEOCHpgDa0WYgpKDFMszcrPcffg5uhwSgPCLD2WWxmq6isisz87tzT01tuGhg==}
     engines: {node: '>= 0.4'}
     dependencies:
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
     dev: true
 
   /is-text-path/1.0.1:
@@ -6699,7 +6699,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.3
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
       object-keys: 1.1.1
     dev: true
 
@@ -7420,8 +7420,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /raw-body/2.5.0:
-    resolution: {integrity: sha512-XpyZ6O7PVu3ItMQl0LslfsRoKxMOxi3SzDkrOtxMES5AqLFpYjQCryxI4LGygUN2jL+RgFsPkMPPlG7cg/47+A==}
+  /raw-body/2.5.1:
+    resolution: {integrity: sha512-qqJBtEyVgS0ZmPGdCFPWJ3FreoqvG4MVQln/kCgF7Olq95IbOp0/BWyMwbdtn4VTvkM8Y7khCQ2Xgk/tcrCXig==}
     engines: {node: '>= 0.8'}
     dependencies:
       bytes: 3.1.2
@@ -7864,7 +7864,7 @@ packages:
       jest-worker: 26.6.2
       rollup: 2.68.0
       serialize-javascript: 4.0.0
-      terser: 5.11.0
+      terser: 5.12.0
     dev: true
 
   /rollup/2.68.0:
@@ -7940,7 +7940,7 @@ packages:
       '@semantic-release/commit-analyzer': 9.0.2_semantic-release@19.0.2
       '@semantic-release/error': 3.0.0
       '@semantic-release/github': 8.0.2_semantic-release@19.0.2
-      '@semantic-release/npm': 9.0.0_semantic-release@19.0.2
+      '@semantic-release/npm': 9.0.1_semantic-release@19.0.2
       '@semantic-release/release-notes-generator': 10.0.3_semantic-release@19.0.2
       aggregate-error: 3.1.0
       cosmiconfig: 7.0.1
@@ -8440,7 +8440,7 @@ packages:
       define-properties: 1.1.3
       es-abstract: 1.19.1
       get-intrinsic: 1.1.1
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
       internal-slot: 1.0.3
       regexp.prototype.flags: 1.4.1
       side-channel: 1.0.4
@@ -8676,8 +8676,8 @@ packages:
       through2: 3.0.2
     dev: true
 
-  /terser/5.11.0:
-    resolution: {integrity: sha512-uCA9DLanzzWSsN1UirKwylhhRz3aKPInlfmpGfw8VN6jHsAtu8HJtIpeeHHK23rxnE/cDc+yvmq5wqkIC6Kn0A==}
+  /terser/5.12.0:
+    resolution: {integrity: sha512-R3AUhNBGWiFc77HXag+1fXpAxTAFRQTJemlJKjAgD9r8xXTpjNKqIXwHM/o7Rh+O0kUJtS3WQVdBeMKFk5sw9A==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
@@ -8836,8 +8836,8 @@ packages:
     resolution: {integrity: sha512-AqTiAOLcj85xS7vQ8QkAV41hPDIJ71XJB4RCUrzo/1GM2CQwhkJGaf9Hgr7BOugMRpgGUrqRg/DrBDl4H40+8g==}
     dev: true
 
-  /ts-node/10.5.0_99a448058f874aec2a353d0e974167cc:
-    resolution: {integrity: sha512-6kEJKwVxAJ35W4akuiysfKwKmjkbYxwQMTBaAxo9KKAx/Yd26mPUyhGz3ji+EsJoAgrLqVsYHNuuYwQe22lbtw==}
+  /ts-node/10.6.0_e79e62fe450383fd2d418267dc75e645:
+    resolution: {integrity: sha512-CJen6+dfOXolxudBQXnVjRVvYTmTWbyz7cn+xq2XTsvnaXbHqr4gXSCNbS2Jj8yTZMuGwUoBESLaOkLascVVvg==}
     hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
@@ -8862,7 +8862,7 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 4.5.5
+      typescript: 4.6.2
       v8-compile-cache-lib: 3.0.0
       yn: 3.1.1
     dev: true
@@ -8916,8 +8916,8 @@ packages:
     resolution: {integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=}
     dev: true
 
-  /typescript/4.5.5:
-    resolution: {integrity: sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==}
+  /typescript/4.6.2:
+    resolution: {integrity: sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==}
     engines: {node: '>=4.2.0'}
     hasBin: true
 
@@ -8942,7 +8942,7 @@ packages:
     dependencies:
       function-bind: 1.1.1
       has-bigints: 1.0.1
-      has-symbols: 1.0.2
+      has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
     dev: true
 
