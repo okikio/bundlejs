@@ -3,6 +3,7 @@ import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
+import * as brotli from "../util/brotli";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";
@@ -19,6 +20,7 @@ export const initEvent = new EventEmitter();
 (async () => {
     try {
         if (!_initialized) {
+            console.log(brotli)
             await initialize({
                 worker: false,
                 wasmURL: `./esbuild.wasm`
