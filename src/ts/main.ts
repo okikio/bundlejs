@@ -11,6 +11,8 @@ import { animate } from "@okikio/animate";
 
 import type { ITransition, IHistoryItem } from "@okikio/native";
 
+const indexImport = import("./index");
+
 try {
     // On theme switcher button click (mouseup is a tiny bit more efficient) toggle the theme between dark and light mode
     let themeSwitch = Array.from(document.querySelectorAll(".theme-options")) as HTMLSelectElement[];
@@ -45,9 +47,15 @@ window.addEventListener(
     { passive: true }
 );
 
-let oldShareURL = new URL(String(document.location)); 
+let oldShareURL = new URL(String(document.location));
+
 try {
     const app = new App();
+    const indexRun = async (app: App) => {
+        const { build, InitialRender } = await indexImport;
+        InitialRender(oldShareURL);
+        build(app);
+    };
 
     //= Fade Transition
     const Fade: ITransition = {
@@ -88,25 +96,10 @@ try {
         ]))
 
         .set("Router", new Router())
-        .add(new PJAX());
-
-    let indexRun = async () => {
-        const { build, InitialRender } = await import("./index");
-        // const Monaco = await import("./modules/monaco");
-        // const [
-        //     Monaco,
-        //     { build, InitialRender }
-        // ] = await Promise.all([
-        //     import("./modules/monaco"),
-        //     import("./index")
-        // ]);
-        
-        InitialRender(oldShareURL);
-        build(app);
-    }
+        .add(new PJAX()); 
     
     app.emitter.once("index", async () => {
-        indexRun();
+        indexRun(app);
     });
 
     if (/^\/(\#.*)?(index)?(\.html)?$/.test(oldShareURL.toString()))

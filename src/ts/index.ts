@@ -238,7 +238,7 @@ export const build = (app: App) => {
             target: loadingContainerEl,
             opacity: [1, 0],
             easing: "ease-in",
-            duration: 300,
+            duration: 50,
             autoplay: false,
             fillMode: "both",
         });
