@@ -1,3 +1,9 @@
+export const isObject = (obj: any) => typeof obj === "object" && obj != null;
+export const isPrimitive = (val) => (typeof val === 'object' ? val === null : typeof val !== 'function');
+export const isValidKey = key => {
+    return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+};
+
 // Based on https://gist.github.com/egardner/efd34f270cc33db67c0246e837689cb9
 // Deep Equality comparison example
 //
@@ -15,7 +21,6 @@
 // * The reason this nested helper function is necessary is that 
 //   `typeof null` is still "object" in JS, a major "gotcha" to watch out for.
 //
-export const isObject = (obj: any) => typeof obj === "object" && obj != null;
 export const deepEqual = (obj1: any, obj2: any) => {
     if (obj1 === obj2) {
         return true;
@@ -27,4 +32,64 @@ export const deepEqual = (obj1: any, obj2: any) => {
 
         return true;
     }
-}
+};
+
+/** Compares 2 objects and only keep the keys that are different in both objects */
+export const deepDiff = (obj1: any, obj2: any) => {
+    let keys = Object.keys(obj2);
+    let result = {};
+    let i = 0;
+    for (; i < keys.length; i++) {
+        let key = keys[i];
+        let value = obj2[key];
+
+        if (key in obj1) {
+            let bothAreArrays = Array.isArray(obj1[key]) && Array.isArray(value);
+            if (obj1[key] == value) {
+                continue;
+            } else if (bothAreArrays) {
+                if (!deepEqual(obj1[key], value))
+                    result[key] = value;
+                else continue;
+            } else if (isObject(obj1[key]) && isObject(value)) {
+                // Remove empty objects
+                let diff = deepDiff(obj1[key], value);
+                if (Object.keys(diff).length)
+                    result[key] = diff;
+            } else {
+                result[key] = value;
+            }
+        } else {
+            result[key] = value;
+        }
+    }
+
+    return result;
+};
+
+/*!
+ * Based on assign-deep <https://github.com/jonschlinkert/assign-deep>
+ *
+ * Copyright (c) 2017-present, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+export const deepAssign = (target, ...args) => {
+    let i = 0;
+    if (isPrimitive(target)) target = args[i++];
+    if (!target) target = {};
+    for (; i < args.length; i++) {
+        if (isObject(args[i])) {
+            for (const key of Object.keys(args[i])) {
+                if (isValidKey(key)) {
+                    if (isObject(target[key]) && isObject(args[i][key])) {
+                        deepAssign(target[key], args[i][key]);
+                    } else {
+                        target[key] = args[i][key];
+                    }
+                }
+            }
+        }
+    }
+    
+    return target;
+};

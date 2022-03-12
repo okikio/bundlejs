@@ -68,7 +68,7 @@ try {
             return animate({
                 target: fromWrapper,
                 opacity: [1, 0],
-                duration: 500,
+                duration: 200,
             })
         },
 
@@ -80,7 +80,7 @@ try {
             await animate({
                 target: toWrapper,
                 opacity: [0, 1],
-                duration: 500
+                duration: 200
             });
         }
     };

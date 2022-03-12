@@ -1,44 +1,27 @@
-
-// Remap builtins
-export const PolyfillMap = {
-    "console": 'console-browserify',
-    "constants": 'constants-browserify',
-    "crypto": 'crypto-browserify',
-    "http": 'http-browserify',
-    "buffer": 'buffer',
-    "Dirent": "dirent",
-    "vm": 'vm-browserify',
-    "zlib": 'zlib-browserify',
-    "assert": 'assert',
-    "child_process": 'child_process',
-    "cluster": 'child_process',
-    "dgram": 'dgram',
-    "dns": 'dns',
-    "domain": 'domain-browser',
-    "events": 'events',
-    "https": 'https',
-    "module": 'module',
-    "net": 'net',
-    "path": 'path-browserify',
-    "punycode": 'punycode',
-    "querystring": 'querystring',
-    "readline": 'readline',
-    "repl": 'repl',
-    "stream": 'stream',
-    "string_decoder": 'string_decoder',
-    "sys": 'sys',
-    "timers": 'timers',
-    "tls": 'tls',
-    "tty": 'tty-browserify',
-    "url": 'url',
-    "util": 'util',
-    "_shims": '_shims',
-    "_stream_duplex": '_stream_duplex',
-    "_stream_readable": '_stream_readable',
-    "_stream_writable": '_stream_writable',
-    "_stream_transform": '_stream_transform',
-    "_stream_passthrough": '_stream_passthrough',
-    process: 'process/browser',
-    fs: 'memfs',
-    os: 'os-browserify/browser',
+import { deepAssign, deepDiff } from "./src/ts/util/deep-equal";
+let a = {
+    "compression": "gzip",
+    "esbuild": {
+        "target": [
+            "esnext"
+        ],
+        "format": "esm",
+        "bundle": true,
+        "minify": true,
+        "color": true,
+    }
 };
+let b = {
+    "compression": "brotli",
+    "esbuild": {
+        "target": [
+            "esnext",
+            "es2020"
+        ],
+        "format": "esm",
+        "bundle": true,
+        "minify": false,
+        "color": true,
+    }
+};
+console.log(deepAssign({}, a, deepDiff(a, b)))
