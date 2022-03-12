@@ -1,17 +1,19 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
-import type { Plugin } from 'esbuild';
+import type { OutputFile, Plugin } from 'esbuild';
 
 import { getRequest } from '../util/cache';
+import { decode } from '../util/encode-decode';
 import { getCDNHost, inferLoader, isBareImport } from '../util/loader';
 
 import { urlJoin } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
 
-export async function fetchPkg(url: string) {
+export async function fetchPkg(url: string, logger = console.log) {
     try {
         let response = await getRequest(url);
         if (!response.ok)
             throw new Error(`[getRequest] Failed to load ${response.url} (${response.status} code)`);
+        logger("Fetch " + url, "info");
         
         return {
             url: response.url,
@@ -19,12 +21,11 @@ export async function fetchPkg(url: string) {
         };
     } catch (err) { 
         throw new Error(`[getRequest] Failed at request (${url}) \n${err}`);
-
     }
 }
 
 export const HTTP_NAMESPACE = 'http-url';
-export const HTTP = (logger: (messages: string[] | any, type?: "error" | "warning" | any) => void): Plugin => {
+export const HTTP = (assets: OutputFile[] = [], logger: (messages: string[] | any, type?: "error" | "warning" | any) => void): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -72,12 +73,34 @@ export const HTTP = (logger: (messages: string[] | any, type?: "error" | "warnin
             // handle the example import from https://cdn.esm.sh/ but in reality this
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
-                const { content, url } = await fetchPkg(args.path);
-                logger("Fetch " + url, "info");
+                const { content, url } = await fetchPkg(args.path, logger);
+                const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
+                const code = decode(content);
+                const matches = Array.from(code.matchAll(rgx));
+
+                const promises = [];
+                for (const [, m] of matches) {
+                    promises.push(
+                        (async () => {
+                            let url = new URL("./", args.path).toString();
+                            let { content: asset } = await fetchPkg(urlJoin(url, m), logger);
+                            assets.push({
+                                path: m,
+                                contents: asset,
+                                get text() {
+                                    return decode(asset);
+                                }
+                            })
+                        })()
+                    );
+                }
+
+                await Promise.all(promises);
+                
                 return {
                     contents: content,
                     loader: inferLoader(url),
-                    pluginData: { url, pkg: args.pluginData?.pkg }
+                    pluginData: { url, pkg: args.pluginData?.pkg },
                 };
             });
         },
