@@ -26,6 +26,7 @@ import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+import { DefaultConfigStr } from "./configs/bundle-options";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -74,7 +75,6 @@ window.addEventListener("pagehide", function (event) {
     }
 });
 
-
 let fileSizeEl: HTMLElement[];
 
 // Bundle Events
@@ -105,10 +105,11 @@ BundleEvents.on({
             let query = searchParams.get("query") || searchParams.get("q");
             let share = searchParams.get("share");
             let bundle = searchParams.get("bundle");
+            let config = searchParams.get("config") ?? DefaultConfigStr;
             if (query || share || plaintext) {
                 if (bundle != null) {
                     fileSizeEl.forEach(el => (el.textContent = `Wait!`));
-                    BundleEvents.emit("bundle");
+                    BundleEvents.emit("bundle", config);
                 }
 
                 isInitial = false;
@@ -152,17 +153,18 @@ export const build = (app: App) => {
     let editor: Editor.IStandaloneCodeEditor;
     let inputModel: Editor.ITextModel;
     let outputModel: Editor.ITextModel;
+    let configModel: Editor.ITextModel;
 
     // bundles using esbuild and returns the result
     BundleEvents.on({
-        bundle() {
+        bundle(config: string) {
             if (!initialized) return;
             value = `` + inputModel?.getValue();
 
             fileSizeEl.forEach(el => (el.innerHTML = `<div class="loading"></div>`));
 
             start = Date.now();
-            postMessage({ event: "build", details: value });
+            postMessage({ event: "build", details: { config, value } });
         },
         result(details) {
             let { initialSize, size, content } = details;
@@ -243,22 +245,34 @@ export const build = (app: App) => {
             fillMode: "both",
         });
 
-        const { languages, inputModelResetValue, outputModelResetValue } = Monaco;
+        const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = Monaco;
         const getShareableURL = async (model: typeof inputModel) => {
             try {
                 const worker = await languages.typescript.getTypeScriptWorker();
                 const thisWorker = await worker(model.uri);
 
                 // @ts-ignore
-                return await thisWorker.getShareableURL(model.uri.toString());
+                return await thisWorker.getShareableURL(model.uri.toString(), configModel.getValue());
             } catch (e) {
                 console.warn(e)
             }
         };
 
         const resetEditor = (editorModel = "input") => { 
-            editor.setValue(
-                editorModel == "input" ? inputModelResetValue : outputModelResetValue);
+            let resetValue: string;
+            switch (editorModel) {
+                case "input":
+                    resetValue = inputModelResetValue;
+                    break;
+                case "output":
+                    resetValue = outputModelResetValue;
+                    break;
+                default:
+                    resetValue = configModelResetValue;
+                    break;
+            }
+
+            editor.setValue(resetValue);
         }
 
         const editorBtns = (editor: Editor.IStandaloneCodeEditor) => {
@@ -291,24 +305,31 @@ export const build = (app: App) => {
 
                 prettierBtn.addEventListener("click", () => {
                     editor.getAction("editor.action.formatDocument").run();
-                    (async () => {
+                    const model = editor.getModel();
+                    if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())){
                         try {
-                            const model = editor.getModel();
-                            const worker = await languages.typescript.getTypeScriptWorker();
-                            const thisWorker = await worker(model.uri);
+                            (async () => {
+                                const worker = await languages.typescript.getTypeScriptWorker();
+                                const thisWorker = await worker(model.uri);
 
-                            // @ts-ignore
-                            const formattedCode = await thisWorker.format(model.uri.toString());
-                            editor.setValue(formattedCode);
+                                // @ts-ignore
+                                const formattedCode = await thisWorker.format(model.uri.toString());
+                                editor.setValue(formattedCode);
+                            })();
                         } catch (e) {
                             console.warn(e)
                         }
-                    })();
+                    }
                 });
 
                 resetBtn.addEventListener("click", () => {
-                    resetEditor(editor.getModel() == inputModel ? "input" : "output");
-                    if (editor.getModel() != outputModel) {
+                    let modelType: string;
+                    if (editor.getModel() == inputModel) modelType = "input";
+                    else if (editor.getModel() == outputModel) modelType = "output";
+                    else modelType = "config";
+
+                    resetEditor(modelType);
+                    if (editor.getModel() != outputModel && editor.getModel() == configModel) {
                         isInitial = true;
                     }
                 });
@@ -325,7 +346,8 @@ export const build = (app: App) => {
                     (async () => {
                         await animate({
                             target: editorInfo,
-                            translateY: [100, "-100%"],
+                            translateY: [100, "-120%"],
+                            opacity: [0, 1],
                             fillMode: "both",
                             duration: 500,
                             easing: "ease-out",
@@ -333,7 +355,8 @@ export const build = (app: App) => {
 
                         await animate({
                             target: editorInfo,
-                            translateY: ["-100%", 100],
+                            translateY: ["-120%", 100],
+                            opacity: [1, 0],
                             fillMode: "both",
                             delay: 1000,
                         });
@@ -351,21 +374,30 @@ export const build = (app: App) => {
             if (editorTabs) {
                 let inputEditorBtn = editorTabs.querySelector(".input-btn");
                 let outputEditorBtn = editorTabs.querySelector(".output-btn");
-                inputEditorBtn.addEventListener("click", () => {
-                    outputEditorBtn.classList.remove("active");
+                let settingEditorBtn = editorTabs.querySelector(".settings-btn");
+                inputEditorBtn?.addEventListener("click", () => {
                     inputEditorBtn.classList.add("active");
+                    outputEditorBtn.classList.remove("active");
+                    settingEditorBtn.classList.remove("active");
                     editor?.setModel(inputModel);
                 });
-                outputEditorBtn.addEventListener("click", () => {
+                outputEditorBtn?.addEventListener("click", () => {
                     inputEditorBtn.classList.remove("active");
                     outputEditorBtn.classList.add("active");
+                    settingEditorBtn.classList.remove("active");
                     editor?.setModel(outputModel);
+                });
+                settingEditorBtn?.addEventListener("click", () => {
+                    inputEditorBtn.classList.remove("active");
+                    outputEditorBtn.classList.remove("active");
+                    settingEditorBtn.classList.add("active");
+                    editor?.setModel(configModel);
                 });
             }
         };
 
         // Build the Code Editor
-        [editor, inputModel, outputModel] = Monaco.build(oldShareURL);
+        [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;
@@ -447,7 +479,7 @@ export const build = (app: App) => {
                 (async () => {
                     if (!initialized)
                         fileSizeEl.forEach(el => (el.textContent = `Wait!`));
-                    BundleEvents.emit("bundle");
+                    BundleEvents.emit("bundle", configModel?.getValue());
                     outputModel.setValue(outputModelResetValue);
                     pushState(await getShareableURL(inputModel));
                 })();

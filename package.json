@@ -114,6 +114,7 @@
         "tailwindcss": "^3.0.23",
         "tiny-glob": "^0.2.9",
         "tsm": "^2.2.1",
+        "typescript-json-schema": "^0.53.0",
         "workbox-build": "^6.5.1"
     }
 }

@@ -184,6 +184,7 @@ task("js", async () => {
 
         { WEB_WORKER },
         { solidPlugin: SOLID },
+        { TS_TO_JSON },
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -191,6 +192,7 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
+        import("./plugins/ts-to-json.js"),
     ]);
 
     const esbuild =
@@ -229,7 +231,7 @@ task("js", async () => {
                         ".wasm": "file",
                     },
 
-                    plugins: [WEB_WORKER(), SOLID()],
+                    plugins: [WEB_WORKER(), SOLID(), TS_TO_JSON()],
                 }),
 
                 gulpif(

@@ -3,7 +3,6 @@ import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
-// import { compress } from "../util/brotli-wasm.js";
 import { compress } from "../deno/brotli/mod";
 
 import { EXTERNAL } from "../plugins/external";
@@ -13,6 +12,8 @@ import { CDN } from "../plugins/cdn";
 import { encode, decode } from "../util/encode-decode";
 import { render as ansi } from "../util/ansi";
 
+import { DefaultConfig } from "../configs/bundle-options";
+
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
 
 let _initialized = false;
@@ -21,7 +22,6 @@ export const initEvent = new EventEmitter();
 (async () => {
     try {
         if (!_initialized) {
-            console.log(compress(encode("Cool")))
             await initialize({
                 worker: false,
                 wasmURL: `./esbuild.wasm`
@@ -44,7 +44,6 @@ export const createNotice = async (errors: PartialMessage[], kind: "error" | "wa
 
 export const start = async (port) => {
     const BuildEvents = new EventEmitter();
-
     const postMessage = (obj: { event: string, details: any }) => {
         let messageStr = JSON.stringify(obj);
         let encodedMessage = encode(messageStr);
@@ -91,7 +90,14 @@ export const start = async (port) => {
     if (_initialized)
         initEvent.emit("init");
 
-    BuildEvents.on("build", (input: string) => {
+    BuildEvents.on("build", (details) => {
+        let { config = "{}", value: input } = details;
+        config = JSON.parse(config ? config : "{}") ?? {};
+
+        // Exclude certain properties
+        let { define = {}, loader = {}, other = {}, ...remainingConfig } = config;
+        let { other: _, ...defaultConfig } = DefaultConfig;
+
         logger("Bundling 🚀");
 
         if (!_initialized) {
@@ -112,41 +118,36 @@ export const start = async (port) => {
             try {
                 try {
                     result = await build({
-                        stdin: {
+                        "stdin": {
                             // Ensure input is a string
                             contents: `${input}`,
                             loader: 'ts',
                         },
-                        bundle: true,
-                        minify: true,
-                        color: true,
-                        sourcemap: false,
-                        treeShaking: true,
-                        incremental: false,
-                        target: ["esnext"],
-                        logLevel: 'info',
+                        
+                        ...defaultConfig,
+                        ...remainingConfig,
+
                         write: false,
-                        outfile: "/bundle.js",
-                        platform: "browser",
-                        format: "esm",
                         loader: {
                             '.png': 'file',
                             '.jpeg': 'file',
                             '.ttf': 'file',
                             '.svg': 'text',
                             '.html': 'text',
-                            '.scss': 'css'
+                            '.scss': 'css',
+                            ...loader
                         },
                         define: {
                             "__NODE__": `false`,
-                            "process.env.NODE_ENV": `"production"`
+                            "process.env.NODE_ENV": `"production"`,
+                            ...define
                         },
                         plugins: [
                             EXTERNAL(),
                             HTTP(logger),
                             CDN(),
                         ],
-                        globalName: 'bundler',
+                        outfile: "/bundle.js",
                     });
                 } catch (e) {
                     if (e.errors) {
@@ -162,8 +163,19 @@ export const start = async (port) => {
                 }
 
                 content = result?.outputFiles?.map(({ path, text, contents }) => {
-                    if (path == "/bundle.js")
+                    let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
+                    if (path == "/bundle.js") {
                         output = text;
+                    } else if (ignoreFile)
+                        return encode("");
+
+                    // For debugging reasons
+                    if (config?.logLevel == "verbose" && !ignoreFile) {
+                        console.groupCollapsed(path); 
+                        console.log(text)
+                        console.groupEnd();
+                    }
+
                     return contents;
                 });
 
@@ -207,19 +219,17 @@ export const start = async (port) => {
 
             // Use pako & pretty-bytes for gzipping
             try {
+                let { compression = {} } = other;
+                let { type = "gzip", level = 9 } = compression;
+
                 // @ts-ignore
                 let totalByteLength = prettyBytes(
                     content.reduce((acc, { byteLength }) => acc + byteLength, 0)
                 );
-                let totalBrotliCompressedSize = prettyBytes(
+                let totalCompressedSize = prettyBytes(
                     (await Promise.all(
-                        content.map((v: Uint8Array) => compress(v, v.length, 8))
-                    )).reduce((acc, { length }) => acc + length, 0)
-                );
-                let totalGZIPCompressedSize = prettyBytes(
-                    (await Promise.all(
-                        content.map((v: Uint8Array) => gzip(v, { level: 9 }))
-                    )).reduce((acc, { length }) => acc + length, 0)
+                        content.map((v: Uint8Array) => type == "brotli" ? compress(v, v.length, level) : gzip(v, { level }))
+                    )).reduce((acc, { length }) => acc + length, 0) 
                 );
 
                 postMessage({
@@ -227,14 +237,13 @@ export const start = async (port) => {
                     details: { 
                         content: output, 
                         initialSize: `${totalByteLength}`,
-                        size: `${totalGZIPCompressedSize} (gzip), ${totalBrotliCompressedSize} (brotli)` 
+                        size: `${totalCompressedSize} (${type})` 
                     }
                 });
 
                 content = null;
                 totalByteLength = null;
-                totalGZIPCompressedSize = null;
-                totalBrotliCompressedSize = null;
+                totalCompressedSize = null;
                 output = null;
             } catch (error) {
                 postMessage({

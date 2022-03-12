@@ -6,7 +6,6 @@ import init, {
     decompress as wasm_decompress,
 } from "./wasm.js";
 
-
 let initialized = false;
 const getWASM = async () => {
     if (!initialized) await init(source);
