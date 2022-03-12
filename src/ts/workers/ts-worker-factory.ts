@@ -11,7 +11,9 @@
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
 import type ts from "typescript";
-import { sign } from "crypto";
+
+import { DefaultConfig } from "../configs/bundle-options";
+import { deepEqual } from "../util/deep-equal";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -133,9 +135,20 @@ const worker = (TypeScriptWorker, fileMap) => {
             return await Promise.resolve(formatter.formatText(fileName, source.getFullText()));
         }
 
-        async getShareableURL(fileName) {
+        async getShareableURL(fileName, config = "{}") {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
+            config = JSON.parse(config ? config : "{}") ?? {};
+
+            // Basically only keep the config options that have changed from the default
+            let changedEntries = Object.entries(config).map(([key, value]) => {
+                if (key in DefaultConfig && deepEqual(DefaultConfig[key], value)) {
+                    return null;
+                }
+
+                return [key, value];
+            }).filter(v => v !== null) as any;
+            let changedConfig = Object.fromEntries(changedEntries);
 
             // Collect the first few import and export statements
             let ImportExportStatements = [];
@@ -216,6 +229,10 @@ const worker = (TypeScriptWorker, fileMap) => {
                 else
                     url.searchParams.set("share", compressToURL(remainingCode));
             }
+
+            if (changedConfig && changedEntries?.length) 
+                url.searchParams.set("config", JSON.stringify(changedConfig));
+        
             return decodeURIComponent(url.toString());
         }
     };

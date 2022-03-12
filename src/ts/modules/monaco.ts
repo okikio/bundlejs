@@ -1,6 +1,9 @@
 import "../../../node_modules/monaco-editor/esm/vs/language/typescript/monaco.contribution.js";
-
 import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution.js";
+
+import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js";
+// import "../../../node_modules/monaco-editor/esm/vs/basic-languages/json/json.contribution.js";
+
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
 
@@ -81,15 +84,23 @@ import GithubDark from "../util/github-dark";
 import WebWorker, { WorkerConfig } from "../util/WebWorker";
 
 import { mediaTheme, themeGet } from "../scripts/theme";
-import { parseSearchQuery, parseInput } from "../util/parse-query";
+import { parseSearchQuery, parseInput, parseConfig } from "../util/parse-query";
 
 import TS_WORKER_FACTORY_URL from "worker:../workers/ts-worker-factory.ts";
 import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
+import JSON_WORKER_URL from "worker:../workers/json.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
+
+import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
+
 import { getRequest } from "../util/cache.js";
-    
 import { USE_SHAREDWORKER } from "../../../env";
+import { DefaultConfig } from "../configs/bundle-options.js";
+
 export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
+
+// JSON Language Workers currently have no exports so I can't get SharedWorkers to work with them
+export const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" }); // USE_SHAREDWORKER ? new WebWorker(JSON_WORKER_URL, { name: "json-worker" }) : 
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -98,6 +109,8 @@ export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL,
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
             return TS_WORKER; 
+        } else if (label === "json") {
+            return JSON_WORKER; 
         }
 
         return (() => {
@@ -113,11 +126,15 @@ export const inputModelResetValue = [
     '// Click Run for the Bundled, Minified & Gzipped package size',
     'export * from "@okikio/animate";'
 ].join("\n");
+export const configModelResetValue = JSON.stringify(DefaultConfig, null, "\t"); // Indented with tab;
 
 export { languages, Editor, Uri };
-export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel] => {
+export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
         parseSearchQuery(oldShareURL) || inputModelResetValue;
+
+    const initialConfig =
+        JSON.stringify(parseConfig(oldShareURL), null, "\t") || configModelResetValue;
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     inputEl.textContent = "";
@@ -141,6 +158,11 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         outputModelResetValue,
         "typescript",
         Uri.parse("file://output.ts")
+    );
+    let configModel = Editor.createModel(
+        initialConfig, 
+        'json', 
+        Uri.parse('file://config.json')
     );
 
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
@@ -239,7 +261,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     
     languages.typescript.typescriptDefaults.setEagerModelSync(true);
     languages.typescript.typescriptDefaults.addExtraLib(
-        "declare module 'https://*' {\n\texport * from \"https://cdn.esm.sh/*\";\n}",
+        "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
         `file://node_modules/@types/https.d.ts`
     );
 
@@ -313,5 +335,17 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         },
     });
 
-    return [editor, inputModel, outputModel];
+    // Configure the JSON language support with schemas and schema associations
+    languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas: [
+            {
+                uri: "https://unpkg.com/esbuild-wasm/esm/browser.d.ts", // id of the first schema
+                fileMatch: [configModel.uri.toString()], // associate with our model
+                schema: TYPE_SCHEMA 
+            }
+        ]
+    });
+    
+    return [editor, inputModel, outputModel, configModel];
 };
