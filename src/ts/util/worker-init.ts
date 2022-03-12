@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { SimpleWorkerServer } from 'monaco-editor/esm/vs/base/common/worker/simpleWorker';
 import { EditorSimpleWorker } from 'monaco-editor/esm/vs/editor/common/services/editorSimpleWorker';
 export function initialize(foreignModule, port, initialized) {

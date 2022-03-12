@@ -39,7 +39,6 @@ export const getCDNHost = (url: string, host = HOST) => {
     host = /\/$/.test(host) ? host : `${host}/`;
 
     let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
-    console.log(host, argPath)
     return { argPath, host, url: host + argPath.replace(/^\//, "") };
 }
 

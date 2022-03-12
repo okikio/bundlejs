@@ -26,7 +26,6 @@ import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
-import { DefaultConfigStr } from "./configs/bundle-options";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -107,7 +106,7 @@ BundleEvents.on({
             let query = searchParams.get("query") || searchParams.get("q");
             let share = searchParams.get("share");
             let bundle = searchParams.get("bundle");
-            let config = searchParams.get("config") ?? DefaultConfigStr;
+            let config = searchParams.get("config") ?? "{}";
             if (query || share || plaintext) {
                 if (bundle != null) {
                     fileSizeEl.forEach(el => (el.textContent = `Wait!`));

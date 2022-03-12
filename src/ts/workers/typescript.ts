@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 // export * from "../../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js";
 
 /*---------------------------------------------------------------------------------------------

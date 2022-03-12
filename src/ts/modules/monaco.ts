@@ -95,7 +95,7 @@ import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
 
 import { getRequest } from "../util/cache.js";
 import { USE_SHAREDWORKER } from "../../../env";
-import { DefaultConfig } from "../configs/bundle-options.js";
+import { EasyDefaultConfig } from "../configs/bundle-options.js";
 
 export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
 
@@ -125,7 +125,7 @@ export const inputModelResetValue = [
     '// Click Build for the Bundled, Minified & Gzipped package size',
     'export * from "@okikio/animate";'
 ].join("\n");
-export const configModelResetValue = JSON.stringify(DefaultConfig, null, "\t"); // Indented with tab;
+export const configModelResetValue = JSON.stringify(EasyDefaultConfig, null, "\t"); // Indented with tab
 
 export { languages, Editor, Uri };
 export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {

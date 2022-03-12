@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
@@ -16,8 +17,9 @@ import { deepAssign } from "../util/deep-equal";
 
 import { DefaultConfig } from "../configs/bundle-options";
 
-import type { BundleConfigOptions } from "../configs/bundle-options";
+import type { BundleConfigOptions, CompressionOptions } from "../configs/bundle-options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
+import { ALIAS } from "../plugins/alias";
 
 let _initialized = false;
 export const initEvent = new EventEmitter();
@@ -94,11 +96,11 @@ export const start = async (port) => {
         initEvent.emit("init");
 
     BuildEvents.on("build", (details) => {
-        let { config, value: input } = details;
-        config = deepAssign({}, DefaultConfig, JSON.parse(config ? config : "{}")) as BundleConfigOptions;
+        let { config: _config, value: input } = details;
+        let config = deepAssign({}, DefaultConfig, JSON.parse(_config ? _config : "{}")) as BundleConfigOptions;
 
         // Exclude certain properties
-        let { define = {}, loader = {}, ...esbuildOpts } = config.esbuild ?? {};
+        let { define = {}, loader = {}, ...esbuildOpts } = (config.esbuild ?? {}) as BundleConfigOptions['esbuild'];
         logger("Bundling 🚀");
 
         if (!_initialized) {
@@ -107,6 +109,7 @@ export const start = async (port) => {
         }
 
         (async () => {
+            const assets: OutputFile[] = [];
             let output = "";
 
             // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
@@ -123,6 +126,7 @@ export const start = async (port) => {
                             // Ensure input is a string
                             contents: `${input}`,
                             loader: 'ts',
+                            sourcefile: "/bundle.ts"
                         },
                         
                         ...esbuildOpts,
@@ -143,11 +147,12 @@ export const start = async (port) => {
                             ...define
                         },
                         plugins: [
-                            EXTERNAL(),
-                            HTTP(logger),
-                            CDN(),
+                            ALIAS(config?.alias),
+                            EXTERNAL(esbuildOpts?.external),
+                            HTTP(assets, logger),
+                            CDN(config?.cdn),
                         ],
-                        outfile: "/bundle.js",
+                        outdir: "/"
                     });
                 } catch (e) {
                     if (e.errors) {
@@ -162,18 +167,21 @@ export const start = async (port) => {
                     } else throw e;
                 }
 
-                content = result?.outputFiles?.map(({ path, text, contents }) => {
+                content = [...assets].concat(result?.outputFiles)?.map(({ path, text, contents }) => {
                     let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
-                    if (path == "/bundle.js") {
+                    if (path == "/stdin.js") {
                         output = text;
-                    } else if (ignoreFile)
-                        return encode("");
+                    } 
 
                     // For debugging reasons
-                    if (config?.logLevel == "verbose" && !ignoreFile) {
-                        console.groupCollapsed(path); 
-                        console.log(text);
-                        console.groupEnd();
+                    if (esbuildOpts?.logLevel == "verbose") {
+                        if (ignoreFile) {
+                            console.log(path)
+                        } else {
+                            console.groupCollapsed(path); 
+                            console.log(text);
+                            console.groupEnd();
+                        }
                     }
 
                     return contents;
@@ -220,10 +228,10 @@ export const start = async (port) => {
             // Use pako & pretty-bytes for gzipping
             try {
                 let { compression = {} } = config;
-                let { type = "gzip", level = 9 } = 
-                    typeof compression == "string" ? 
+                let { type = "gzip", quality: level = 9 } = 
+                    (typeof compression == "string" ? 
                         { type: compression } : 
-                        (compression ?? {});
+                        (compression ?? {})) as CompressionOptions;
 
                 // @ts-ignore
                 let totalByteLength = prettyBytes(

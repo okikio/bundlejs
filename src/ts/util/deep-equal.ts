@@ -82,7 +82,7 @@ export const deepAssign = (target, ...args) => {
             for (const key of Object.keys(args[i])) {
                 if (isValidKey(key)) {
                     if (isObject(target[key]) && isObject(args[i][key])) {
-                        deepAssign(target[key], args[i][key]);
+                        target[key] = deepAssign(Array.isArray(target[key]) ? [] : {}, target[key], args[i][key]);
                     } else {
                         target[key] = args[i][key];
                     }

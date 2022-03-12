@@ -1,8 +1,9 @@
 import type { Plugin } from 'esbuild';
 
 import { encode } from "../util/encode-decode";
-export const EMPTY_EXPORT = encode(`export default {}`);
+import { getCDNHost } from '../util/loader';
 
+export const EMPTY_EXPORT = encode(`export default {}`);
 export const PolyfillMap = {
     "console": 'console-browserify',
     "constants": 'constants-browserify',
@@ -55,32 +56,26 @@ export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/too
 export const ExternalPackages = ['chokidar', 'yargs', 'fsevents', `worker_threads`, "assert/strict", "async_hooks", "diagnostics_channel", "http2", "fs/promises", "inspector", "perf_hooks", "timers/promises", "trace_events", "v8", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 // Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51
-export const isExternal = (id: string) => {
-    return ExternalPackages.find((it: string): boolean => {
+export const isExternal = (id: string, external: string[] = []) => {
+    return [...ExternalPackages, ...external].find((it: string): boolean => {
         if (it === id) return true; // import 'foo' & external: ['foo']
         if (id.startsWith(`${it}/`)) return true; // import 'foo/bar.js' & external: ['foo']
         return false;
     });
 }
 
+export const ALIAS_NAMESPACE = 'alias-globals';
 export const EXTERNALS_NAMESPACE = 'external-globals';
-export const EXTERNAL = (): Plugin => {
+export const EXTERNAL = (external: string[] = []): Plugin => {
     return {
         name: EXTERNALS_NAMESPACE,
         setup(build) {
-            build.onResolve({ filter: /^node\:.*/ }, (args) => {
-                return {
-                    path: args.path,
-                    namespace: EXTERNALS_NAMESPACE,
-                    external: true
-                };
-            });
-
             build.onResolve({ filter: /.*/ }, (args) => {
                 let path = args.path.replace(/^node\:/, "");
-                if (isExternal(path)) {
+                let { argPath } = getCDNHost(path);
+                if (isExternal(argPath, external)) {
                     return {
-                        path,
+                        path: argPath,
                         namespace: EXTERNALS_NAMESPACE,
                         external: true
                     };

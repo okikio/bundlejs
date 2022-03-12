@@ -1,4 +1,3 @@
-
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
 import { HTTP_NAMESPACE } from './http';
@@ -77,12 +76,13 @@ export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveR
 }
 
 export const CDN_NAMESPACE = 'cdn-url';
-export const CDN = (): Plugin => {
+export const CDN = (host: string): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
             // Resolve bare imports to the CDN required using different URL schemes
-            build.onResolve({ filter: /.*/ }, CDN_RESOLVE());
+            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(host));
+            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(host));
         },
     };
 };

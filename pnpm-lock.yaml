@@ -2004,7 +2004,7 @@ packages:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
     dependencies:
-      mime-types: 2.1.34
+      mime-types: 2.1.35
       negotiator: 0.6.3
     dev: true
 
@@ -5233,8 +5233,8 @@ packages:
       space-separated-tokens: 2.0.1
     dev: true
 
-  /highlight.js/11.4.0:
-    resolution: {integrity: sha512-nawlpCBCSASs7EdvZOYOYVkJpGmAOKMYZgZtUqSRqodZE0GRVcFKwo1RcpeOemqh9hyttTdd5wDBwHkuSyUfnA==}
+  /highlight.js/11.5.0:
+    resolution: {integrity: sha512-SM6WDj5/C+VfIY8pZ6yW6Xa0Fm1tniYVYWYW1Q/DcMnISZFrC3aQAZZZFAAZtybKNrGId3p/DNbFTtcTXXgYBw==}
     engines: {node: '>=12.0.0'}
     dev: true
 
@@ -6198,12 +6198,12 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /lowlight/2.5.0:
-    resolution: {integrity: sha512-OXGUch9JZu4q5r4Ir6QlUp5pBXMxS7NHaclhRiUlxNRcOSK0gtXZcVrsGP4eM7bv0/KDHg/TXQagx/X35EULsA==}
+  /lowlight/2.6.0:
+    resolution: {integrity: sha512-Gas6VcSevLDRAtFP/kg3bj1Ozwncgd0jAgpIxIyNcO/Qm0csJnly9LLEdN75qc9t3l/g/JPFXCkFLe1LPxHozA==}
     dependencies:
       '@types/hast': 2.3.4
       fault: 2.0.1
-      highlight.js: 11.4.0
+      highlight.js: 11.5.0
     dev: true
 
   /lru-cache/6.0.0:
@@ -6359,16 +6359,16 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /mime-db/1.51.0:
-    resolution: {integrity: sha512-5y8A56jg7XVQx2mbv1lu49NR4dokRnhZYTtL+KGfaa27uq4pSTXkwQkFJl4pkRMyNFz/EtYDSkiiEHx3F7UN6g==}
+  /mime-db/1.52.0:
+    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
     dev: true
 
-  /mime-types/2.1.34:
-    resolution: {integrity: sha512-6cP692WwGIs9XXdOO4++N+7qjqv0rqxxVvJ3VHPh/Sc9mVZcQP+ZGhkKiTvWMQRr2tbHkJP/Yn7Y0npb3ZBs4A==}
+  /mime-types/2.1.35:
+    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
-      mime-db: 1.51.0
+      mime-db: 1.52.0
     dev: true
 
   /mime/1.4.1:
@@ -7667,7 +7667,7 @@ packages:
     dependencies:
       '@types/hast': 2.3.4
       hast-util-to-text: 3.1.1
-      lowlight: 2.5.0
+      lowlight: 2.6.0
       unified: 10.1.2
       unist-util-visit: 4.1.0
     dev: true
@@ -8072,7 +8072,7 @@ packages:
       debug: 2.6.9
       escape-html: 1.0.3
       http-errors: 1.6.3
-      mime-types: 2.1.34
+      mime-types: 2.1.35
       parseurl: 1.3.3
     dev: true
 

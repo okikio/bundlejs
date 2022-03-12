@@ -1,5 +1,5 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
-import { DefaultConfig } from "../configs/bundle-options";
+import { EasyDefaultConfig } from "../configs/bundle-options";
 import { deepAssign } from "./deep-equal";
 
 export const parseInput = (value: string) => {
@@ -128,6 +128,6 @@ export const parseConfig = (shareURL: URL) => {
     try {
         const searchParams = shareURL.searchParams;
         const config = searchParams.get("config") ?? "{}";
-        return deepAssign({}, DefaultConfig, JSON.parse(config ? config : "{}"));
+        return deepAssign({}, EasyDefaultConfig, JSON.parse(config ? config : "{}"));
     } catch (e) { }
 };
