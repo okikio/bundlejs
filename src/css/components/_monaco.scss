@@ -11,9 +11,9 @@
 .tab-btns {
   .action-btns {
     @apply flex;
-  .btn {
-    @apply border-0 dark:border-0;
-  }
+    .btn {
+      @apply border-0 dark:border-0;
+    }
   }
   .active {
     @apply bg-gray-100 dark:bg-quaternary dark:hover:bg-gray-800;
@@ -21,13 +21,13 @@
 }
 
 .settings-btn {
-    @apply px-3 py-2 rounded-md;
-    @apply flex items-center justify-center ;
-    svg {
-      vertical-align: middle;
-      fill: currentColor;
-      width: 1em;
-    }
+  @apply px-3 py-2 rounded-md;
+  @apply flex items-center justify-center;
+  svg {
+    vertical-align: middle;
+    fill: currentColor;
+    width: 1em;
+  }
 }
 
 .drag-section {
@@ -37,7 +37,7 @@
   }
 
   &.dynamic {
-    @apply flex lt-sm:flex-row items-center justify-center sm:h-full lt-sm:pt-2 lt-sm:pb-2;
+    @apply flex lt-sm:flex-row items-center justify-center sm:h-full lt-sm:pt-1 lt-sm:pb-1;
 
     .drag-handle {
       @apply w-12 h-1 sm:w-1 sm:h-12 rounded-full;
@@ -194,7 +194,6 @@
   // @apply bg-gray-200 dark:bg-quaternary;
   @apply bg-white border border-gray-300;
   @apply dark:bg-elevated dark:border-gray-700;
-
 }
 
 .file-size {
