@@ -9,24 +9,26 @@ import { resolve, legacy } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 import { getRequest } from '../util/cache';
 
-export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return async (args) => {
         if (isBareImport(args.path)) {
+            let { argPath, host } = getCDNHost(args.path, _host);
+
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-            let parsed = parsePackageName(args.path);
+            let parsed = parsePackageName(argPath);
             let subpath = parsed.path;
             let pkg = args.pluginData?.pkg ?? {};
             let path;
 
             // Resolving imports from package.json, if a package starts with "#" 
-            if (args.path[0] == "#") {
-                let path = resolveImports({ ...pkg, exports: pkg.imports }, args.path, {
+            if (argPath[0] == "#") {
+                let path = resolveImports({ ...pkg, exports: pkg.imports }, argPath, {
                     require: args.kind === "require-call" || args.kind === "require-resolve"
                 });
 
                 if (typeof path === "string") {
                     subpath = path.replace(/^\.?\/?/, "/");
-                    console.log("[CDN - Internal Import]", path, pkg);
+                    // console.log("[CDN - Internal Import]", path, pkg);
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
@@ -40,13 +42,13 @@ export const CDN_RESOLVE = (host?: string): (args: OnResolveArgs) => OnResolveRe
                 }
             } 
             
-            if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(args.path)) { 
+            if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(argPath)) { 
                 let { devDependencies = {}, dependencies = {}, peerDependencies = {} } = pkg;
                 let deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
                 let keys = Object.keys(deps);
 
-                if (keys.includes(args.path)) {
-                    parsed.version = deps[args.path];
+                if (keys.includes(argPath)) {
+                    parsed.version = deps[argPath];
                 }
             }
 
