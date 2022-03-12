@@ -123,7 +123,7 @@ export const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" });
 
 export const outputModelResetValue = "// Output";
 export const inputModelResetValue = [
-    '// Click Run for the Bundled, Minified & Gzipped package size',
+    '// Click Build for the Bundled, Minified & Gzipped package size',
     'export * from "@okikio/animate";'
 ].join("\n");
 export const configModelResetValue = JSON.stringify(DefaultConfig, null, "\t"); // Indented with tab;

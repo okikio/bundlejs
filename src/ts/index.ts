@@ -469,12 +469,12 @@ export const build = (app: App) => {
 
         // Listen to events for the results
         ResultEvents.on("add-module", (v) => {
-            value = isInitial ? "// Click Run for the Bundled + Minified + Gzipped package size" : `` + inputModel?.getValue();
+            value = isInitial ? "// Click Build for the Bundled + Minified + Gzipped package size" : `` + inputModel?.getValue();
             inputModel?.setValue((value + "\n" + v).trim());
         });
 
-        let RunBtn = Array.from(document.querySelectorAll("#run")) as HTMLElement[];
-        RunBtn.forEach(btn => {
+        let BuildBtn = Array.from(document.querySelectorAll("#build")) as HTMLElement[];
+        BuildBtn.forEach(btn => {
             btn?.addEventListener("click", () => {
                 (async () => {
                     if (!initialized)
