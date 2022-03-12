@@ -99,9 +99,6 @@ import { DefaultConfig } from "../configs/bundle-options.js";
 
 export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
 
-// JSON Language Workers currently have no exports so I can't get SharedWorkers to work with them
-export const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" }); // USE_SHAREDWORKER ? new WebWorker(JSON_WORKER_URL, { name: "json-worker" }) : 
-
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
 // bundles that contain the web workers.
@@ -110,6 +107,8 @@ export const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" });
         if (label === "typescript" || label === "javascript") {
             return TS_WORKER; 
         } else if (label === "json") {
+            // JSON Language Workers currently have no exports so I can't get SharedWorkers to work with them
+            const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" }); // USE_SHAREDWORKER ? new WebWorker(JSON_WORKER_URL, { name: "json-worker" }) : 
             return JSON_WORKER; 
         }
 
