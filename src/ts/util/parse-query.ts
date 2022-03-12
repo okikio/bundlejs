@@ -1,4 +1,5 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
+import { DefaultConfig } from "../configs/bundle-options";
 
 export const parseInput = (value: string) => {
     // const host = "https://registry.npmjs.com/-/v1/search?text";
@@ -33,8 +34,8 @@ export const parseInput = (value: string) => {
  * where the square brackets represent seperate packages, and everything inside the squarebrackets,
  * are the exported methods, types, etc...
  */
- export const parseTreeshakeExports = (str: string) =>
- (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
+export const parseTreeshakeExports = (str: string) =>
+    (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
 // Inspired by https://github.com/solidjs/solid-playground
 /**
@@ -42,7 +43,7 @@ export const parseInput = (value: string) => {
 * ```ts
 * "/?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{+animate+}],[{+animate+as+B+}],[*+as+TR],[{+type+animate+}],[*],[{+animate+as+A+}],[*+as+PR],[{+animate+}]&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA" 
 * // to
-* // Click Run for the Bundled, Minified & Gzipped package size
+* // Click Build for the Bundled, Minified & Gzipped package size
 * import T from "@okikio/emitter";
 * import { animate } from "@okikio/animate";
 * import { animate as B } from "@okikio/animate";
@@ -59,61 +60,87 @@ export const parseInput = (value: string) => {
 * - `share` represents all other code that isn't export/import
 */
 export const parseSearchQuery = (shareURL: URL) => {
- try {
-     const searchParams = shareURL.searchParams;
-     let result = "";
-     let query = searchParams.get("query") || searchParams.get("q");
-     let treeshake = searchParams.get("treeshake");
-     if (query) {
-         let queryArr = query.trim().split(",");
-         let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
-         result += (
-             "// Click Run for the Bundled, Minified & Gzipped package size\n" +
-             queryArr
-                 .map((q, i) => {
-                     let treeshakeExports =
-                         treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
-                             ? treeshakeArr[i].trim().split(",").join(", ")
-                             : "*";
-                     let [, ,
-                         declaration = "export",
-                         module
-                     ] = /^(\((.*)\))?(.*)/.exec(q);
-                     return `${declaration} ${treeshakeExports} from ${JSON.stringify(
-                         module
-                     )};`;
-                 })
-                 .join("\n")
-         );
-     }
+    try {
+        const searchParams = shareURL.searchParams;
+        let result = "";
+        let query = searchParams.get("query") || searchParams.get("q");
+        let treeshake = searchParams.get("treeshake");
+        if (query) {
+            let queryArr = query.trim().split(",");
+            let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
+            result += (
+                "// Click Build for the Bundled, Minified & Compressed package size\n" +
+                queryArr
+                    .map((q, i) => {
+                        let treeshakeExports =
+                            treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
+                                ? treeshakeArr[i].trim().split(",").join(", ")
+                                : "*";
+                        let [, ,
+                            declaration = "export",
+                            module
+                        ] = /^(\((.*)\))?(.*)/.exec(q);
+                        return `${declaration} ${treeshakeExports} from ${JSON.stringify(
+                            module
+                        )};`;
+                    })
+                    .join("\n")
+            );
+        }
 
-     let share = searchParams.get("share");
-     if (share) result += "\n" + decompressFromURL(share.trim());
+        let share = searchParams.get("share");
+        if (share) result += "\n" + decompressFromURL(share.trim());
 
-     let plaintext = searchParams.get("text");
-     if (plaintext) {
-         result += "\n" + JSON.parse(
+        let plaintext = searchParams.get("text");
+        if (plaintext) {
+            result += "\n" + JSON.parse(
+                /**  
              /**  
+                /**  
+                 * Support users wrapping/not-wrapping plaintext in a string, 
               * Support users wrapping/not-wrapping plaintext in a string, 
+                 * Support users wrapping/not-wrapping plaintext in a string, 
+                 * e.g. 
               * e.g. 
-              * ```md
+                 * e.g. 
+                 * ```md
+                 * 
               * 
-              * /?text="console.log(document)\nconsole.log(window)"
-              * and
-              * /?text=console.log(document)\nconsole.log(window)
+                 * 
+                 * /?text="console.log(document)\nconsole.log(window)"
+                 * and
+                 * /?text=console.log(document)\nconsole.log(window)
+                 * 
               * 
+                 * 
+                 * are the same, they result in 
               * are the same, they result in 
-              * ```ts
-              * console.log(document)
-              * console.log(window)
-              * ```
+                 * are the same, they result in 
+                 * ```ts
+                 * console.log(document)
+                 * console.log(window)
+                 * ```
+                 * 
               * 
-              * ```
-             */
-             /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\")
-         );
-     }
+                 * 
+                 * ```
+                */
+                /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\")
+            );
+        }
 
-     return result.trim();
- } catch (e) { }
+        return result.trim();
+    } catch (e) { }
+};
+
+/**
+* Converts URL's into config. 
+* - `config` represents the JSON config
+*/
+export const parseConfig = (shareURL: URL) => {
+    try {
+        const searchParams = shareURL.searchParams;
+        const config = searchParams.get("config") ?? "{}";
+        return Object.assign({}, DefaultConfig, JSON.parse(config ? config : "{}") ?? {});
+    } catch (e) { }
 };

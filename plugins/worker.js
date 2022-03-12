@@ -3,6 +3,7 @@
 import { join, dirname, basename } from "path";
 import esbuild from "esbuild";
 
+// import { WASM } from "./wasm/index.js";
 export const WEB_WORKER = () => {
     /**
      * @type {import('esbuild').Plugin}
@@ -74,7 +75,7 @@ export const WEB_WORKER = () => {
                                 loader: {
                                     ".ttf": "file",
                                     ".wasm": "file",
-                                },
+                                }
                             }),
 
                             /esbuild|empty/.test(workerFileName) ? esbuild.build({
@@ -101,7 +102,7 @@ export const WEB_WORKER = () => {
                                 loader: {
                                     ".ttf": "file",
                                     ".wasm": "file",
-                                },
+                                }
                             }) : Promise.resolve() 
                         ]);
 
