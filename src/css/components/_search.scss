@@ -23,7 +23,7 @@
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 150ms;
         @apply transform scale-[0.85] active:scale-75 active:bg-gray-600;
-        @apply hover:bg-white dark:hover:bg-tertiary;
+        @apply hover:bg-gray-200 dark:hover:bg-tertiary;
         @apply text-black dark:text-white m-0;
     }
 }

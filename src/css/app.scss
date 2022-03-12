@@ -307,15 +307,15 @@ footer.footer {
 
 .btn-highlight {
     @apply rounded-md mr-1 inline-block;
-    @apply text-blue-500 bg-gray-100 hover:bg-gray-200;
+    @apply text-blue-500 bg-gray-100 hover:bg-gray-300;
     @apply dark:text-blue-400 dark:bg-quaternary;
     @apply dark:hover:bg-gray-800;
     @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
 }
 
 .btn {
-    @apply px-3 py-2 rounded-md no-underline hover:bg-gray-200;
-    @apply text-blue-600 dark:text-blue-400 dark:hover:bg-quaternary;
+    @apply px-3 py-2 rounded-md no-underline hover:bg-gray-300;
+    @apply text-blue-600 dark:text-blue-400 dark:hover:bg-gray-800;
 
     &.active {
         @apply bg-blue-700 text-white hover:bg-blue-500;

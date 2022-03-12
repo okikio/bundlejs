@@ -184,6 +184,7 @@ task("js", async () => {
 
         { WEB_WORKER },
         { solidPlugin: SOLID },
+        { TS_TO_JSON },
     ] = await Promise.all([
         import("gulp-esbuild"),
         import("gulp-size"),
@@ -191,6 +192,7 @@ task("js", async () => {
 
         import("./plugins/worker.js"),
         import("esbuild-plugin-solid"),
+        import("./plugins/ts-to-json.js"),
     ]);
 
     const esbuild =
@@ -201,6 +203,7 @@ task("js", async () => {
     return stream(
         [
             `${tsFolder}/*.ts`,
+            `${tsFolder}/*.js`,
             `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
             `node_modules/esbuild-wasm/esbuild.wasm`,
@@ -228,7 +231,7 @@ task("js", async () => {
                         ".wasm": "file",
                     },
 
-                    plugins: [WEB_WORKER(), SOLID()],
+                    plugins: [WEB_WORKER(), SOLID(), TS_TO_JSON()],
                 }),
 
                 gulpif(
@@ -341,10 +344,7 @@ task("service-worker", async () => {
 
 // Other assets
 task("assets", () => {
-    return stream([`${assetsFolder}/**/*`], {
-        opts: {
-            base: assetsFolder,
-        },
+    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`], {
         dest: destFolder,
     });
 });
@@ -428,7 +428,7 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts}`, `!${tsFolder}/**/*.d.ts`],
+        [`${tsFolder}/**/*.{tsx,ts,js}`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
         series("js", /* "preload-chunks", */ "service-worker", "reload")
     );
