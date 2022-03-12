@@ -1,34 +1,31 @@
 import type { BuildOptions } from "esbuild-wasm";
 
-export type BundleConfigOptions = BuildOptions & { 
-    other: {
-        compression: {
-            type: "gzip" | "brotli",
-            quality: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
-        }
-    }
+/** The compression algorithim to use, there are currently 2 options "gzip" and "brotli" */
+export type CompressionType = "gzip" | "brotli";
+export type BundleConfigOptions = { 
+    esbuild?: BuildOptions,
+    compression?: {
+        type: CompressionType,
+        quality: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+    } | CompressionType
 };
 
 export const DefaultConfig: BundleConfigOptions = {
-    "target": ["esnext"],
-    "format": "esm",
-    "bundle": true,
-    "minify": true,
-    "color": true,
+    "compression": "gzip",
+    "esbuild": {
+        "target": ["esnext"],
+        "format": "esm",
+        "bundle": true,
+        "minify": true,
+        "color": true,
 
-    "treeShaking": true,
-    "platform": "browser",
-    "globalName": "bundledCode",
+        "treeShaking": true,
+        "platform": "browser",
+        "globalName": "bundledCode",
 
-    "logLevel": "info",
-    "sourcemap": false,
-    "incremental": false,
-    
-    "other": {
-        "compression": {
-            "type": "gzip",
-            "quality": 9
-        }
+        "logLevel": "info",
+        "sourcemap": false,
+        "incremental": false,
     }
 }
 

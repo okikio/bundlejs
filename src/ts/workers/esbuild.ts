@@ -14,6 +14,7 @@ import { render as ansi } from "../util/ansi";
 
 import { DefaultConfig } from "../configs/bundle-options";
 
+import type { BundleConfigOptions } from "../configs/bundle-options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
 
 let _initialized = false;
@@ -91,13 +92,11 @@ export const start = async (port) => {
         initEvent.emit("init");
 
     BuildEvents.on("build", (details) => {
-        let { config = "{}", value: input } = details;
-        config = JSON.parse(config ? config : "{}") ?? {};
+        let { config, value: input } = details;
+        config = (JSON.parse(config ? config : "{}") ?? {}) as BundleConfigOptions;
 
         // Exclude certain properties
-        let { define = {}, loader = {}, other = {}, ...remainingConfig } = config;
-        let { other: _, ...defaultConfig } = DefaultConfig;
-
+        let { define = {}, loader = {}, ...esbuildOpts } = config.esbuild ?? {};
         logger("Bundling 🚀");
 
         if (!_initialized) {
@@ -124,8 +123,8 @@ export const start = async (port) => {
                             loader: 'ts',
                         },
                         
-                        ...defaultConfig,
-                        ...remainingConfig,
+                        ...(DefaultConfig.esbuild),
+                        ...esbuildOpts,
 
                         write: false,
                         loader: {
@@ -219,8 +218,11 @@ export const start = async (port) => {
 
             // Use pako & pretty-bytes for gzipping
             try {
-                let { compression = {} } = other;
-                let { type = "gzip", level = 9 } = compression;
+                let { compression = {} } = config;
+                let { type = "gzip", level = 9 } = 
+                    typeof compression == "string" ? 
+                        { type: compression } : 
+                        (compression ?? {});
 
                 // @ts-ignore
                 let totalByteLength = prettyBytes(
