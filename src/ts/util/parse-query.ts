@@ -43,7 +43,7 @@ export const parseTreeshakeExports = (str: string) =>
 * ```ts
 * "/?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{+animate+}],[{+animate+as+B+}],[*+as+TR],[{+type+animate+}],[*],[{+animate+as+A+}],[*+as+PR],[{+animate+}]&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA" 
 * // to
-* // Click Run for the Bundled, Minified & Gzipped package size
+* // Click Build for the Bundled, Minified & Gzipped package size
 * import T from "@okikio/emitter";
 * import { animate } from "@okikio/animate";
 * import { animate as B } from "@okikio/animate";
@@ -69,7 +69,7 @@ export const parseSearchQuery = (shareURL: URL) => {
             let queryArr = query.trim().split(",");
             let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
             result += (
-                "// Click Run for the Bundled, Minified & Gzipped package size\n" +
+                "// Click Build for the Bundled, Minified & Compressed package size\n" +
                 queryArr
                     .map((q, i) => {
                         let treeshakeExports =
