@@ -24,4 +24,10 @@ let b = {
         "color": true,
     }
 };
-console.log(deepAssign({}, a, deepDiff(a, b)))
+// console.log(deepAssign({}, a, deepDiff(a, b)))
+
+import { encode, decode } from "./src/ts/util/encode-decode";
+import { compress } from "./src/ts/deno/lz4/mod";
+(async () => {
+console.log(decode(await compress(encode("https://bundle.js.org/?q=unpkg:@okikio/animate&config={%22compression%22:%22brotli%22,%22esbuild%22:{%22minify%22:false}}"))));
+})();

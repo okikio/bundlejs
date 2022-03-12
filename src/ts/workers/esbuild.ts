@@ -4,6 +4,7 @@ import { EventEmitter } from "@okikio/emitter";
 import prettyBytes from "pretty-bytes";
 import { gzip } from "pako";
 import { compress } from "../deno/brotli/mod";
+import { compress as lz4_compress } from "../deno/lz4/mod";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";
@@ -11,12 +12,12 @@ import { CDN } from "../plugins/cdn";
 
 import { encode, decode } from "../util/encode-decode";
 import { render as ansi } from "../util/ansi";
+import { deepAssign } from "../util/deep-equal";
 
 import { DefaultConfig } from "../configs/bundle-options";
 
 import type { BundleConfigOptions } from "../configs/bundle-options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
-import { deepAssign } from "../util/deep-equal";
 
 let _initialized = false;
 export const initEvent = new EventEmitter();
@@ -171,7 +172,7 @@ export const start = async (port) => {
                     // For debugging reasons
                     if (config?.logLevel == "verbose" && !ignoreFile) {
                         console.groupCollapsed(path); 
-                        console.log(text)
+                        console.log(text);
                         console.groupEnd();
                     }
 
@@ -230,7 +231,16 @@ export const start = async (port) => {
                 );
                 let totalCompressedSize = prettyBytes(
                     (await Promise.all(
-                        content.map((v: Uint8Array) => type == "brotli" ? compress(v, v.length, level) : gzip(v, { level }))
+                        content.map((v: Uint8Array) => { 
+                            switch (type) {
+                                case "lz4":
+                                    return lz4_compress(v);
+                                case "brotli": 
+                                    return compress(v, v.length, level);
+                                default:  
+                                    return gzip(v, { level });
+                            }
+                        })
                     )).reduce((acc, { length }) => acc + length, 0) 
                 );
 

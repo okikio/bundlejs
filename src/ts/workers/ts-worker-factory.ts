@@ -13,7 +13,7 @@ import { compressToURL } from "@amoutonbrady/lz-string";
 import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
-import { deepDiff, deepEqual } from "../util/deep-equal";
+import { deepDiff } from "../util/deep-equal";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
