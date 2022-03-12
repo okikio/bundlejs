@@ -1,1 +1,2 @@
+/// <reference lib="webworker" />
 export {};
