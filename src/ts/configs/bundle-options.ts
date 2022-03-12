@@ -1,14 +1,14 @@
 import type { BuildOptions } from "esbuild-wasm";
 
-/** The compression algorithim to use, there are currently 2 options "gzip" and "brotli" */
-export type CompressionType = "gzip" | "brotli";
+/** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
+export type CompressionType = "gzip" | "brotli" | "lz4";
 export type BundleConfigOptions = { 
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: BuildOptions,
     
-    /** The compression algorithim to use, there are currently 2 options "gzip" and "brotli" */
+    /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
     compression?: {
-        /** The compression algorithim to use, there are currently 2 options "gzip" and "brotli" */
+        /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
         type: CompressionType,
 
         /** Compression quality ranging from 1 to 11 */
