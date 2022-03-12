@@ -1,3 +1,24 @@
+# [0.2.0](https://github.com/okikio/bundle/compare/v0.1.0...v0.2.0) (2022-03-12)
+
+
+### Bug Fixes
+
+* fix missing initialSize from console ([7716174](https://github.com/okikio/bundle/commit/7716174418be1239fa18f60b906d94fdcfa79ab0))
+* rename run button to build ([6fb0ee3](https://github.com/okikio/bundle/commit/6fb0ee30ebe98104422b9dabe99aab05e18a091e))
+
+
+### Features
+
+* add brotli compression support, (WIP) make it configurable ([e56a174](https://github.com/okikio/bundle/commit/e56a1749c35a3daa2bc77b5ae434c61741b54a09))
+* add support for custom configs ([f7ad05e](https://github.com/okikio/bundle/commit/f7ad05e7aa61f1441b3d0f0f340d81f002019cd4))
+* increase max number of console lines to 250 ([06bcdb6](https://github.com/okikio/bundle/commit/06bcdb6b8ed4a735277742871c794cf43d2f541a))
+* switch to dprint for formatting ([49e3801](https://github.com/okikio/bundle/commit/49e3801b8d88b1c1a9c1e4e67ef6364f262d3967))
+
+
+### Performance Improvements
+
+* speed-up bundle ([c845bb0](https://github.com/okikio/bundle/commit/c845bb05df1f093bd51ddb27f671c693b145954d))
+
 # [0.1.0](https://github.com/okikio/bundle/compare/v0.0.5...v0.1.0) (2022-02-26)
 
 
