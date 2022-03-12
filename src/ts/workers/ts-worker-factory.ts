@@ -13,7 +13,7 @@ import { compressToURL } from "@amoutonbrady/lz-string";
 import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
-import { deepEqual } from "../util/deep-equal";
+import { deepDiff, deepEqual } from "../util/deep-equal";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -141,14 +141,8 @@ const worker = (TypeScriptWorker, fileMap) => {
             config = JSON.parse(config ? config : "{}") ?? {};
 
             // Basically only keep the config options that have changed from the default
-            let changedEntries = Object.entries(config).map(([key, value]) => {
-                if (key in DefaultConfig && deepEqual(DefaultConfig[key], value)) {
-                    return null;
-                }
-
-                return [key, value];
-            }).filter(v => v !== null) as any;
-            let changedConfig = Object.fromEntries(changedEntries);
+            let changedConfig = deepDiff(DefaultConfig, config);
+            let changedEntries = Object.keys(changedConfig);
 
             // Collect the first few import and export statements
             let ImportExportStatements = [];

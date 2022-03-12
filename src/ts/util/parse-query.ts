@@ -1,5 +1,6 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
 import { DefaultConfig } from "../configs/bundle-options";
+import { deepAssign } from "./deep-equal";
 
 export const parseInput = (value: string) => {
     // const host = "https://registry.npmjs.com/-/v1/search?text";
@@ -94,35 +95,21 @@ export const parseSearchQuery = (shareURL: URL) => {
         let plaintext = searchParams.get("text");
         if (plaintext) {
             result += "\n" + JSON.parse(
-                /**  
-             /**  
-                /**  
+                /**    
                  * Support users wrapping/not-wrapping plaintext in a string, 
-              * Support users wrapping/not-wrapping plaintext in a string, 
-                 * Support users wrapping/not-wrapping plaintext in a string, 
-                 * e.g. 
-              * e.g. 
                  * e.g. 
                  * ```md
                  * 
-              * 
                  * 
                  * /?text="console.log(document)\nconsole.log(window)"
                  * and
                  * /?text=console.log(document)\nconsole.log(window)
                  * 
-              * 
                  * 
-                 * are the same, they result in 
-              * are the same, they result in 
                  * are the same, they result in 
                  * ```ts
                  * console.log(document)
                  * console.log(window)
-                 * ```
-                 * 
-              * 
-                 * 
                  * ```
                 */
                 /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\")
@@ -141,6 +128,6 @@ export const parseConfig = (shareURL: URL) => {
     try {
         const searchParams = shareURL.searchParams;
         const config = searchParams.get("config") ?? "{}";
-        return Object.assign({}, DefaultConfig, JSON.parse(config ? config : "{}") ?? {});
+        return deepAssign({}, DefaultConfig, JSON.parse(config ? config : "{}"));
     } catch (e) { }
 };

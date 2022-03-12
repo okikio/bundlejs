@@ -16,6 +16,7 @@ import { DefaultConfig } from "../configs/bundle-options";
 
 import type { BundleConfigOptions } from "../configs/bundle-options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
+import { deepAssign } from "../util/deep-equal";
 
 let _initialized = false;
 export const initEvent = new EventEmitter();
@@ -93,7 +94,7 @@ export const start = async (port) => {
 
     BuildEvents.on("build", (details) => {
         let { config, value: input } = details;
-        config = (JSON.parse(config ? config : "{}") ?? {}) as BundleConfigOptions;
+        config = deepAssign({}, DefaultConfig, JSON.parse(config ? config : "{}")) as BundleConfigOptions;
 
         // Exclude certain properties
         let { define = {}, loader = {}, ...esbuildOpts } = config.esbuild ?? {};
@@ -123,7 +124,6 @@ export const start = async (port) => {
                             loader: 'ts',
                         },
                         
-                        ...(DefaultConfig.esbuild),
                         ...esbuildOpts,
 
                         write: false,

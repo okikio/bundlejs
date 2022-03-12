@@ -14,7 +14,8 @@
         "dev": "pnpm watch",
         "test": "pnpm build",
         "pre-release": "pnpm test",
-        "semantic-release": "semantic-release"
+        "semantic-release": "semantic-release",
+        "repl": "tsm repl.ts"
     },
     "release": {
         "branches": [

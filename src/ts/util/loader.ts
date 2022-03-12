@@ -26,7 +26,6 @@ export const inferLoader = (url: string): Loader => {
 
 export const HOST = 'https://unpkg.com';
 export const getCDNHost = (url: string, host = HOST) => {
-    let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
     if (/^skypack\:/.test(url)) {
         host = `https://cdn.skypack.dev`;
     } else if (/^(esm\.sh|esm)\:/.test(url)) {
@@ -36,13 +35,11 @@ export const getCDNHost = (url: string, host = HOST) => {
     } else if (/^(jsdelivr|esm\.run)\:/.test(url)) {
         host = `https://cdn.jsdelivr.net/npm`;
     }
-
-    // typescript will only work on esm.sh
-    else if (/^typescript/.test(url)) {
-        host = `https://unpkg.com`;
-    }
     
     host = /\/$/.test(host) ? host : `${host}/`;
+
+    let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
+    console.log(host, argPath)
     return { argPath, host, url: host + argPath.replace(/^\//, "") };
 }
 
