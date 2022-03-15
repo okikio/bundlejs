@@ -56,3 +56,17 @@ All you need to do is to add this to your `README.md`
 
 You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
 
+
+## Backers
+
+Backers are awesome people and organizations who use, enjoy, and donate to the project. The list of backers who love and support this project are,
+
+<!---
+<a href="https://opencollective.com/bundle"><img src="https://opencollective.com/bundle/individuals.svg?width=890"></a>
+<a href="https://opencollective.com/bundle"><img src="https://opencollective.com/bundle/organizations.svg?width=890"></a>
+<object type="image/svg+xml" data="https://opencollective.com/collective/tiers/backers.svg?avatarHeight=36&width=600"></object>
+-->
+
+<a href="https://opencollective.com/bundle/organization/0/website"><img src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128"></a>
+<a href="https://opencollective.com/bundle/organization/1/website"><img src="https://opencollective.com/bundle/organization/1/avatar.svg"></a>
+
