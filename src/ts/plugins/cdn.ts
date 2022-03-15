@@ -8,16 +8,15 @@ import { resolve, legacy } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 import { getRequest } from '../util/cache';
 
-export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return async (args) => {
         if (isBareImport(args.path)) {
-            let { argPath, host } = getCDNHost(args.path, _host);
+            let { argPath, host, query } = getCDNHost(args.path, _host);
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             let parsed = parsePackageName(argPath);
             let subpath = parsed.path;
             let pkg = args.pluginData?.pkg ?? {};
-            let path;
 
             // Resolving imports from package.json, if a package starts with "#" 
             if (argPath[0] == "#") {
@@ -35,13 +34,13 @@ export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveR
                     let { url } = getCDNHost(`${pkg.name}@${pkg.version}${subpath}`);
                     return {
                         namespace: HTTP_NAMESPACE,
-                        path: url,
+                        path: url + query,
                         pluginData: { pkg }
                     };
                 }
-            } 
-            
-            if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(argPath)) { 
+            }
+
+            if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(argPath)) {
                 let { devDependencies = {}, dependencies = {}, peerDependencies = {} } = pkg;
                 let deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
                 let keys = Object.keys(deps);
@@ -51,24 +50,28 @@ export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveR
                 }
             }
 
-            let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
+            try {
+                let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
 
-            // Strongly cache package.json files
-            pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
-            path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
-                require: args.kind === "require-call" || args.kind === "require-resolve",
-            }) || legacy(pkg);
+                // Strongly cache package.json files
+                pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
+                let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+                    require: args.kind === "require-call" || args.kind === "require-resolve",
+                }) || legacy(pkg);
 
-            if (typeof path === "string")
-                subpath = path.replace(/^\.?\/?/, "/");
+                if (typeof path === "string")
+                    subpath = path.replace(/^\.?\/?/, "/");
 
-            if (subpath && subpath[0] !== "/")
-                subpath = `/${subpath}`;
+                if (subpath && subpath[0] !== "/")
+                    subpath = `/${subpath}`;
+            } catch (e) {
+                logger([e, "There is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json."], "error");
+            }
 
             let { url } = getCDNHost(`${parsed.name}@${parsed.version}${subpath}`, host);
             return {
                 namespace: HTTP_NAMESPACE,
-                path: url,
+                path: url + query,
                 pluginData: { pkg }
             };
         }
@@ -76,13 +79,13 @@ export const CDN_RESOLVE = (_host?: string): (args: OnResolveArgs) => OnResolveR
 }
 
 export const CDN_NAMESPACE = 'cdn-url';
-export const CDN = (host: string): Plugin => {
+export const CDN = (logger = console.log, host: string): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
             // Resolve bare imports to the CDN required using different URL schemes
-            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(host));
-            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(host));
+            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(logger, host));
+            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(logger, host));
         },
     };
 };
