@@ -51,7 +51,7 @@ export const HTTP = (assets: OutputFile[] = [], logger: (messages: string[] | an
                 if (!argPath.startsWith(".")) {
                     let { origin } = new URL(path);
                     if (isBareImport(argPath)) {
-                        return CDN_RESOLVE(origin)(args);
+                        return CDN_RESOLVE(logger, origin)(args);
                     } else {
                         return {
                             path: getCDNHost(argPath, origin).url,
@@ -95,8 +95,7 @@ export const HTTP = (assets: OutputFile[] = [], logger: (messages: string[] | an
                     );
                 }
 
-                await Promise.all(promises);
-                
+                await Promise.all(promises);  
                 return {
                     contents: content,
                     loader: inferLoader(url),

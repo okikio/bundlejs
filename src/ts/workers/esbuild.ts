@@ -150,7 +150,7 @@ export const start = async (port) => {
                             ALIAS(config?.alias),
                             EXTERNAL(esbuildOpts?.external),
                             HTTP(assets, logger),
-                            CDN(config?.cdn),
+                            CDN(logger, config?.cdn),
                         ],
                         outdir: "/"
                     });
