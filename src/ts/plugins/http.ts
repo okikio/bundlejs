@@ -1,9 +1,9 @@
 // Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts
-import type { OutputFile, Plugin } from 'esbuild';
+import type { OnResolveArgs, OnResolveResult, OutputFile, Plugin } from 'esbuild';
 
 import { getRequest } from '../util/cache';
 import { decode } from '../util/encode-decode';
-import { getCDNHost, inferLoader, isBareImport } from '../util/loader';
+import { getCDNHost, HOST, inferLoader, isBareImport } from '../util/loader';
 
 import { urlJoin } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
@@ -24,8 +24,43 @@ export async function fetchPkg(url: string, logger = console.log) {
     }
 }
 
+export const HTTP_RESOLVE = (logger = console.log): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+    return (args) => {
+        let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
+        if (!argPath.startsWith(".")) {  
+            if (/^https?:\/\//.test(argPath)) { 
+                return {
+                    path: argPath,
+                    namespace: HTTP_NAMESPACE,
+                    pluginData: { pkg: args.pluginData?.pkg },
+                };
+            }
+
+            let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : HOST, "../", argPath);
+            console.log(path, args, args.pluginData?.url)
+            let { origin } = new URL(path);
+            if (isBareImport(argPath)) {
+                return CDN_RESOLVE(logger, origin)(args);
+            } else {
+                return {
+                    path: getCDNHost(argPath, origin).url,
+                    namespace: HTTP_NAMESPACE,
+                    pluginData: { pkg: args.pluginData?.pkg },
+                };
+            }
+        }
+
+        let path = urlJoin(args.pluginData?.url, "../", argPath);
+        return {
+            path,
+            namespace: HTTP_NAMESPACE,
+            pluginData: { pkg: args.pluginData?.pkg },
+        };
+    };
+};
+
 export const HTTP_NAMESPACE = 'http-url';
-export const HTTP = (assets: OutputFile[] = [], logger: (messages: string[] | any, type?: "error" | "warning" | any) => void): Plugin => {
+export const HTTP = (logger = console.log, assets: OutputFile[] = []): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -45,28 +80,7 @@ export const HTTP = (assets: OutputFile[] = [], logger: (messages: string[] | an
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, args => {
-                let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
-                let path = urlJoin(args.pluginData?.url, "../", argPath);
-                if (!argPath.startsWith(".")) {
-                    let { origin } = new URL(path);
-                    if (isBareImport(argPath)) {
-                        return CDN_RESOLVE(logger, origin)(args);
-                    } else {
-                        return {
-                            path: getCDNHost(argPath, origin).url,
-                            namespace: HTTP_NAMESPACE,
-                            pluginData: { pkg: args.pluginData?.pkg },
-                        };
-                    }
-                }
-
-                return {
-                    path, 
-                    namespace: HTTP_NAMESPACE,
-                    pluginData: { pkg: args.pluginData?.pkg },
-                };
-            });
+            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(logger));
 
             // When a URL is loaded, we want to actually download the content
             // from the internet. This has just enough logic to be able to

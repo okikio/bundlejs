@@ -147,9 +147,9 @@ export const start = async (port) => {
                             ...define
                         },
                         plugins: [
-                            ALIAS(config?.alias),
+                            ALIAS(logger, config?.alias),
                             EXTERNAL(esbuildOpts?.external),
-                            HTTP(assets, logger),
+                            HTTP(logger, assets),
                             CDN(logger, config?.cdn),
                         ],
                         outdir: "/"
