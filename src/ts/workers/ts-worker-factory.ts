@@ -161,7 +161,6 @@ const worker = (TypeScriptWorker, fileMap) => {
                             (node as ts.ImportDeclaration)?.importClause : 
                             (node as ts.ExportDeclaration)?.exportClause;
                             
-                        console.log(isImport, node, clause)
                         ImportExportStatements.push({
                             kind: isImport ? "import" : "export",
                             clause: clause?.getText() ?? "*",
@@ -175,7 +174,6 @@ const worker = (TypeScriptWorker, fileMap) => {
                 }
             );
 
-            console.log(ImportExportStatements)
             // Remove import and export statements
             let remainingCode = source.getFullText();
             [...ImportExportStatements].map(({ pos }) => {
