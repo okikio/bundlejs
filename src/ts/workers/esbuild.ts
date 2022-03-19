@@ -125,8 +125,8 @@ export const start = async (port) => {
                         "stdin": {
                             // Ensure input is a string
                             contents: `${input}`,
-                            loader: 'ts',
-                            sourcefile: "/bundle.ts"
+                            loader: 'tsx',
+                            sourcefile: "/bundle.tsx"
                         },
                         
                         ...esbuildOpts,

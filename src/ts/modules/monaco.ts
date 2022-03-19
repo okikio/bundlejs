@@ -151,7 +151,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     let inputModel = Editor.createModel(
         initialValue,
         "typescript",
-        Uri.parse("file://input.ts")
+        Uri.parse("file://input.tsx")
     );
     let outputModel = Editor.createModel(
         outputModelResetValue,
@@ -249,7 +249,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
     
-        jsx: languages.typescript.JsxEmit.React,
+        jsx: languages.typescript.JsxEmit.ReactJSX,
     });
     
     // @ts-ignore

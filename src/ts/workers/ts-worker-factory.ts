@@ -150,22 +150,21 @@ const worker = (TypeScriptWorker, fileMap) => {
             source.forEachChild(
                 (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
                     let isImport =
-                        node.kind == SyntaxKind.ImportDeclaration - 1;
+                        node.kind == SyntaxKind.ImportDeclaration;
                     let isExport =
-                        node.kind == SyntaxKind.ExportDeclaration - 1;
+                        node.kind == SyntaxKind.ExportDeclaration;
                     if (!BackToBackImportExport) return;
 
                     BackToBackImportExport = isImport || isExport || Boolean(node.moduleSpecifier);
                     if (BackToBackImportExport) {
+                        let clause = isImport ? 
+                            (node as ts.ImportDeclaration)?.importClause : 
+                            (node as ts.ExportDeclaration)?.exportClause;
+                            
+                        console.log(isImport, node, clause)
                         ImportExportStatements.push({
                             kind: isImport ? "import" : "export",
-                            clause:
-                                (isImport
-                                    ? (node as ts.ImportDeclaration)
-                                        .importClause
-                                    : (node as ts.ExportDeclaration)
-                                        .exportClause
-                                )?.getText() ?? "*",
+                            clause: clause?.getText() ?? "*",
                             module: node.moduleSpecifier.getText(),
                             pos: {
                                 start: node.pos,
@@ -176,9 +175,10 @@ const worker = (TypeScriptWorker, fileMap) => {
                 }
             );
 
+            console.log(ImportExportStatements)
             // Remove import and export statements
             let remainingCode = source.getFullText();
-            ImportExportStatements.map(({ pos }) => {
+            [...ImportExportStatements].map(({ pos }) => {
                 let { start, end } = pos;
                 let snippet = remainingCode.substring(start, end);
                 return snippet;
@@ -200,7 +200,7 @@ const worker = (TypeScriptWorker, fileMap) => {
                     v.clause
                         .split(",")
                         .map((s) => s.trim())
-                        .join("") +
+                        .join(",") +
                     "],";
             });
 
