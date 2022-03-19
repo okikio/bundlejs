@@ -60,7 +60,7 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
                 }) || legacy(pkg);
 
                 if (typeof path === "string")
-                    subpath = path.replace(/^\.?\/?/, "/");
+                    subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
                 if (subpath && subpath[0] !== "/")
                     subpath = `/${subpath}`;
