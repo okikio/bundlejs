@@ -427,7 +427,7 @@ export const build = (app: App) => {
         );
 
         const shareBtn = Array.from(document.querySelectorAll(
-            ".btn-share#share"
+            ".btn-permalink#share"
         )) as HTMLButtonElement[];
         const shareInput = document.querySelector(
             "#copy-input"
