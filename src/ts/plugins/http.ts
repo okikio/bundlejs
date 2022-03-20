@@ -37,7 +37,6 @@ export const HTTP_RESOLVE = (logger = console.log): (args: OnResolveArgs) => OnR
             }
 
             let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : HOST, "../", argPath);
-            console.log(path, args, args.pluginData?.url)
             let { origin } = new URL(path);
             if (isBareImport(argPath)) {
                 return CDN_RESOLVE(logger, origin)(args);
