@@ -3,7 +3,8 @@ import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
 import prettyBytes from "pretty-bytes";
-import { gzip } from "pako";
+// import { gzip } from "pako";
+import { gzip, getWASM } from "../deno/denoflate/mod";
 import { compress } from "../deno/brotli/mod";
 import { compress as lz4_compress } from "../deno/lz4/mod";
 
@@ -27,6 +28,7 @@ export const initEvent = new EventEmitter();
 (async () => {
     try {
         if (!_initialized) {
+            await getWASM();
             await initialize({
                 worker: false,
                 wasmURL: `./esbuild.wasm`
@@ -147,9 +149,9 @@ export const start = async (port) => {
                             ...define
                         },
                         plugins: [
-                            ALIAS(logger, config?.alias),
+                            ALIAS(logger, config?.alias, config?.cdn),
                             EXTERNAL(esbuildOpts?.external),
-                            HTTP(logger, assets),
+                            HTTP(logger, assets, config?.cdn),
                             CDN(logger, config?.cdn),
                         ],
                         outdir: "/"
@@ -246,7 +248,7 @@ export const start = async (port) => {
                                 case "brotli": 
                                     return compress(v, v.length, level);
                                 default:  
-                                    return gzip(v, { level });
+                                    return gzip(v, level);
                             }
                         })
                     )).reduce((acc, { length }) => acc + length, 0) 

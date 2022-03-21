@@ -34,11 +34,13 @@ export const getCDNHost = (url: string, host = HOST) => {
         host = `https://unpkg.com`;
     } else if (/^(jsdelivr|esm\.run)\:/.test(url)) {
         host = `https://cdn.jsdelivr.net/npm`;
+    } else if (/^(deno)\:/.test(url)) {
+        host = `https://deno.land/x`;
     }
     
     host = /\/$/.test(host) ? host : `${host}/`;
 
-    let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
+    let argPath = url.replace(/^(deno|skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
     let _url = new URL(host + argPath.replace(/^\//, ""));
     let noQuery = (urlStr: string) => _url.search ? urlStr.replace(_url.search, "") : urlStr;
     return { argPath: noQuery(argPath), host, url: noQuery(_url.toString()), query: _url.search };

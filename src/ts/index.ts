@@ -122,10 +122,10 @@ BundleEvents.on({
         messages = [].concat(messages ?? []);
         if (!/error|warning/.test(type))
             messages.forEach(log => console.log(log));
-        let logs = messages.map(msg => {
-            msg = msg.replace(/(https?:\/\/[^\s\)]+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
+        let logs = messages.map((msg = "") => {
+            msg = (msg ?? "").replace(/(https?:\/\/[^\s\)]+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
             let [title, ...message] = msg.split(/\n/);
-            return ({ type, title, message: message.join("\n") });
+            return ({ type, title, message: (message ?? []).join("\n") });
         });
 
         addLogs(logs);

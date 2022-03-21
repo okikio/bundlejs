@@ -11,7 +11,8 @@ import { getRequest } from '../util/cache';
 export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return async (args) => {
         if (isBareImport(args.path)) {
-            let { argPath, host, query } = getCDNHost(args.path, _host);
+            // Support a different default CDN + allow for custom CDN url schemes
+            let { argPath, host, query } = getCDNHost(args.path, !/:/.test(_host) ? getCDNHost(_host + ":").host : _host);
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             let parsed = parsePackageName(argPath);
@@ -31,7 +32,7 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
 
-                    let { url } = getCDNHost(`${pkg.name}@${pkg.version}${subpath}`);
+                    let { url } = getCDNHost(`${pkg.name}@${/^https?\:\/\/deno.land/.test(host) ? "" : "@" + pkg.version}${subpath}`);
                     return {
                         namespace: HTTP_NAMESPACE,
                         path: url + query,
@@ -51,24 +52,27 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
             }
 
             try {
-                let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
+                if (!/^https?\:\/\/deno.land/.test(host)) {
+                    let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
 
-                // Strongly cache package.json files
-                pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
-                let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
-                    require: args.kind === "require-call" || args.kind === "require-resolve",
-                }) || legacy(pkg);
+                    // Strongly cache package.json files
+                    pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
+                    let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+                        require: args.kind === "require-call" || args.kind === "require-resolve",
+                    }) || legacy(pkg);
 
-                if (typeof path === "string")
-                    subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
+                    if (typeof path === "string")
+                        subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
-                if (subpath && subpath[0] !== "/")
-                    subpath = `/${subpath}`;
+                    if (subpath && subpath[0] !== "/")
+                        subpath = `/${subpath}`;
+                }
             } catch (e) {
-                logger([e, "There is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json."], "error");
+                logger([`You may want to change CDNs. The current CDN "${host}" doesn't support package.json.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warn");
+                console.warn(e)
             }
 
-            let { url } = getCDNHost(`${parsed.name}@${parsed.version}${subpath}`, host);
+            let { url } = getCDNHost(`${parsed.name}${/^https?\:\/\/deno.land/.test(host) ? "" : "@" + parsed.version}${subpath}`, host);
             return {
                 namespace: HTTP_NAMESPACE,
                 path: url + query,

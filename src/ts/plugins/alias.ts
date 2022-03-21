@@ -1,7 +1,7 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
 import { parse as parsePackageName } from "parse-package-name";
-import { getCDNHost, isBareImport } from '../util/loader';
+import { getCDNHost, HOST, isBareImport } from '../util/loader';
 import { EXTERNALS_NAMESPACE } from './external';
 import { HTTP_RESOLVE } from './http';
 
@@ -17,14 +17,14 @@ export const isAlias = (id: string, aliases = {}) => {
     });
 }
 
-export const ALIAS_RESOLVE = (logger = console.log, _aliases = {}): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const ALIAS_RESOLVE = (logger = console.log, _aliases = {}, host = HOST): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return (args) => {
         let path = args.path.replace(/^node\:/, "");
         let { argPath } = getCDNHost(path);
         if (isAlias(argPath, _aliases)) {
             let pkgDetails = parsePackageName(argPath);
             let aliasPath = _aliases[pkgDetails.name];
-            return HTTP_RESOLVE(logger)({
+            return HTTP_RESOLVE(logger, host)({
                 ...args,
                 path: aliasPath
             });
@@ -33,13 +33,13 @@ export const ALIAS_RESOLVE = (logger = console.log, _aliases = {}): (args: OnRes
 };
 
 export const ALIAS_NAMESPACE = 'alias-globals';
-export const ALIAS = (logger = console.log, aliases = {}): Plugin => {
+export const ALIAS = (logger = console.log, aliases = {}, host = HOST): Plugin => {
     return {
         name: ALIAS_NAMESPACE,
         setup(build) {
             build.onResolve({ filter: /^node\:.*/ }, (args) => {
                 if (isAlias(args.path, aliases)) 
-                    return ALIAS_RESOLVE(logger, aliases)(args);
+                    return ALIAS_RESOLVE(logger, aliases, host)(args);
 
                 return {
                     path: args.path,
@@ -48,8 +48,8 @@ export const ALIAS = (logger = console.log, aliases = {}): Plugin => {
                 };
             });
 
-            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(logger, aliases));
-            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(logger, aliases));
+            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(logger, aliases, host));
+            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(logger, aliases, host));
         },
     };
 };

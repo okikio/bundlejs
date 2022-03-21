@@ -3768,7 +3768,7 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
     dependencies:
-      jake: 10.8.3
+      jake: 10.8.4
     dev: true
 
   /electron-to-chromium/1.4.88:
@@ -5822,12 +5822,13 @@ packages:
       lodash.uniqby: 4.7.0
     dev: true
 
-  /jake/10.8.3:
-    resolution: {integrity: sha512-qeoeVK7eSYbs1r9zPLweN0KJfUPqUQyM/WtJC8kmUJoYzfkK/MqcJNNkrOY3CtoWyg8LytAAwyNMk3NGsDs3OQ==}
+  /jake/10.8.4:
+    resolution: {integrity: sha512-MtWeTkl1qGsWUtbl/Jsca/8xSoK3x0UmS82sNbjqxxG/de/M/3b1DntdjHgPMC50enlTNwXOCRqPXLLt5cCfZA==}
+    engines: {node: '>=10'}
     hasBin: true
     dependencies:
       async: 0.9.2
-      chalk: 2.4.2
+      chalk: 4.1.2
       filelist: 1.0.2
       minimatch: 3.1.2
     dev: true
