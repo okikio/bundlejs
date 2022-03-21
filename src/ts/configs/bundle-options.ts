@@ -30,7 +30,7 @@ export type BundleConfigOptions = {
     esbuild?: BuildOptions,
 
     /** The default CDN to import packages from */
-    cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://unpkg.com" | "https://cdn.jsdelivr.net/npm" | (string & {}),
+    cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://deno.land/x" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "deno" | (string & {}),
 
     /** Aliases for replacing packages with different ones, e.g. replace "fs" with "memfs", so, it can work on the web, etc... */
     alias?: Record<string, string>,

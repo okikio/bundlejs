@@ -24,7 +24,7 @@ export async function fetchPkg(url: string, logger = console.log) {
     }
 }
 
-export const HTTP_RESOLVE = (logger = console.log): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const HTTP_RESOLVE = (logger = console.log, host = HOST): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return (args) => {
         let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
         if (!argPath.startsWith(".")) {  
@@ -36,7 +36,7 @@ export const HTTP_RESOLVE = (logger = console.log): (args: OnResolveArgs) => OnR
                 };
             }
 
-            let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : HOST, "../", argPath);
+            let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : getCDNHost(host).host, "../", argPath);
             let { origin } = new URL(path);
             if (isBareImport(argPath)) {
                 return CDN_RESOLVE(logger, origin)(args);
@@ -59,7 +59,7 @@ export const HTTP_RESOLVE = (logger = console.log): (args: OnResolveArgs) => OnR
 };
 
 export const HTTP_NAMESPACE = 'http-url';
-export const HTTP = (logger = console.log, assets: OutputFile[] = []): Plugin => {
+export const HTTP = (logger = console.log, assets: OutputFile[] = [], host = HOST): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -79,7 +79,7 @@ export const HTTP = (logger = console.log, assets: OutputFile[] = []): Plugin =>
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(logger));
+            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(logger, host));
 
             // When a URL is loaded, we want to actually download the content
             // from the internet. This has just enough logic to be able to
@@ -92,13 +92,13 @@ export const HTTP = (logger = console.log, assets: OutputFile[] = []): Plugin =>
                 const matches = Array.from(code.matchAll(rgx));
 
                 const promises = [];
-                for (const [, m] of matches) {
+                for (const [, match] of matches) {
                     promises.push(
                         (async () => {
                             let url = new URL("./", args.path).toString();
-                            let { content: asset } = await fetchPkg(urlJoin(url, m), logger);
+                            let { content: asset } = await fetchPkg(urlJoin(url, match), logger);
                             assets.push({
-                                path: m,
+                                path: match,
                                 contents: asset,
                                 get text() {
                                     return decode(asset);
