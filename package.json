@@ -64,7 +64,6 @@
         "countapi-js": "^1.0.2",
         "esbuild-wasm": "0.14.25",
         "monaco-editor": "^0.32.1",
-        "pako": "^2.0.4",
         "parse-package-name": "^1.0.0",
         "pretty-bytes": "^6.0.0",
         "resolve.exports": "^1.1.0",

@@ -35,7 +35,6 @@ specifiers:
   husky: ^7.0.4
   jstransformer-markdown-it: ^2.1.0
   monaco-editor: ^0.32.1
-  pako: ^2.0.4
   parse-package-name: ^1.0.0
   postcss: ^8.4.12
   postcss-csso: ^6.0.0
@@ -72,7 +71,6 @@ dependencies:
   countapi-js: 1.0.2
   esbuild-wasm: 0.14.25
   monaco-editor: 0.32.1
-  pako: 2.0.4
   parse-package-name: 1.0.0
   pretty-bytes: 6.0.0
   resolve.exports: 1.1.0
@@ -6883,10 +6881,6 @@ packages:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
     dev: true
-
-  /pako/2.0.4:
-    resolution: {integrity: sha512-v8tweI900AUkZN6heMU/4Uy4cXRc2AYNRggVmTR+dEncawDJgCdLMximOVA2p4qO57WMynangsfGRb5WD6L1Bg==}
-    dev: false
 
   /parent-module/1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
