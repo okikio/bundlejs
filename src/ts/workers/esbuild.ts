@@ -21,6 +21,7 @@ import { DefaultConfig } from "../configs/bundle-options";
 import type { BundleConfigOptions, CompressionOptions } from "../configs/bundle-options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
 import { ALIAS } from "../plugins/alias";
+import { getCDNHost } from "../util/loader";
 
 let _initialized = false;
 export const initEvent = new EventEmitter();
@@ -123,6 +124,8 @@ export const start = async (port) => {
             // Use esbuild to bundle files
             try {
                 try {
+                    // Convert CDN values to URL origins
+                    let { host } = !/:/.test(config?.cdn) ? getCDNHost(config?.cdn + ":") : getCDNHost(config?.cdn);
                     result = await build({
                         "stdin": {
                             // Ensure input is a string
@@ -149,10 +152,10 @@ export const start = async (port) => {
                             ...define
                         },
                         plugins: [
-                            ALIAS(logger, config?.alias, config?.cdn),
+                            ALIAS(logger, config?.alias, host),
                             EXTERNAL(esbuildOpts?.external),
-                            HTTP(logger, assets, config?.cdn),
-                            CDN(logger, config?.cdn),
+                            HTTP(logger, assets, host),
+                            CDN(logger, host),
                         ],
                         outdir: "/"
                     });

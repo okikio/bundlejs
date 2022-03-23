@@ -8,14 +8,14 @@ import { resolve, legacy } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 import { getRequest } from '../util/cache';
 
-export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const CDN_RESOLVE = (logger = console.log, cdn?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return async (args) => {
         if (isBareImport(args.path)) {
             // Support a different default CDN + allow for custom CDN url schemes
-            let { argPath, host, query } = getCDNHost(args.path, !/:/.test(_host) ? getCDNHost(_host + ":").host : _host);
+            let { argPath, host, query } = getCDNHost(args.path, cdn);
 
             // None npm standard CDNs, e.g. deno, github
-            let NOT_NPM_CDN = /^https?\:\/\/(deno\.land|raw\.githubusercontent\.com|cdn\.jsdelivr\.net\/gh)/.test(host)
+            let NOT_NPM_CDN = /^https?\:\/\/(deno\.land|raw\.githubusercontent\.com|cdn\.jsdelivr\.net\/gh)/.test(host);
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             let parsed = parsePackageName(argPath);
