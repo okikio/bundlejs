@@ -14,6 +14,9 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
             // Support a different default CDN + allow for custom CDN url schemes
             let { argPath, host, query } = getCDNHost(args.path, !/:/.test(_host) ? getCDNHost(_host + ":").host : _host);
 
+            // None npm standard CDNs, e.g. deno, github
+            let NOT_NPM_CDN = /^https?\:\/\/(deno\.land|raw\.githubusercontent\.com|cdn\.jsdelivr\.net\/gh)/.test(host)
+
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             let parsed = parsePackageName(argPath);
             let subpath = parsed.path;
@@ -32,7 +35,7 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
 
-                    let { url } = getCDNHost(`${pkg.name}@${/^https?\:\/\/deno.land/.test(host) ? "" : "@" + pkg.version}${subpath}`);
+                    let { url } = getCDNHost(`${pkg.name}@${NOT_NPM_CDN ? "" : "@" + pkg.version}${subpath}`);
                     return {
                         namespace: HTTP_NAMESPACE,
                         path: url + query,
@@ -52,7 +55,7 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
             }
 
             try {
-                if (!/^https?\:\/\/deno.land/.test(host)) {
+                if (!NOT_NPM_CDN) {
                     let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
 
                     // Strongly cache package.json files
@@ -72,7 +75,7 @@ export const CDN_RESOLVE = (logger = console.log, _host?: string): (args: OnReso
                 console.warn(e)
             }
 
-            let { url } = getCDNHost(`${parsed.name}${/^https?\:\/\/deno.land/.test(host) ? "" : "@" + parsed.version}${subpath}`, host);
+            let { url } = getCDNHost(`${parsed.name}${NOT_NPM_CDN ? "" : "@" + parsed.version}${subpath}`, host);
             return {
                 namespace: HTTP_NAMESPACE,
                 path: url + query,
