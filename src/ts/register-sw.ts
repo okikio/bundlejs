@@ -76,15 +76,16 @@ export default () => {
                 if ("caches" in globalThis) {
                     let resetCache = document.querySelector(".btn#reset-cache") as HTMLElement;
                     resetCache?.addEventListener("click", (e) => {
-                        // Clear Cache
-                        caches.keys().then(cache_names => {
-                            cache_names.forEach(cache_name => {
-                                caches.delete(cache_name);
-                            });
-                        }).then(async () => {
-                            await wb.update();
+                        (async () => { 
+                            // Clear Cache
+                            let cache_names = await caches.keys();
+                            await Promise.all(cache_names.map(cache_name => {
+                                return caches.delete(cache_name);
+                            }));
+                            console.log("Clear Cache")
+                            // await wb.update();
                             window.location.reload();
-                        });
+                        })()
                     })
                 }
 

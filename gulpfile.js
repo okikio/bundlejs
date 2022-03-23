@@ -358,7 +358,10 @@ task("service-worker", async () => {
                         cacheableResponse: {
                             statuses: [0, 200]
                         },
-                        expiration: 60 * 60 * 24 * 365
+                        cacheName: "FontCache",
+                        expiration: { 
+                            maxAgeSeconds: 60 * 60 * 24 * 365
+                        }
                     }
                 },
             ],
