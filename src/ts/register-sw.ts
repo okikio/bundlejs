@@ -1,6 +1,6 @@
 import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
- 
+
 import { ENABLE_SW } from "../../env";
 import { CACHE_NAME } from "./util/cache";
 
@@ -68,13 +68,29 @@ export default () => {
                 });
             };
 
-            window.addEventListener("load", () => {
+            window?.addEventListener("load", () => {
                 // Use the window load event to keep the page load performant
                 const wb = new Workbox("/sw.js");
 
+                // Force Referesh Cache
+                if ("caches" in globalThis) {
+                    let resetCache = document.querySelector(".btn#reset-cache") as HTMLElement;
+                    resetCache?.addEventListener("click", (e) => {
+                        // Clear Cache
+                        caches.keys().then(cache_names => {
+                            cache_names.forEach(cache_name => {
+                                caches.delete(cache_name);
+                            });
+                        }).then(async () => {
+                            await wb.update();
+                            window.location.reload();
+                        });
+                    })
+                }
+
                 // Add an event listener to detect when the registered
                 // service worker has installed but is waiting to activate.
-                wb.addEventListener("waiting", (event) => {
+                wb?.addEventListener("waiting", (event) => {
                     // `event.wasWaitingBeforeRegister` will be false if this is
                     // the first time the updated service worker is waiting.
                     // When `event.wasWaitingBeforeRegister` is true, a previously
@@ -85,7 +101,6 @@ export default () => {
                     // that a user can either accept or reject.
                     dialog("confirm")
                         .then(() => {
-
                             wb.messageSkipWaiting();
                         })
                         .catch(() => { });
@@ -95,12 +110,12 @@ export default () => {
                 // Assuming the user accepted the update, set up a listener
                 // that will reload the page as soon as the previously waiting
                 // service worker has taken control.
-                wb.addEventListener("controlling", async (event) => {
+                wb?.addEventListener("controlling", async (event) => {
                     caches.delete(CACHE_NAME);
                     window.location.reload();
                 });
 
-                wb.addEventListener("activated", (event) => {
+                wb?.addEventListener("activated", (event) => {
                     // `event.isUpdate` will be true if another version of the service
                     // worker was controlling the page when this version was registered.
                     if (!event.isUpdate) {
@@ -112,7 +127,7 @@ export default () => {
                     }
                 });
 
-                wb.register();
+                wb?.register();
             });
         }
     })();

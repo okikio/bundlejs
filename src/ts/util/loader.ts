@@ -32,15 +32,19 @@ export const getCDNHost = (url: string, host = HOST) => {
         host = `https://cdn.esm.sh`;
     } else if (/^unpkg\:/.test(url)) {
         host = `https://unpkg.com`;
+    } else if (/^(jsdelivr\.gh)\:/.test(url)) {
+        host = `https://cdn.jsdelivr.net/gh`;
     } else if (/^(jsdelivr|esm\.run)\:/.test(url)) {
         host = `https://cdn.jsdelivr.net/npm`;
     } else if (/^(deno)\:/.test(url)) {
         host = `https://deno.land/x`;
+    } else if (/^(github)\:/.test(url)) {
+        host = `https://raw.githubusercontent.com`;
     }
     
     host = /\/$/.test(host) ? host : `${host}/`;
 
-    let argPath = url.replace(/^(deno|skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:/, "");
+    let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.sh|esm\.run|deno|github)\:/, "");
     let _url = new URL(host + argPath.replace(/^\//, ""));
     let noQuery = (urlStr: string) => _url.search ? urlStr.replace(_url.search, "") : urlStr;
     return { argPath: noQuery(argPath), host, url: noQuery(_url.toString()), query: _url.search };

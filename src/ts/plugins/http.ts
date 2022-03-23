@@ -5,7 +5,7 @@ import { getRequest } from '../util/cache';
 import { decode } from '../util/encode-decode';
 import { getCDNHost, HOST, inferLoader, isBareImport } from '../util/loader';
 
-import { urlJoin } from "../util/path";
+import { urlJoin, extname } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
 
 export async function fetchPkg(url: string, logger = console.log) {
@@ -86,7 +86,12 @@ export const HTTP = (logger = console.log, assets: OutputFile[] = [], host = HOS
             // handle the example import from https://cdn.esm.sh/ but in reality this
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
-                const { content, url } = await fetchPkg(args.path, logger);
+                // Some typescript files don't have file extensions but you can't fetch a file without their file extension
+                // so bundle assumes that the file extention for missing files is always typescript
+                let ext = extname(args.path);
+                let argPath = ext.length > 0 ? args.path : args.path + ".ts";
+
+                const { content, url } = await fetchPkg(argPath, logger);
                 const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
                 const code = decode(content);
                 const matches = Array.from(code.matchAll(rgx));
