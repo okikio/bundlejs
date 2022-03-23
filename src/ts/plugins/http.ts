@@ -24,7 +24,7 @@ export async function fetchPkg(url: string, logger = console.log) {
     }
 }
 
-export const HTTP_RESOLVE = (logger = console.log, host = HOST): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
+export const HTTP_RESOLVE = (logger = console.log, cdn = HOST): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
     return (args) => {
         let argPath = args.path.replace(/\/$/, "/index"); // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
         if (!argPath.startsWith(".")) {  
@@ -36,13 +36,16 @@ export const HTTP_RESOLVE = (logger = console.log, host = HOST): (args: OnResolv
                 };
             }
 
-            let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : getCDNHost(host).host, "../", argPath);
+            let path = urlJoin(args.pluginData?.url ? args.pluginData?.url : cdn, "../", argPath);
             let { origin } = new URL(path);
+            
+            let NOT_NPM_CDN = /^https?\:\/\/(deno\.land|raw\.githubusercontent\.com|cdn\.jsdelivr\.net\/gh)/.test(origin);
+            let _origin = NOT_NPM_CDN ? cdn : origin;
             if (isBareImport(argPath)) {
-                return CDN_RESOLVE(logger, origin)(args);
+                return CDN_RESOLVE(logger, _origin)(args);
             } else {
                 return {
-                    path: getCDNHost(argPath, origin).url,
+                    path: getCDNHost(argPath, _origin).url,
                     namespace: HTTP_NAMESPACE,
                     pluginData: { pkg: args.pluginData?.pkg },
                 };
