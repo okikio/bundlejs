@@ -123,8 +123,8 @@ block content
   br
   .container  
     h2#usage Usage
-    blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
-    blockquote Treeshaking is available, but since esbuild and rollup don't have direct access to each packages package.json, there might be slight package version conflicts.
+    blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
+    blockquote Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
     blockquote Check the console for error messages and warnings.
 
     p You can use custom protocols to specify which CDN the module should come from.
@@ -141,7 +141,11 @@ block content
         //- br
         li unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
         //- br
-        li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react] 
+        li deno:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
+        //- br
+        li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
+        //- br
+        li jsdelivr.gh:facebook/react/packages/react-dom/index.js  ->   #[a(href="https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js" target="_blank" rel="noopener") https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js] 
     br
     p e.g.
     :markdown-it(linkify langPrefix='language-')
@@ -229,7 +233,7 @@ block content
       li
         a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
           div(class="flex gap-2")
-            img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" class="inline-block" width="24")
+            img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
             span @sheetjs
       li And more, etc...
     //- br  

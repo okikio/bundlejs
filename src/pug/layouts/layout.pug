@@ -10,7 +10,7 @@ html.dark(lang="en")
     meta(http-equiv='X-UA-Compatible' content='IE=edge')
 
     meta(name='viewport' content='width=device-width, initial-scale=1')
-    meta(name='viewport' content='initial-scale=1, viewport-fit=cover')
+    //- meta(name='viewport' content='initial-scale=1, viewport-fit=cover')
 
     link(rel='apple-touch-icon', sizes='180x180', href='/favicon/apple-touch-icon.png')
     link(rel='icon', type='image/png', sizes='32x32', href='/favicon/favicon-32x32.png')
@@ -53,9 +53,9 @@ html.dark(lang="en")
       let defaults = {
         url: "/",
         websiteURL: "https://bundle.js.org",
-        title: "bundle - a quick online bundler and compressed package size checker",
-        description: "bundle is a quick and easy way to bundle and minify your ts, js, jsx and npm projects all online. It also allows for checking the compressed gzip or brotli size of bundles. It is similar to bundlephobia but does all the work right on your browser and can treeshake multiple packages together from multiple CDNs.",
-        keywords: "bundle, rollup, esbuild, gzip, brotli, deno, bundler, bundlephobia, cdn, github, skypack, unpkg, compressed, jsx, online, size, package, minify, es2020, monaco-editor, typescript"
+        title: "bundle - an online bundler + a npm package size checker",
+        description: "A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all online, with the bundle file size.",
+        keywords: "bundle, rollup, esbuild, gzip, npm, brotli, deno, bundler, treeshake, bundlephobia, cdn, github, skypack, unpkg, compressed, jsx, online bundler, size, package, minify, es2020, monaco-editor, typescript"
       };
 
     block pageInfo
@@ -90,8 +90,9 @@ html.dark(lang="en")
     main#main(data-wrapper)
       block styles
 
-      block seo
+      //- block seo
         +seo(page, defaults)
+      title= page?.title
 
       block preload
 
