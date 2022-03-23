@@ -15,7 +15,7 @@ block content
       
     p 
       strong bundle
-      |  is a quick and easy way to bundle your projects, minify and see it's gzip size. It's an online tool similar to
+      |  is a quick and easy way to bundle your projects, minify and see their gzip and brotli size. It's an online tool similar to
       a(href="https://bundlephobia.com" target="_blank" rel="noopener")  bundlephobia
       | , but 
       strong bundle
@@ -28,13 +28,15 @@ block content
       a(href="https://github.com/microsoft/monaco-editor" target="_blank" rel="noopener")  monaco-editor
       |  for the code-editor,
       a(href="https://github.com/evanw/esbuild" target="_blank" rel="noopener")  esbuild 
-      |  and
-      a(href="https://github.com/rollup/rollup" target="_blank" rel="noopener")  rollup
       |  as bundler and treeshaker respectively,
-      a(href="https://github.com/nodeca/pako" target="_blank" rel="noopener")  pako
-      |  as a js port of the zlib and gzip libraries, 
+      a(href="https://github.com/hazae41/denoflate/tree/master" target="_blank" rel="noopener")  denoflate
+      |  as a wasm port of gzip, 
+      a(href="https://github.com/denosaurs/deno_brotli/tree/master" target="_blank" rel="noopener")  deno_brotli
+      |  as a wasm port of brotli, 
+      a(href="https://github.com/denosaurs/deno_lz4" target="_blank" rel="noopener")  deno_lz4
+      |  as a wasm port of lz4, 
       a(href="https://github.com/sindresorhus/pretty-bytes" target="_blank" rel="noopener")  pretty-bytes
-      |  to convert the gzip size to human readable values, and 
+      |  to convert the compressed size to human readable values, and 
       a(href="https://github.com/mlomb/countapi-js" target="_blank" rel="noopener")  countapi-js
       |  to keep track of the number of page visits, in a private and secure way.
       br
@@ -47,8 +49,11 @@ block content
       a(href="https://github.com/mizchi/uniroll" target="_blank" rel="noopener")  uniroll
       |  project.
       br
+      :markdown-it(linkify langPrefix='language-')
+        > Some of bundle.js.org's latest features were inspired by [egoist/play-esbuild](https://github.com/egoist/play-esbuild) and [hyrious/esbuild-repl](https://github.com/hyrious/esbuild-repl), check them out they each use esbuild in different ways.
       br
-      span= "The project isn't perfect, I am still working on an autocomplete, hover intellisence, better mobile support and the high memory usage of "
+      br
+      span= "The project isn't perfect, I am still working on an autocomplete, better mobile support and the high memory usage of "
       strong esbuild
       span= " and "
       strong monaco
@@ -71,7 +76,3 @@ block content
       | You can join the discussion on
       a(href="https://github.com/okikio/bundle/discussions" target="_blank" rel="noopener")  github discussions
       | .
-
-    br
-    :markdown-it(linkify langPrefix='language-')
-      > Some of bundle.js.org's latest features were inspired by [egoist/play-esbuild](https://github.com/egoist/play-esbuild) and [hyrious/esbuild-repl](https://github.com/hyrious/esbuild-repl), check them out they each use esbuild in different ways.

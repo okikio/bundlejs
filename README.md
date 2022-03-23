@@ -2,7 +2,7 @@
 
 <a href="https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-bundle-6" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&theme=dark" alt="bundle - An online npm package bundle size checker | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a> [![Open In Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/okikio/bundle/blob/main/README.md)
 
-A small online tool for checking the gzipped and minified size of npm packages.
+A small online tool for checking the minified gzip/brotli size of npm packages.
 
 I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, [esbuild](https://github.com/evanw/esbuild) and [rollup](https://github.com/rollup/rollup) as bundler and treeshaker respectively, [pako](https://github.com/nodeca/pako) as a js port of the zlib and gzip libraries, [pretty-bytes](https://github.com/sindresorhus/pretty-bytes) to convert the gzip size to human readable values, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.
 
