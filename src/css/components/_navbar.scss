@@ -6,7 +6,7 @@
     }
 
     .container {
-        @apply sm:max-w-screen-lg px-5 h-full relative;
+        @apply sm:max-w-screen-lg px-0.5 sm:px-5 h-full relative;
     }
 
     .navbar-bg {
@@ -83,7 +83,7 @@
 .navbar-collapse {
     @apply items-center;
 
-    @screen lt-md {
+    @screen lt-sm {
         --height: 100vh;
         transition: height ease-out 0.35s, transform ease-out 0.35s, opacity ease 0.35s;
         @apply flex-grow;

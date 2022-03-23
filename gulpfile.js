@@ -64,6 +64,7 @@ task("html", async () => {
             {
                 behavior: "append",
                 content: [h("i.icon", "insert_link")],
+                test: ['h2', 'h3', 'h4', 'h5', 'h6']
             },
         ],
         ["rehype-external-links", { target: "_blank", rel: ["noopener"] }],
@@ -325,15 +326,40 @@ task("service-worker", async () => {
                     // Apply a network-first strategy.
                     handler: "NetworkFirst",
                     method: "GET",
+                    options: {
+                        cacheableResponse: {
+                            statuses: [0, 200]
+                        }
+                    }
                 },
                 {
                     // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
                     urlPattern:
-                        /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|woff2|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+                        /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
 
                     // Apply a stale-while-revalidate strategy.
                     handler: "StaleWhileRevalidate",
                     method: "GET",
+                    options: {
+                        cacheableResponse: {
+                            statuses: [0, 200]
+                        }
+                    }
+                },
+                {
+                    // Match any request that ends with .woff2, .woff, etc.... or that comes from Google Fonts
+                    urlPattern:
+                        /\.(?:woff2|woff)$|^https:\/\/(?:fonts\.gstatic\.com)/,
+
+                    // Apply a stale-while-revalidate strategy.
+                    handler: "CacheFirst",
+                    method: "GET",
+                    options: {
+                        cacheableResponse: {
+                            statuses: [0, 200]
+                        },
+                        expiration: 60 * 60 * 24 * 365
+                    }
                 },
             ],
         });
