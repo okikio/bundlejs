@@ -1,111 +1,101 @@
-import { createSignal } from "solid-js";
+import { createSignal, useTransition } from "solid-js";
 import { For, render } from "solid-js/web";
+
 import { EventEmitter } from "@okikio/emitter";
-import { timeline } from "@okikio/animate";
+import { timeline, animate } from "@okikio/animate";
 
 export const ResultEvents = new EventEmitter();
 export const [getState, setState] = createSignal([]);
 export const [isInitial, setIsInitial] = createSignal(true);
 
+export const [pending, start] = useTransition();
+export const updateState = (state: any[]) => () => start(() => setState(state));
+
+export const ErrorCard = ({
+    name = "@okikio/native",
+    description = "Lorem Ipsium..."
+}) => {
+    return (
+        <div class="card">
+            <section class="content error">
+                <h3 class="font-semibold text-lg">
+                    <div class="text-center">{name}</div>
+                </h3>
+                <p class="text-center">{description}</p>
+            </section>
+        </div>
+    );
+};
+
+export const toLocaleDateString = (date: string | number | Date) => new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 export const Card = ({
-    type = "",
     name = "@okikio/native",
     description = "Lorem Ipsium...",
     date = "2021-01-23T07:29:32.575Z",
     author = "okikio",
     version = ""
 }) => {
-    let _date = type ? "" : new Date(date).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
+    let _date = toLocaleDateString(date);
     let _authorHref = `https://www.skypack.dev/search?q=maintainer:${author}`;
     let _package = `${name}${version ? "@" + version : ""}`;
     let _packageHref = `https://www.skypack.dev/view/${_package}`;
 
     let btnTextEl: HTMLElement;
     let btnEl: HTMLButtonElement;
+
+    // When user clicks the "Add Module button" give the user some feedback
+    let onclick = () => {
+        let text = btnTextEl.innerText;
+        let opts = {
+            target: btnTextEl,
+            duration: 400,
+            fillMode: "forwards"
+        };
+
+        timeline()
+            .add({
+                ...opts,
+                opacity: [1, 0],
+                onfinish() {
+                    btnTextEl.innerText = "Added!";
+                    ResultEvents.emit("add-module", `export * from "${_package}";`);
+                }
+            })
+            .add({
+                ...opts,
+                opacity: [0, 1],
+            })
+            .add({
+                ...opts,
+                opacity: [1, 0],
+                onfinish: () => { btnTextEl.innerText = text; }
+            })
+            .add({
+                ...opts,
+                opacity: [0, 1],
+                onfinish: () => { ResultEvents.emit("complete"); }
+            });
+    };
+
     return (
         <div class="card">
-            <section class={`content ${type ? "special" : ""}`}>
-                <h3 class={`font-semibold text-lg`}>
-                {
-                    type ? 
-                        (<div class="text-center">{type}</div>) : 
-                        (<a href={_packageHref} target="_blank">{type || name}</a>)
-                }
+            <section class="content">
+                <h3 class="font-semibold text-lg">
+                    <a href={_packageHref} target="_blank">{name}</a>
                 </h3>
-                <p class={type ? "text-center" : ""}>{description}</p>
+                <p>{description}</p>
                 <p class="updated-time">
-                    {type || (_date == undefined && author == undefined) ? "" : `Updated ${_date} `}
-                    {author && !type ? (<>
-                        by
-                        <a href={_authorHref} target="_blank">
-                            @{author}
-                        </a>
-                        .
-                    </>) : ""}
+                    {_date && `Updated ${_date} `}
+                    {author && (<>
+                        by <a href={_authorHref} target="_blank">@{author}</a>.
+                    </>)}
                 </p>
             </section>
-            {type ? "" :
-                (<section class="add">
-                    <button ref={btnEl}
-                        class="btn"
-                        onclick={() => {
-                            let text = btnTextEl.innerText;
-
-                            timeline()
-                                .add({
-                                    target: btnTextEl,
-                                    opacity: [1, 0],
-                                    duration: 400,
-                                    fillMode: "forwards",
-                                    onfinish() {
-                                        btnTextEl.innerText = "Added!";
-                                        ResultEvents.emit(
-                                            "add-module",
-                                            `export * from "${_package}";`
-                                        );
-                                    }
-                                })
-                                .add({
-                                    target: btnTextEl,
-                                    opacity: [0, 1],
-                                    duration: 400,
-                                    fillMode: "forwards",
-                                    onfinish() {
-                                        // btnEl.blur();
-                                    }
-                                })
-                                .add({
-                                    target: btnTextEl,
-                                    opacity: [1, 0],
-                                    duration: 400,
-                                    fillMode: "forwards",
-                                    onfinish() {
-                                        btnTextEl.innerText = text;
-                                    }
-                                })
-                                .add({
-                                    target: btnTextEl,
-                                    opacity: [0, 1],
-                                    duration: 400,
-                                    fillMode: "forwards",
-                                    onfinish() {
-                                        ResultEvents.emit("complete");
-                                    }
-                                });
-
-                        }}
-                    >
-                        <span class="btn-text" ref={btnTextEl}>
-                            Add Module
-                        </span>
-                    </button>
-                </section>
-                )
-            }
+            <section class="add">
+                <button ref={btnEl} class="btn" onclick={onclick}>
+                    <span class="btn-text" ref={btnTextEl}>Add Module</span>
+                </button>
+            </section>
         </div>
     );
 };
@@ -113,17 +103,20 @@ export const Card = ({
 export const SearchResults = () => {
     return (
         <div class={`search-results`}>
-            {getState().length == 0 ? (
-                <Card 
-                    type="No results..."
+            {getState().length == 0 && (
+                <ErrorCard 
+                    name="No results..."
                     description=""
-                ></Card>
-            ) : ""}
+                ></ErrorCard>
+            )}
             <For each={getState()}>
                 {({ name, description, version, author, date, type }) => {
-                    return (
+                    return (type == "error" ? 
+                        <ErrorCard 
+                            name={name}
+                            description={description}
+                        ></ErrorCard> :
                         <Card
-                            type={type ?? ""}
                             name={name}
                             description={description}
                             author={author}

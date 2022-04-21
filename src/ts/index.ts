@@ -26,6 +26,7 @@ import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+import { getRequest } from "./util/cache";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -47,7 +48,7 @@ let isInitial = true;
 // Bundle worker
 const BundleWorkerConfig = WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker");
 export const BundleWorker = USE_SHAREDWORKER ? new WebWorker(...BundleWorkerConfig) : new Worker(...BundleWorkerConfig) as WebWorker;
-BundleWorker?.start?.();
+BundleWorker?.start?.(); // Only SharedWorkers support the start method, so optionally call the method if it is supported
 
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
@@ -86,7 +87,7 @@ BundleEvents.on({
         if (initialized)
             BundleEvents.emit("ready");
     },
-    init(details) {
+    init() {
         initialized = true;
         if (fileSizeEl)
             fileSizeEl.forEach(el => (el.textContent = `Wait...`));
@@ -99,9 +100,12 @@ BundleEvents.on({
         if (fileSizeEl)
             fileSizeEl.forEach(el => (el.textContent = `...`));
 
+        // If the URL contains share details make sure to use those details
+        // e.g. config, query, etc...
         if (oldShareURL.search) {
             const searchParams = oldShareURL
                 .searchParams;
+                
             let plaintext = searchParams.get("text");
             let query = searchParams.get("query") || searchParams.get("q");
             let share = searchParams.get("share");
@@ -120,8 +124,12 @@ BundleEvents.on({
     log(details) {  
         let { type, messages } = details;
         messages = [].concat(messages ?? []);
+
+        // Log warnings to devtools
         if (!/error|warning/.test(type))
             messages.forEach(log => console.log(log));
+
+        // Add the logs to the virtual console
         let logs = messages.map((msg = "") => {
             msg = (msg ?? "").replace(/(https?:\/\/[^\s\)]+)/g, `<a href="$1" target="_blank" rel="noopener">$1</a>`);
             let [title, ...message] = msg.split(/\n/);
@@ -130,7 +138,7 @@ BundleEvents.on({
 
         addLogs(logs);
     },
-    warn(details) {
+    warning(details) {
         let { type, message } = details;
         console.warn(`${message.length} ${type}(s)`);
         (Array.isArray(message) ? message : [message]).forEach(msg => {
@@ -147,8 +155,50 @@ BundleEvents.on({
     },
 });
 
+export const replaceState = (url: string | URL, historyManager: HistoryManager) => {
+    if (url) {
+        let { last } = historyManager;
+        let state = {
+            ...last,
+            url: url.toString()
+        }
+
+        historyManager.states.pop();
+        historyManager.states.push({ ...state });
+
+        let item: IHistoryItem = {
+            index: historyManager.pointer,
+            states: [...historyManager.states]
+        };
+
+        window.history.replaceState(item, "", state.url);
+    }
+}
+
+export const pushState = (url: string | URL, historyManager: HistoryManager) => {
+    if (url) {
+        let { last } = historyManager;
+        let state = {
+            ...last,
+            url: url.toString()
+        }
+
+        let len = historyManager.length;
+        historyManager.states.push({ ...state });
+        historyManager.pointer = len;
+
+        let item: IHistoryItem = {
+            index: historyManager.pointer,
+            states: [...historyManager.states]
+        };
+
+        window.history.pushState(item, "", state.url);
+    }
+}
+
 // Load all heavy main content
 export const build = (app: App) => {
+    const historyManager = app.get("HistoryManager") as HistoryManager;
     fileSizeEl = fileSizeEl ?? Array.from(document.querySelectorAll(".file-size"));
 
     let editor: Editor.IStandaloneCodeEditor;
@@ -171,64 +221,51 @@ export const build = (app: App) => {
             let { initialSize, size, content } = details;
 
             outputModel?.setValue?.(content);  
-            const bundleTime = `⌛ Bundled ${timeFormatter.format(
-                (Date.now() - start) / 1000,
-                "seconds"
-            )}`;
+            const bundleTime = `⌛ Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
             console.log(bundleTime);
             console.log(`Bundled size is`, initialSize + " -> ", size);
             addLogs([
-                {
-                    title: bundleTime
-                },
-                {
-                    title: `Bundle size is ${initialSize} -> ${size}`
-                }
-            ])
+                { title: bundleTime },
+                { title: `Bundle size is ${initialSize} -> ${size}` }
+            ]);
             fileSizeEl.forEach(el => (el.textContent = `` + size));
         }
     });
 
-    let historyManager = app.get("HistoryManager") as HistoryManager;
-    let replaceState = (url) => {
-        if (url) {
-            let { last } = historyManager;
-            let state = {
-                ...last,
-                url: url.toString()
-            }
+    const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = Monaco;
+    const getShareableURL = async (model: typeof inputModel) => {
+        try {
+            const worker = await languages.typescript.getTypeScriptWorker();
+            const thisWorker = await worker(model.uri);
 
-            historyManager.states.pop();
-            historyManager.states.push({ ...state });
-
-            let item: IHistoryItem = {
-                index: historyManager.pointer,
-                states: [...historyManager.states]
-            };
-
-            window.history.replaceState(item, "", state.url);
+            // @ts-ignore
+            return await thisWorker.getShareableURL(model.uri.toString(), configModel.getValue());
+        } catch (e) {
+            console.warn(e)
         }
-    }
+    };
 
-    let pushState = (url) => {
-        if (url) {
-            let { last } = historyManager;
-            let state = {
-                ...last,
-                url: url.toString()
-            }
+    const getModelType = () => {
+        if (editor.getModel() == inputModel) return "input";
+        else if (editor.getModel() == outputModel) return "output";
+        else return "config";
+    };
 
-            let len = historyManager.length;
-            historyManager.states.push({ ...state });
-            historyManager.pointer = len;
-
-            let item: IHistoryItem = {
-                index: historyManager.pointer,
-                states: [...historyManager.states]
-            };
-
-            window.history.pushState(item, "", state.url);
+    const resetEditor = (editorModel = "input") => { 
+        let resetValue: string;
+        switch (editorModel) {
+            case "input":
+                resetValue = inputModelResetValue;
+                break;
+            case "output":
+                resetValue = outputModelResetValue;
+                break;
+            default:
+                resetValue = configModelResetValue;
+                break;
         }
+
+        editor.setValue(resetValue);
     }
 
     // Monaco
@@ -245,36 +282,6 @@ export const build = (app: App) => {
             autoplay: false,
             fillMode: "both",
         });
-
-        const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = Monaco;
-        const getShareableURL = async (model: typeof inputModel) => {
-            try {
-                const worker = await languages.typescript.getTypeScriptWorker();
-                const thisWorker = await worker(model.uri);
-
-                // @ts-ignore
-                return await thisWorker.getShareableURL(model.uri.toString(), configModel.getValue());
-            } catch (e) {
-                console.warn(e)
-            }
-        };
-
-        const resetEditor = (editorModel = "input") => { 
-            let resetValue: string;
-            switch (editorModel) {
-                case "input":
-                    resetValue = inputModelResetValue;
-                    break;
-                case "output":
-                    resetValue = outputModelResetValue;
-                    break;
-                default:
-                    resetValue = configModelResetValue;
-                    break;
-            }
-
-            editor.setValue(resetValue);
-        }
 
         const editorBtns = (editor: Editor.IStandaloneCodeEditor) => {
             let el = editor.getDomNode();
@@ -324,50 +331,46 @@ export const build = (app: App) => {
                 });
 
                 resetBtn.addEventListener("click", () => {
-                    let modelType: string;
-                    if (editor.getModel() == inputModel) modelType = "input";
-                    else if (editor.getModel() == outputModel) modelType = "output";
-                    else modelType = "config";
+                    let modelType = getModelType();
 
                     resetEditor(modelType);
-                    if (editor.getModel() != outputModel && editor.getModel() == configModel) {
-                        isInitial = true;
-                    }
+                    if (modelType == "input") isInitial = true;
                 });
 
                 copyBtn.addEventListener("click", () => {
                     const range = editor.getModel().getFullModelRange();
                     editor.setSelection(range);
                     editor
-                        .getAction(
-                            "editor.action.clipboardCopyWithSyntaxHighlightingAction"
-                        )
+                        .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
                         .run();
-
+                    
+                    // Show user a copied banner, to give them feedback
                     (async () => {
-                        await animate({
+                        let opts = {
                             target: editorInfo,
+                            fillMode: "both",
+                        };
+
+                        await animate({
+                            ...opts,
                             translateY: [100, "-120%"],
                             opacity: [0, 1],
-                            fillMode: "both",
                             duration: 500,
                             easing: "ease-out",
                         });
 
                         await animate({
-                            target: editorInfo,
+                            ...opts,
                             translateY: ["-120%", 100],
                             opacity: [1, 0],
-                            fillMode: "both",
                             delay: 1000,
                         });
                     })();
                 });
 
                 codeWrapBtn.addEventListener("click", () => {
-                    let wordWrap: "on" | "off" =
-                        editor.getRawOptions()["wordWrap"] == "on" ? "off" : "on";
-                    editor.updateOptions({ wordWrap });
+                    let wordWrap = editor.getRawOptions()["wordWrap"];
+                    editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
                 });
             }
             
@@ -417,21 +420,23 @@ export const build = (app: App) => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
+        // Update the URL share query everytime user makes a change 
         editor.onDidChangeModelContent(
             debounce((e) => {
+                let modelType = getModelType();
+                if (modelType != "input") return;
                 (async () => {
-                    replaceState(await getShareableURL(inputModel));
+                    replaceState(await getShareableURL(inputModel), historyManager);
                     isInitial = false;
                 })();
             }, 1000)
         );
+    })();
 
-        const shareBtn = Array.from(document.querySelectorAll(
-            ".btn-permalink#share"
-        )) as HTMLButtonElement[];
-        const shareInput = document.querySelector(
-            "#copy-input"
-        ) as HTMLInputElement;
+    // Share Button
+    (() => {
+        const shareBtn = Array.from(document.querySelectorAll(".btn-permalink#share")) as HTMLButtonElement[];
+        const shareInput = document.querySelector("#copy-input") as HTMLInputElement;
         shareBtn.forEach(el => {
             el?.addEventListener("click", () => {
                 (async () => {
@@ -446,9 +451,7 @@ export const build = (app: App) => {
                             });
 
                             el.innerText = "Shared!";
-                            setTimeout(() => {
-                                el.innerText = shareBtnValue;
-                            }, 600);
+                            setTimeout(() => { el.innerText = shareBtnValue; }, 600);
                         } else {
                             shareInput.value = await getShareableURL(inputModel);
                             shareInput.select();
@@ -457,9 +460,7 @@ export const build = (app: App) => {
                             let shareBtnValue = el.innerText;
 
                             el.innerText = "Copied!";
-                            setTimeout(() => {
-                                el.innerText = shareBtnValue;
-                            }, 600);
+                            setTimeout(() => { el.innerText = shareBtnValue; }, 600);
                         }
                     } catch (error) {
                         console.log('Error sharing', error);
@@ -467,22 +468,32 @@ export const build = (app: App) => {
                 })();
             });
         });
+    })();
 
+    // Add Module from Search Results
+    (() => {
         // Listen to events for the results
         ResultEvents.on("add-module", (v) => {
-            value = isInitial ? "// Click Build for the Bundled + Minified + Gzipped package size" : `` + inputModel?.getValue();
+            value = isInitial ? "// Click Build for the bundled, minified and compressed package size" : `` + inputModel?.getValue();
             inputModel?.setValue((value + "\n" + v).trim());
         });
+    })();
 
+    // Build buttons
+    (() => {
         let BuildBtn = Array.from(document.querySelectorAll("#build")) as HTMLElement[];
+
+        // There are 2 build buttons, 1 for desktop, 1 for mobile
+        // This allows both buttons to build the code
         BuildBtn.forEach(btn => {
             btn?.addEventListener("click", () => {
                 (async () => {
                     if (!initialized)
                         fileSizeEl.forEach(el => (el.textContent = `Wait!`));
+                        
                     BundleEvents.emit("bundle", configModel?.getValue());
                     outputModel.setValue(outputModelResetValue);
-                    pushState(await getShareableURL(inputModel));
+                    pushState(await getShareableURL(inputModel), historyManager);
                 })();
             });
         });
@@ -499,18 +510,23 @@ export const InitialRender = (shareURL: URL) => {
         fileSizeEl.forEach(el => (el.textContent = `...`));
 
     // SearchResults solidjs component
-    (async () => {
-        const searchInput = document.querySelector(
-            ".search input"
-        ) as HTMLInputElement;
-        let searchFn = debounce(() => {
+    (() => {
+        const clearBtn = document.querySelector(".search .clear");
+        const searchInput = document.querySelector(".search input") as HTMLInputElement;
+        const SearchContainerEl = document.querySelector(".search-container") as HTMLElement;
+
+        const SearchResultContainerEl = SearchContainerEl.querySelector(".search-results-container") as HTMLElement;
+        if (SearchResultContainerEl) renderSearchResults(SearchResultContainerEl);
+
+        const keyUp = debounce((e) => {
+            e.stopPropagation();
             let { value } = searchInput;
             if (value.length <= 0) return;
 
             let { url, version } = parseInput(value);
             (async () => {
                 try {
-                    let response = await fetch(url);
+                    let response = await getRequest(url);
                     let result = await response.json();
                     setState(
                         // result?.results   ->   api.npms.io
@@ -530,27 +546,15 @@ export const InitialRender = (shareURL: URL) => {
                 } catch (e) {
                     console.error(e);
                     setState([{
-                        type: "Error...",
+                        type: "error",
+                        name: "Error...",
                         description: e?.message
                     }]);
                 }
             })();
-        }, 100)
-        searchInput?.addEventListener?.("keydown", (e) => {
-            // e.preventDefault();
-            e.stopPropagation();
-            searchFn(e);
-        });
+        }, 250);
 
-        const SearchContainerEl = document.querySelector(
-            ".search-container"
-        ) as HTMLElement;
-        const SearchResultContainerEl = SearchContainerEl.querySelector(
-            ".search-results-container"
-        ) as HTMLElement;
-        if (SearchResultContainerEl) renderSearchResults(SearchResultContainerEl);
-
-        const clearBtn = document.querySelector(".search .clear");
+        searchInput?.addEventListener?.("keyup", keyUp);
         clearBtn?.addEventListener("click", () => {
             searchInput.value = "";
             setState([]);
@@ -584,6 +588,7 @@ export const InitialRender = (shareURL: URL) => {
             .addEventListener("change", (e) => {
                 leftSide.style.removeProperty(e.matches ? 'height' : 'width');
         });
+
         let drag = (e: MouseEvent) => { 
             // How far the mouse has been moved
             const dx = e.clientX - x;
@@ -637,7 +642,6 @@ export const InitialRender = (shareURL: URL) => {
         };
         
         dragHandle.addEventListener('pointerdown', pointerDown);
-
         window.addEventListener('resize', debounce(() => { 
             parentRect = parentEl.getBoundingClientRect();
             parentWidth = parentRect.width;
@@ -703,9 +707,7 @@ export const InitialRender = (shareURL: URL) => {
 
     // Console solidjs component
     (async () => {
-        const ConsoleEl = document.querySelector(
-            ".console code"
-        ) as HTMLElement;
+        const ConsoleEl = document.querySelector(".console code") as HTMLElement;
         if (ConsoleEl) {
             ConsoleEl.innerHTML = "";
             renderConsole(ConsoleEl);
@@ -726,16 +728,12 @@ export const InitialRender = (shareURL: URL) => {
 
         const scrollDownBtn = document.querySelector(".console-btns .console-to-bottom-btn");
         scrollDownBtn?.addEventListener("click", () => {
-            if (ConsoleEl) { 
-                ConsoleEl.scrollTo(0, ConsoleEl.scrollHeight);
-            }
+            ConsoleEl?.scrollTo?.(0, ConsoleEl.scrollHeight);
         });
 
         const scrollUpBtn = document.querySelector(".console-btns .console-to-top-btn");
         scrollUpBtn?.addEventListener("click", () => {
-            if (ConsoleEl) { 
-                ConsoleEl.scrollTo(0, 0);
-            }
+            ConsoleEl?.scrollTo?.(0, 0);
         });
     })();
 

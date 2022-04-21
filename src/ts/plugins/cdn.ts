@@ -1,28 +1,43 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
 import { HTTP_NAMESPACE } from './http';
-import { isBareImport, getCDNHost } from '../util/loader';
+import { isBareImport } from '../util/path';
+import { getRequest } from '../util/cache';
+
+import { getCDNUrl, getCDNStyle } from '../util/util-cdn';
 import { resolveImports } from '../util/resolve-imports';
 
 import { resolve, legacy } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
-import { getRequest } from '../util/cache';
 
-export const CDN_RESOLVE = (logger = console.log, cdn?: string): (args: OnResolveArgs) => OnResolveResult | Promise<OnResolveResult> => {
-    return async (args) => {
+import { DEFAULT_CDN_HOST } from '../util/util-cdn';
+
+/** CDN Plugin Namespace */
+export const CDN_NAMESPACE = 'cdn-url';
+
+/**
+ * Resolution algorithm for the esbuild CDN plugin 
+ * 
+ * @param cdn The default CDN to use
+ * @param logger Console log
+ */
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
+    return async (args: OnResolveArgs):  Promise<OnResolveResult> => {
         if (isBareImport(args.path)) {
             // Support a different default CDN + allow for custom CDN url schemes
-            let { argPath, host, query } = getCDNHost(args.path, cdn);
+            let { path: argPath, origin } = getCDNUrl(args.path, cdn);
 
-            // None npm standard CDNs, e.g. deno, github
-            let NOT_NPM_CDN = /^https?\:\/\/(deno\.land|raw\.githubusercontent\.com|cdn\.jsdelivr\.net\/gh)/.test(host);
+            // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
+            let NPM_CDN = getCDNStyle(origin) == "npm";
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             let parsed = parsePackageName(argPath);
             let subpath = parsed.path;
             let pkg = args.pluginData?.pkg ?? {};
 
-            // Resolving imports from package.json, if a package starts with "#" 
+            // Resolving imports from the package.json, if said import starts with "#" 
+            // If an import starts with "#" then it's a subpath-import
+            // https://nodejs.org/api/packages.html#subpath-imports
             if (argPath[0] == "#") {
                 let path = resolveImports({ ...pkg, exports: pkg.imports }, argPath, {
                     require: args.kind === "require-call" || args.kind === "require-resolve"
@@ -30,36 +45,43 @@ export const CDN_RESOLVE = (logger = console.log, cdn?: string): (args: OnResolv
 
                 if (typeof path === "string") {
                     subpath = path.replace(/^\.?\/?/, "/");
-                    // console.log("[CDN - Internal Import]", path, pkg);
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
 
-                    let { url } = getCDNHost(`${pkg.name}@${NOT_NPM_CDN ? "" : "@" + pkg.version}${subpath}`);
+                    let version = NPM_CDN ? "@" + pkg.version : "";
+                    let { url: { href } } = getCDNUrl(`${pkg.name}${version}${subpath}`);
                     return {
                         namespace: HTTP_NAMESPACE,
-                        path: url + query,
+                        path: href,
                         pluginData: { pkg }
                     };
                 }
             }
 
-            if (("dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg) && !/\S+@\S+/.test(argPath)) {
-                let { devDependencies = {}, dependencies = {}, peerDependencies = {} } = pkg;
+            // Are there an dependecies???? Well Goood.
+            let depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
+            if (depsExists && !/\S+@\S+/.test(argPath)) {
+                let { 
+                    devDependencies = {}, 
+                    dependencies = {}, 
+                    peerDependencies = {} 
+                } = pkg;
+                
                 let deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
                 let keys = Object.keys(deps);
 
-                if (keys.includes(argPath)) {
+                if (keys.includes(argPath)) 
                     parsed.version = deps[argPath];
-                }
             }
 
-            try {
-                if (!NOT_NPM_CDN) {
-                    let { url: pkgJSON_URL } = getCDNHost(`${parsed.name}@${parsed.version}/package.json`, host);
+            // If the CDN supports package.json and some other npm stuff, it counts as an npm CDN
+            if (NPM_CDN) {
+                try {
+                    let { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
 
                     // Strongly cache package.json files
-                    pkg = await getRequest(pkgJSON_URL, true).then((res) => res.json());
+                    pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
                     let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
                         require: args.kind === "require-call" || args.kind === "require-resolve",
                     }) || legacy(pkg);
@@ -69,30 +91,38 @@ export const CDN_RESOLVE = (logger = console.log, cdn?: string): (args: OnResolv
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
+                } catch (e) {
+                    logger([`You may want to change CDNs. The current CDN "${origin}" doesn't support package.json.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warn");
+                    console.warn(e);
                 }
-            } catch (e) {
-                logger([`You may want to change CDNs. The current CDN "${host}" doesn't support package.json.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warn");
-                console.warn(e)
             }
 
-            let { url } = getCDNHost(`${parsed.name}${NOT_NPM_CDN ? "" : "@" + parsed.version}${subpath}`, host);
+            // If the CDN is npm based then it should add the parsed version to the URL
+            // e.g. https://unpkg.com/spring-easing@v1.0.0/
+            let version = NPM_CDN ? "@" + parsed.version : "";
+            let { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
             return {
                 namespace: HTTP_NAMESPACE,
-                path: url + query,
+                path: url.toString(),
                 pluginData: { pkg }
             };
         }
     };
-}
+};
 
-export const CDN_NAMESPACE = 'cdn-url';
-export const CDN = (logger = console.log, host: string): Plugin => {
+/**
+ * Esbuild CDN plugin 
+ * 
+ * @param cdn The default CDN to use
+ * @param logger Console log
+ */
+export const CDN = (cdn: string, logger = console.log): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
             // Resolve bare imports to the CDN required using different URL schemes
-            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(logger, host));
-            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(logger, host));
+            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, logger));
+            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, logger));
         },
     };
 };

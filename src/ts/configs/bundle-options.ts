@@ -1,6 +1,7 @@
 import type { BuildOptions } from "esbuild-wasm";
+
 import { deepAssign } from "../util/deep-equal";
-import { HOST } from "../util/loader";
+import { DEFAULT_CDN_HOST } from "../util/util-cdn";
 
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export type CompressionType = "gzip" | "brotli" | "lz4";
@@ -53,7 +54,7 @@ export type BundleConfigOptions = {
 };
 
 export const EasyDefaultConfig: BundleConfigOptions = {
-    "cdn": HOST,
+    "cdn": DEFAULT_CDN_HOST,
     "compression": "gzip",
     "esbuild": {
         "target": ["esnext"],

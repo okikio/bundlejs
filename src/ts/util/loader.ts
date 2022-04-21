@@ -1,20 +1,22 @@
 import type { Loader } from 'esbuild';
-import { isAbsolute, extname } from './path';
+import { extname } from './path';
 
-export const isBareImport = (url: string) => {
-    return /^(?!\.).*/.test(url) && !isAbsolute(url);
-}
-
-// Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
+/** Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts */ 
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];
-export const inferLoader = (url: string): Loader => {
-    const ext = extname(url);
+
+/**
+ * Based on the file extention determine the esbuild loader to use
+ */
+export const inferLoader = (urlStr: string): Loader => {
+    const ext = extname(urlStr);
     if (RESOLVE_EXTENSIONS.includes(ext))
         return ext.slice(1) as Loader;
 
     if (ext === ".mjs" || ext === ".cjs") return "js";
     if (ext === ".mts" || ext === ".cts") return "ts";
-
+    
+    if (ext === ".tsx") return "tsx";
+    if (ext === ".jsx") return "jsx";
     if (ext == ".scss") return "css";
 
     if (ext == ".png" || ext == ".jpeg" || ext == ".ttf") return "dataurl";
@@ -23,30 +25,3 @@ export const inferLoader = (url: string): Loader => {
 
     return ext.length ? "text" : "ts";
 }
-
-export const HOST = 'https://unpkg.com';
-export const getCDNHost = (url: string, host = HOST) => {
-    if (/^skypack\:/.test(url)) {
-        host = `https://cdn.skypack.dev`;
-    } else if (/^(esm\.sh|esm)\:/.test(url)) {
-        host = `https://cdn.esm.sh`;
-    } else if (/^unpkg\:/.test(url)) {
-        host = `https://unpkg.com`;
-    } else if (/^(jsdelivr\.gh)\:/.test(url)) {
-        host = `https://cdn.jsdelivr.net/gh`;
-    } else if (/^(jsdelivr|esm\.run)\:/.test(url)) {
-        host = `https://cdn.jsdelivr.net/npm`;
-    } else if (/^(deno)\:/.test(url)) {
-        host = `https://deno.land/x`;
-    } else if (/^(github)\:/.test(url)) {
-        host = `https://raw.githubusercontent.com`;
-    }
-    
-    host = /\/$/.test(host) ? host : `${host}/`;
-
-    let argPath = url.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.sh|esm\.run|deno|github)\:/, "");
-    let _url = new URL(host + argPath.replace(/^\//, ""));
-    let noQuery = (urlStr: string) => _url.search ? urlStr.replace(_url.search, "") : urlStr;
-    return { argPath: noQuery(argPath), host, url: noQuery(_url.toString()), query: _url.search };
-}
-

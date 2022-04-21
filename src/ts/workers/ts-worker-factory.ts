@@ -14,6 +14,7 @@ import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
 import { deepAssign, deepDiff } from "../util/deep-equal";
+import { getRequest } from "../util/cache";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -72,18 +73,16 @@ let config: Record<string, unknown> | undefined = {
     "ignoreNodeCommentText": "dprint-ignore",
     "ignoreFileCommentText": "dprint-ignore-file"
 };
-const abortController = new AbortController();
-const signal = abortController.signal;
+
 const getFormatter = async () => {
     try {
         const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
-        const response = fetch(url, { signal });
+        const response = getRequest(url);
         const formatter = await createStreaming(response);
         formatter.setConfig({}, config);
         return formatter;
     } catch (err) {
-        if (!signal.aborted)
-            throw err;
+        throw err;
     }
 }
 
