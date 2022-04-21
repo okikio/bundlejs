@@ -1,7 +1,7 @@
 export const CACHE = new WeakMap();
 export const CACHE_NAME = 'EXTERNAL_FETCHES';
-export const getRequest = async (url: RequestInfo, permanent: boolean = false) => {
-    let request = new Request(url);
+export const getRequest = async (url: RequestInfo | URL, permanent: boolean = false, fetchOpts?: RequestInit) => {
+    let request = new Request(url.toString());
     let response: Response;
 
     // In specific situations the browser will sometimes disable access to cache storage, so, I create my own
@@ -16,12 +16,12 @@ export const getRequest = async (url: RequestInfo, permanent: boolean = false) =
         // otherwise, use network request
         if (permanent) {
             if (!cacheResponse) {
-                let networkResponse = await fetch(request);
+                let networkResponse = await fetch(request, fetchOpts);
                 cache.put(request, networkResponse.clone());
                 response = networkResponse;
             }
         } else {
-            let networkResponse = await fetch(request);
+            let networkResponse = await fetch(request, fetchOpts);
             cache.put(request, networkResponse.clone());
             response = cacheResponse || networkResponse;
         }
@@ -34,12 +34,12 @@ export const getRequest = async (url: RequestInfo, permanent: boolean = false) =
         // otherwise, use network request
         if (permanent) {
             if (!cacheResponse) {
-                let networkResponse = await fetch(request);
+                let networkResponse = await fetch(request, fetchOpts);
                 CACHE.set(request, networkResponse.clone());
                 response = networkResponse;
             }
         } else {
-            let networkResponse = await fetch(request);
+            let networkResponse = await fetch(request, fetchOpts);
             CACHE.set(request, networkResponse.clone());
             response = cacheResponse || networkResponse;
         }

@@ -1,9 +1,15 @@
 // Based on https://css-tricks.com/how-to-animate-the-details-element-using-waapi/
 export const detailsEls = new WeakMap<HTMLDetailsElement, Accordion>();
 export class Accordion {
-    constructor(el) {
+    el: HTMLDetailsElement;
+    summary: HTMLElement;
+    content: HTMLDivElement;
+    animation: Animation;
+    isClosing: boolean;
+    isExpanding: boolean;
+    constructor(el: Element) {
         // Store the <details> element
-        this.el = el;
+        this.el = el as HTMLDetailsElement;
         // Store the <summary> element
         this.summary = el.querySelector("summary");
         // Store the <div class="content"> element

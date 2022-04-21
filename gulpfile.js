@@ -205,8 +205,8 @@ task("js", async () => {
         [
             `${tsFolder}/*.ts`,
             `${tsFolder}/*.js`,
-            `${tsFolder}/scripts/*`,
             `!${tsFolder}/**/*.d.ts`,
+            // `${tsFolder}/scripts/*`,
             `node_modules/esbuild-wasm/esbuild.wasm`,
         ],
         {

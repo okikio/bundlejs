@@ -1,8 +1,8 @@
 extends /layouts/layout.pug
 
 block preload 
-  link(src='/js/index.min.js' type='modulepreload' as="script" importance="high")
-  link(rel="stylesheet", href="/js/index.min.css" importance="low")
+  link(src='/js/index.min.js' type='modulepreload' as="script" fetchpriority="high")
+  link(rel="stylesheet", href="/js/index.min.css" fetchpriority="low")
 
 block content
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
