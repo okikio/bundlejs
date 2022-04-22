@@ -165,13 +165,22 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
             // would probably need to be more complex.
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 // Some typescript files don't have file extensions but you can't fetch a file without their file extension
-                // so bundle assumes that the file extention for missing files is always typescript
+                // so bundle tries to solve for that
                 let ext = extname(args.path);
-                let argPath = ext.length > 0 ? args.path : args.path + ".ts";
+                let argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
+                let content: Uint8Array, url: string;
 
-                const { content, url } = await fetchPkg(argPath, logger);
-                assets = assets.concat(await fetchAssets(args.path, content, logger));  
+                try { 
+                    // Fetch the path without the `.ts` extension
+                   ({ content, url } = await fetchPkg(argPath(), logger));
+                } catch(err) {
+                    // If the ^ above fetch doesn't work, try again with a `.ts` extension
+                    // Some typescript files don't have file extensions but you can't fetch a file without their file extension
+                    logger([err.toString()], "error");
+                    ({ content, url } = await fetchPkg(argPath(".ts"), logger));
+                }
 
+                assets = assets.concat(await fetchAssets(url, content, logger));  
                 return {
                     contents: content,
                     loader: inferLoader(url),
