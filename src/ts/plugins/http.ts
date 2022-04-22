@@ -66,10 +66,10 @@ export const fetchAssets = async (path: string, content: Uint8Array, logger = co
 /**
  * Resolution algorithm for the esbuild HTTP plugin
  * 
- * @param cdn The default CDN to use
+ * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
+export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
     return async (args: OnResolveArgs):  Promise<OnResolveResult> => {
         // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
         let argPath = args.path.replace(/\/$/, "/index");
@@ -87,12 +87,12 @@ export const HTTP_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
 
             let pathOrigin = new URL(
                 // Use the parent files URL as a host
-                urlJoin(args.pluginData?.url ? args.pluginData?.url : cdn, "../", argPath)
+                urlJoin(args.pluginData?.url ? args.pluginData?.url : host, "../", argPath)
             ).origin;
             
             // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
             let NPM_CDN = getCDNStyle(pathOrigin) == "npm";
-            let origin = NPM_CDN ? pathOrigin : cdn;
+            let origin = NPM_CDN ? pathOrigin : host;
             
             // If the import is a bare import, use the CDN plugins resolution algorithm
             if (isBareImport(argPath)) {
@@ -134,10 +134,10 @@ export const HTTP_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
  * Esbuild HTTP plugin 
  * 
  * @param assets Array to store fetched assets
- * @param cdn The default CDN to use
+ * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP = (assets: OutputFile[] = [], cdn = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -157,7 +157,7 @@ export const HTTP = (assets: OutputFile[] = [], cdn = DEFAULT_CDN_HOST, logger =
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(cdn, logger));
+            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, logger));
 
             // When a URL is loaded, we want to actually download the content
             // from the internet. This has just enough logic to be able to

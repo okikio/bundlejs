@@ -32,10 +32,10 @@ export const isAlias = (id: string, aliases = {}) => {
  * Resolution algorithm for the esbuild ALIAS plugin 
  * 
  * @param aliases An object with package as the key and the package alias as the value, e.g. { "fs": "memfs" }
- * @param cdn The default CDN to use
+ * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = console.log) => {
+export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log) => {
     return async (args: OnResolveArgs):  Promise<OnResolveResult> => {
         let path = args.path.replace(/^node\:/, "");
         let { path: argPath } = getCDNUrl(path);
@@ -43,7 +43,7 @@ export const ALIAS_RESOLVE = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = con
         if (isAlias(argPath, aliases)) {
             let pkgDetails = parsePackageName(argPath);
             let aliasPath = aliases[pkgDetails.name];
-            return HTTP_RESOLVE(cdn, logger)({
+            return HTTP_RESOLVE(host, logger)({
                 ...args,
                 path: aliasPath
             });
@@ -55,10 +55,10 @@ export const ALIAS_RESOLVE = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = con
  * Esbuild ALIAS plugin 
  * 
  * @param aliases An object with package as the key and the package alias as the value, e.g. { "fs": "memfs" }
- * @param cdn The default CDN to use
+ * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
     return {
         name: ALIAS_NAMESPACE,
         setup(build) {
@@ -68,7 +68,7 @@ export const ALIAS = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = console.log
             // this plugin.
             build.onResolve({ filter: /^node\:.*/ }, (args) => {
                 if (isAlias(args.path, aliases)) 
-                    return ALIAS_RESOLVE(aliases, cdn, logger)(args);
+                    return ALIAS_RESOLVE(aliases, host, logger)(args);
 
                 return {
                     path: args.path,
@@ -82,8 +82,8 @@ export const ALIAS = (aliases = {}, cdn = DEFAULT_CDN_HOST, logger = console.log
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, cdn, logger));
-            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, cdn, logger));
+            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, logger));
+            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, logger));
         },
     };
 };
