@@ -90,6 +90,7 @@ export const start = async (port: MessagePort) => {
             postMessage({
                 event: "log",
                 details: { 
+                    type,
                     messages: [`${msgs.length} ${type}(s) ${type == "error" ? "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)" : ""}`] 
                 }
             });
