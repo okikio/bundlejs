@@ -424,7 +424,7 @@ export const build = (app: App) => {
         editor.onDidChangeModelContent(
             debounce((e) => {
                 let modelType = getModelType();
-                if (modelType != "input") return;
+                if (modelType == "output") return;
                 (async () => {
                     replaceState(await getShareableURL(inputModel), historyManager);
                     isInitial = false;
