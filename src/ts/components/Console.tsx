@@ -56,7 +56,7 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
       {({ title, message = "", type }, index) => {
         let styleType = {
           "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
-          "warn": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md"
+          "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md"
         };
         
         let staticClassName = "whitespace-normal overflow-auto overscroll-x-contain "; 
