@@ -4,13 +4,17 @@ export {
   gzip,
   gunzip,
   zlib,
-  unzlib,
-} from "./pkg/denoflate";
+  unzlib
+} from "./pkg/denoflate.js";
 
-import init from "./pkg/denoflate";
+import type { InitOutput } from "./pkg/denoflate";
+
+import init from "./pkg/denoflate.js"; 
+
+// @ts-ignore
 import { wasm as WASM } from "./pkg/denoflate_bg.wasm.js";
 
-export let wasm;
+export let wasm: InitOutput;
 export const getWASM = async () => {
   if (wasm) return wasm;
   return (wasm = await init(WASM));
