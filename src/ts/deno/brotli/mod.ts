@@ -1,5 +1,4 @@
 // Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
-
 import init, {
     source,
     compress as wasm_compress,
@@ -7,7 +6,7 @@ import init, {
 } from "./wasm.js";
 
 let initialized = false;
-const getWASM = async () => {
+export const getWASM = async () => {
     if (!initialized) await init(source);
     return (initialized = true);
 }

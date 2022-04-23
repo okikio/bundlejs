@@ -86,7 +86,7 @@
         "esbuild": "0.14.37",
         "esbuild-plugin-solid": "^0.4.2",
         "gulp": "^4.0.2",
-        "gulp-esbuild": "^0.10.2",
+        "gulp-esbuild": "^0.10.3",
         "gulp-if": "^3.0.0",
         "gulp-plumber": "^1.2.1",
         "gulp-postcss": "^9.0.1",
