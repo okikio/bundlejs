@@ -295,7 +295,6 @@ footer.footer {
     // visibility: hidden;
 }
 
-.navbar-toggle,
 .theme-toggle,
 .intall-btn,
 .btn-icon {
@@ -321,6 +320,9 @@ footer.footer {
     @apply dark:hover:bg-gray-800;
     @apply focus-visible:border-blue-600 focus-visible:ring-4 focus:rounded-md;
 }
+
+
+// .navbar-toggle,
 
 .btn {
     @apply px-3 py-2 rounded-md no-underline hover:bg-gray-300;
