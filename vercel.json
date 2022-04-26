@@ -39,7 +39,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com data:; script-src 'self' https://cdn.polyfill.io 'unsafe-eval'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-ancestors 'self' https:;"
+                    "value": "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com data:; script-src 'self' https://giscus.app https://bundlejs.com https://giscus.bundlejs.com https://cdn.polyfill.io 'unsafe-eval'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-ancestors 'self' https:;"
                 },
                 {
                     "key": "Permissions-Policy",
