@@ -1,9 +1,10 @@
 // Based on https://css-tricks.com/how-to-animate-the-details-element-using-waapi/
-export const detailsEls = new WeakMap<HTMLDetailsElement, Accordion>();
-export class Accordion {
+export const detailsEls = new WeakMap<HTMLDetailsElement, DetailsComponent>();
+export class DetailsComponent {
     el: HTMLDetailsElement;
     summary: HTMLElement;
     content: HTMLDivElement;
+    anchors: HTMLAnchorElement[];
     animation: Animation;
     isClosing: boolean;
     isExpanding: boolean;
@@ -14,6 +15,7 @@ export class Accordion {
         this.summary = el.querySelector("summary");
         // Store the <div class="content"> element
         this.content = el.querySelector(".content");
+        this.anchors = Array.from(this.summary?.querySelectorAll("a"));
 
         // Store the animation object (so we can cancel it if needed)
         this.animation = null;
@@ -23,21 +25,36 @@ export class Accordion {
         this.isExpanding = false;
         // Detect user clicks on the summary element
         this.onClick = this.onClick.bind(this);
-        this.summary.addEventListener("click", this.onClick);
+        this.anchorClick = this.anchorClick.bind(this);
+
+        this.summary?.addEventListener("click", this.onClick);
+        this.anchors?.forEach(anchor => {
+            anchor?.addEventListener("click", this.anchorClick);
+        });
     }
 
-    onClick(e) {
+    anchorClick(e: MouseEvent) {
+        e.stopPropagation();
+    }
+
+    onClick(e: MouseEvent) {
         // Stop default behaviour from the browser
-        e.preventDefault();
+        e.preventDefault(); 
+
+        this.toggle();
+    }
+
+    toggle() {
         // Add an overflow on the <details> to avoid content overflowing
         this.el.style.overflow = "hidden";
+
         // Check if the element is being closed or is already closed
-        if (this.isClosing || !this.el.open) {
+        if (this.isClosing || !this.el.open) 
             this.open();
-            // Check if the element is being openned or is already open
-        } else if (this.isExpanding || this.el.open) {
+
+        // Check if the element is being openned or is already open
+        else if (this.isExpanding || this.el.open) 
             this.shrink();
-        }
     }
 
     shrink() {
@@ -45,9 +62,13 @@ export class Accordion {
         this.isClosing = true;
 
         // Store the current height of the element
-        const startHeight = `${this.el.offsetHeight}px`;
+        const start = this.el.offsetHeight;
+
         // Calculate the height of the summary
-        const endHeight = `${this.summary.offsetHeight}px`;
+        const end = this.summary.offsetHeight;
+
+        const startHeight = `${start}px`;
+        const endHeight = `${end}px`;
 
         // If there is already an animation running
         if (this.animation) {
@@ -62,7 +83,7 @@ export class Accordion {
                 height: [startHeight, endHeight],
             },
             {
-                duration: 400,
+                duration: 500,
                 easing: "ease-out",
             }
         );
@@ -76,8 +97,10 @@ export class Accordion {
     open() {
         // Apply a fixed height on the element
         this.el.style.height = `${this.el.offsetHeight}px`;
+
         // Force the [open] attribute on the details element
         this.el.open = true;
+
         // Wait for the next frame to call the expand function
         window.requestAnimationFrame(() => this.expand());
     }
@@ -85,11 +108,15 @@ export class Accordion {
     expand() {
         // Set the element as "being expanding"
         this.isExpanding = true;
+
         // Get the current fixed height of the element
-        const startHeight = `${this.el.offsetHeight}px`;
+        const start = this.el.offsetHeight;
+
         // Calculate the open height of the element (summary height + content height)
-        const endHeight = `${this.summary.offsetHeight +
-            this.content.offsetHeight}px`;
+        const end = this.summary.offsetHeight + this.content.offsetHeight;
+
+        const startHeight = `${start}px`;
+        const endHeight = `${end}px`;
 
         // If there is already an animation running
         if (this.animation) {
@@ -104,7 +131,7 @@ export class Accordion {
                 height: [startHeight, endHeight],
             },
             {
-                duration: 400,
+                duration: 500,
                 easing: "ease-out",
             }
         );
@@ -130,20 +157,19 @@ export class Accordion {
         if (this.el) {
             detailsEls.delete(this.el);
             this.summary?.removeEventListener?.("click", this.onClick);
+            this.anchors?.forEach(anchor => {
+                anchor?.removeEventListener?.("click", this.anchorClick);
+            });
+            
             this.animation?.cancel?.();
 
-            // Store the <details> element
             this.el = null;
-            // Store the <summary> element
             this.summary = null;
-            // Store the <div class="content"> element
             this.content = null;
+            this.anchors = null;
 
-            // Store the animation object (so we can cancel it if needed)
             this.animation = null;
-            // Store if the element is closing
             this.isClosing = null;
-            // Store if the element is expanding
             this.isExpanding = null;
         }
     }
@@ -154,7 +180,22 @@ export const run = () => {
     if (details.length > 0) {
         details.forEach((el) => {
             if (el && !detailsEls.has(el)) 
-                detailsEls.set(el, new Accordion(el));
+                detailsEls.set(el, new DetailsComponent(el));
         });
     }
 }
+        
+export const hashChange = () => {
+    let { hash } = document.location;
+    let el = document.querySelector(`details${hash}`) as HTMLDetailsElement;
+    
+    if (el && hash.length) {
+        if (el.open != true) {
+            let detailsComponent = detailsEls.get(el);
+            detailsComponent?.toggle();
+        }
+    }
+};
+
+window.addEventListener("load", hashChange);
+window.addEventListener('hashchange', hashChange);

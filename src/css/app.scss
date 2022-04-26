@@ -206,9 +206,10 @@ main {
     }
 
     h2 {
-        @apply text-5xl font-bold mb-8;
+        @apply text-5xl font-bold;
     }
 
+    .accordian h2,
     h2#usage {
         @apply text-4xl font-bold;
         // my-8
@@ -226,7 +227,7 @@ main {
     }
 
     h4 {
-        @apply text-2xl font-bold mb-2;
+        @apply text-2xl font-bold;
     }
 
     .list-disc {
@@ -412,10 +413,11 @@ button,
     @apply px-2 py-2 rounded-md ml-2;
     // color-scheme: light;
 }
-details {
+details:not(.accordian) {
     .content {
         padding-left: 2ch;
     }
+
     summary::marker {
         content: "";
     }
@@ -428,6 +430,7 @@ details {
         text-shadow: 0 0 0.6px var(--text-shadow-color),
             0 0 0.6px var(--text-shadow-color),
             0 0 0.6px var(--text-shadow-color);
+
         &:active {
             --text-shadow-color: currentColor;
         }
@@ -494,7 +497,91 @@ details {
     }
 }
 
-// html.dark .theme-options {
-//     color-scheme: dark;
-//     @apply bg-black;
-// }
+details.accordian {
+    .clickable {
+        @apply inline-block cursor-pointer px-4 py-2;
+    }
+
+    .content {
+        padding-right: 2ch;
+    }
+
+    summary:hover {
+        h1 .icon, h2 .icon, h3 .icon, h4 .icon, h5 .icon, h6 .icon {
+            @apply visible;
+        }
+    }
+
+    summary::marker {
+        content: "";
+    }
+
+    summary {
+        --text-shadow-color: transparent;
+        @apply relative cursor-pointer font-light;
+        // letter-spacing: .1em;
+        padding-right: 2ch;
+        transition: text-shadow ease 0.4s;
+        text-shadow: 0 0 0.6px var(--text-shadow-color),
+            0 0 0.6px var(--text-shadow-color),
+            0 0 0.6px var(--text-shadow-color);
+
+        &:active {
+            --text-shadow-color: currentColor;
+        }
+
+        &:after {
+            font-family: "Material Icons Round";
+            font-size: 24px;
+            font-weight: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-shadow: none;
+
+            content: "► ";
+            content: "chevron_right";
+            @apply absolute top-1/2;
+            right: 0.25ch;
+            @apply text-2xl text-gray-800/80 dark:text-gray-200/60;
+            transform: translate(0, -50%);
+            @apply cursor-pointer;
+        }
+
+        &:active,
+        &:active:after {
+            @apply text-gray-800 dark:text-gray-100;
+        }
+    }
+
+    summary:after {
+        transition: transform 0.2s ease-in-out, color ease 0.2s;
+        transform: translate(0, -50%) rotateZ(0deg);
+    }
+
+    &[open] > summary {
+        --text-shadow-color: currentColor;
+
+        &:active {
+            --text-shadow-color: transparent;
+        }
+
+        &:after {
+            @apply text-gray-600/60 dark:text-gray-400/60;
+            // content: "▼ ";
+            // content: "\f2a2";
+            transform: translate(0, -50%) rotateZ(90deg);
+        }
+
+        &:active:after {
+            @apply text-gray-800 dark:text-gray-100;
+        }
+    }
+}
+

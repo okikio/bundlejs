@@ -3,10 +3,10 @@ import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet } from "./theme";
 
-// import { build, InitialRender } from "./index";
+import { build, InitialRender } from "./index";
 import RegisterServiceWorker from "./register-sw";
 
-import * as Accordion from "./modules/accordion";
+import * as DetailsComponent from "./modules/details";
 import { animate } from "@okikio/animate";
 
 import type { ITransition, IHistoryItem } from "@okikio/native";
@@ -161,8 +161,8 @@ window.addEventListener("load", () => {
     });
 });
 
-// Accordion
-Accordion.run();
+// Details Component
+DetailsComponent.run();
 
 RegisterServiceWorker();
 export { };

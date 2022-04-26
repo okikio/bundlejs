@@ -121,122 +121,141 @@ block content
 
   br
   br
-  .container  
-    h2#usage Usage
-    blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
-    blockquote Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
-    blockquote Check the console for error messages and warnings.
 
-    p You can use custom protocols to specify which CDN the module should come from.
-    br
-    p
-      ul.list-disc
-        li esm.run:react   ->   #[a(href="https://esm.run/react" target="_blank" rel="noopener") https://esm.run/react] 
-        //- br
-        li esm.sh:react    ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
-        //- br
-        li esm:react       ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
-        //- br
-        li skypack:react   ->   #[a(href="https://cdn.skypack.dev/react" target="_blank" rel="noopener") https://cdn.skypack.dev/react] 
-        //- br
-        li unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
-        //- br
-        li deno:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
-        //- br
-        li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
-        //- br
-        li jsdelivr.gh:facebook/react/packages/react-dom/index.js  ->   #[a(href="https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js" target="_blank" rel="noopener") https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js] 
-    br
-    p e.g.
-    :markdown-it(linkify langPrefix='language-')
-      ```ts
-      import { toStr } from "skypack:@okikio/animate";
-      // or
-      export * from "esm:@okikio/animate"; 
-      // or 
-      export { animate } from "https://cdn.skypack.dev/@okikio/animate";
-      ```
-    br
-    p.relative
-      span="* If an error occurs try using a different CDN, by default "
-      strong bundle
-      |  uses
-      a(href="https://unpkg.com" target="_blank" rel="noopener")  unpkg.com
-      |  but you can use the others.
-    br
-    p.relative
-      span="* For some packages an error occurs where the default export is excluded from the treeshaken bundle, the solution for this is to manually include the default export like so,  "
-      :markdown-it(linkify langPrefix='language-')
-        ```ts
-        export * from "solid-dismiss";
-        // and
-        export { default } from "solid-dismiss";
-        ```
-    br
-    br
-    h4#url-queries URL Queries & Shareable Links
-    br
-    p
-      | You can now use search queries in #[strong bundle], all you need to do is add this to the url #[br]
-      | #[code="?q={packages}&treeshake={methods to treeshake}"] #[br] #[br] 
-      | e.g. #[br]
-      | You want #[code react], #[code react-dom], #[code vue], and #[code @okikio/animate], but only want the #[code Animate] and #[code toStr] methods exported from #[code @okikio/animate].
-      | #[br] #[br] You would add this to the url 
-      a(href="/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]" rel="noopener")
-        | ?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]
-      br 
-      br
-      | If you only want a couple packages and don't care to treeshake, then all you need is something like this,
-      a(href="/?q=react,react-dom,vue,@okikio/animate" rel="noopener")
-        | ?q=react,react-dom,vue,@okikio/animate
-      | . There is another way to share a reproduciable bundle, the sharable link. Shareble links look like this #[a(href="/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?share=PTAEGEBs...] with the string value of the input code editor being compressed into a string and placed into the URL. 
-      br
-      br
-      | In order to create a shareble link, you click the #[code Share] button, it copies the share url to your clipboard, and from there you can paste where you wish. 
-      br
-      br
-      details(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").rounded-md
-        summary
-          p.px-4.py-2.cursor-pointer.select-none Auto-bundling shared URL's
-        div.content.px-2.py-4
-          p If you would like to bundle your code when the share URL is loaded, add #[code bundle] to the url, e.g. #[a(href="/?q=@okikio/animate&bundle" rel="noopener") /?bundle&q=@okikio/animate] or #[a(href="/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?bundle&share=PTAEGEBs...]
-    br
-    br
-    h4#badges Badges
-    p
-      | You can also add bundle badges, they look like this,
-      br
-      br
-      div.space-x-2
-        a(href="https://bundle.js.org/" class="inline-block") 
-          img(src="/badge-light.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
-        a(href="https://bundle.js.org/" class="inline-block") 
-          img(src="/badge-dark.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
-      br
-      | All you need to do is to add this to your #[code README.md]
-      br
-      :markdown-it(linkify langPrefix='language-')
-        ```md
-        # Light Mode Badge 
-        [![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/)
+  mixin divider
+    .px.py-3
+      .w-full.h-0.border-b.border-gray-700
 
-        # Dark Mode Badge 
-        [![Open Bundle](https://bundle.js.org/badge-dark.svg)](https://bundle.js.org/)
-        ```
-      br
-      | You can use the #[a(href="#url-queries--shareable-links") URL Queries & Shareable Links] above, to create unique bundles, when users clicks on the badge.
-    br
-    br
+  .container 
+    details.accordian#usage(open)
+      summary
+        h2 Usage
+      div.content.py-4
+        blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
+        blockquote Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
+        blockquote Check the console for error messages and warnings.
+
+        p You can use custom protocols to specify which CDN the module should come from.
+        br
+        p
+          ul.list-disc
+            li esm.run:react   ->   #[a(href="https://esm.run/react" target="_blank" rel="noopener") https://esm.run/react] 
+            //- br
+            li esm.sh:react    ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
+            //- br
+            li esm:react       ->   #[a(href="https://cdn.esm.sh/react" target="_blank" rel="noopener") https://cdn.esm.sh/react] 
+            //- br
+            li skypack:react   ->   #[a(href="https://cdn.skypack.dev/react" target="_blank" rel="noopener") https://cdn.skypack.dev/react] 
+            //- br
+            li unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
+            //- br
+            li deno:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
+            //- br
+            li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
+            //- br
+            li jsdelivr.gh:facebook/react/packages/react-dom/index.js  ->   #[a(href="https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js" target="_blank" rel="noopener") https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js] 
+        br
+        p e.g.
+        :markdown-it(linkify langPrefix='language-')
+          ```ts
+          import { toStr } from "skypack:@okikio/animate";
+          // or
+          export * from "esm:@okikio/animate"; 
+          // or 
+          export { animate } from "https://cdn.skypack.dev/@okikio/animate";
+          ```
+        br
+        p.relative
+          span="* If an error occurs try using a different CDN, by default "
+          strong bundle
+          |  uses
+          a(href="https://unpkg.com" target="_blank" rel="noopener")  unpkg.com
+          |  but you can use the others.
+        br
+        p.relative
+          span="* For some packages an error occurs where the default export is excluded from the treeshaken bundle, the solution for this is to manually include the default export like so,  "
+          :markdown-it(linkify langPrefix='language-')
+            ```ts
+            export * from "solid-dismiss";
+            // and
+            export { default } from "solid-dismiss";
+            ```
+
+    +divider
+
+    details.accordian#url-queries--shareable-links
+      summary
+        h4 URL Queries & Shareable Links
+      div.content.py-4
+        p
+          | You can now use search queries in #[strong bundle], all you need to do is add this to the url #[br]
+          | #[code="?q={packages}&treeshake={methods to treeshake}"] #[br] #[br] 
+          | e.g. #[br]
+          | You want #[code react], #[code react-dom], #[code vue], and #[code @okikio/animate], but only want the #[code Animate] and #[code toStr] methods exported from #[code @okikio/animate].
+          | #[br] #[br] You would add this to the url 
+          a(href="/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]" rel="noopener")
+            | ?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}]
+          br 
+          br
+          | If you only want a couple packages and don't care to treeshake, then all you need is something like this,
+          a(href="/?q=react,react-dom,vue,@okikio/animate" rel="noopener")
+            | ?q=react,react-dom,vue,@okikio/animate
+          | . There is another way to share a reproduciable bundle, the sharable link. Shareble links look like this #[a(href="/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?share=PTAEGEBs...] with the string value of the input code editor being compressed into a string and placed into the URL. 
+          br
+          br
+          | In order to create a shareble link, you click the #[code Share] button, it copies the share url to your clipboard, and from there you can paste where you wish. 
+          br
+          br
+          details.accordian(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").rounded-md
+            summary
+              p.px-4.py-2.cursor-pointer.select-none Auto-bundling shared URL's
+            div.content.pl-4.pr-2.py-4
+              p If you would like to bundle your code when the share URL is loaded, add #[code bundle] to the url, e.g. #[a(href="/?q=@okikio/animate&bundle" rel="noopener") /?bundle&q=@okikio/animate] or #[a(href="/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?bundle&share=PTAEGEBs...]
+          
+    +divider
+
+    details.accordian#badges
+      summary
+        h4 Badges
+      div.content.py-4
+        p
+          | You can also add bundle badges, they look like this,
+          br
+          br
+          div.space-x-2
+            a(href="https://bundle.js.org/" class="inline-block") 
+              img(src="/badge-light.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
+            a(href="https://bundle.js.org/" class="inline-block") 
+              img(src="/badge-dark.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
+          br
+          | All you need to do is to add this to your #[code README.md]
+          br
+          :markdown-it(linkify langPrefix='language-')
+            ```md
+            # Light Mode Badge 
+            [![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/)
+
+            # Dark Mode Badge 
+            [![Open Bundle](https://bundle.js.org/badge-dark.svg)](https://bundle.js.org/)
+            ```
+          br
+          | You can use the #[a(href="#url-queries--shareable-links") URL Queries & Shareable Links] above, to create unique bundles, when users clicks on the badge.
+  
+    +divider
     
-    h4#users Users who use and love bundle
-    ul(class="list-inside list-disc")
-      li
-        a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
-          div(class="flex gap-2")
-            img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
-            span @sheetjs
-      li And more, etc...
-    //- br  
+    details.accordian#users-who-use-and-love-bundle
+      summary
+        h4 Users who use and love bundle
+      div.content.py-4
+        ul(class="list-inside list-disc")
+          li
+            a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
+              div(class="flex gap-2")
+                img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
+                span @sheetjs
+          li And more, etc...
+      //- br  
+
     br
     blockquote Special thanks to #[a(href="https://sheetjs.com") @sheetjs] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
     blockquote Tweet at me on #[a(href="https://twitter.com/@okikio_dev") @okikio_dev] with what you love and what you think needs improvement in #[code bundle] to get added to the list users.
