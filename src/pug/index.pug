@@ -131,10 +131,12 @@ block content
       summary
         h4 Usage
       div.content.py-4
-        blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
-        blockquote Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
-        blockquote Check the console for error messages and warnings.
-
+        p When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
+        br
+        p Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
+        br
+        p Check the console for error messages and warnings.
+        br
         p You can use custom protocols to specify which CDN the module should come from.
         br
         p
@@ -247,26 +249,49 @@ block content
       summary
         h4 Community
       div.content.py-4
+        blockquote Tweet at me on #[a(href="https://twitter.com/@okikio_dev") @okikio_dev] with what you love and what you think needs improvement in #[code bundle] to get added to the list users.
         ul(class="list-inside list-disc")
           li
             a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
               div(class="flex gap-2")
                 img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
                 span @sheetjs
+          li
+            a(class="inline-flex" href="https://opencollective.com/bundle/individual/0/website")
+              div(class="flex gap-2")
+                img(src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128" alt="Dani Guardiola Logo" class="inline-block" width="24")
+                span @daniguardio_la
           li And more, etc...
-          
+
+        script(src=`https://opencollective.com/bundle/banner.js` async)
+
     +divider
     
     details.accordian#discus
       summary
         h4 Discus
       div.content.py-4
-        script(src="https://giscus.app/client.js", data-repo="okikio/bundle", data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=", data-category="General", data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw", data-mapping="pathname", data-reactions-enabled="1", data-emit-metadata="0", data-input-position="bottom", data-theme="preferred_color_scheme", data-lang="en", data-loading="lazy", crossorigin="anonymous", async)
+        //- src="https://giscus.app/client.js", data-repo="okikio/bundle", data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=", data-category="General", data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw", data-mapping="pathname", data-reactions-enabled="1", data-emit-metadata="0", data-input-position="bottom", data-theme="preferred_color_scheme", data-lang="en", data-loading="lazy", crossorigin="anonymous", 
+        script(
+          src="https://giscus.bundlejs.com/client.js"
+          data-repo="okikio/bundle"
+          data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM="
+          data-category="General"
+          data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw"
+          data-mapping="pathname"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme="preferred_color_scheme"
+          data-lang="en"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async
+        )
       //- br  
 
     br
-    blockquote Special thanks to #[a(href="https://sheetjs.com") @sheetjs] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
-    blockquote Tweet at me on #[a(href="https://twitter.com/@okikio_dev") @okikio_dev] with what you love and what you think needs improvement in #[code bundle] to get added to the list users.
+    blockquote  Special thanks to #[a(href="https://sheetjs.com") @sheetjs] and #[a(href="https://daniguardio.la/" ) @daniguardio_la] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
     br
     .text-center
       p(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").inline-block.px-4.py-2.rounded-md

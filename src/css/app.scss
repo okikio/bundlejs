@@ -595,3 +595,7 @@ details.accordian {
     }
 }
 
+#opencollective-banner body {
+    color-scheme: dark light;
+    @apply bg-transparent;
+  }

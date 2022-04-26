@@ -319,9 +319,9 @@ task("service-worker", async () => {
             // Define runtime caching rules.
             runtimeCaching: [
                 {
-                    // Match any request that starts with https://api.producthunt.com and https://api.countapi.xyz
+                    // Match any request that starts with https://api.producthunt.com, https://api.countapi.xyz, https://opencollective.com, etc...
                     urlPattern:
-                        /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com))/,
+                        /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com))/,
 
                     // Apply a network-first strategy.
                     handler: "NetworkFirst",
