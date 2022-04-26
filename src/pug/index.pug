@@ -129,7 +129,7 @@ block content
   .container 
     details.accordian#usage(open)
       summary
-        h2 Usage
+        h4 Usage
       div.content.py-4
         blockquote When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
         blockquote Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
@@ -243,9 +243,9 @@ block content
   
     +divider
     
-    details.accordian#users-who-use-and-love-bundle
+    details.accordian#community
       summary
-        h4 Users who use and love bundle
+        h4 Community
       div.content.py-4
         ul(class="list-inside list-disc")
           li
@@ -254,6 +254,14 @@ block content
                 img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
                 span @sheetjs
           li And more, etc...
+          
+    +divider
+    
+    details.accordian#discus
+      summary
+        h4 Discus
+      div.content.py-4
+        script(src="https://giscus.app/client.js", data-repo="okikio/bundle", data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=", data-category="General", data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw", data-mapping="pathname", data-reactions-enabled="1", data-emit-metadata="0", data-input-position="bottom", data-theme="preferred_color_scheme", data-lang="en", data-loading="lazy", crossorigin="anonymous", async)
       //- br  
 
     br

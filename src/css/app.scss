@@ -209,10 +209,8 @@ main {
         @apply text-5xl font-bold;
     }
 
-    .accordian h2,
     h2#usage {
         @apply text-4xl font-bold;
-        // my-8
     }
 
     .tab-style {
@@ -228,6 +226,16 @@ main {
 
     h4 {
         @apply text-2xl font-bold;
+    }
+    
+    .accordian h4 {
+        @apply underline;
+        text-decoration-style: wavy;
+        text-decoration-color: transparent;
+        text-underline-offset: theme("spacing.1");
+
+        font-weight: 300;
+        @apply text-xl;
     }
 
     .list-disc {
