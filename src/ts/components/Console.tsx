@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { For, render } from "solid-js/web";
-import { Accordion, detailsEls } from "../modules/accordion";
+import { DetailsComponent, detailsEls } from "../modules/details";
 import { debounce } from "../util/debounce";
 
 let accLength = 0;
@@ -68,7 +68,7 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
         let detailsEl;
         onMount(() => { 
           if (detailsEl && !detailsEls.has(detailsEl)) 
-            detailsEls.set(detailsEl, new Accordion(detailsEl));
+            detailsEls.set(detailsEl, new DetailsComponent(detailsEl));
         });
         onCleanup(() => {
           if (detailsEl && detailsEls.has(detailsEl)) {

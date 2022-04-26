@@ -10,11 +10,11 @@ block pageInfo
 
 block content
   #faq.container.max-w-screen-lg
-    h2.text-center Frequently Asked Questions
+    h2.text-center.mb-8 Frequently Asked Questions
     p I frequently get asked what was the point in building bundle, this is a short, quick, and simple summary of frequently asked questions and my reasons for building bundle.   
     br
     br
-    h4 
+    h4.mb-2
       | What is the advantage over 
       a(href="https://bundlephobia.com" target="_blank" rel="noopener")  bundlephobia
       | ?
@@ -22,7 +22,7 @@ block content
       :markdown-it(linkify langPrefix='language-')
         There are a couple reasons for this, but the main one is that `bundlephobia` wasn't reliable enough. 
     br
-    h4 What do you mean wasn't reliable enough? 
+    h4.mb-2 What do you mean wasn't reliable enough? 
     p Right now #[code bundlephobia], is a bit hit or miss when it comes to treeshaking. So, I built #[strong bundle.js.org], which can treeshake bundles accurately. 
       br
       br
@@ -52,13 +52,13 @@ block content
       :markdown-it(linkify langPrefix='language-')
         On the other hand, since, `bundle.js.org` runs locally right on your computer, when an error occurs it logs the exact error you would see when using [esbuild](https://esbuild.github.io/) or other bundlers in your build process, making it much easier to know exactly what is wrong with your js bundle.
     br
-    h4 Wait, locally as in no external servers? 
+    h4.mb-2 Wait, locally as in no external servers? 
     p
     
       :markdown-it(linkify langPrefix='language-')
         Yes, locally right on your browser, I used [esbuild-wasm](https://esbuild.github.io/getting-started/#wasm) for the main bundler and [rollup](https://rollupjs.org/guide/en/) for more accurate treeshaking.
     br
-    h4 Can it bundle multiple packages and treeshake them? 
+    h4.mb-2 Can it bundle multiple packages and treeshake them? 
     p
       :markdown-it(linkify langPrefix='language-')
         Yes. `bundle.js.org` can treeshake all packages, and it can do so accurately.
