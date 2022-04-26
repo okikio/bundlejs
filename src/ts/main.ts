@@ -52,9 +52,9 @@ let oldShareURL = new URL(String(document.location));
 try {
     const app = new App();
     const indexRun = async (app: App) => {
-        // const { build, InitialRender } = await indexImport;
-        // InitialRender(oldShareURL);
-        // build(app);
+        const { build, InitialRender } = await indexImport;
+        InitialRender(oldShareURL);
+        build(app);
     };
 
     //= Fade Transition
