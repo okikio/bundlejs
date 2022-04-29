@@ -216,8 +216,8 @@ main {
     .tab-style {
         // @apply text-lg;
         text-decoration: underline;
-        text-decoration-style: wavy;
-        text-underline-offset: 0.2rem;
+        // text-decoration-style: wavy;
+        text-underline-offset: 0.35rem;
     }
 
     h2#faq {
@@ -230,9 +230,9 @@ main {
     
     .accordian h4 {
         @apply underline;
-        text-decoration-style: wavy;
+        // text-decoration-style: wavy;
         text-decoration-color: transparent;
-        text-underline-offset: theme("spacing.1");
+        text-underline-offset: theme("spacing.2");
 
         font-weight: 300;
         @apply text-xl;
