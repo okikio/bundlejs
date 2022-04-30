@@ -98,7 +98,7 @@
         "hastscript": "^7.0.2",
         "husky": "^7.0.4",
         "jstransformer-markdown-it": "^2.1.0",
-        "postcss": "^8.4.12",
+        "postcss": "^8.4.13",
         "postcss-csso": "^6.0.0",
         "postcss-scss": "^4.0.4",
         "posthtml-parser": "^0.11.0",

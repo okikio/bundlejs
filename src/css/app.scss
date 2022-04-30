@@ -40,8 +40,9 @@ h4,
 h5,
 h6 {
     .icon {
-        visibility: hidden;
-        @apply text-3xl;
+        // visibility: hidden;
+        @apply transition-opacity duration-200 opacity-0 text-3xl;
+        @apply font-semibold;
         line-height: 1;
     }
 
@@ -502,7 +503,7 @@ details.accordian {
 
     summary:hover {
         h1 .icon, h2 .icon, h3 .icon, h4 .icon, h5 .icon, h6 .icon {
-            @apply visible;
+            @apply opacity-100;
         }
     }
 
