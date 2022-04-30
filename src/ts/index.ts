@@ -14,7 +14,7 @@ import {
     addLogs, clearLogs
 } from "./components/Console";
 
-import { hit, set } from "countapi-js";
+import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
 import { parseInput } from "./util/parse-query";
@@ -741,7 +741,6 @@ export const InitialRender = (shareURL: URL) => {
     (async () => {
         if (!PRODUCTION_MODE) return;
         try {
-            console.log(await hit("bundlejs.com"));
             let { value } = await hit("bundle.js.org", "visits");
             let visitCounterEl = document.querySelector("#visit-counter");
             if (visitCounterEl)
