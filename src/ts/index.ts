@@ -741,7 +741,7 @@ export const InitialRender = (shareURL: URL) => {
     (async () => {
         if (!PRODUCTION_MODE) return;
         try {
-            await set("bundle.js.org/visits", 26900);
+            await set("visits", 26901);
             let { value } = await hit("bundle.js.org", "visits");
             let visitCounterEl = document.querySelector("#visit-counter");
             if (visitCounterEl)
