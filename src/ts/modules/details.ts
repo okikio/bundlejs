@@ -183,7 +183,16 @@ export const run = () => {
                 detailsEls.set(el, new DetailsComponent(el));
         });
     }
-}
+};
+
+export const stop = () => {
+    let details = Array.from(document.querySelectorAll("details"));
+    if (details.length > 0) {
+        details.forEach((el) => {
+            detailsEls.delete(el);
+        });
+    }
+};
         
 export const hashChange = () => {
     let { hash } = document.location;

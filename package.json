@@ -53,7 +53,7 @@
     "bugs": {
         "url": "https://github.com/okikio/bundle/issues"
     },
-    "homepage": "https://bundle.js.org",
+    "homepage": "https://bundlejs.com",
     "dependencies": {
         "@amoutonbrady/lz-string": "^0.0.1",
         "@dprint/formatter": "^0.2.0",

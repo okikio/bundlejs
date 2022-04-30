@@ -384,7 +384,7 @@ task("sitemap", async () => {
     return stream(`${htmlFolder}/**/*.html`, {
         pipes: [
             sitemap({
-                siteUrl: "https://bundle.js.org",
+                siteUrl: "https://bundlejs.com",
                 mappings: [
                     {
                         pages: ["**/*"],

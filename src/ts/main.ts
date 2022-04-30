@@ -64,12 +64,13 @@ try {
         // Fade Out Old Page
         out({ from }) {
             let fromWrapper = from.wrapper;
+            DetailsComponent.stop();
 
             return animate({
                 target: fromWrapper,
                 opacity: [1, 0],
                 duration: 200,
-            })
+            });
         },
 
         // Fade In New Page
@@ -82,6 +83,7 @@ try {
                 opacity: [0, 1],
                 duration: 200
             });
+            DetailsComponent.run();
         }
     };
 

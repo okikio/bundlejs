@@ -9,6 +9,7 @@ block content
 
   .container
     header
+      blockquote ✨ New ✨ #[a(href="https://bundlejs.com") bundlejs.com] is the new official domain for #[code bundlejs].
       h1 bundle
       p 
         | a quick npm package size checker 
@@ -131,7 +132,7 @@ block content
       summary
         h4 Usage
       div.content.py-4
-        p When bundling packages that also export CSS and other external files, #[strong bundle.js.org] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
+        p When bundling packages that also export CSS and other external files, #[strong bundlejs.com] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
         br
         p Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is #[a(href="https://unpkg.com" target="_blank" rel="noopener") unpkg.com].
         br
@@ -225,9 +226,9 @@ block content
           br
           br
           div.space-x-2
-            a(href="https://bundle.js.org/" class="inline-block") 
+            a(href="https://bundlejs.com/" class="inline-block") 
               img(src="/badge-light.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
-            a(href="https://bundle.js.org/" class="inline-block") 
+            a(href="https://bundlejs.com/" class="inline-block") 
               img(src="/badge-dark.svg", alt="Open Bundle" loading="lazy" width="150" height="40")
           br
           | All you need to do is to add this to your #[code README.md]
@@ -235,13 +236,13 @@ block content
           :markdown-it(linkify langPrefix='language-')
             ```md
             # Light Mode Badge 
-            [![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/)
+            [![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/)
 
             # Dark Mode Badge 
-            [![Open Bundle](https://bundle.js.org/badge-dark.svg)](https://bundle.js.org/)
+            [![Open Bundle](https://bundlejs.com/badge-dark.svg)](https://bundlejs.com/)
             ```
           br
-          | You can use the #[a(href="#url-queries--shareable-links") URL Queries & Shareable Links] above, to create unique bundles, when users clicks on the badge.
+          | You can use the #[a(href="#sharing") Sharing] section above, to create unique bundles, when users clicks on the badge.
   
     +divider
     
@@ -263,7 +264,7 @@ block content
                 span @daniguardio_la
           li And more, etc...
 
-        script(src=`https://opencollective.com/bundle/banner.js` async)
+        //- script(src=`https://opencollective.com/bundle/banner.js` async fetchpriority="low")
 
     +divider
     
@@ -286,11 +287,13 @@ block content
           data-lang="en"
           data-loading="lazy"
           crossorigin="anonymous"
-          async
+          defer
+          fetchpriority="low"
         )
       //- br  
 
     br
+    blockquote #[strong Note] You can also use #[a(href="https://bundlesize.com") bundlesize.com] to access #[code bundlejs].
     blockquote  Special thanks to #[a(href="https://sheetjs.com") @sheetjs] and #[a(href="https://daniguardio.la/" ) @daniguardio_la] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
     br
     .text-center

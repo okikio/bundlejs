@@ -19,5 +19,5 @@ function n(n,t){return function(n){if(Array.isArray(n))return n}(n)||function(n,
     console.log(btoa(unescape(encodeURIComponent(String.fromCharCode(...await compress(encoded))))).length);
     console.log(btoa(unescape(encodeURIComponent(String.fromCharCode(...await gzip(encoded))))).length);
     console.log(btoa(unescape(encodeURIComponent(String.fromCharCode(...await brotli(encoded, encoded.length, 11))))).length);
-    // console.log(decode(await compress(encode("https://bundle.js.org/?q=unpkg:@okikio/animate&config={%22compression%22:%22brotli%22,%22esbuild%22:{%22minify%22:false}}"))));
+    // console.log(decode(await compress(encode("https://bundlejs.com/?q=unpkg:@okikio/animate&config={%22compression%22:%22brotli%22,%22esbuild%22:{%22minify%22:false}}"))));
 })();
