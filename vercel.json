@@ -142,7 +142,7 @@
         }
     ],
     "rewrites": [
-        { "source": "/measure/:match*", "destination": "https://analytics.bundlejs.com/:match" }
+        { "source": "/measure/count.js", "destination": "https://analytics.bundlejs.com/umami.js" }
     ],
     "github": {
         "silent": true,
