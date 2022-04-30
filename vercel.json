@@ -141,6 +141,9 @@
             ]
         }
     ],
+    "rewrites": [
+        { "source": "/measure/:match*", "destination": "https://analytics.bundlejs.com/:match" }
+    ],
     "github": {
         "silent": true,
         "autoJobCancelation": true
