@@ -44,6 +44,10 @@ mixin seo(page, defaults)
 
   meta(name="web-author" content="Okiki Ojo")
 
+  link(rel='webmention', href='https://webmention.io/bundlejs.com/webmention')
+  link(rel='pingback', href='https://webmention.io/bundlejs.com/xmlrpc')
+  link(rel='pingback', href='https://webmention.io/webmention?forward=https://bundlejs.com/endpoint')
+
   script(type="application/ld+json").
     {
       "@context":"https://schema.org",
@@ -61,7 +65,9 @@ mixin seo(page, defaults)
             "https://github.com/okikio/bundle",
             "https://okikio.github.io/bundle",
             "https://opencollective.com/bundle",
-            "https://bestofjs.org/projects/bundle"
+            "https://bestofjs.org/projects/bundle",
+            "https://www.saashub.com/bundlejs-alternatives",
+            "https://alternativeto.net/software/bundle"
           ],
           "description":"#{defaults.description}",
           "logo":{
@@ -112,7 +118,9 @@ mixin seo(page, defaults)
             "https://github.com/okikio/bundle",
             "https://okikio.github.io/bundle",
             "https://opencollective.com/bundle",
-            "https://bestofjs.org/projects/bundle"
+            "https://bestofjs.org/projects/bundle",
+            "https://www.saashub.com/bundlejs-alternatives",
+            "https://alternativeto.net/software/bundle"
           ],
           "mainEntityOfPage":{
             "@type":"WebPage",
