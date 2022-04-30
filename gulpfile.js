@@ -321,7 +321,7 @@ task("service-worker", async () => {
                 {
                     // Match any request that starts with https://api.producthunt.com, https://api.countapi.xyz, https://opencollective.com, etc...
                     urlPattern:
-                        /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com))/,
+                        /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:discus\.bundlejs\.com)|(?:analytics\.bundlejs\.com))/,
 
                     // Apply a network-first strategy.
                     handler: "NetworkFirst",
