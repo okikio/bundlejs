@@ -142,7 +142,8 @@
         }
     ],
     "rewrites": [
-        { "source": "/measure/:measure*", "destination": "https://analytics.bundlejs.com/:measure" }
+        { "source": "/measure/:measure((?!count.js).*)", "destination": "https://analytics.bundlejs.com/:measure" },
+        { "source": "/measure/count.js", "destination": "https://analytics.bundlejs.com/count.js" }
     ],
     "github": {
         "silent": true,
