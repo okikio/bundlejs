@@ -186,15 +186,7 @@ main {
 
     #about,
     #faq {
-        @apply px-5 pt-24;
-
-        h4 {
-            @apply pt-12;
-        }
-
-        h4:first-of-type {
-            @apply pt-4;
-        }
+        @apply px-5 pt-12;
 
         p {
             @apply text-lg;
@@ -209,19 +201,11 @@ main {
         @apply text-5xl font-bold;
     }
 
-    h2#usage {
-        @apply text-4xl font-bold;
-    }
-
     .tab-style {
         // @apply text-lg;
         text-decoration: underline;
         // text-decoration-style: wavy;
         text-underline-offset: 0.35rem;
-    }
-
-    h2#faq {
-        @apply pl-0;
     }
 
     h4 {

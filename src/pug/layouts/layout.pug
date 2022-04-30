@@ -33,7 +33,7 @@ html.dark(lang="en")
     
     meta(name='color-scheme', content='dark light')
 
-    link(rel='search' href='https://bundle.js.org/open-search.xml' type='application/opensearchdescription+xml' title='bundle')
+    link(rel='search' href='https://bundlejs.com/open-search.xml' type='application/opensearchdescription+xml' title='bundle')
 
     link(rel="icon", type="image/svg+xml" href="/favicon/favicon.svg")
     link(rel="manifest", href="/manifest.json")
@@ -53,7 +53,7 @@ html.dark(lang="en")
     -
       let defaults = {
         url: "/",
-        websiteURL: "https://bundle.js.org",
+        websiteURL: "https://bundlejs.com",
         title: "bundle - an online bundler + a npm package size checker",
         description: "A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all online, with the bundle file size.",
         keywords: "bundle, rollup, esbuild, gzip, npm, brotli, deno, bundler, treeshake, bundlephobia, cdn, github, skypack, unpkg, compressed, jsx, online bundler, size, package, minify, es2020, monaco-editor, typescript"
@@ -103,7 +103,7 @@ html.dark(lang="en")
       +footer
     
     //- script(src="https://cdn.polyfill.io/v3/polyfill.min.js?features=default,es2015,es2018,Array.prototype.includes,Promise,Intl" async fetchpriority="high")
-    script(async='', defer='', data-website-id='8bc0c9cc-4c05-4667-971e-6f3cf4200de5', src='https://analytics.bundlejs.com/umami.js')
+    script(src='https://analytics.bundlejs.com/umami.js' data-website-id='8bc0c9cc-4c05-4667-971e-6f3cf4200de5' defer)
     script(src='/js/main.min.js' type='module' async)
 
     block script

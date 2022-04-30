@@ -2,9 +2,9 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
     <ShortName>bundle</ShortName>
     <Description>bundle.js - a quick and easy way to bundle your projects, minify and see it's gzip size</Description>
-    <Image width="16" height="16" type="image/x-icon">https://bundle.js.org/favicon/favicon.ico</Image>
+    <Image width="16" height="16" type="image/x-icon">https://bundlejs.com/favicon/favicon.ico</Image>
     <InputEncoding>UTF-8</InputEncoding>
     <Contact>opensearch@test.org</Contact>
-    <Url type="text/html" template="https://bundle.js.org/?q={searchTerms}&amp;bundle"/>
-    <moz:SearchForm>https://bundle.js.org</moz:SearchForm>
+    <Url type="text/html" template="https://bundlejs.com/?q={searchTerms}&amp;bundle"/>
+    <moz:SearchForm>https://bundlejs.com</moz:SearchForm>
 </OpenSearchDescription>
