@@ -141,10 +141,6 @@
             ]
         }
     ],
-    "rewrites": [
-        { "source": "/measure/count.js", "destination": "https://analytics.bundlejs.com/count.js" },
-        { "source": "/measure/:measure((?!count).*)", "destination": "https://analytics.bundlejs.com/:measure" }
-    ],
     "github": {
         "silent": true,
         "autoJobCancelation": true
