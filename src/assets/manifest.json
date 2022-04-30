@@ -42,17 +42,32 @@
     {
       "src": "/favicon/screenshot-mobile.png",
       "type": "image/png",
-      "sizes": "1860x1653"
+      "sizes": "750x1334"
     },
     {
       "src": "/favicon/screenshot-desktop.png",
       "type": "image/png",
-      "sizes": "3240x2880"
+      "sizes": "2880x1530"
     },
     {
       "src": "/favicon/screenshot-bundled.png",
       "type": "image/png",
-      "sizes": "3240x2880"
+      "sizes": "2880x1490"
+    },
+    {
+      "src": "/favicon/screenshot-light-mode.png",
+      "type": "image/png",
+      "sizes": "1857x966"
+    },
+    {
+      "src": "/favicon/screenshot-error.png",
+      "type": "image/png",
+      "sizes": "2880x1490"
+    },
+    {
+      "src": "/favicon/old-social-preview.png",
+      "type": "image/png",
+      "sizes": "1857x966"
     }
   ],
   "share_target": {
