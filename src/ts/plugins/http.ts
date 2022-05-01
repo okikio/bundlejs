@@ -172,12 +172,16 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
 
                 try { 
                     // Fetch the path without the `.ts` extension
-                   ({ content, url } = await fetchPkg(argPath(), logger));
+                    ({ content, url } = await fetchPkg(argPath(), logger));
                 } catch(err) {
                     // If the ^ above fetch doesn't work, try again with a `.ts` extension
                     // Some typescript files don't have file extensions but you can't fetch a file without their file extension
-                    logger([err.toString()], "error");
-                    ({ content, url } = await fetchPkg(argPath(".ts"), logger));
+                    try {
+                        ({ content, url } = await fetchPkg(argPath(".ts"), logger));
+                    } catch (e) {
+                        logger([e.toString()], "error");
+                        throw err;
+                    }
                 }
 
                 assets = assets.concat(await fetchAssets(url, content, logger));  
