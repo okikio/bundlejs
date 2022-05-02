@@ -152,11 +152,13 @@ block content
             //- br
             li unpkg:react     ->   #[a(href="https://unpkg.com/react" target="_blank" rel="noopener") https://unpkg.com/react] 
             //- br
-            li deno:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
+            li deno:preact  ->   #[a(href="https://deno.land/x/preact" target="_blank" rel="noopener") https://deno.land/x/preact]  
             //- br
             li jsdelivr:react  ->   #[a(href="https://cdn.jsdelivr.net/npm/react" target="_blank" rel="noopener") https://cdn.jsdelivr.net/npm/react]  
             //- br
             li jsdelivr.gh:facebook/react/packages/react-dom/index.js  ->   #[a(href="https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js" target="_blank" rel="noopener") https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js] 
+            //- br
+            li github:facebook/react/main/packages/react/index.js  ->   #[a(href="https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js" target="_blank" rel="noopener") https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js] 
         br
         p e.g.
         :markdown-it(linkify langPrefix='language-')
@@ -214,6 +216,55 @@ block content
               p.px-4.py-2.cursor-pointer.select-none Auto-bundling shared URL's
             div.content.pl-4.pr-2.py-4
               p If you would like to bundle your code when the share URL is loaded, add #[code bundle] to the url, e.g. #[a(href="/?q=@okikio/animate&bundle" rel="noopener") /?bundle&q=@okikio/animate] or #[a(href="/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener") /?bundle&share=PTAEGEBs...]
+    
+    +divider
+
+    details.accordian#externals
+      summary
+        h4 Externals
+      div.content.py-4
+        p
+          | Externals allow you to mark certain modules as modules to exclude from resolving, loading, and bundling, you use it the way you'd use the esbuild externals config option, e.g.
+          
+          :markdown-it(linkify langPrefix='language-')
+            ```ts 
+            {
+              "esbuild": {
+                "external": ["react", "react-dom"],
+              }
+            }
+            ```
+          br
+          :markdown-it(linkify langPrefix='language-')
+            > You can try it out below, [bundlejs.com/?config={"esbuild":{"external":["@okikio/animate"]}}](https://bundlejs.com/?config={"esbuild":{"external":["@okikio/animate"]}}).
+
+            > Check out a complex example of using the external config [bundlejs.com/?q=@babel/core&config={"esbuild":{"external":[...]}}](https://bundlejs.com/?q=@babel/core&config={%22esbuild%22:{%22external%22:[%22debug%22,%22@babel/types%22,%22@babel/parser%22,%22@babel/generator%22,%22@babel/traverse%22,%22@babel/template%22,%22@babel/helper%22,%22semver%22,%22gensync%22,%22@babel/code-frame%22,%22json5%22,%22caniuse-lite%22,%22source-map%22,%22@ampproject/remapping%22,%22@babel/helper-compilation-targets%22,%22@babel/helper-validator-option%22,%22browserslist%22,%22@jridgewell/trace-mapping%22,%22convert-source-map%22,%22@babel/helpers%22,%22@babel/compat-data%22,%22@babel/helper-environment-visitor%22,%22@babel/helper-module-imports%22,%22@babel/helper-module-transforms%22,%22@babel/helper-validator-identifier%22,%22node-releases%22,%22@jridgewell/resolve-uri%22,%22@jridgewell/sourcemap-codec%22,%22electron-to-chromium%22]}})
+          
+    +divider
+
+    details.accordian#aliases
+      summary
+        h4 Aliases
+      div.content.py-4
+        p
+          | Aliases act as a redirect for modules, they are for replacing packages with different ones, e.g. replace #[code fs] with #[code memfs], so, it can work on the web, etc.. 
+          br
+          br
+          | You use aliases like this
+          
+          :markdown-it(linkify langPrefix='language-')
+            ```ts
+            {
+              "alias": {
+                "@okikio/animate": "@babel/core"
+              }
+            }
+            ```
+          br
+          :markdown-it(linkify langPrefix='language-')
+            > You can try out an example of using aliases, [bundlejs.com/?config={"alias":{"@okikio/animate":"@babel/core"}}](https://bundlejs.com/?config={"alias":{"@okikio/animate":"@babel/core"}}).
+
+            > ⚠️ Warning: aliases currently don't care about the original packages version, e.g. `@okikio/animate@beta` will be redirected to `react-dom` regardless of the package version in use.
           
     +divider
 
