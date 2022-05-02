@@ -10,13 +10,12 @@ export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"
 export const inferLoader = (urlStr: string): Loader => {
     const ext = extname(urlStr);
     if (RESOLVE_EXTENSIONS.includes(ext))
-        return ext.slice(1) as Loader;
+        // Resolve all .js and .jsx files to .ts and .tsx files
+        return (/^\.js(x)?/.test(ext) ? ext.replace(/^\.js/, ".ts") : ext).slice(1) as Loader;
 
-    if (ext === ".mjs" || ext === ".cjs") return "js";
+    if (ext === ".mjs" || ext === ".cjs") return "ts"; // "js"
     if (ext === ".mts" || ext === ".cts") return "ts";
     
-    if (ext === ".tsx") return "tsx";
-    if (ext === ".jsx") return "jsx";
     if (ext == ".scss") return "css";
 
     if (ext == ".png" || ext == ".jpeg" || ext == ".ttf") return "dataurl";
