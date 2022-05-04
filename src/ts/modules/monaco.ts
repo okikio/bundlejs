@@ -88,7 +88,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     const isAndroid = navigator && /android/i.test(navigator.userAgent);
 
     let inputModel = Editor.createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
-    let outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.ts"));
+    let outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
     let configModel = Editor.createModel(initialConfig, 'json', Uri.parse('file://config.json'));
 
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
@@ -176,7 +176,9 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
     
-        jsx: languages.typescript.JsxEmit.ReactJSX,
+        // jsx: languages.typescript.JsxEmit.ReactJSX,
+        // @ts-ignore
+        jsx: "react"
     });
     
     // @ts-ignore

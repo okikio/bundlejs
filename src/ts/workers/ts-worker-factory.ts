@@ -6,8 +6,6 @@
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
-// import { setupTypeAcquisition } from "@typescript/ata";
-
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
 import type ts from "typescript";
@@ -95,38 +93,6 @@ const SyntaxKind = {
 
 const worker = (TypeScriptWorker, fileMap) => {
     return class MonacoTSWorker extends TypeScriptWorker {
-        async typeAcquisition(fileName) {
-            // const program = this._languageService.getProgram() as ts.Program;
-            // const source = program.getSourceFile(fileName);
-
-            // const extraLib = new Map<string, string>();
-            // const TypeAquisition = setupTypeAcquisition({
-            //     projectName: "My ATA Project",
-            //     typescript: ts,
-            //     logger: console,
-            //     delegate: {
-            //         receivedFile: (code: string, path: string) => {
-            //             // Add code to your runtime at the path...
-            //             extraLib.set(path, code);
-            //         },
-            //         started: () => {
-            //             console.log("ATA start")
-            //         },
-            //         progress: (downloaded: number, total: number) => {
-            //             console.log(`Got ${downloaded} out of ${total}`)
-            //         },
-            //         finished: vfs => {
-            //             console.log("ATA done", Array.from(vfs.keys()))
-            //             this.updateExtraLibs(Object.entries(extraLib).map(([k, v]) => {
-            //                 return ({ filePath: k, content: v });
-            //             }));
-            //         },
-            //     },
-            // });
-
-            // TypeAquisition(source.getFullText());
-        }
-
         async format(fileName) {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
