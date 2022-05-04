@@ -1,5 +1,8 @@
 import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
 
+import { setupTypeAcquisition } from "@typescript/ata";
+import ts from "typescript";
+
 import { animate } from "@okikio/animate";
 import { EventEmitter } from "@okikio/emitter";
 
@@ -245,6 +248,43 @@ export const build = (app: App) => {
         }
     };
 
+    const extraLib = new Map<string, string>();
+    const TypeAquisition = setupTypeAcquisition({
+        projectName: "My ATA Project",
+        typescript: ts,
+        logger: console,
+        async fetcher(input, init) {
+            return await getRequest(input, false, init);
+        },
+        delegate: {
+            receivedFile: (code: string, path: string) => {
+                // Add code to your runtime at the path...
+                extraLib.set(path, code);
+            },
+            started: () => {
+                console.log("Types Aquisition Start")
+            },
+            progress: (downloaded: number, total: number) => {
+                console.log(`Got ${downloaded} out of ${total}`)
+            },
+            finished: vfs => {
+                console.log("Types Aquisition Done", Array.from(vfs.keys()));
+                Object.entries(vfs).forEach(([uri, content]) => {
+                    languages.typescript.typescriptDefaults.addExtraLib(content as string, uri);
+                });
+
+                // resolve(JSON.stringify( Object.entries(extraLib) ));
+                // this.updateExtraLibs(Object.entries(extraLib).map(([k, v]) => {
+                //     return ({ filePath: k, content: v });
+                // }));
+            },
+        },
+    });
+
+    const getTypescriptTypes = async (model: typeof inputModel) => {
+        TypeAquisition(model.getValue());
+    };
+
     const getModelType = () => {
         if (editor.getModel() == inputModel) return "input";
         else if (editor.getModel() == outputModel) return "output";
@@ -420,6 +460,10 @@ export const build = (app: App) => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
+        setTimeout(() => {
+            getTypescriptTypes(inputModel);
+        }, 1000);
+
         // Update the URL share query everytime user makes a change 
         editor.onDidChangeModelContent(
             debounce((e) => {
@@ -428,6 +472,8 @@ export const build = (app: App) => {
                 (async () => {
                     replaceState(await getShareableURL(inputModel), historyManager);
                     isInitial = false;
+
+                    await getTypescriptTypes(inputModel);
                 })();
             }, 1000)
         );
