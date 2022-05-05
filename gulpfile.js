@@ -63,7 +63,7 @@ task("html", async () => {
             "rehype-autolink-headings",
             {
                 behavior: "append",
-                content: [h("i.icon", "insert_link")],
+                content: [h("i.icon", { "aria-hidden": "true" }, "insert_link")],
                 test: ['h2', 'h3', 'h4', 'h5', 'h6']
             },
         ],

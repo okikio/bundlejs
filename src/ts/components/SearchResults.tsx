@@ -80,9 +80,9 @@ export const Card = ({
     return (
         <div class="card">
             <section class="content">
-                <h3 class="font-semibold text-lg">
+                <h2 class="font-semibold text-lg">
                     <a href={_packageHref} target="_blank">{name}</a>
-                </h3>
+                </h2>
                 <p>{description}</p>
                 <p class="updated-time">
                     {_date && `Updated ${_date} `}
