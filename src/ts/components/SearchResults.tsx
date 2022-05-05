@@ -18,9 +18,9 @@ export const ErrorCard = ({
     return (
         <div class="card">
             <section class="content error">
-                <h3 class="font-semibold text-lg">
+                <h2 class="font-semibold text-lg">
                     <div class="text-center">{name}</div>
-                </h3>
+                </h2>
                 <p class="text-center">{description}</p>
             </section>
         </div>
