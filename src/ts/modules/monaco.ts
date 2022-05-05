@@ -176,9 +176,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
     
-        // jsx: languages.typescript.JsxEmit.ReactJSX,
-        // @ts-ignore
-        jsx: "react"
+        jsx: languages.typescript.JsxEmit.ReactJSX,
     });
     
     // @ts-ignore
@@ -190,7 +188,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     languages.typescript.typescriptDefaults.setEagerModelSync(true);
     languages.typescript.typescriptDefaults.addExtraLib(
         "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
-        `file://node_modules/@types/https.d.ts`
+        `file://node_modules/@types/http/https.d.ts`
     );
 
     const IMPORTS_REXPORTS_REQUIRE_REGEX =
