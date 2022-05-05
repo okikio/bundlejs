@@ -209,11 +209,11 @@ main {
         text-underline-offset: 0.35rem;
     }
 
-    h4 {
+    h3 {
         @apply text-2xl font-bold;
     }
     
-    .accordian h4 {
+    .accordian h3 {
         @apply underline;
         // text-decoration-style: wavy;
         text-decoration-color: transparent;

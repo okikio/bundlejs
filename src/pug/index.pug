@@ -28,8 +28,8 @@ block content
       .action-btns-overflow.flex.flex-grow(class=classValue)
         .flex-grow
         .action-btns.justify-end
-          button.btn#build(type='button') Build
-          button.btn.btn-permalink#share(type='button') Share
+          button.btn.build-btn(type='button') Build
+          button.btn.btn-permalink.share-btn(type='button') Share
           .file-size-container(title="Original -> Compressed")
             .file-size Wait...
               
@@ -130,7 +130,7 @@ block content
   .container 
     details.accordian#usage
       summary
-        h4 Usage
+        h3 Usage
       div.content.py-4
         p When bundling packages that also export CSS and other external files, #[strong bundlejs.com] now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
         br
@@ -190,7 +190,7 @@ block content
 
     details.accordian#sharing
       summary
-        h4 Sharing
+        h3 Sharing
       div.content.py-4
         p
           | You can now use search queries in #[strong bundle], all you need to do is add this to the url #[br]
@@ -221,7 +221,7 @@ block content
 
     details.accordian#externals
       summary
-        h4 Externals
+        h3 Externals
       div.content.py-4
         p
           | Externals allow you to mark certain modules as modules to exclude from resolving, loading, and bundling, you use it the way you'd use the esbuild externals config option, e.g.
@@ -244,7 +244,7 @@ block content
 
     details.accordian#aliases
       summary
-        h4 Aliases
+        h3 Aliases
       div.content.py-4
         p
           | Aliases act as a redirect for modules, they are for replacing packages with different ones, e.g. replace #[code fs] with #[code memfs], so, it can work on the web, etc.. 
@@ -270,7 +270,7 @@ block content
 
     details.accordian#badges
       summary
-        h4 Badges
+        h3 Badges
       div.content.py-4
         p
           | You can also add bundle badges, they look like this,
@@ -299,19 +299,19 @@ block content
     
     details.accordian#community
       summary
-        h4 Community
+        h3 Community
       div.content.py-4
         blockquote Tweet at me on #[a(href="https://twitter.com/@okikio_dev") @okikio_dev] with what you love and what you think needs improvement in #[code bundle] to get added to the list users.
         ul(class="list-inside list-disc")
           li
             a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
               div(class="flex gap-2")
-                img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24")
+                img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24" height="24")
                 span @sheetjs
           li
             a(class="inline-flex" href="https://opencollective.com/bundle/individual/0/website")
               div(class="flex gap-2")
-                img(src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128" alt="Dani Guardiola Logo" class="inline-block" width="24")
+                img(src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128" alt="Dani Guardiola Logo" class="inline-block" width="24" height="24")
                 span @daniguardio_la
           li And more, etc...
 
@@ -321,7 +321,7 @@ block content
     
     details.accordian#discus
       summary
-        h4 Discus
+        h3 Discus
       div.content.py-4
         //- src="https://giscus.app/client.js", data-repo="okikio/bundle", data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=", data-category="General", data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw", data-mapping="pathname", data-reactions-enabled="1", data-emit-metadata="0", data-input-position="bottom", data-theme="preferred_color_scheme", data-lang="en", data-loading="lazy", crossorigin="anonymous", 
         script(

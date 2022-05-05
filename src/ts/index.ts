@@ -1,7 +1,7 @@
 import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
 
-import { setupTypeAcquisition } from "@typescript/ata";
-import ts from "typescript";
+// import { setupTypeAcquisition } from "@typescript/ata";
+// import ts from "typescript";
 
 import { animate } from "@okikio/animate";
 import { EventEmitter } from "@okikio/emitter";
@@ -25,7 +25,7 @@ import { parseInput } from "./util/parse-query";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
-import * as Monaco from "./modules/monaco";
+// import * as Monaco from "./modules/monaco";
 
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
@@ -200,7 +200,7 @@ export const pushState = (url: string | URL, historyManager: HistoryManager) => 
 }
 
 // Load all heavy main content
-export const build = (app: App) => {
+export const build = async (app: App) => {
     const historyManager = app.get("HistoryManager") as HistoryManager;
     fileSizeEl = fileSizeEl ?? Array.from(document.querySelectorAll(".file-size"));
 
@@ -235,6 +235,7 @@ export const build = (app: App) => {
         }
     });
 
+    const Monaco = await import("./modules/monaco");
     const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue, Uri, Editor } = Monaco;
     const getShareableURL = async (model: typeof inputModel) => {
         try {
@@ -424,50 +425,50 @@ export const build = (app: App) => {
         loadingContainerEl = null;
         FadeLoadingScreen = null;
 
-        const TypeAquisition = setupTypeAcquisition({
-            projectName: "My ATA Project",
-            typescript: ts,
-            logger: console,
-            async fetcher(input, init) {
-                return await getRequest(input, false, init);
-            },
-            delegate: {
-                started: () => {
-                    console.log("Types Aquisition Start")
-                },
-                receivedFile: (code: string, path: string) => {
-                    // Add code to your runtime at the path...
-                    languages.typescript.typescriptDefaults.addExtraLib(code, "file://" + path);
+        // const TypeAquisition = setupTypeAcquisition({
+        //     projectName: "My ATA Project",
+        //     typescript: ts,
+        //     logger: console,
+        //     async fetcher(input, init) {
+        //         return await getRequest(input, false, init);
+        //     },
+        //     delegate: {
+        //         started: () => {
+        //             console.log("Types Aquisition Start")
+        //         },
+        //         receivedFile: (code: string, path: string) => {
+        //             // Add code to your runtime at the path...
+        //             languages.typescript.typescriptDefaults.addExtraLib(code, "file://" + path);
 
-                    const uri = Uri.file(path);
-                    if (Editor.getModel(uri) === null) {
-                        Editor.createModel(code, "typescript", uri);
-                    }
-                },
-                progress: (downloaded: number, total: number) => {
-                    console.log(`Got ${downloaded} out of ${total}`)
-                },
-                finished: vfs => {
-                    console.log("Types Aquisition Done");
-                },
-            },
-        });
+        //             const uri = Uri.file(path);
+        //             if (Editor.getModel(uri) === null) {
+        //                 Editor.createModel(code, "typescript", uri);
+        //             }
+        //         },
+        //         progress: (downloaded: number, total: number) => {
+        //             console.log(`Got ${downloaded} out of ${total}`)
+        //         },
+        //         finished: vfs => {
+        //             console.log("Types Aquisition Done");
+        //         },
+        //     },
+        // });
     
-        const getTypescriptTypes = async (model: typeof inputModel) => {
-            try {
-                const worker = await languages.typescript.getTypeScriptWorker();
-                await worker(model.uri);
+        // const getTypescriptTypes = async (model: typeof inputModel) => {
+        //     try {
+        //         const worker = await languages.typescript.getTypeScriptWorker();
+        //         await worker(model.uri);
 
-                // @ts-ignore
-                TypeAquisition(model.getValue());
-            } catch (e) {
-                console.warn(e);
-            }
-        };
+        //         // @ts-ignore
+        //         TypeAquisition(model.getValue());
+        //     } catch (e) {
+        //         console.warn(e);
+        //     }
+        // };
 
-        setTimeout(() => {
-            getTypescriptTypes(inputModel);
-        }, 1000);
+        // setTimeout(() => {
+        //     getTypescriptTypes(inputModel);
+        // }, 1000);
 
         // Update the URL share query everytime user makes a change 
         editor.onDidChangeModelContent(
@@ -478,7 +479,7 @@ export const build = (app: App) => {
                     replaceState(await getShareableURL(inputModel), historyManager);
                     isInitial = false;
 
-                    await getTypescriptTypes(inputModel);
+                    // await getTypescriptTypes(inputModel);
                 })();
             }, 1000)
         );
@@ -486,7 +487,7 @@ export const build = (app: App) => {
 
     // Share Button
     (() => {
-        const shareBtn = Array.from(document.querySelectorAll(".btn-permalink#share")) as HTMLButtonElement[];
+        const shareBtn = Array.from(document.querySelectorAll(".btn-permalink.share-btn")) as HTMLButtonElement[];
         const shareInput = document.querySelector("#copy-input") as HTMLInputElement;
         shareBtn.forEach(el => {
             el?.addEventListener("click", () => {
@@ -532,7 +533,7 @@ export const build = (app: App) => {
 
     // Build buttons
     (() => {
-        let BuildBtn = Array.from(document.querySelectorAll("#build")) as HTMLElement[];
+        let BuildBtn = Array.from(document.querySelectorAll(".build-btn")) as HTMLElement[];
 
         // There are 2 build buttons, 1 for desktop, 1 for mobile
         // This allows both buttons to build the code

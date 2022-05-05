@@ -54,7 +54,7 @@ try {
     const indexRun = async (app: App) => {
         const { build, InitialRender } = await indexImport;
         InitialRender(oldShareURL);
-        build(app);
+        await build(app);
     };
 
     //= Fade Transition

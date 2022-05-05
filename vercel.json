@@ -56,7 +56,7 @@
             "headers": [
                 {
                     "key": "Link",
-                    "value": "<https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, </js/theme.min.js>; rel=modulepreload; importance=high, </js/main.min.js>; rel=modulepreload; importance=high, </js/index.min.js>; rel=modulepreload, </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; importance=low; crossorigin, </js/esbuild.worker.mjs>; rel=modulepreload; as=script; importance=high, </js/typescript.worker.js>; rel=prefetch"
+                    "value": "<https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, </js/theme.min.js>; rel=modulepreload; fetchpriority=high, </js/main.min.js>; rel=modulepreload; fetchpriority=high, </js/index.min.js>; rel=modulepreload, </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; fetchpriority=low; crossorigin, </js/esbuild.worker.mjs>; rel=modulepreload; as=script; fetchpriority=high, </js/typescript.worker.js>; rel=prefetch, </js/esbuild.wasm>; rel=prefetch, </dprint-typescript-plugin.wasm>; rel=prefetch"
                 }
             ]
         },
