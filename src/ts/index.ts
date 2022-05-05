@@ -235,7 +235,7 @@ export const build = (app: App) => {
         }
     });
 
-    const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = Monaco;
+    const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue, Uri, Editor } = Monaco;
     const getShareableURL = async (model: typeof inputModel) => {
         try {
             const worker = await languages.typescript.getTypeScriptWorker();
@@ -246,43 +246,6 @@ export const build = (app: App) => {
         } catch (e) {
             console.warn(e)
         }
-    };
-
-    const extraLib = new Map<string, string>();
-    const TypeAquisition = setupTypeAcquisition({
-        projectName: "My ATA Project",
-        typescript: ts,
-        logger: console,
-        async fetcher(input, init) {
-            return await getRequest(input, false, init);
-        },
-        delegate: {
-            receivedFile: (code: string, path: string) => {
-                // Add code to your runtime at the path...
-                extraLib.set(path, code);
-            },
-            started: () => {
-                console.log("Types Aquisition Start")
-            },
-            progress: (downloaded: number, total: number) => {
-                console.log(`Got ${downloaded} out of ${total}`)
-            },
-            finished: vfs => {
-                console.log("Types Aquisition Done", Array.from(vfs.keys()));
-                Object.entries(vfs).forEach(([uri, content]) => {
-                    languages.typescript.typescriptDefaults.addExtraLib(content as string, uri);
-                });
-
-                // resolve(JSON.stringify( Object.entries(extraLib) ));
-                // this.updateExtraLibs(Object.entries(extraLib).map(([k, v]) => {
-                //     return ({ filePath: k, content: v });
-                // }));
-            },
-        },
-    });
-
-    const getTypescriptTypes = async (model: typeof inputModel) => {
-        TypeAquisition(model.getValue());
     };
 
     const getModelType = () => {
@@ -338,7 +301,8 @@ export const build = (app: App) => {
                 let editorInfo = parentEl.querySelector(".editor-info");
 
                 btnContainer.classList.toggle("hide", window.matchMedia("(max-width: 640px)").matches);
-                window.matchMedia("(max-width: 640px)")
+                window
+                    .matchMedia("(max-width: 640px)")
                     .addEventListener("change", (e) => {
                         btnContainer.classList.toggle("hide", e.matches);
                     });
@@ -459,6 +423,47 @@ export const build = (app: App) => {
 
         loadingContainerEl = null;
         FadeLoadingScreen = null;
+
+        const TypeAquisition = setupTypeAcquisition({
+            projectName: "My ATA Project",
+            typescript: ts,
+            logger: console,
+            async fetcher(input, init) {
+                return await getRequest(input, false, init);
+            },
+            delegate: {
+                started: () => {
+                    console.log("Types Aquisition Start")
+                },
+                receivedFile: (code: string, path: string) => {
+                    // Add code to your runtime at the path...
+                    languages.typescript.typescriptDefaults.addExtraLib(code, "file://" + path);
+
+                    const uri = Uri.file(path);
+                    if (Editor.getModel(uri) === null) {
+                        Editor.createModel(code, "typescript", uri);
+                    }
+                },
+                progress: (downloaded: number, total: number) => {
+                    console.log(`Got ${downloaded} out of ${total}`)
+                },
+                finished: vfs => {
+                    console.log("Types Aquisition Done");
+                },
+            },
+        });
+    
+        const getTypescriptTypes = async (model: typeof inputModel) => {
+            try {
+                const worker = await languages.typescript.getTypeScriptWorker();
+                await worker(model.uri);
+
+                // @ts-ignore
+                TypeAquisition(model.getValue());
+            } catch (e) {
+                console.warn(e);
+            }
+        };
 
         setTimeout(() => {
             getTypescriptTypes(inputModel);
