@@ -408,6 +408,11 @@ button,
     @apply px-2 py-2 rounded-md ml-2;
     // color-scheme: light;
 }
+
+details summary::-webkit-details-marker {
+    display: none;
+    
+}
 details:not(.accordian) {
     .content {
         padding-left: 2ch;
@@ -583,4 +588,8 @@ details.accordian {
 #opencollective-banner body {
     color-scheme: dark light;
     @apply bg-transparent;
-  }
+}
+
+.giscus-frame {
+    color-scheme: none;
+}
