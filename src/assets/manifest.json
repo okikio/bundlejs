@@ -1,5 +1,5 @@
 {
-  "name": "bundle",
+  "name": "bundlejs",
   "short_name": "bundle",
   "id": "bundle",
   "start_url": "/",
@@ -7,7 +7,7 @@
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "description": "a quick and easy way to bundle your js projects, minify and see their gzipped size, all locally on your device",
+  "description": "A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all locally on your device, with the bundle file size.",
   "icons": [
     {
       "src": "/favicon/android-chrome-192x192.png",
@@ -40,11 +40,6 @@
       "sizes": "1080x960"
     },
     {
-      "src": "/favicon/screenshot-mobile.png",
-      "type": "image/png",
-      "sizes": "750x1500"
-    },
-    {
       "src": "/favicon/screenshot-desktop.png",
       "type": "image/png",
       "sizes": "3100x1550"
@@ -65,9 +60,9 @@
       "sizes": "3100x1550"
     },
     {
-      "src": "/favicon/old-social-preview.png",
+      "src": "/favicon/screenshot-mobile.png",
       "type": "image/png",
-      "sizes": "1080x608"
+      "sizes": "750x1500"
     }
   ],
   "share_target": {
