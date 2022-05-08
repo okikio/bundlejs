@@ -74,11 +74,12 @@ export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
 }
 
 /**
- * Remove CDN URL Schemes like `deno:...`, `unpkg:...`, etc... Leaving only the import path
+ * Remove CDN URL Schemes like `deno:...`, `unpkg:...`, etc... and known CDN hosts, e.g. `https://raw.githubusercontent.com/...`, `https://cdn.skypack.dev/...`, etc...  Leaving only the import path
  */
  export const getPureImportPath = (importStr: string) => 
     importStr
         .replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "")
+        .replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "")
         .replace(/^\//, "");
 
 /**
