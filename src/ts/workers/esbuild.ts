@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { FileSystem } from "../util/filesystem";
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
@@ -142,7 +143,9 @@ export const start = async (port: MessagePort) => {
             outputFiles: OutputFile[];
         } | BuildIncremental;
 
-        // Catch other unexpected errors
+        // Ensure a fresh filesystem on every run
+        FileSystem.clear();
+
         try {
             // Catch esbuild errors 
             try {
@@ -152,8 +155,8 @@ export const start = async (port: MessagePort) => {
                     "stdin": {
                         // Ensure input is a string
                         contents: `${input}`,
-                        loader: 'tsx',
-                        sourcefile: "/bundle.tsx"
+                        loader: 'js',
+                        sourcefile: "/bundle.js"
                     },
                     
                     ...esbuildOpts,
@@ -217,6 +220,8 @@ export const start = async (port: MessagePort) => {
                 return contents;
             });
 
+            console.log(Array.from(FileSystem.keys()))
+
             // Print warning
             if (result?.warnings.length > 0) {
                 // Post warning to the real console
@@ -272,6 +277,7 @@ export const start = async (port: MessagePort) => {
             totalCompressedSize = null;
             output = null;
         } catch (err) {
+            // Catch unexpected errors
             // Errors can take multiple forms, so it trys to support the many forms errors can take
             let error = [].concat(err instanceof Error ? err?.message : err);
             postMessage({

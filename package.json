@@ -60,7 +60,7 @@
         "@okikio/animate": "beta",
         "@okikio/emitter": "^2.1.7",
         "@okikio/native": "^3.0.1",
-        "@okikio/sharedworker": "^1.0.3",
+        "@okikio/sharedworker": "^1.0.4",
         "@typescript/ata": "^0.9.3",
         "countapi-js": "^1.0.2",
         "esbuild-wasm": "0.14.37",
