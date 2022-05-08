@@ -1,4 +1,4 @@
-# [bundle](https://bundlejs.org)
+# [bundlejs](https://bundlejs.com)
 
 > ✨ New ✨ [bundlejs.com](https://bundlejs.com) is the new official domain for `bundlejs`.
 
