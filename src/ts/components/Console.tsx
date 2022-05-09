@@ -29,13 +29,13 @@ export const clearLogs = () => {
   setLogs([]);
 }
 
+export const [stickToBottom, setStickToBottom] = createSignal(true);
 export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
   let len = createMemo(() => getLogs().length);
-  let [stickToBottom, setStickToBottom] = createSignal(true);
   if (parentEl) { 
     parentEl?.addEventListener("scroll", debounce((e) => { 
       setStickToBottom(parentEl.scrollTop + parentEl.clientHeight >= parentEl.scrollHeight - 50);
-    }, 50), { passive: true });
+    }, 20), { passive: true });
   }
 
   createEffect(() => {

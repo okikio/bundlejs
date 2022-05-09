@@ -43,7 +43,6 @@ export const Chart: FunctionalComponent<ChartProps> = ({ root, sizeProperty, sel
         onNodeClick={(node) => {
           setSelectedNode(selectedNode === node ? undefined : node);
         }}
-        sizeProperty={sizeProperty}
       />
       <Tooltip visible={showTooltip} node={tooltipNode} root={root} sizeProperty={sizeProperty} />
     </>

@@ -13,18 +13,12 @@ export interface TreeMapProps {
   onNodeHover: (event: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
   selectedNode: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf> | undefined;
   onNodeClick: (node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
-  sizeProperty: SizeKey;
 }
 
-export const TreeMap: FunctionalComponent<TreeMapProps> = ({
-  root,
-  onNodeHover,
-  selectedNode,
-  onNodeClick,
-  sizeProperty,
-}) => {
+export const TreeMap: FunctionalComponent<TreeMapProps> = ({ root, onNodeHover, selectedNode, onNodeClick }) => {
   const { width, height, getModuleIds } = useContext(StaticContext);
 
+  console.time("layering");
   // this will make groups by height
   const nestedData = useMemo(() => {
     const nestedDataMap = group(root.descendants(), (d: HierarchyNode<ModuleTree | ModuleTreeLeaf>) => d.height);
@@ -35,6 +29,7 @@ export const TreeMap: FunctionalComponent<TreeMapProps> = ({
     nestedData.sort((a, b) => b.key - a.key);
     return nestedData;
   }, [root]);
+  console.timeEnd("layering");
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${height}`}>
@@ -45,11 +40,10 @@ export const TreeMap: FunctionalComponent<TreeMapProps> = ({
               return (
                 <Node
                   key={getModuleIds(node.data).nodeUid.id}
-                  node={node}
+                  node={node as HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>}
                   onMouseOver={onNodeHover}
                   selected={selectedNode === node}
                   onClick={onNodeClick}
-                  sizeProperty={sizeProperty}
                 />
               );
             })}

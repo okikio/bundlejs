@@ -28,21 +28,17 @@ export async function buildHtml({ title, data, template }: BuildHtmlOptions): Pr
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>${htmlEscape(title)}</title>
     <link rel='stylesheet' href='/js/${template}.min.css' />
-    <style>
-    </style>
   </head>
   <body>
     <main></main>
-    <!-- <script src="/js/${template}.min.js" type="module" defer></script> -->
     <script type="module" defer>
       /*<!--*/
       import * as drawChart from "/js/${template}.min.js";
       const data = ${JSON.stringify(data)};
-  
+      
       const run = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-  
         const chartNode = document.querySelector("main");
         drawChart.default(chartNode, data, width, height);
       };

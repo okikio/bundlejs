@@ -14,7 +14,7 @@ import {
 } from "./components/SearchResults";
 import {
     renderComponent as renderConsole,
-    addLogs, clearLogs
+    addLogs, clearLogs, setStickToBottom
 } from "./components/Console";
 
 import { hit } from "countapi-js";
@@ -208,6 +208,14 @@ export const build = async (app: App) => {
     let inputModel: Editor.ITextModel;
     let outputModel: Editor.ITextModel;
     let configModel: Editor.ITextModel;
+    
+    let setIframeHTML = (iframe: HTMLIFrameElement, newHTML: string) => {
+        iframe?.contentWindow?.document?.open();
+        iframe?.contentWindow?.document?.write(newHTML);
+        iframe?.contentWindow?.document?.close();
+    };
+
+    let iframeLoader = document.querySelector(".analyzer-loader") as HTMLIFrameElement;
 
     // bundles using esbuild and returns the result
     BundleEvents.on({
@@ -219,6 +227,27 @@ export const build = async (app: App) => {
 
             start = Date.now();
             postMessage({ event: "build", details: { config, value } });
+
+            let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
+            let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
+            let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
+            content?.classList?.add("hidden");
+            
+            iframeLoader?.classList?.remove("hidden");
+            loadingEl?.classList?.remove("hidden");
+
+            let IframeFadeInLoadingScreen = animate({
+                target: iframeLoader,
+                opacity: [0, 1],
+                easing: "ease-out",
+                duration: 50,
+                autoplay: false
+            });
+            IframeFadeInLoadingScreen.play();
+            IframeFadeInLoadingScreen.then(() => {
+                setIframeHTML(iframe, ``);
+            });
+
         },
         result(details) {
             let { initialSize, size, content } = details;
@@ -235,10 +264,23 @@ export const build = async (app: App) => {
         },
         iframe(details) {
             let { content: newHTML } = details;
+            let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
+
             let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write(newHTML);
-            iframe.contentWindow.document.close();
+            setIframeHTML(iframe, newHTML);
+            
+            let IframeFadeOutLoadingScreen = animate({
+                target: iframeLoader,
+                opacity: [1, 0],
+                easing: "ease-in",
+                duration: 50,
+                autoplay: false
+            });
+            IframeFadeOutLoadingScreen.play();
+            IframeFadeOutLoadingScreen.then(() => {
+                iframeLoader?.classList?.add("hidden");
+                loadingEl?.classList?.add("hidden");
+            });
         }
     });
 
@@ -753,6 +795,7 @@ export const InitialRender = (shareURL: URL) => {
         const scrollUpBtn = document.querySelector(".console-btns .console-to-top-btn");
         scrollUpBtn?.addEventListener("click", () => {
             ConsoleEl?.scrollTo?.(0, 0);
+            setStickToBottom(false);
         });
     })();
 

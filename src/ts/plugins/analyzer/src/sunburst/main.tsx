@@ -1,4 +1,4 @@
-import type { ModuleRenderInfo, ModuleTree, ModuleTreeLeaf, ModuleUID, SizeKey } from "../../types/types";
+import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 
 import { h, Fragment, FunctionalComponent } from "preact";
 import { useContext, useMemo, useState } from "preact/hooks";
@@ -10,9 +10,6 @@ import { Chart } from "./chart";
 
 import { StaticContext } from "./index";
 import { isModuleTree } from "../../utils/is-module-tree";
-
-export type LinkInfo = ModuleRenderInfo & { uid: ModuleUID };
-export type ModuleLinkInfo = Map<ModuleUID, LinkInfo[]>;
 
 export const Main: FunctionalComponent = () => {
   const { availableSizeProperties, rawHierarchy, getModuleSize, layout, data } = useContext(StaticContext);
@@ -53,14 +50,14 @@ export const Main: FunctionalComponent = () => {
         if (isModuleTree(node)) return 0;
         const ownSize = getModuleSize(node, sizeProperty);
         const zoomMultiplier = getNodeSizeMultiplier(node);
-        const filterMultiplier = getModuleFilterMultiplier(data.nodes[node.uid]);
+        const filterMultiplier = getModuleFilterMultiplier(data.nodeMetas[data.nodeParts[node.uid].mainUid]);
 
         return ownSize * zoomMultiplier * filterMultiplier;
       })
       .sort((a, b) => getModuleSize(a.data, sizeProperty) - getModuleSize(b.data, sizeProperty));
 
     return layout(rootWithSizesAndSorted);
-  }, [data.nodes, getModuleFilterMultiplier, getModuleSize, getNodeSizeMultiplier, layout, rawHierarchy, sizeProperty]);
+  }, [data, getModuleFilterMultiplier, getModuleSize, getNodeSizeMultiplier, layout, rawHierarchy, sizeProperty]);
 
   return (
     <>

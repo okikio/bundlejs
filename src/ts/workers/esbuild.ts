@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { FileSystem } from "../util/filesystem";
+import { FileSystem, setFile } from "../util/filesystem";
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
@@ -149,6 +149,8 @@ export const start = async (port: MessagePort) => {
 
         try {
             // Catch esbuild errors 
+            setFile("/bundle.js", `${input}`);
+
             try {
                 // Convert CDN values to URL origins
                 let { origin } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
@@ -208,6 +210,9 @@ export const start = async (port: MessagePort) => {
                 if (path == "/stdin.js") 
                     output = text;
 
+                if (/\.map$/.test(path)) 
+                    return encode("")
+
                 // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
                 if (esbuildOpts?.logLevel == "verbose") {
                     if (ignoreFile) {
@@ -221,17 +226,6 @@ export const start = async (port: MessagePort) => {
 
                 return contents;
             });
-
-            try {
-                if (config?.analysis) {
-                    postMessage({
-                        event: "iframe",
-                        details: { 
-                            content: await analyze(result?.metafile, config?.analysis == true ? "treemap" : config?.analysis, logger) 
-                        }
-                    });
-                }
-            } catch (e) {}
 
             // Print warning
             if (result?.warnings.length > 0) {
@@ -249,6 +243,8 @@ export const start = async (port: MessagePort) => {
             }
             
             logger("Done ✨", "info");
+            
+            logger("Generating Bundle Analysis 📊", "info");
 
             // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
             let { compression = {} } = config;
@@ -287,6 +283,37 @@ export const start = async (port: MessagePort) => {
             totalByteLength = null;
             totalCompressedSize = null;
             output = null;
+
+            // Generate Bundle Analysis Charts
+            try {
+                if (config?.analysis) {
+                    postMessage({
+                        event: "iframe",
+                        details: { 
+                            content: await analyze(
+                                result?.metafile, 
+                                [...assets]
+                                    .concat(result?.outputFiles)
+                                    .concat(
+                                        Array
+                                            .from(FileSystem.entries())
+                                            .map(([path, contents]) => {
+                                                return {
+                                                    path, contents,
+                                                    get text() { return decode(contents); }
+                                                };
+                                            })
+                                    ), 
+                                {
+                                    template: config?.analysis,
+                                    gzipSize: type == "gzip",
+                                    brotliSize: type == "brotli"
+                                }, logger
+                            ) 
+                        }
+                    });
+                }
+            } catch (e) {}
         } catch (err) {
             // Catch unexpected errors
             // Errors can take multiple forms, so it trys to support the many forms errors can take

@@ -22,6 +22,7 @@ export const Main: FunctionalComponent = () => {
 
   const { getModuleFilterMultiplier, setExcludeFilter, setIncludeFilter } = useFilter();
 
+  console.time("getNodeSizeMultiplier");
   const getNodeSizeMultiplier = useMemo(() => {
     const rootSize = getModuleSize(rawHierarchy.data, sizeProperty);
     const selectedSize = selectedNode ? getModuleSize(selectedNode.data, sizeProperty) : 1;
@@ -45,7 +46,9 @@ export const Main: FunctionalComponent = () => {
       };
     }
   }, [getModuleSize, rawHierarchy.data, selectedNode, sizeProperty]);
+  console.timeEnd("getNodeSizeMultiplier");
 
+  console.time("root hierarchy compute");
   // root here always be the same as rawHierarchy even after layouting
   const root = useMemo(() => {
     const rootWithSizesAndSorted = rawHierarchy
@@ -53,14 +56,16 @@ export const Main: FunctionalComponent = () => {
         if (isModuleTree(node)) return 0;
         const ownSize = getModuleSize(node, sizeProperty);
         const zoomMultiplier = getNodeSizeMultiplier(node);
-        const filterMultiplier = getModuleFilterMultiplier(data.nodes[node.uid]);
+        const filterMultiplier = getModuleFilterMultiplier(data.nodeMetas[data.nodeParts[node.uid].mainUid]);
 
         return ownSize * zoomMultiplier * filterMultiplier;
       })
       .sort((a, b) => getModuleSize(a.data, sizeProperty) - getModuleSize(b.data, sizeProperty));
 
     return layout(rootWithSizesAndSorted);
-  }, [data.nodes, getModuleFilterMultiplier, getModuleSize, getNodeSizeMultiplier, layout, rawHierarchy, sizeProperty]);
+  }, [data, getModuleFilterMultiplier, getModuleSize, getNodeSizeMultiplier, layout, rawHierarchy, sizeProperty]);
+
+  console.timeEnd("root hierarchy compute");
 
   return (
     <>
