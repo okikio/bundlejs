@@ -236,7 +236,78 @@ task("js", async () => {
                 }),
 
                 gulpif(
-                    (file) => /\.js$/.test(file.path),
+                    (file) => /\.(js|css)$/.test(file.path),
+                    size({
+                        gzip: true,
+                        showFiles: true,
+                        showTotal: false,
+                    })
+                ),
+            ],
+            dest: jsFolder, // Output
+        }
+    );
+});
+
+// JS Analyzer Tasks
+task("js-analyzer", async () => {
+    const [
+        { default: gulpEsBuild, createGulpEsbuild },
+        { default: size },
+        { default: gulpif },
+
+        { SASS },
+    ] = await Promise.all([
+        import("gulp-esbuild"),
+        import("gulp-size"),
+        import("gulp-if"),
+
+        import("./plugins/sass.js"),
+    ]);
+
+    const TEMPLATE = ["sunburst", "treemap", "network"];
+
+    const esbuild =
+        mode == "watch"
+            ? createGulpEsbuild({ incremental: true })
+            : gulpEsBuild;
+
+    return stream(
+        [
+            `${tsFolder}/plugins/analyzer/src/{${TEMPLATE.toString()}}/index.tsx`,
+            `!${tsFolder}/**/*.d.ts`
+        ],
+        {
+            pipes: [
+                // Bundle Modules
+                esbuild({
+                    target: ["es2019"],
+                    platform: "browser",
+                    treeShaking: true,
+
+                    assetNames: "[dir]",
+                    entryNames: "[dir].min",
+
+                    jsxFragment: "Fragment",
+                    jsxFactory: "h",
+
+                    bundle: true,
+                    minify: true,
+                    color: true,
+                    format: "esm",
+                    sourcemap: true,
+                    splitting: true,
+
+                    loader: {
+                        ".ttf": "file",
+                        ".wasm": "file",
+                    },
+
+                    plugins: [SASS()],
+                }),
+
+                gulpif(
+                    (file) => /\.(js|css)$/.test(file.path),
                     size({
                         gzip: true,
                         showFiles: true,
@@ -457,9 +528,9 @@ task("watch", async () => {
     );
 
     watch(
-        [`${tsFolder}/**/*.{tsx,ts,js}`, `!${tsFolder}/**/*.d.ts`],
+        [`${tsFolder}/**/*.{tsx,ts,js,jsx}`, `!${tsFolder}/**/*.d.ts`],
         { delay: 850 },
-        series("js", /* "preload-chunks", */ "service-worker", "reload")
+        series(parallel("js", "js-analyzer"), /* "preload-chunks", */ "service-worker", "reload")
     );
 
     watch(
@@ -473,7 +544,7 @@ task(
     "build",
     series(
         "clean",
-        parallel("html", "css", "assets", "js"),
+        parallel("html", "css", "assets", "js", "js-analyzer"),
          /* "preload-chunks", */ 
         parallelFn("minify-css", "service-worker", "sitemap")
     )
@@ -482,7 +553,7 @@ task(
     "default",
     series(
         "clean",
-        parallel("html", "css", "assets", "js"),
+        parallel("html", "css", "assets", "js", "js-analyzer"),
          /* "preload-chunks", */ 
         "service-worker",
         "watch"

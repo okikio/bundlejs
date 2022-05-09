@@ -593,3 +593,10 @@ details.accordian {
 .giscus-frame {
     color-scheme: none;
 }
+
+#analyzer {
+    color-scheme: none;
+    @apply w-full rounded-lg;
+    resize: vertical;
+    min-height: theme("spacing.2");
+}

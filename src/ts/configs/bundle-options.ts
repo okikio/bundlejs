@@ -1,5 +1,7 @@
 import type { BuildOptions } from "esbuild-wasm";
 
+import type { TemplateType } from "../plugins/analyzer/types/template-types";
+
 import { deepAssign } from "../util/deep-equal";
 import { DEFAULT_CDN_HOST } from "../util/util-cdn";
 
@@ -51,11 +53,18 @@ export type BundleConfigOptions = {
      * ```
     */
     compression?: CompressionOptions | CompressionType
+    
+    /**
+     * Generates interactive zoomable charts displaing the size of output files. 
+     * It's a great way to determine what causes the bundle size to be so large. 
+     */
+    analysis?: TemplateType | boolean
 };
 
 export const EasyDefaultConfig: BundleConfigOptions = {
     "cdn": DEFAULT_CDN_HOST,
     "compression": "gzip",
+    "analysis": false,
     "esbuild": {
         "target": ["esnext"],
         "format": "esm",
