@@ -114,7 +114,7 @@ BundleEvents.on({
             let share = searchParams.get("share");
             let bundle = searchParams.get("bundle");
             let config = searchParams.get("config") ?? "{}";
-            if (query || share || plaintext) {
+            if (query || share || plaintext || config) {
                 if (bundle != null) {
                     fileSizeEl.forEach(el => (el.textContent = `Wait!`));
                     BundleEvents.emit("bundle", config);
