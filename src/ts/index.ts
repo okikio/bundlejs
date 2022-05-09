@@ -232,6 +232,13 @@ export const build = async (app: App) => {
                 { title: `Bundle size is ${initialSize} -> ${size}` }
             ]);
             fileSizeEl.forEach(el => (el.textContent = `` + size));
+        },
+        iframe(details) {
+            let { content: newHTML } = details;
+            let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(newHTML);
+            iframe.contentWindow.document.close();
         }
     });
 
@@ -424,51 +431,6 @@ export const build = async (app: App) => {
 
         loadingContainerEl = null;
         FadeLoadingScreen = null;
-
-        // const TypeAquisition = setupTypeAcquisition({
-        //     projectName: "My ATA Project",
-        //     typescript: ts,
-        //     logger: console,
-        //     async fetcher(input, init) {
-        //         return await getRequest(input, false, init);
-        //     },
-        //     delegate: {
-        //         started: () => {
-        //             console.log("Types Aquisition Start")
-        //         },
-        //         receivedFile: (code: string, path: string) => {
-        //             // Add code to your runtime at the path...
-        //             languages.typescript.typescriptDefaults.addExtraLib(code, "file://" + path);
-
-        //             const uri = Uri.file(path);
-        //             if (Editor.getModel(uri) === null) {
-        //                 Editor.createModel(code, "typescript", uri);
-        //             }
-        //         },
-        //         progress: (downloaded: number, total: number) => {
-        //             console.log(`Got ${downloaded} out of ${total}`)
-        //         },
-        //         finished: vfs => {
-        //             console.log("Types Aquisition Done");
-        //         },
-        //     },
-        // });
-    
-        // const getTypescriptTypes = async (model: typeof inputModel) => {
-        //     try {
-        //         const worker = await languages.typescript.getTypeScriptWorker();
-        //         await worker(model.uri);
-
-        //         // @ts-ignore
-        //         TypeAquisition(model.getValue());
-        //     } catch (e) {
-        //         console.warn(e);
-        //     }
-        // };
-
-        // setTimeout(() => {
-        //     getTypescriptTypes(inputModel);
-        // }, 1000);
 
         // Update the URL share query everytime user makes a change 
         editor.onDidChangeModelContent(
@@ -707,13 +669,12 @@ export const InitialRender = (shareURL: URL) => {
         }, 50)).observe(parentEl);
     })();
 
-    // Drag handle - Resizable Full height
-    (() => { 
+    let dragHandleY = (target = ".flex-wrapper", section = ".drag-section#handle-2", handle = ".drag-handle") => {
         // Based on the tutorial at https://htmldom.dev/create-resizable-split-views/
         // Honestly, I am surprised that native dragging doesn't work for this use case
-        const dragSection = document.querySelector(".drag-section#handle-2") as HTMLElement;
-        const dragHandle = dragSection.querySelector(".drag-handle") as HTMLElement;
-        const targetEl = document.querySelector(".flex-wrapper") as HTMLElement;
+        const dragSection = document.querySelector(section) as HTMLElement;
+        const dragHandle = dragSection.querySelector(handle) as HTMLElement;
+        const targetEl = document.querySelector(target) as HTMLElement;
 
         // The current position of mouse
         let y = 0;
@@ -755,7 +716,13 @@ export const InitialRender = (shareURL: URL) => {
         };
         
         dragHandle.addEventListener('pointerdown', pointerDown);
-    })();
+    };
+
+    // Drag handle - Resizable Full height
+    dragHandleY();
+
+    // Drag handle - (Analyzer iframe) Resizable Full height
+    dragHandleY("#analyzer", ".drag-section#handle-3");
 
     // Console solidjs component
     (async () => {

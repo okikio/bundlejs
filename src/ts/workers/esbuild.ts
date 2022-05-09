@@ -3,7 +3,7 @@ import { FileSystem } from "../util/filesystem";
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
-import prettyBytes from "pretty-bytes";
+import bytes from "bytes";
 
 import { gzip, getWASM } from "../deno/denoflate/mod";
 import { compress } from "../deno/brotli/mod";
@@ -24,6 +24,7 @@ import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "
 
 import { ALIAS } from "../plugins/alias";
 import { getCDNUrl } from "../util/util-cdn";
+import { analyze } from "../plugins/analyzer";
 
 export let _initialized = false;
 export const initEvent = new EventEmitter();
@@ -160,7 +161,8 @@ export const start = async (port: MessagePort) => {
                     },
                     
                     ...esbuildOpts,
-
+                    
+                    metafile: true,
                     write: false,
                     loader: {
                         '.png': 'file',
@@ -220,7 +222,16 @@ export const start = async (port: MessagePort) => {
                 return contents;
             });
 
-            console.log(Array.from(FileSystem.keys()))
+            try {
+                if (config?.analysis) {
+                    postMessage({
+                        event: "iframe",
+                        details: { 
+                            content: await analyze(result?.metafile, config?.analysis == true ? "treemap" : config?.analysis, logger) 
+                        }
+                    });
+                }
+            } catch (e) {}
 
             // Print warning
             if (result?.warnings.length > 0) {
@@ -245,10 +256,10 @@ export const start = async (port: MessagePort) => {
                 (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
 
             // @ts-ignore
-            let totalByteLength = prettyBytes(
+            let totalByteLength = bytes(
                 content.reduce((acc, { byteLength }) => acc + byteLength, 0)
             );
-            let totalCompressedSize = prettyBytes(
+            let totalCompressedSize = bytes(
                 (await Promise.all(
                     content.map((code: Uint8Array) => { 
                         switch (type) {

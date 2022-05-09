@@ -127,7 +127,26 @@ block content
     .info-pane(class="!pt-0")
       +code-info("sm:hidden")
 
-  br
+    br
+    
+    details#analysis.accordian(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").rounded-md
+      summary
+        p.px-4.py-2.cursor-pointer.select-none Analysis
+      div.content.pl-4.pr-2.py-4
+        p
+          :markdown-it(linkify langPrefix='language-')
+            Enable the `analysis` config to view the size of output files with interactive zoomable charts.
+            ```ts
+            {
+              "analysis": "treemap" | "network" | "sunburst" | true | false,
+              "esbuild": { ... }
+            }
+            ```
+        br
+        iframe#analyzer(src="about:blank" allowtransparency="true")
+        .drag-section.vertical#handle-3
+          .drag-handle
+
   br
 
   mixin divider
