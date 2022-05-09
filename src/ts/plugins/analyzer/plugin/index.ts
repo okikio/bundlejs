@@ -1,51 +1,98 @@
 import type { TemplateType } from "../types/template-types";
-import type { ModuleLink, ModuleRenderInfo, ModuleTree, ModuleTreeLeaf, VisualizerData } from "../types/types";
+import type { ModuleLengths, ModuleTree, ModuleTreeLeaf, VisualizerData } from "../types/types";
 import type { Metadata, MetadataOutput } from "../types/metafile";
 import type { ModuleInfo } from "../types/rollup";
+import type { OutputFile } from "esbuild-wasm";
 
 import { ModuleMapper } from "./module-mapper";
 import { addLinks, buildTree, mergeTrees } from "./data";
 import { buildHtml } from "./build-stats";
 
-export interface PluginVisualizerOptions {
+import { gzipSizeGetter, brotliSizeGetter, emptySizeGetter } from "./compress";
+
+/**
+ * Analyzer options
+ */
+export interface AnalyzerOptions {
   title?: string;
-  template?: TemplateType;
+  template?: TemplateType | boolean;
+  gzipSize?: boolean;
+  brotliSize?: boolean;
 }
 
-export const visualizer = async (metadata: Metadata, opts: PluginVisualizerOptions = {}): Promise<string> => {
+export const visualizer = async (metadata: Metadata, outputFiles: OutputFile[], opts: AnalyzerOptions = {}): Promise<string> => {
   const title = opts.title ?? "Esbuild Visualizer";
-
-  const template = opts.template ?? "treemap";
+  const template = (opts.template == true ? "treemap" : opts.template as TemplateType) ?? "treemap";
   const projectRoot = "";
 
-  const renderedModuleToInfo = (id: string, mod: { bytesInOutput: number }): ModuleRenderInfo => {
+  let outputFilesMap = new Map<string, Uint8Array>();
+  outputFiles.forEach(({ path, contents }) => {
+    outputFilesMap.set(path, contents);
+  });
+  // console.log(metadata, outputFiles, Array.from(outputFilesMap.entries()));
+
+  const gzipSize = !!opts.gzipSize;
+  const brotliSize = !!opts.brotliSize;
+  const gzip = gzipSize ? gzipSizeGetter : emptySizeGetter;
+  const brotli = brotliSize ? brotliSizeGetter : emptySizeGetter;
+
+  const ModuleLengths = async ({
+    id,
+    mod
+  }: {
+    id: string;
+    mod: { bytesInOutput: number };
+  }): Promise<ModuleLengths & { id: string }> => {
+    const code = outputFilesMap.get(id);
+    let faultyCode = code == null || code == undefined || code?.length == 0;
+    let [gzipLength, brotliLength, renderedLength] = await Promise.all(faultyCode ? [0, 0, mod.bytesInOutput] : [gzip(code), brotli(code), code?.length])
     const result = {
       id,
-      renderedLength: mod.bytesInOutput,
+      gzipLength,
+      brotliLength,
+      renderedLength
     };
     return result;
   };
 
   const roots: Array<ModuleTree | ModuleTreeLeaf> = [];
   const mapper = new ModuleMapper(projectRoot);
-  const links: ModuleLink[] = [];
 
   // collect trees
   for (const [bundleId, bundle] of Object.entries(metadata.outputs)) {
-    const modules = Object.entries(bundle.inputs).map(([id, mod]) => renderedModuleToInfo(id, mod));
-
+    const modules = await Promise.all(
+      Object
+        .entries(bundle.inputs)
+        .map(([id, mod]) => ModuleLengths({ id, mod }))
+    );
     const tree = buildTree(bundleId, modules, mapper);
 
-    roots.push(tree);
+    const code = outputFilesMap.get(bundleId);
+    if (tree.children.length === 0 && code) {
+      const bundleSizes = await ModuleLengths({
+        id: bundleId,
+        mod: { bytesInOutput: code?.length }
+      });
+
+      const facadeModuleId = `${bundleId}-unknown`;
+      const bundleUid = mapper.setNodePart(bundleId, facadeModuleId, bundleSizes);
+      mapper.setNodeMeta(facadeModuleId, { isEntry: true });
+      const leaf: ModuleTreeLeaf = { name: bundleId, uid: bundleUid };
+      roots.push(leaf);
+    } else {
+      roots.push(tree);
+    }
   }
 
   const getModuleInfo = (bundle: MetadataOutput) => (moduleId: string): ModuleInfo => {
     const input = metadata.inputs?.[moduleId];
 
     const imports = input?.imports.map((i) => i.path);
+    
+    const code = outputFilesMap.get(moduleId);
 
     return {
-      renderedLength: bundle.inputs?.[moduleId]?.bytesInOutput ?? 0,
+      renderedLength: code?.length ?? bundle.inputs?.[moduleId]?.bytesInOutput ?? 0,
       importedIds: imports ?? [],
       dynamicallyImportedIds: [],
       isEntry: bundle.entryPoint === moduleId,
@@ -56,22 +103,20 @@ export const visualizer = async (metadata: Metadata, opts: PluginVisualizerOptio
   for (const [bundleId, bundle] of Object.entries(metadata.outputs)) {
     if (bundle.entryPoint == null) continue;
 
-    addLinks(bundleId, bundle.entryPoint, getModuleInfo(bundle), links, mapper);
+    addLinks(bundleId,  getModuleInfo(bundle), mapper);
   }
 
   const tree = mergeTrees(roots);
 
   const data: VisualizerData = {
-    version: 2.0,
+    version: 3.0,
     tree,
-    nodes: mapper.getNodes(),
     nodeParts: mapper.getNodeParts(),
-    links,
+    nodeMetas: mapper.getNodeMetas(),
     env: {},
     options: {
-      gzip: false,
-      brotli: false,
-      sourcemap: false,
+      gzip: gzipSize,
+      brotli: brotliSize
     },
   };
 

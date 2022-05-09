@@ -10,6 +10,7 @@ import { inferLoader } from '../util/loader';
 
 import { urlJoin, extname, isBareImport } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
+import { isArgumentsObject } from 'util/types';
 
 /** HTTP Plugin Namespace */
 export const HTTP_NAMESPACE = 'http-url';
@@ -44,10 +45,10 @@ export const fetchPkg = async (url: string, logger = console.log) => {
  * 
  * @param path Path for original js files 
  * @param content Content of original js files
+ * @param namespace esbuild plugin namespace
  * @param logger Console log
- * @param fs Virtual Filesystem
  */
-export const fetchAssets = async (path: string, content: Uint8Array, logger = console.log) => {
+export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, logger = console.log) => {
     const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
     const parentURL = new URL("./", path).toString();
 
@@ -59,8 +60,9 @@ export const fetchAssets = async (path: string, content: Uint8Array, logger = co
         
         // Create a virtual file system for storing assets
         // This is for building a package bundle analyzer 
-        let { pathname } = new URL(getPureImportPath(url), "https://local.com");
-        setFile("/node_modules" + pathname, content);
+        setFile(namespace + ":" + url, content);
+        // let { pathname } = new URL(getPureImportPath(url), "https://local.com");
+        // setFile("/node_modules" + pathname, content);
 
         return {
             path: assetURL, contents: asset,
@@ -188,17 +190,24 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                     try {
                         ({ content, url } = await fetchPkg(argPath(".ts"), logger));
                     } catch (e) {
-                        logger([e.toString()], "error");
-                        throw err;
+                        // If the ^ above fetch doesn't work, try again with a `.tsx` extension
+                        // Some typescript files use `.tsx`
+                        try {
+                            ({ content, url } = await fetchPkg(argPath(".tsx"), logger));
+                        } catch (e) {
+                            logger([e.toString()], "error");
+                            throw err;
+                        }
                     }
                 }
 
                 // Create a virtual file system for storing node modules
                 // This is for building a package bundle analyzer 
-                let { pathname } = new URL(getPureImportPath(url), "https://local.com");
-                setFile("/node_modules" + pathname, content);
+                setFile(args.namespace + ":" + args.path, content);
+                // let { pathname } = new URL(getPureImportPath(url), "https://local.com");
+                // setFile("/node_modules" + pathname, content);
 
-                assets = assets.concat(await fetchAssets(url, content, logger));  
+                assets = assets.concat(await fetchAssets(url, content, args.namespace, logger));  
                 return {
                     contents: content,
                     loader: inferLoader(url),

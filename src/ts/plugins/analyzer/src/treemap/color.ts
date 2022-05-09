@@ -1,5 +1,6 @@
 import type { ModuleTree, ModuleTreeLeaf } from "../../types/types";
 
+import * as d3 from "d3";
 import { scaleSequential, scaleLinear } from "d3-scale";
 import { hsl, RGBColor } from "d3-color";
 
@@ -41,9 +42,20 @@ const createRainbowColor = (root: HierarchyNode<ModuleTree | ModuleTreeLeaf>): N
   colorParentMap.set(root, COLOR_BASE);
 
   if (root.children != null) {
-    const colorScale = scaleSequential([0, root.children.length - 1], (n) => hsl(360 * n, 0.6, 0.85));
+    // d3.scaleSequential([8, 0], d3.interpolateCool)
+    let colorScale = scaleSequential([Math.max(root?.children?.length, 10), 0], d3.interpolateCool); // hsl(360 * n, 0.3, 0.85)
     root.children.forEach((c, id) => {
       colorParentMap.set(c, colorScale(id).toString());
+
+      colorScale = scaleSequential([Math.max(c?.children?.length ?? 0, 15), 5], d3.interpolateWarm); 
+      c?.children?.forEach((child, id) => {
+        colorParentMap.set(child, colorScale(id).toString());
+        
+        colorScale = scaleSequential([Math.max(child?.children?.length ?? 0, 20), 10], d3.interpolateCool); 
+        child?.children?.forEach((c, id) => {
+          colorParentMap.set(c, colorScale(id).toString());
+        });
+      });
     });
   }
 
@@ -66,7 +78,7 @@ const createRainbowColor = (root: HierarchyNode<ModuleTree | ModuleTreeLeaf>): N
     if (!colorMap.has(node)) {
       const backgroundColor = getBackgroundColor(node);
       const l = relativeLuminance(backgroundColor.rgb());
-      const fontColor = l > 0.179 ? "#000" : "#fff";
+      const fontColor = l > 0.19 ? "#000" : "#fff";
       colorMap.set(node, {
         backgroundColor: backgroundColor.toString(),
         fontColor,

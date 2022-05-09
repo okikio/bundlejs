@@ -7,7 +7,7 @@ import { format as formatBytes } from "bytes";
 
 import { LABELS } from "../sizes";
 import { HierarchyRectangularNode } from "d3-hierarchy";
-import { StaticContext } from ".";
+import { StaticContext } from "./index";
 import { isModuleTree } from "../../utils/is-module-tree";
 
 export interface TooltipProps {
@@ -20,11 +20,26 @@ export interface TooltipProps {
 const Tooltip_marginX = 10;
 const Tooltip_marginY = 30;
 
-export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root, sizeProperty }) => {
-  const { availableSizeProperties, getModuleSize, importedByCache } = useContext(StaticContext);
+const RENDRED = (
+  <span>
+    <b>{LABELS.renderedLength}</b> is a byte size of individual file after transformations and treeshake.
+  </span>
+);
 
-  const ref = useRef<HTMLDivElement>() as MutableRef<HTMLDivElement>;
+const COMPRESSED = (
+  <span>
+    <b>{LABELS.gzipLength}</b> and <b>{LABELS.brotliLength}</b> is a byte size of individual file after individual{" "}
+    transformations,
+    <br /> treeshake and compression.
+  </span>
+);
+
+export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root, sizeProperty }) => {
+  const { availableSizeProperties, getModuleSize, data } = useContext(StaticContext);
+
+  const ref = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState({});
+
   const content = useMemo(() => {
     if (!node) return null;
 
@@ -39,6 +54,12 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
       .reverse()
       .map((d) => d.data.name)
       .join("/");
+
+    let dataNode = null;
+    if (!isModuleTree(node.data)) {
+      const mainUid = data.nodeParts[node.data.uid].mainUid;
+      dataNode = data.nodeMetas[mainUid];
+    }
 
     return (
       <>
@@ -61,21 +82,33 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
             );
           }
         })}
-        {!isModuleTree(node.data) && importedByCache.has(node.data.uid) && (
+        <br />
+        {dataNode && dataNode.importedBy.length > 0 && (
           <div>
             <div>
               <b>Imported By</b>:
             </div>
-            {[...new Set(importedByCache.get(node.data.uid)?.map(({ id }) => id))].map((id) => (
-              <div key={id}>{id}</div>
-            ))}
+            {dataNode.importedBy.map(({ uid }) => {
+              const id = data.nodeMetas[uid].id;
+              return <div key={id}>{id}</div>;
+            })}
           </div>
+        )}
+        <br />
+        <small>{RENDRED}</small>
+        {(data.options.gzip || data.options.brotli) && (
+          <>
+            <br />
+            <small>{COMPRESSED}</small>
+          </>
         )}
       </>
     );
-  }, [availableSizeProperties, getModuleSize, importedByCache, node, root.data, sizeProperty]);
+  }, [availableSizeProperties, data, getModuleSize, node, root.data, sizeProperty]);
 
   const updatePosition = (mouseCoords: { x: number; y: number }) => {
+    if (!ref.current) return;
+
     const pos = {
       left: mouseCoords.x + Tooltip_marginX,
       top: mouseCoords.y + Tooltip_marginY,

@@ -28,6 +28,7 @@ export type CompressionOptions = {
     /** Compression quality ranging from 1 to 11 */
     quality: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 };
+
 export type BundleConfigOptions = { 
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: BuildOptions,
@@ -64,7 +65,7 @@ export type BundleConfigOptions = {
 export const EasyDefaultConfig: BundleConfigOptions = {
     "cdn": DEFAULT_CDN_HOST,
     "compression": "gzip",
-    "analysis": false,
+    "analysis": true,
     "esbuild": {
         "target": ["esnext"],
         "format": "esm",

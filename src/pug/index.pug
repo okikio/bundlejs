@@ -143,9 +143,14 @@ block content
             }
             ```
         br
-        iframe#analyzer(src="about:blank" allowtransparency="true")
-        .drag-section.vertical#handle-3
-          .drag-handle
+        .relative.w-full
+          .analyzer-loader
+            .text-center
+              p.loader-content Nothing to analyze...
+              .loading.hidden
+          iframe#analyzer(src="about:blank" allowtransparency="true")
+          .drag-section.vertical#handle-3
+            .drag-handle
 
   br
 

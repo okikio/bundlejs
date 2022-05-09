@@ -1,4 +1,3 @@
-import type { ModuleRenderInfo } from "../types/types";
 import { useState, useMemo } from "preact/hooks";
 
 export type FilterSetter = (value: string) => void;
@@ -21,7 +20,7 @@ export type UseFilter = {
   excludeFilter: string;
   setIncludeFilter: FilterSetter;
   setExcludeFilter: FilterSetter;
-  getModuleFilterMultiplier: (data: ModuleRenderInfo) => number;
+  getModuleFilterMultiplier: (data: { id: string }) => number;
 };
 
 export const useFilter = (): UseFilter => {
@@ -37,7 +36,7 @@ export const useFilter = (): UseFilter => {
     }
     try {
       const re = new RegExp(includeFilter);
-      return ({ id }: ModuleRenderInfo) => re.test(id);
+      return ({ id }: { id: string }) => re.test(id);
     } catch (err) {
       return () => false;
     }
@@ -49,7 +48,7 @@ export const useFilter = (): UseFilter => {
     }
     try {
       const re = new RegExp(excludeFilter);
-      return ({ id }: ModuleRenderInfo) => re.test(id);
+      return ({ id }: { id: string }) => re.test(id);
     } catch (err) {
       return () => false;
     }
@@ -58,7 +57,7 @@ export const useFilter = (): UseFilter => {
   const isDefaultInclude = includeFilter === "";
 
   const getModuleFilterMultiplier = useMemo(() => {
-    return (data: ModuleRenderInfo) => {
+    return (data: { id: string }) => {
       if (isDefaultInclude) {
         return isModuleExcluded(data) ? 0 : 1;
       }
