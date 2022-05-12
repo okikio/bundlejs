@@ -262,7 +262,7 @@ export const build = async (app: App) => {
             ]);
             fileSizeEl.forEach(el => (el.textContent = `` + size));
         },
-        iframe(details) {
+        chart(details) {
             let { content: newHTML } = details;
             let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
 
