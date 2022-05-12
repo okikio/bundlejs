@@ -1,6 +1,9 @@
 /// <reference lib="webworker" />
+import type { BundleConfigOptions, CompressionOptions } from "../configs/bundle-options";
+import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions } from "esbuild-wasm";
+
 import { FileSystem, setFile } from "../util/filesystem";
-import { initialize, build, formatMessages } from "esbuild-wasm";
+import { initialize, build, transform, transformSync, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
 import bytes from "bytes";
@@ -18,9 +21,6 @@ import { render as ansi } from "../util/ansi";
 import { deepAssign } from "../util/deep-equal";
 
 import { DefaultConfig } from "../configs/bundle-options";
-
-import type { BundleConfigOptions, CompressionOptions } from "../configs/bundle-options";
-import type { BuildResult, OutputFile, BuildIncremental, PartialMessage } from "esbuild-wasm";
 
 import { ALIAS } from "../plugins/alias";
 import { getCDNUrl } from "../util/util-cdn";
@@ -243,8 +243,6 @@ export const start = async (port: MessagePort) => {
             }
             
             logger("Done ✨", "info");
-            
-            logger("Generating Bundle Analysis 📊", "info");
 
             // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
             let { compression = {} } = config;
@@ -287,31 +285,63 @@ export const start = async (port: MessagePort) => {
             // Generate Bundle Analysis Charts
             try {
                 if (config?.analysis) {
+                    logger("Generating Bundle Analysis 📊", "info");
+
+                    // A list of compressed input files and chunks, 
+                    // by default output files are already compressed but input files aren't so we need to manually transform them in order to ensure accuracy
+                    let inputFiles = [];
+                    let count = 0;
+                    for (let [path, contents] of FileSystem.entries()) {
+                        // This minifies & compresses input files for a accurate view of what is eating up the most size
+                        // It uses the esbuild options to determine how it should minify input code
+                        let text = decode(contents);
+                        let code = text;
+                        
+                        /*  WIP  */
+                        // console.log(await Promise.resolve(path))
+                        // ({ code } = transformSync(text, { 
+                        //     minify: esbuildOpts?.minify,
+                        //     format: esbuildOpts?.format,
+                        //     target: esbuildOpts?.target,
+                        //     treeShaking: esbuildOpts?.treeShaking,
+                        //     tsconfigRaw: (esbuildOpts as unknown as TransformOptions)?.tsconfigRaw,
+                        //     sourcefile: path,
+                        //     define: (esbuildOpts as unknown as TransformOptions)?.define,
+                        //     jsx: esbuildOpts?.jsx,
+                        //     jsxFactory: esbuildOpts?.jsxFactory,
+                        //     jsxFragment: esbuildOpts?.jsxFragment,
+                        //     pure: esbuildOpts?.pure,
+                        //     keepNames: esbuildOpts?.keepNames,
+                        // }));
+                            
+                        logger(`Transform ${path}`, "info");
+                        inputFiles.push({ path, contents: encode(code), text: code });
+                    }
+                    
+                    console.log(inputFiles)
+                    
+                    // List of all files in use
+                    let files = [...assets]
+                        .concat(result?.outputFiles)
+                        .concat(inputFiles);
+                    
+                    // Generate Iframe Chart
                     postMessage({
-                        event: "iframe",
+                        event: "chart",
                         details: { 
                             content: await analyze(
-                                result?.metafile, 
-                                [...assets]
-                                    .concat(result?.outputFiles)
-                                    .concat(
-                                        Array
-                                            .from(FileSystem.entries())
-                                            .map(([path, contents]) => {
-                                                return {
-                                                    path, contents,
-                                                    get text() { return decode(contents); }
-                                                };
-                                            })
-                                    ), 
-                                {
+                                result?.metafile, files,
+                                { 
                                     template: config?.analysis,
                                     gzipSize: type == "gzip",
                                     brotliSize: type == "brotli"
-                                }, logger
+                                }, 
+                                logger
                             ) 
                         }
                     });
+
+                    logger("Finished Bundle Analysis ✨", "info");
                 }
             } catch (e) {}
         } catch (err) {

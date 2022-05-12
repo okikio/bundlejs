@@ -70,7 +70,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
         };
     });
 
-    return await Promise.all(promises); 
+    return await Promise.allSettled(promises); 
 };
 
 /**
@@ -207,7 +207,20 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                 // let { pathname } = new URL(getPureImportPath(url), "https://local.com");
                 // setFile("/node_modules" + pathname, content);
 
-                assets = assets.concat(await fetchAssets(url, content, args.namespace, logger));  
+                let _assetResults = 
+                    (await fetchAssets(url, content, args.namespace, logger))
+                    .filter((result) => {
+                        if (result.status == "rejected") {
+                            logger("Asset fetch failed.\n" + result?.reason?.toString(), "warn");
+                            return false;
+                        } else return true;
+                    })
+                    .map((result) => {
+                        if (result.status == "fulfilled") 
+                            return result.value;
+                    });
+
+                assets = assets.concat(_assetResults);  
                 return {
                     contents: content,
                     loader: inferLoader(url),
