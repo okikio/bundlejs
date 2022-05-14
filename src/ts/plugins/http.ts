@@ -10,7 +10,6 @@ import { inferLoader } from '../util/loader';
 
 import { urlJoin, extname, isBareImport } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
-import { isArgumentsObject } from 'util/types';
 
 /** HTTP Plugin Namespace */
 export const HTTP_NAMESPACE = 'http-url';
@@ -146,7 +145,6 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
  * @param assets Array to store fetched assets
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
- * @param fs Virtual Filesystem
  */
 export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
     return {
@@ -195,7 +193,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                         try {
                             ({ content, url } = await fetchPkg(argPath(".tsx"), logger));
                         } catch (e) {
-                            logger([e.toString()], "error");
+                            logger(e.toString(), "error");
                             throw err;
                         }
                     }
@@ -211,7 +209,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                     (await fetchAssets(url, content, args.namespace, logger))
                     .filter((result) => {
                         if (result.status == "rejected") {
-                            logger("Asset fetch failed.\n" + result?.reason?.toString(), "warn");
+                            logger("Asset fetch failed.\n" + result?.reason?.toString(), "warning");
                             return false;
                         } else return true;
                     })

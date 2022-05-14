@@ -4,22 +4,22 @@ import { DetailsComponent, detailsEls } from "../modules/details";
 import { debounce } from "../util/debounce";
 
 let accLength = 0;
-type TypeLog = {
+export type TypeLog = {
   title: string | any;
   message?: string | any;
-  type?: "error" | "warning";
+  type?: "error" | "warning" | "info";
 };
 
-export const MAX_LOGS = 250;
+export const [MAX_LOGS, SET_MAX_LOGS] = createSignal(250);
 export const [getLogs, setLogs] = createSignal<TypeLog[]>([]);
 export const addLogs = (logs: TypeLog[] = []) => { 
   accLength += logs.length;
 
   let newLogs = [...getLogs(), ...logs];
-  if (newLogs.length > MAX_LOGS) { 
+  if (newLogs.length > MAX_LOGS()) { 
     newLogs = [{
-      title: `Logs have been truncated, showing only ${MAX_LOGS} of ${accLength - MAX_LOGS} logs...\nCheck the devtools console for a fully detailed log.`,
-    }, ...newLogs.slice(newLogs.length - MAX_LOGS)];
+      title: `Logs have been truncated, showing only ${MAX_LOGS} of ${accLength - MAX_LOGS()} logs...\nCheck the devtools console for a fully detailed log.`,
+    }, ...newLogs.slice(newLogs.length - MAX_LOGS())];
   }
   setLogs(newLogs);   
 }
@@ -56,7 +56,8 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
       {({ title, message = "", type }, index) => {
         let styleType = {
           "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
-          "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md"
+          "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md",
+          "info": "border-b border-gray-300/60 dark:border-gray-600/60 text-green-500/90 dark:text-green-300/90"
         };
         
         let staticClassName = "whitespace-normal overflow-auto overscroll-x-contain "; 

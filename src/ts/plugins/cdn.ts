@@ -92,7 +92,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
                 } catch (e) {
-                    logger([`You may want to change CDNs. The current CDN "${origin}" doesn't support package.json.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages, bundle will switch to inaccurate traversal basically guestimate the package version. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warn");
+                    logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
                     console.warn(e);
                 }
             }
