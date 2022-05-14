@@ -18,7 +18,7 @@ export const addLogs = (logs: TypeLog[] = []) => {
   let newLogs = [...getLogs(), ...logs];
   if (newLogs.length > MAX_LOGS()) { 
     newLogs = [{
-      title: `Logs have been truncated, showing only ${MAX_LOGS} of ${accLength - MAX_LOGS()} logs...\nCheck the devtools console for a fully detailed log.`,
+      title: `Logs have been truncated, showing only ${MAX_LOGS()} of ${accLength - MAX_LOGS()} logs...\nCheck the devtools console for a fully detailed log.`,
     }, ...newLogs.slice(newLogs.length - MAX_LOGS())];
   }
   setLogs(newLogs);   

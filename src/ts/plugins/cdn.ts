@@ -2,7 +2,7 @@ import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
 import { HTTP_NAMESPACE } from './http';
 import { isBareImport } from '../util/path';
-import { getRequest } from '../util/cache';
+import { getRequest } from '../util/fetch-and-cache';
 
 import { getCDNUrl, getCDNStyle } from '../util/util-cdn';
 import { resolveImports } from '../util/resolve-imports';

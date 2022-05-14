@@ -30,7 +30,7 @@ import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 
 import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
 
-import { getRequest } from "../util/cache.js";
+import { getRequest } from "../util/fetch-and-cache.js";
 import { USE_SHAREDWORKER } from "../../../env";
 import { EasyDefaultConfig } from "../configs/bundle-options.js";
 import { toLocaleDateString } from "../components/SearchResults.jsx";

@@ -89,23 +89,6 @@ export const start = async (port: MessagePort) => {
             });
         }
 
-        if (/error|warning/.test(type)) {
-            let message = msgs.length > 1 ? `${msgs.length} ${type}(s) ` : "" + `${type == "error" ? "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)" : ""}`;
-            if (message.length > 0) {
-                if (devtools) {
-                    postMessage({
-                        event: type,
-                        details: { type, message }
-                    });
-                }
-
-                postMessage({
-                    event: "log",
-                    details: { type, message }
-                });
-            }
-        }
-
         if (devtools) {
             postMessage({
                 event: type,
@@ -208,17 +191,22 @@ export const start = async (port: MessagePort) => {
                 });
             } catch (e) {
                 if (e.errors) {
+                    let msgs = [...await createNotice(e.errors, "error", false)];
+                    
                     // Post errors to the real console
                     postMessage({
                         event: "error",
                         details: {
                             type: `error`,
-                            message: [...await createNotice(e.errors, "error", false)]
+                            message: msgs
                         }
                     });
 
                     // Log errors with added color info. to the virtual console
-                    return logger([...await createNotice(e.errors, "error")], "error", false);
+                    logger([...await createNotice(e.errors, "error")], "error", false);
+
+                    let message = (msgs.length > 1 ? `${msgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+                    return logger(message, "error");
                 } else throw e;
             }
 
@@ -245,17 +233,23 @@ export const start = async (port: MessagePort) => {
 
             // Print warning
             if (result?.warnings.length > 0) {
+                let msgs = [...await createNotice(result.warnings, "warning", false)];
+
                 // Post warning to the real console
                 postMessage({
                     event: "warning",
                     details: {
                         type: `warning`,
-                        message: [...await createNotice(result.warnings, "warning", false)]
+                        message: msgs
                     }
                 });
 
                 // Log warning with added color info. to the virtual console
                 logger([...await createNotice(result.warnings, "warning")], "warning", false);
+
+                let message = (msgs.length > 1 ? `${msgs.length} warning(s) ` : "");
+                if (message.length > 0) 
+                    logger(message, "warning");
             }
             
             logger("Done ✨", "info");
@@ -372,6 +366,9 @@ export const start = async (port: MessagePort) => {
             });
 
             logger(error, "error", false);
+                    
+            let message = "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+            logger(message, "error");
         }
     });
 

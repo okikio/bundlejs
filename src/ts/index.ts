@@ -31,7 +31,7 @@ import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
 // import * as Monaco from "./modules/monaco";
-import { getRequest } from "./util/cache";
+import { getRequest } from "./util/fetch-and-cache";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -87,7 +87,9 @@ let fileSizeEl: HTMLElement[];
 let consoleLog = (type: TypeLog["type"], log = "") => {
     // Ignore empty log messages
     if (log && log?.length > 0) {
-        let [title, ...message] = log.split(/\n/);
+        let [title, ...message] = log
+            .replace(/\n/g, "\n")
+            .split(/\n/);
 
         // If there is a break line in the console log message, then create a group console log
         // only group info logs and normal console logs, ignore errors and warnings
@@ -177,9 +179,11 @@ BundleEvents.on({
 
         // Add logs to the virtual console
         let logs = message.map((msg = "") => {
-            msg = (msg ?? "").replace(/(https?:\/\/[^\s\)\:]+)((?:\:\d+){0,})/g, `<a href="$1" target="_blank" rel="noopener">$1</a>$2`);
+            console.log(msg)
+            msg = (msg ?? "")
+                .replace(/(https?:\/\/[^\s\)\:]+)((?:\:\d+){0,})/g, `<a href="$1" target="_blank" rel="noopener">$1</a>$2`);
             let [title, ...message] = msg.split(/\n/);
-            return ({ type, title, message: (message ?? []).join("\n") });
+            return ({ type, title, message: (message ?? []).join("<br>") });
         });
 
         addLogs(logs);
