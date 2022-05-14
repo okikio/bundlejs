@@ -2,7 +2,7 @@ import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
 
 import { ENABLE_SW } from "../../env";
-import { CACHE_NAME } from "./util/cache";
+import { CACHE_NAME } from "./util/fetch-and-cache";
 
 export default () => {
     // Check that service workers are supported

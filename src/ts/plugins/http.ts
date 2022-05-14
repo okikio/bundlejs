@@ -2,7 +2,7 @@
 import type { OnLoadArgs, OnResolveArgs, OnResolveResult, OutputFile, Plugin } from 'esbuild';
 import { FileSystem, getResolvedPath, setFile } from '../util/filesystem';
 
-import { getRequest } from '../util/cache';
+import { getRequest } from '../util/fetch-and-cache';
 import { decode } from '../util/encode-decode';
 
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle, getPureImportPath } from '../util/util-cdn';
@@ -24,7 +24,7 @@ export const fetchPkg = async (url: string, logger = console.log) => {
     try {
         let response = await getRequest(url);
         if (!response.ok)
-            throw new Error(`[getRequest] Failed to load ${response.url} (${response.status} code)`);
+            throw new Error(`Couldn't load ${response.url} (${response.status} code)`);
             
         logger(`Fetch ${url}`, "info");
         
@@ -33,7 +33,7 @@ export const fetchPkg = async (url: string, logger = console.log) => {
             content: new Uint8Array(await response.arrayBuffer()),
         };
     } catch (err) { 
-        throw new Error(`[getRequest] Failed at request (${url}) \n${err}`);
+        throw new Error(`[getRequest] Failed at request (${url})\n${err.toString()}`);
     }
 };
 
@@ -193,7 +193,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                         try {
                             ({ content, url } = await fetchPkg(argPath(".tsx"), logger));
                         } catch (e) {
-                            logger(e.toString(), "error");
+                            // logger(e.toString(), "error");
                             throw err;
                         }
                     }

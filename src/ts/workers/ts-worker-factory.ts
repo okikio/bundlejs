@@ -12,7 +12,7 @@ import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
 import { deepAssign, deepDiff } from "../util/deep-equal";
-import { getRequest } from "../util/cache";
+import { getRequest } from "../util/fetch-and-cache";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
