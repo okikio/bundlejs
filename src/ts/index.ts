@@ -1,3 +1,7 @@
+import type { editor as Editor } from "monaco-editor";
+import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
+import type { BundleConfigOptions } from "./configs/bundle-options";
+
 import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
 
 // import { setupTypeAcquisition } from "@typescript/ata";
@@ -14,7 +18,8 @@ import {
 } from "./components/SearchResults";
 import {
     renderComponent as renderConsole,
-    addLogs, clearLogs, setStickToBottom
+    addLogs, clearLogs, setStickToBottom, SET_MAX_LOGS,
+    type TypeLog
 } from "./components/Console";
 
 import { hit } from "countapi-js";
@@ -26,9 +31,6 @@ import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
 // import * as Monaco from "./modules/monaco";
-
-import type { editor as Editor } from "monaco-editor";
-import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
 import { getRequest } from "./util/cache";
 
 export let oldShareURL = new URL(String(document.location));
@@ -82,6 +84,47 @@ window.addEventListener("pagehide", function (event) {
 
 let fileSizeEl: HTMLElement[];
 
+let consoleLog = (type: TypeLog["type"], log = "") => {
+    // Ignore empty log messages
+    if (log && log?.length > 0) {
+        let [title, ...message] = log.split(/\n/);
+
+        // If there is a break line in the console log message, then create a group console log
+        // only group info logs and normal console logs, ignore errors and warnings
+        let groupLogs = message && message.length > 0 && !/error|warning/.test(type);
+        if (groupLogs) {
+            if (/info/.test(type)) {
+                // Info logs are green
+                let logColors = { "error": "#f87171", "warning": "#facc15", "info": "#86efac" };
+                console.groupCollapsed("%c" + title, `color: ${logColors[type]};`);
+            } else {
+                console.groupCollapsed(title); 
+            }
+        }
+
+        // Log according to the type of message given
+        let value = groupLogs ? message.join("\n") : log;
+        switch (type) {
+            case "error":
+                console.error(value);
+                break;
+            case "warning":
+                console.warn(value);
+                break;
+            case "info":
+                // Info logs are green
+                console.info("%c" + value, "color: green;");
+                break;
+            default:
+                console.log(value);
+        }
+
+        if (groupLogs) 
+            console.groupEnd();
+        
+    }
+};
+
 // Bundle Events
 BundleEvents.on({
     loaded() {
@@ -125,15 +168,15 @@ BundleEvents.on({
         }
     },
     log(details) {  
-        let { type, messages } = details;
-        messages = [].concat(messages ?? []);
+        let { type, message } = details;
+        message = [].concat(message ?? []); 
 
-        // Log warnings to devtools
-        if (!/error|warning/.test(type))
-            messages.forEach(log => console.log(log));
+        // Log to devtools
+        if (!/error|warning/.test(type)) 
+            message.forEach(log => consoleLog(type, log));
 
-        // Add the logs to the virtual console
-        let logs = messages.map((msg = "") => {
+        // Add logs to the virtual console
+        let logs = message.map((msg = "") => {
             msg = (msg ?? "").replace(/(https?:\/\/[^\s\)\:]+)((?:\:\d+){0,})/g, `<a href="$1" target="_blank" rel="noopener">$1</a>$2`);
             let [title, ...message] = msg.split(/\n/);
             return ({ type, title, message: (message ?? []).join("\n") });
@@ -141,18 +184,18 @@ BundleEvents.on({
 
         addLogs(logs);
     },
-    warning(details) {
+    
+    info(details) { },
+    warning(details) { 
         let { type, message } = details;
-        console.warn(`${message.length} ${type}(s)`);
-        (Array.isArray(message) ? message : [message]).forEach(msg => {
-            console.warn(msg);
+        (Array.isArray(message) ? message : [message]).forEach(warn => {
+            consoleLog("warning", warn);
         });
     },
     error(details) {
-        let { type, error } = details;
-        console.error(`${error.length} ${type}(s) (if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)`);
-        (Array.isArray(error) ? error : [error]).forEach(err => {
-            console.error(err);
+        let { type, message } = details;
+        (Array.isArray(message) ? message : [message]).forEach(err => {
+            consoleLog("error", err);
         });
         fileSizeEl.forEach(el => (el.textContent = `ERROR`));
     },
@@ -257,8 +300,8 @@ export const build = async (app: App) => {
             console.log(bundleTime);
             console.log(`Bundled size is`, initialSize + " -> ", size);
             addLogs([
-                { title: bundleTime },
-                { title: `Bundle size is ${initialSize} -> ${size}` }
+                { title: bundleTime, type: "info" },
+                { title: `Bundle size is ${initialSize} -> ${size}`, type: "info" }
             ]);
             fileSizeEl.forEach(el => (el.textContent = `` + size));
         },
@@ -480,6 +523,16 @@ export const build = async (app: App) => {
                 let modelType = getModelType();
                 if (modelType == "output") return;
                 (async () => {
+                    try {
+                        // Set the max log limit for the virtual console, using the esbuild logLimit config option 
+                        if (modelType == "config") {
+                            let config = JSON.parse(editor.getValue()) as BundleConfigOptions;
+                            if (config?.esbuild?.logLimit) {
+                                SET_MAX_LOGS(config?.esbuild?.logLimit);
+                            }
+                        }
+                    } catch (e) {}
+
                     replaceState(await getShareableURL(inputModel), historyManager);
                     isInitial = false;
 

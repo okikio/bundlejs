@@ -6,14 +6,14 @@ import type { OutputFile } from "esbuild-wasm";
 import { AnalyzerOptions, visualizer } from "./plugin/index";
 
 export const analyze = async (metadata: Metadata, outputFiles: OutputFile[], opts: AnalyzerOptions = {}, logger = console.log) => {
-  try {
-    return await visualizer(metadata, outputFiles, {
-      title: "Bundle Analysis",
-      ...opts
-    });
-  } catch (err) {
-    let { stack } = (err as Error);
-    logger([`[Analyzer] ${err}`, stack], "warn");
-    console.warn(err, stack);
-  }
+    try {
+        return await visualizer(metadata, outputFiles, {
+            title: "Bundle Analysis",
+            ...opts
+        });
+    } catch (err) {
+        let { stack } = (err as Error);
+        logger([`[Analyzer] ${err}`, stack], "warning");
+        console.warn(err, stack);
+    }
 };

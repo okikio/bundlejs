@@ -78,8 +78,9 @@ export const start = async (port: MessagePort) => {
      * 
      * @param messages Message(s) to log
      * @param type Log type
+     * @param devtools Whether to log messages to the devtools as well as the virtual console?
      */
-    const logger = (messages: string[] | any, type?: "error" | "warning" | (string & {})) => {
+    const logger = (messages: string[] | any, type?: "error" | "warning" | (string & {}), devtools = true) => {
         let msgs = Array.isArray(messages) ? messages : [messages];
         if (type == "init") {
             postMessage({
@@ -88,19 +89,36 @@ export const start = async (port: MessagePort) => {
             });
         }
 
-        if (type == "error" || type == "warning") {
+        if (/error|warning/.test(type)) {
+            let message = msgs.length > 1 ? `${msgs.length} ${type}(s) ` : "" + `${type == "error" ? "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)" : ""}`;
+            if (message.length > 0) {
+                if (devtools) {
+                    postMessage({
+                        event: type,
+                        details: { type, message }
+                    });
+                }
+
+                postMessage({
+                    event: "log",
+                    details: { type, message }
+                });
+            }
+        }
+
+        if (devtools) {
             postMessage({
-                event: "log",
+                event: type,
                 details: { 
                     type,
-                    messages: [`${msgs.length} ${type}(s) ${type == "error" ? "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)" : ""}`] 
+                    message: msgs
                 }
             });
         }
 
         postMessage({
             event: "log",
-            details: { type, messages: msgs }
+            details: { type, message: msgs }
         });
     };
 
@@ -113,7 +131,7 @@ export const start = async (port: MessagePort) => {
         // Errors when initializing
         error(error) {
             let err = Array.isArray(error) ? error : error?.message;
-            logger([`Error initializing, you may need to close and reopen all currently open pages pages`, ...(Array.isArray(err) ? err : [err])], "error");
+            logger([`Error initializing, you may need to close and reopen all currently open pages and/or reload all currently open pages `, ...(Array.isArray(err) ? err : [err])], "error");
         }
     });
 
@@ -195,12 +213,12 @@ export const start = async (port: MessagePort) => {
                         event: "error",
                         details: {
                             type: `error`,
-                            error: [...await createNotice(e.errors, "error", false)]
+                            message: [...await createNotice(e.errors, "error", false)]
                         }
                     });
 
                     // Log errors with added color info. to the virtual console
-                    return logger([...await createNotice(e.errors, "error")], "error");
+                    return logger([...await createNotice(e.errors, "error")], "error", false);
                 } else throw e;
             }
 
@@ -211,16 +229,14 @@ export const start = async (port: MessagePort) => {
                     output = text;
 
                 if (/\.map$/.test(path)) 
-                    return encode("")
+                    return encode("");
 
                 // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
                 if (esbuildOpts?.logLevel == "verbose") {
                     if (ignoreFile) {
-                        console.log(path);
+                        logger("Output File: " + path);
                     } else {
-                        console.groupCollapsed(path); 
-                        console.log(text);
-                        console.groupEnd();
+                        logger("Output File: " + path + "\n" + text);
                     }
                 }
 
@@ -239,7 +255,7 @@ export const start = async (port: MessagePort) => {
                 });
 
                 // Log warning with added color info. to the virtual console
-                logger([...await createNotice(result.warnings, "warning")], "warning");
+                logger([...await createNotice(result.warnings, "warning")], "warning", false);
             }
             
             logger("Done ✨", "info");
@@ -285,12 +301,11 @@ export const start = async (port: MessagePort) => {
             // Generate Bundle Analysis Charts
             try {
                 if (config?.analysis) {
-                    logger("Generating Bundle Analysis 📊", "info");
+                    logger("Generating Bundle Analysis 📊");
 
                     // A list of compressed input files and chunks, 
                     // by default output files are already compressed but input files aren't so we need to manually transform them in order to ensure accuracy
                     let inputFiles = [];
-                    let count = 0;
                     for (let [path, contents] of FileSystem.entries()) {
                         // This minifies & compresses input files for a accurate view of what is eating up the most size
                         // It uses the esbuild options to determine how it should minify input code
@@ -314,11 +329,14 @@ export const start = async (port: MessagePort) => {
                         //     keepNames: esbuildOpts?.keepNames,
                         // }));
                             
-                        logger(`Transform ${path}`, "info");
+                        // For debugging reasons, if the user chooses verbose, print all the content to the devtools console
+                        let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
+                        logger(`Analyze ${path}${esbuildOpts?.logLevel == "verbose" && !ignoreFile ? "\n" + text : ""}`);
+
                         inputFiles.push({ path, contents: encode(code), text: code });
                     }
                     
-                    console.log(inputFiles)
+                    // console.log(inputFiles)
                     
                     // List of all files in use
                     let files = [...assets]
@@ -350,10 +368,10 @@ export const start = async (port: MessagePort) => {
             let error = [].concat(err instanceof Error ? err?.message : err);
             postMessage({
                 event: "error",
-                details: { type: `error`, error }
+                details: { type: `error`, message: error }
             });
 
-            logger(error, "error");
+            logger(error, "error", false);
         }
     });
 
