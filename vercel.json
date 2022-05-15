@@ -142,7 +142,7 @@
         }
     ],
     "rewrites": [
-      { "source": "/api-measure", "destination": "https://analytics.bundlejs.com/api/collect/" }
+      { "source": "/js/take-measurement", "destination": "https://analytics.bundlejs.com/api/collect" }
     ],
     "github": {
         "silent": true,
