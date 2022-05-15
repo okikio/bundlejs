@@ -142,7 +142,7 @@
         }
     ],
     "rewrites": [
-      { "source": "/api-route", "destination": "https://analytics.bundlejs.com/api/collect" }
+      { "source": "/api-measure", "destination": "https://analytics.bundlejs.com/api/collect/" }
     ],
     "github": {
         "silent": true,
