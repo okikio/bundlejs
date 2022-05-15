@@ -112,6 +112,12 @@
 .navbar-logo {
     @apply dark:hover:text-blue-500;
     @apply text-xl font-bold ml-1;
+    
+    img {
+        
+        @apply w-6 h-6;
+        align-self: center;
+    }
 }
 
 .navbar-list a {
