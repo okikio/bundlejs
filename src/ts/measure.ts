@@ -28,7 +28,7 @@ export function removeTrailingSlash(url) {
 }
 
 (window => {
-  const apiRoute = "/api-measure"; // "/api/collect";
+  const apiRoute = "/take-measurement"; // "/api/collect";
 
   const {
     screen: { width, height },
