@@ -64,11 +64,6 @@
       "src": "/favicon/screenshot-mobile.png",
       "type": "image/png",
       "sizes": "750x1500"
-    },
-    {
-      "src": "/favicon/screenshot-poster.png",
-      "type": "image/png",
-      "sizes": "1080x960"
     }
   ],
   "share_target": {
