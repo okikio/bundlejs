@@ -93,7 +93,7 @@ export const start = async (port: MessagePort) => {
         if (devtools) {
             postMessage({
                 event: type,
-                details: { 
+                details: {
                     type,
                     message: msgs
                 }
@@ -193,7 +193,7 @@ export const start = async (port: MessagePort) => {
             } catch (e) {
                 if (e.errors) {
                     let msgs = [...await createNotice(e.errors, "error", false)];
-                    
+
                     // Post errors to the real console
                     postMessage({
                         event: "error",
@@ -255,15 +255,15 @@ export const start = async (port: MessagePort) => {
                 logger([...await createNotice(result.warnings, "warning")], "warning", false);
 
                 let message = (msgs.length > 1 ? `${msgs.length} warning(s) ` : "");
-                if (message.length > 0) 
+                if (message.length > 0)
                     logger(message, "warning");
             }
-            
+
             logger("Done ✨", "info");
 
             // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
             let { compression = {} } = config;
-            let { type = "gzip", quality: level = 9 } = 
+            let { type = "gzip", quality: level = 9 } =
                 (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
 
             // @ts-ignore
@@ -272,25 +272,25 @@ export const start = async (port: MessagePort) => {
             );
             let totalCompressedSize = bytes(
                 (await Promise.all(
-                    content.map((code: Uint8Array) => { 
+                    content.map((code: Uint8Array) => {
                         switch (type) {
                             case "lz4":
                                 return lz4_compress(code);
-                            case "brotli": 
+                            case "brotli":
                                 return compress(code, code.length, level);
-                            default:  
+                            default:
                                 return gzip(code, level);
                         }
                     })
-                )).reduce((acc, { length }) => acc + length, 0) 
+                )).reduce((acc, { length }) => acc + length, 0)
             );
 
             postMessage({
                 event: "result",
-                details: { 
-                    content: output, 
+                details: {
+                    content: output,
                     initialSize: `${totalByteLength}`,
-                    size: `${totalCompressedSize} (${type})` 
+                    size: `${totalCompressedSize} (${type})`
                 }
             });
 
@@ -312,7 +312,7 @@ export const start = async (port: MessagePort) => {
                         // It uses the esbuild options to determine how it should minify input code
                         let text = decode(contents);
                         let code = text;
-                        
+
                         /*  WIP  */
                         // console.log(await Promise.resolve(path))
                         // ({ code } = transformSync(text, { 
@@ -329,40 +329,40 @@ export const start = async (port: MessagePort) => {
                         //     pure: esbuildOpts?.pure,
                         //     keepNames: esbuildOpts?.keepNames,
                         // }));
-                            
+
                         // For debugging reasons, if the user chooses verbose, print all the content to the devtools console
                         let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
                         logger(`Analyze ${path}${esbuildOpts?.logLevel == "verbose" && !ignoreFile ? "\n" + text : ""}`);
 
                         inputFiles.push({ path, contents: encode(code), text: code });
                     }
-                    
+
                     // console.log(inputFiles)
-                    
+
                     // List of all files in use
                     let files = [...assets]
                         .concat(result?.outputFiles)
                         .concat(inputFiles);
-                    
+
                     // Generate Iframe Chart
                     postMessage({
                         event: "chart",
-                        details: { 
+                        details: {
                             content: await analyze(
                                 result?.metafile, files,
-                                { 
+                                {
                                     template: config?.analysis,
                                     gzipSize: type == "gzip",
                                     brotliSize: type == "brotli"
-                                }, 
+                                },
                                 logger
-                            ) 
+                            )
                         }
                     });
 
                     logger("Finished Bundle Analysis ✨", "info");
                 }
-            } catch (e) {}
+            } catch (e) { }
         } catch (err) {
             // Catch unexpected errors
             // Errors can take multiple forms, so it trys to support the many forms errors can take
@@ -373,7 +373,7 @@ export const start = async (port: MessagePort) => {
             });
 
             logger(error, "error", false);
-                    
+
             let message = "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
             logger(message, "error");
         }
