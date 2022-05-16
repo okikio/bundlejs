@@ -5,11 +5,14 @@ block preload
   link(src='/js/esbuild.worker.mjs' type='modulepreload' as="script" fetchpriority="high")
   link(src='/js/esbuild.wasm' type='prefetch' fetchpriority="high")
 
-  link(src='/js/typescript.worker.mjs' type='modulepreload')
-  link(src='/dprint-typescript-plugin.wasm' type='prefetch')
-
   link(src='/js/codicon.ttf' type='preload' as="font" crossorigin)
   link(rel="stylesheet", href="/js/index.min.css")
+
+  link(src='/js/typescript.worker.js' type='modulepreload')
+  link(src='/js/editor.worker.js' type='modulepreload')
+  link(src='/dprint-typescript-plugin.wasm' type='prefetch')
+
+  link(src='/js/json.worker.js' type='modulepreload' fetchpriority="low")
 
 block content
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
