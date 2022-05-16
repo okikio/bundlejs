@@ -47,7 +47,7 @@
                 },
                 {
                     "key": "Link",
-                    "value": "<https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, </js/main.min.js>; rel=modulepreload; fetchpriority=high, </js/esbuild.worker.mjs>; rel=modulepreload; fetchpriority=high, </js/esbuild.wasm>; rel=prefetch; fetchpriority=high"
+                    "value": "<https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous, </js/main.min.js>; rel=modulepreload; fetchpriority=high"
                 }
             ]
         },
@@ -100,7 +100,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=601209600, must-revalidate"
+                    "value": "public, max-age=1209600, must-revalidate"
                 }
             ]
         },
@@ -109,7 +109,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=601209600, must-revalidate"
+                    "value": "public, max-age=1209600, must-revalidate"
                 }
             ]
         },
@@ -142,14 +142,7 @@
         }
     ],
     "rewrites": [
-      { "source": "/js/take-measurement", "destination": "https://analytics.bundlejs.com/api/collect" }
-    ],
-    "redirects": [
-        { 
-            "source": "/result", 
-            "destination": "https://analytics.bundlejs.com",
-            "permanent": false
-        }
+        { "source": "/take-measurement", "destination": "https://analytics.bundlejs.com/api/collect" }
     ],
     "github": {
         "silent": true,

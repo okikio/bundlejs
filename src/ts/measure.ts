@@ -62,7 +62,7 @@ export function removeTrailingSlash(url) {
 
   const root = hostUrl
     ? removeTrailingSlash(hostUrl)
-    : script.src.split('/').slice(0, -1).join('/');
+    : ""; // script.src.split('/').slice(0, -1).join('/');
   const screen = `${width}x${height}`;
   const listeners = {};
   let currentUrl = `${pathname}${search}`;
