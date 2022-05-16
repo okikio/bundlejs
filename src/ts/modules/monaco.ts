@@ -7,7 +7,8 @@ import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribu
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
 import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
+import "./editor.all.ts";
 
 import {
     editor as Editor,

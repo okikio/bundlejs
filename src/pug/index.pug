@@ -6,7 +6,8 @@ block preload
   link(src='/js/esbuild.wasm' type='prefetch' fetchpriority="high")
 
   link(src='/js/codicon.ttf' type='preload' as="font" crossorigin)
-  link(rel="stylesheet", href="/js/index.min.css")
+  link(rel="stylesheet", href="/js/index.min.css" fetchpriority="high")
+  link(rel="stylesheet", href="/css/codicon.min.css" class="monaco-colors")
 
   link(src='/js/typescript.worker.js' type='modulepreload')
   link(src='/js/editor.worker.js' type='modulepreload')

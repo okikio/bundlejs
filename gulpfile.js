@@ -147,7 +147,7 @@ task("css", async () => {
             postcss(
                 [
                     sass({ outputStyle: "compressed" }), // fiber
-                    tailwind("./tailwind.config.cjs"),
+                    tailwind("./tailwind.config.cjs")
                 ],
                 { syntax: scss }
             ),
@@ -159,17 +159,22 @@ task("css", async () => {
 });
 
 task("minify-css", async () => {
-    const [{ default: postcss }, { default: autoprefixer }, { default: csso }] =
-        await Promise.all([
-            import("gulp-postcss"),
-            import("autoprefixer"),
-            import("postcss-csso"),
-        ]);
+    const [
+        { default: postcss }, 
+        { default: autoprefixer }, 
+        { default: cssnano }
+    ] = await Promise.all([
+        import("gulp-postcss"),
+        import("autoprefixer"),
+        import("cssnano"),
+    ]);
 
     return stream(`${destFolder}/**/*.css`, {
         pipes: [
             // Minify scss to css
-            postcss([csso(), autoprefixer()]),
+            postcss([,
+                cssnano({ preset: "default", plugin: autoprefixer })
+            ]),
         ],
         dest: destFolder,
         end: browserSync ? [browserSync.stream()] : null,
