@@ -8,6 +8,7 @@ import { EventEmitter } from "@okikio/emitter";
 
 import bytes from "bytes";
 
+import { treeshake } from "../util/rollup";
 import { gzip, getWASM } from "../deno/denoflate/mod";
 import { compress } from "../deno/brotli/mod";
 import { compress as lz4_compress } from "../deno/lz4/mod";
@@ -211,25 +212,31 @@ export const start = async (port: MessagePort) => {
             }
 
             // Create an array of assets and actual output files, this will later be used to calculate total file size
-            content = [...assets].concat(result?.outputFiles)?.map(({ path, text, contents }) => {
-                let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
-                if (path == "/stdin.js") 
-                    output = text;
+            content = await Promise.all(
+                [...assets]
+                    .concat(result?.outputFiles)
+                    ?.map(async ({ path, text, contents }) => {
+                        let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
+                        if (path == "/stdin.js") {
+                            output = config?.rollup && esbuildOpts?.treeShaking ? 
+                                await treeshake(text, esbuildOpts, config?.rollup) : text;
+                        }
 
-                if (/\.map$/.test(path)) 
-                    return encode("");
+                        if (/\.map$/.test(path))
+                            return encode("");
 
-                // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-                if (esbuildOpts?.logLevel == "verbose") {
-                    if (ignoreFile) {
-                        logger("Output File: " + path);
-                    } else {
-                        logger("Output File: " + path + "\n" + text);
-                    }
-                }
+                        // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
+                        if (esbuildOpts?.logLevel == "verbose") {
+                            if (ignoreFile) {
+                                logger("Output File: " + path);
+                            } else {
+                                logger("Output File: " + path + "\n" + text);
+                            }
+                        }
 
-                return contents;
-            });
+                        return contents;
+                    })
+            );
 
             // Print warning
             if (result?.warnings.length > 0) {
