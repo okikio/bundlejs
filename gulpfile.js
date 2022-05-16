@@ -166,13 +166,13 @@ task("minify-css", async () => {
     ] = await Promise.all([
         import("gulp-postcss"),
         import("autoprefixer"),
-        import("cssnano"),
+        import("cssnano")
     ]);
 
     return stream(`${destFolder}/**/*.css`, {
         pipes: [
             // Minify scss to css
-            postcss([,
+            postcss([
                 cssnano({ preset: "default", plugin: autoprefixer })
             ]),
         ],
