@@ -1,5 +1,5 @@
 import type { BuildOptions } from "esbuild-wasm";
-
+import type { OutputOptions } from "rollup";
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
 
 import { deepAssign } from "../util/deep-equal";
@@ -30,6 +30,9 @@ export type CompressionOptions = {
 };
 
 export type BundleConfigOptions = { 
+    /** Enable using rollup for treeshaking. Only works while the `esbuild.treeShaking` option is true */
+    rollup?: OutputOptions | boolean,
+
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: BuildOptions,
 
@@ -65,7 +68,7 @@ export type BundleConfigOptions = {
 export const EasyDefaultConfig: BundleConfigOptions = {
     "cdn": DEFAULT_CDN_HOST,
     "compression": "gzip",
-    "analysis": true,
+    "analysis": false,
     "esbuild": {
         "target": ["esnext"],
         "format": "esm",
