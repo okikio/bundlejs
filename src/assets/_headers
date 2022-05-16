@@ -8,7 +8,7 @@
   Accept-CH: DPR, Viewport-Width, Width
   X-UA-Compatible: IE=edge
   Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com data:; script-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://cdn.polyfill.io 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com; frame-ancestors 'self' https:;
-  Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
+  Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=()
   Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
   Link: <https://fonts.gstatic.com/s/materialiconsround/v62/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
   Link: </js/main.min.js>; rel=modulepreload; importance=high
@@ -24,8 +24,8 @@
   Link: </js/index.min.js>; rel=modulepreload
   Link: </js/codicon.ttf>; rel=preload; as=font; type=font/ttf; importance=low; crossorigin
   Link: </js/esbuild.wasm>; rel=prefetch
-  Link: </js/esbuild.worker.js>; rel=prefetch; importance=high
-  Link: </js/typescript.worker.js>; rel=prefetch
+  Link: </js/esbuild.worker.mjs>; rel=prefetch; importance=high
+  Link: </js/typescript.worker.mjs>; rel=modulepreload
 
 /*.css
   Cache-Control: public, max-age=4800, stale-while-revalidate=480

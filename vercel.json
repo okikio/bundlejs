@@ -43,7 +43,7 @@
                 },
                 {
                     "key": "Permissions-Policy",
-                    "value": "geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()"
+                    "value": "geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=()"
                 },
                 {
                     "key": "Link",
