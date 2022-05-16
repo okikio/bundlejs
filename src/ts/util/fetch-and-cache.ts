@@ -8,7 +8,7 @@ export const newRequest = async (cache: Cache, request: Request, fetchOpts?: Req
         cache.put(request, clonedResponse);
     else 
         CACHE.set(request, clonedResponse);
-        
+
     return networkResponse;
 };
 
@@ -28,7 +28,6 @@ export const getRequest = async (url: RequestInfo | URL, permanent: boolean = fa
         cacheResponse = CACHE.get(request);
     }
     
-    console.log({ cacheResponse })
     response = cacheResponse.clone();
 
     // If permanent is true, use the cache first and only go to the network if there is nothing in the cache, 
