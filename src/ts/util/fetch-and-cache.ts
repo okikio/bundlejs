@@ -28,7 +28,7 @@ export const getRequest = async (url: RequestInfo | URL, permanent: boolean = fa
         cacheResponse = CACHE.get(request);
     }
     
-    response = cacheResponse.clone();
+    response = cacheResponse;
 
     // If permanent is true, use the cache first and only go to the network if there is nothing in the cache, 
     // otherwise, still use cache first, but in the background queue up a network request
@@ -37,5 +37,5 @@ export const getRequest = async (url: RequestInfo | URL, permanent: boolean = fa
     else if (!permanent)
         newRequest(cache, request, fetchOpts);
 
-    return response;
+    return response.clone();
 }
