@@ -2,11 +2,29 @@ import { Workbox } from "workbox-window";
 import { animate } from "@okikio/animate";
 
 import { ENABLE_SW } from "../../env";
-import { CACHE_NAME } from "./util/fetch-and-cache";
+import { CACHE_NAME, CACHE } from "./util/fetch-and-cache";
 
 export default () => {
     // Check that service workers are supported
-    (async () => {
+    (async () => {      
+        // Force Referesh Cache
+        let resetCache = document.querySelector(".btn#reset-cache") as HTMLElement;
+        resetCache?.addEventListener?.("click", (e) => {
+            (async () => { 
+                // Clear Cache
+                if ("caches" in globalThis) {
+                    let cache_names = await caches.keys();
+                    await Promise.all(cache_names.map(cache_name => {
+                        return caches.delete(cache_name);
+                    }));
+                } else 
+                    CACHE.clear();
+                
+                console.log("Clear Cache");
+                window.location.reload();
+            })()
+        })
+
         if ("serviceWorker" in navigator && ENABLE_SW) {
             let reloadDialog = document.querySelector(
                 ".info-prompt.reload"
@@ -71,23 +89,6 @@ export default () => {
             window?.addEventListener("load", () => {
                 // Use the window load event to keep the page load performant
                 const wb = new Workbox("/sw.js");
-
-                // Force Referesh Cache
-                if ("caches" in globalThis) {
-                    let resetCache = document.querySelector(".btn#reset-cache") as HTMLElement;
-                    resetCache?.addEventListener("click", (e) => {
-                        (async () => { 
-                            // Clear Cache
-                            let cache_names = await caches.keys();
-                            await Promise.all(cache_names.map(cache_name => {
-                                return caches.delete(cache_name);
-                            }));
-                            console.log("Clear Cache")
-                            // await wb.update();
-                            window.location.reload();
-                        })()
-                    })
-                }
 
                 // Add an event listener to detect when the registered
                 // service worker has installed but is waiting to activate.
