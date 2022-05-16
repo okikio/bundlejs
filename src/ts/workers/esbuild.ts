@@ -150,7 +150,7 @@ export const start = async (port: MessagePort) => {
 
         try {
             // Catch esbuild errors 
-            setFile("/bundle.js", `${input}`);
+            setFile("/input.tsx", `${input}`);
 
             try {
                 // Convert CDN values to URL origins
@@ -159,10 +159,10 @@ export const start = async (port: MessagePort) => {
                     "stdin": {
                         // Ensure input is a string
                         contents: `${input}`,
-                        loader: 'js',
-                        sourcefile: "/bundle.js"
+                        loader: 'tsx',
+                        sourcefile: "/input.tsx"
                     },
-                    
+
                     ...esbuildOpts,
                     
                     metafile: true,
