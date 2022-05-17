@@ -1,5 +1,5 @@
-@import "../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css";
-@import "../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon-modifiers.css";
+@use "../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css";
+@use "../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon-modifiers.css";
 
 .codicon-add:before { content: '\ea60'; }
 .codicon-plus:before { content: '\ea60'; }

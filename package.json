@@ -116,6 +116,8 @@
         "husky": "^8.0.1",
         "jstransformer-markdown-it": "^2.1.0",
         "postcss": "^8.4.13",
+        "postcss-font-grabber": "^3.0.2",
+        "postcss-replace": "^2.0.0",
         "postcss-scss": "^4.0.4",
         "posthtml-parser": "^0.11.0",
         "posthtml-render": "^3.0.0",
