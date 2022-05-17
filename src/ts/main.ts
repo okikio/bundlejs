@@ -3,13 +3,16 @@ import { Navbar } from "./services/Navbar";
 
 import { themeSet, themeGet } from "./theme";
 
-import { build, InitialRender } from "./index";
+// import { build, InitialRender } from "./index";
 import RegisterServiceWorker from "./register-sw";
 
 import * as DetailsComponent from "./modules/details";
 import { animate } from "@okikio/animate";
 
 import type { ITransition, IHistoryItem } from "@okikio/native";
+
+const html = document.querySelector("html");
+html?.classList?.add?.("dom-loaded");
 
 const indexImport = import("./index");
 

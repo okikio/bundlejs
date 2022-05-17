@@ -1,6 +1,7 @@
-// /* Generate CLS less font fallback https://deploy-preview-15--upbeat-shirley-608546.netlify.app/perfect-ish-font-fallback/?font=Manrope */
-@use "./fonts/_manrope.scss";
-@use "./fonts/_material-icons.scss";
+// Generate CLS less font fallback https://deploy-preview-15--upbeat-shirley-608546.netlify.app/perfect-ish-font-fallback/?font=Manrope 
+@use "./components/fonts/manrope";
+@use "./components/fonts/material-icons";
+@import "./components/_variables";
 
 @font-face {
   font-family: "Manrope-fallback";
@@ -15,9 +16,6 @@
   ascent-override: 105%;
   src: local("Arial");
 }
-
-// "Material Symbols Outlined", "Material Symbols Sharp", 
-$icon-font: "Material Symbols Rounded", "Material Icons-fallback";
 
 .icon {
   -webkit-font-feature-settings: "liga" off, "dlig";

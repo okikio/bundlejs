@@ -3,11 +3,13 @@
 @tailwind utilities;
 @tailwind variants;
 
-@import "./components/_fonts";
+@import "./components/_variables";
 @import "./components/_navbar";
 @import "./components/_monaco";
 @import "./components/_search";
 @import "./components/_highlightjs";
+
+// $icon-font: variables.$icon-font;
 
 html,
 body {
@@ -33,6 +35,50 @@ body {
   font-size: 1rem;
   line-height: 1.5;
 }
+
+.dom-loaded {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    .icon {
+      @apply transition-opacity duration-200 opacity-0;
+    }
+  }
+
+  button,
+  a {
+    transition: box-shadow 0.2s ease-out;
+  }
+
+  .btn,
+  button,
+  #product-hunt a {
+    transition: opacity ease 0.25s, transform ease-in-out 0.125s,
+      box-shadow ease 0.25s;
+  }
+
+  details:not(.accordian) {
+    summary {
+      transition: text-shadow ease 0.4s;
+    }
+    summary:before {
+      transition: transform 0.2s ease-in-out, color ease 0.2s;
+    }
+  }
+
+  details.accordian {
+    summary {
+      transition: text-shadow ease 0.4s;
+    }
+    summary:after {
+      transition: transform 0.2s ease-in-out, color ease 0.2s;
+    }
+  }
+}
+
 h1,
 h2,
 h3,
@@ -41,7 +87,7 @@ h5,
 h6 {
   .icon {
     // visibility: hidden;
-    @apply transition-opacity duration-200 opacity-0 text-3xl;
+    @apply text-3xl;
     @apply font-semibold;
     line-height: 1;
   }
@@ -88,7 +134,6 @@ a {
 
 button,
 a {
-  transition: box-shadow 0.2s ease-out;
   @apply focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-opacity-50;
   @apply rounded-md focus:outline-none;
 }
@@ -298,8 +343,6 @@ footer.footer {
 .btn,
 button,
 #product-hunt a {
-  transition: opacity ease 0.25s, transform ease-in-out 0.125s,
-    box-shadow ease 0.25s;
   @apply transform scale-100;
   @apply active:bg-blue-200 dark:active:bg-gray-700;
 
@@ -397,7 +440,6 @@ details:not(.accordian) {
     @apply relative cursor-pointer font-light;
     // letter-spacing: .1em;
     padding-left: 2ch;
-    transition: text-shadow ease 0.4s;
     text-shadow: 0 0 0.6px var(--text-shadow-color),
       0 0 0.6px var(--text-shadow-color), 0 0 0.6px var(--text-shadow-color);
 
@@ -439,7 +481,6 @@ details:not(.accordian) {
   }
 
   summary:before {
-    transition: transform 0.2s ease-in-out, color ease 0.2s;
     transform: translate(0, -50%) rotateZ(0deg);
   }
 
@@ -496,7 +537,6 @@ details.accordian {
     @apply relative cursor-pointer font-light;
     // letter-spacing: .1em;
     padding-right: 2ch;
-    transition: text-shadow ease 0.4s;
     text-shadow: 0 0 0.6px var(--text-shadow-color),
       0 0 0.6px var(--text-shadow-color), 0 0 0.6px var(--text-shadow-color);
 
@@ -535,7 +575,6 @@ details.accordian {
   }
 
   summary:after {
-    transition: transform 0.2s ease-in-out, color ease 0.2s;
     transform: translate(0, -50%) rotateZ(0deg);
   }
 
@@ -576,10 +615,10 @@ details.accordian {
     @apply bg-white;
     @apply backdrop-filter backdrop-blur bg-opacity-20;
   }
-  
+
   .loading.hidden,
   &.hidden {
-      display: none;
+    display: none;
   }
 
   .loader-content {
