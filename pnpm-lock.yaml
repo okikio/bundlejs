@@ -54,6 +54,8 @@ specifiers:
   nanoid: ^3.3.4
   parse-package-name: ^1.0.0
   postcss: ^8.4.13
+  postcss-font-grabber: ^3.0.2
+  postcss-replace: ^2.0.0
   postcss-scss: ^4.0.4
   posthtml-parser: ^0.11.0
   posthtml-render: ^3.0.0
@@ -142,6 +144,8 @@ devDependencies:
   husky: 8.0.1
   jstransformer-markdown-it: 2.1.0
   postcss: 8.4.13
+  postcss-font-grabber: 3.0.2_postcss@8.4.13
+  postcss-replace: 2.0.0_postcss@8.4.13
   postcss-scss: 4.0.4_postcss@8.4.13
   posthtml-parser: 0.11.0
   posthtml-render: 3.0.0
@@ -4191,6 +4195,10 @@ packages:
     engines: {node: '>=4.0.0'}
     dev: true
 
+  /deep-get-set/1.1.1:
+    resolution: {integrity: sha512-dBrY4GeR55KfyF9Ipswif/Et4muInKpXkf3ro9hFT/8OdPMVsEGNSfuGzfBv/dJKKwKSqInoZGKV5f40bA7TJA==}
+    dev: true
+
   /deepmerge/4.2.2:
     resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
     engines: {node: '>=0.10.0'}
@@ -7927,6 +7935,15 @@ packages:
       postcss: 8.4.13
     dev: true
 
+  /postcss-font-grabber/3.0.2_postcss@8.4.13:
+    resolution: {integrity: sha512-zt4JD9W6oThxxs1VFyzRCdHhsLzz5tuoPpNr22ZlSYPpaV3dPXXDuGQSo9hXASvTm4ATN6X2x6GS/1eGI2rqLg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      postcss: ^8.0.0
+    dependencies:
+      postcss: 8.4.13
+    dev: true
+
   /postcss-js/4.0.0_postcss@8.4.13:
     resolution: {integrity: sha512-77QESFBwgX4irogGVPgQ5s07vLvFqWr228qZY+w6lW599cRlK/HmnlivnnVUxkjHnCu4J16PDMHcH+e+2HbvTQ==}
     engines: {node: ^12 || ^14 || >= 16}
@@ -8153,6 +8170,17 @@ packages:
     dependencies:
       postcss: 8.4.13
       postcss-value-parser: 4.2.0
+    dev: true
+
+  /postcss-replace/2.0.0_postcss@8.4.13:
+    resolution: {integrity: sha512-8d64/c/dJL2/zjnQvCD1/eH04xMreXFHdC9F0APl/M7Cg0KyLvN+f/HCb87jbyG1dyIbR4zD7sxl/W4JIp9ppQ==}
+    engines: {node: ^12 || ^14 || >=16}
+    peerDependencies:
+      postcss: ^8.4
+    dependencies:
+      deep-get-set: 1.1.1
+      kind-of: 6.0.3
+      postcss: 8.4.13
     dev: true
 
   /postcss-scss/4.0.4_postcss@8.4.13:

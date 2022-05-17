@@ -130,6 +130,8 @@ task("css", async () => {
         { default: scss },
         { default: sass },
 
+        { default: postcssReplace },
+        { postcssFontGrabber },
         { default: rename },
     ] = await Promise.all([
         import("gulp-postcss"),
@@ -138,6 +140,8 @@ task("css", async () => {
         import("postcss-scss"),
         import("@csstools/postcss-sass"),
 
+        import("postcss-replace"),
+        import("postcss-font-grabber"),
         import("gulp-rename"),
     ]);
 
@@ -147,11 +151,25 @@ task("css", async () => {
             postcss(
                 [
                     sass({ outputStyle: "compressed" }), // fiber
-                    tailwind("./tailwind.config.cjs")
+                    tailwind("./tailwind.config.cjs"),
+
+                    postcssReplace({
+                        pattern: /url\(\.\/codicon\.ttf\)/,
+                        data: {
+                            replaceAll: "url(/js/codicon.ttf)"
+                        }
+                    }),
+                    
+                    postcssFontGrabber({
+                        // postcss-font-grabber needs to know the CSS output
+                        // directory in order to calculate the new font URL.
+                        cssDest: `${cssFolder}/`,
+                        fontDest: `${cssFolder}/fonts/`,
+                    }),
                 ],
                 { syntax: scss }
             ),
-            rename({ extname: ".css", suffix: ".min" }),
+            rename({ extname: ".css", suffix: ".min" })
         ],
         dest: cssFolder,
         end: browserSync ? [browserSync.stream()] : null,
