@@ -179,7 +179,6 @@ BundleEvents.on({
 
         // Add logs to the virtual console
         let logs = message.map((msg = "") => {
-            console.log(msg)
             msg = (msg ?? "")
                 .replace(/(https?:\/\/[^\s\)\:]+)((?:\:\d+){0,})/g, `<a href="$1" target="_blank" rel="noopener">$1</a>$2`);
             let [title, ...message] = msg.split(/\n/);
