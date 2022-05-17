@@ -31,7 +31,7 @@ export type CompressionOptions = {
 
 export type BundleConfigOptions = { 
     /** Enable using rollup for treeshaking. Only works while the `esbuild.treeShaking` option is true */
-    rollup?: OutputOptions | boolean,
+    // rollup?: OutputOptions | boolean,
 
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: BuildOptions,
