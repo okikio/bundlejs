@@ -130,23 +130,22 @@ let consoleLog = (type: TypeLog["type"], log = "") => {
 // Bundle Events
 BundleEvents.on({
     loaded() {
-        monacoLoadedFirst = true;
-
-        if (initialized)
+        if (initialized) 
             BundleEvents.emit("ready");
+
+        monacoLoadedFirst = true;
     },
     init() {
         initialized = true;
+        
         if (fileSizeEl)
-            fileSizeEl.forEach(el => (el.textContent = `Wait...`));
+            fileSizeEl.forEach(el => (el.textContent = `...`)); // `Wait...`
 
-        if (monacoLoadedFirst)
+        if (monacoLoadedFirst) 
             BundleEvents.emit("ready");
     },
     ready() {
         console.log("Ready");
-        if (fileSizeEl)
-            fileSizeEl.forEach(el => (el.textContent = `...`));
 
         // If the URL contains share details make sure to use those details
         // e.g. config, query, etc...
@@ -161,7 +160,7 @@ BundleEvents.on({
             let config = searchParams.get("config") ?? "{}";
             if (query || share || plaintext || config) {
                 if (bundle != null) {
-                    fileSizeEl.forEach(el => (el.textContent = `Wait!`));
+                    // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
                     BundleEvents.emit("bundle", config);
                 }
 
@@ -274,25 +273,29 @@ export const build = async (app: App) => {
             start = Date.now();
             postMessage({ event: "build", details: { config, value } });
 
-            let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
-            let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
-            let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
-            content?.classList?.add("hidden");
-            
-            iframeLoader?.classList?.remove("hidden");
-            loadingEl?.classList?.remove("hidden");
+            let configObj = (JSON.parse(config) ?? {}) as BundleConfigOptions;
 
-            let IframeFadeInLoadingScreen = animate({
-                target: iframeLoader,
-                opacity: [0, 1],
-                easing: "ease-out",
-                duration: 50,
-                autoplay: false
-            });
-            IframeFadeInLoadingScreen.play();
-            IframeFadeInLoadingScreen.then(() => {
-                setIframeHTML(iframe, ``);
-            });
+            if (configObj?.analysis) {
+                let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
+                let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
+                let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
+                content?.classList?.add("hidden");
+                
+                iframeLoader?.classList?.remove("hidden");
+                loadingEl?.classList?.remove("hidden");
+
+                let IframeFadeInLoadingScreen = animate({
+                    target: iframeLoader,
+                    opacity: [0, 1],
+                    easing: "ease-out",
+                    duration: 50,
+                    autoplay: false
+                });
+                IframeFadeInLoadingScreen.play();
+                IframeFadeInLoadingScreen.then(() => {
+                    setIframeHTML(iframe, ``);
+                });
+            }
 
         },
         result(details) {
@@ -616,7 +619,7 @@ export const build = async (app: App) => {
 export const InitialRender = (shareURL: URL) => {
     oldShareURL = shareURL;
     fileSizeEl = fileSizeEl ?? Array.from(document.querySelectorAll(".file-size"));
-    BundleWorker?.start?.();
+    // BundleWorker?.start?.();
 
     if (initialized && fileSizeEl)
         fileSizeEl.forEach(el => (el.textContent = `...`));
