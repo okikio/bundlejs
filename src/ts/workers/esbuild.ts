@@ -218,8 +218,9 @@ export const start = async (port: MessagePort) => {
                     ?.map(async ({ path, text, contents }) => {
                         let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
                         if (path == "/stdin.js") {
-                            output = config?.rollup && esbuildOpts?.treeShaking ? 
-                                await treeshake(text, esbuildOpts, config?.rollup) : text;
+                            output =  text;
+                            // config?.rollup && esbuildOpts?.treeShaking ? 
+                            // await treeshake(text, esbuildOpts, config?.rollup) :
                         }
 
                         if (/\.map$/.test(path))
