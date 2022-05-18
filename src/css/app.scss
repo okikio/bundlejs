@@ -179,6 +179,19 @@ main {
   .container {
     @apply px-5 py-2 sm:max-w-screen-md;
 
+    &.pt-0 {
+      padding-top: 0;
+    }
+
+    &.pb-0 {
+      padding-bottom: 0;
+    }
+
+
+    &.py-0 {
+      padding-block: 0;
+    }
+
     word-wrap: break-word;
 
     @supports (padding-top: env(safe-area-inset-top, 0)) {
