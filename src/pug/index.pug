@@ -16,11 +16,8 @@ block preload
   link(src='/js/json.worker.js' type='modulepreload' fetchpriority="low")
 
 block content
-  input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
-
   .container
     header
-      blockquote ✨ New ✨ #[a(href="https://bundlejs.com") bundlejs.com] is the new official domain for #[code bundlejs].
       h1 bundlejs
       p 
         | a quick npm package size checker 
@@ -34,6 +31,8 @@ block content
 
       .search-results-container
      
+  input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
+
   .container.editor-section(class="!max-w-screen-lg relative !pt-0 pb-12")
     mixin code-info(classValue="")
       .action-btns-overflow.flex.flex-grow(class=classValue)
@@ -163,6 +162,8 @@ block content
       .w-full.h-0(class="border-b border-gray-300 dark:border-gray-700")
 
   .container 
+    blockquote.mb-2 📑 Official #[a(href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs") Docs] for #[code bundlejs] are now available.
+    blockquote ✨ Update ✨ #[a(href="https://bundlejs.com") bundlejs.com] is the new official domain for #[code bundlejs].
     details#usage.accordian.umami--toggle--usage-docs-accordian
       summary
         h3 Usage
