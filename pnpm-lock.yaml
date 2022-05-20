@@ -67,7 +67,7 @@ specifiers:
   rehype-slug: ^5.0.1
   resolve.exports: ^1.1.0
   rollup: ^2.74.1
-  sass: ^1.51.0
+  sass: ^1.52.0
   semantic-release: ^19.0.2
   solid-js: ^1.4.2
   standard-version: ^9.5.0
@@ -155,7 +155,7 @@ devDependencies:
   rehype-highlight: 5.0.2
   rehype-slug: 5.0.1
   rollup: 2.74.1
-  sass: 1.51.0
+  sass: 1.52.0
   semantic-release: 19.0.2
   standard-version: 9.5.0
   tailwindcss: 3.0.24
@@ -961,8 +961,8 @@ packages:
       '@babel/helper-plugin-utils': 7.17.12
     dev: true
 
-  /@babel/plugin-transform-for-of/7.17.12_@babel+core@7.18.0:
-    resolution: {integrity: sha512-76lTwYaCxw8ldT7tNmye4LLwSoKDbRCBzu6n/DcK/P3FOR29+38CIIaVIZfwol9By8W/QHORYEnYSLuvcQKrsg==}
+  /@babel/plugin-transform-for-of/7.18.1_@babel+core@7.18.0:
+    resolution: {integrity: sha512-+TTB5XwvJ5hZbO8xvl2H4XaMDOAK57zF4miuC9qQJgysPNEAZZ9Z69rdF5LJkozGdZrjBIUAIyKUWRMmebI7vg==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1187,8 +1187,8 @@ packages:
       '@babel/helper-plugin-utils': 7.17.12
     dev: true
 
-  /@babel/plugin-transform-typescript/7.18.0_@babel+core@7.18.0:
-    resolution: {integrity: sha512-x0DUMnDsoRNnaeWlD1JFviIpbTJUNSDRSctEvF/LIeLMsroJ5+Qa11RnAbZX9dEhnhHOJOle4S15o+/xvM7lKQ==}
+  /@babel/plugin-transform-typescript/7.18.1_@babel+core@7.18.0:
+    resolution: {integrity: sha512-F+RJmL479HJmC0KeqqwEGZMg1P7kWArLGbAKfEi9yPthJyMNjF+DjxFF/halfQvq1Q9GFM4TUbYDNV8xe4Ctqg==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1275,7 +1275,7 @@ packages:
       '@babel/plugin-transform-dotall-regex': 7.16.7_@babel+core@7.18.0
       '@babel/plugin-transform-duplicate-keys': 7.17.12_@babel+core@7.18.0
       '@babel/plugin-transform-exponentiation-operator': 7.16.7_@babel+core@7.18.0
-      '@babel/plugin-transform-for-of': 7.17.12_@babel+core@7.18.0
+      '@babel/plugin-transform-for-of': 7.18.1_@babel+core@7.18.0
       '@babel/plugin-transform-function-name': 7.16.7_@babel+core@7.18.0
       '@babel/plugin-transform-literals': 7.17.12_@babel+core@7.18.0
       '@babel/plugin-transform-member-expression-literals': 7.16.7_@babel+core@7.18.0
@@ -1330,7 +1330,7 @@ packages:
       '@babel/core': 7.18.0
       '@babel/helper-plugin-utils': 7.17.12
       '@babel/helper-validator-option': 7.16.7
-      '@babel/plugin-transform-typescript': 7.18.0_@babel+core@7.18.0
+      '@babel/plugin-transform-typescript': 7.18.1_@babel+core@7.18.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1620,7 +1620,7 @@ packages:
     dependencies:
       '@csstools/sass-import-resolve': 1.0.0
       postcss: 8.4.14
-      sass: 1.51.0
+      sass: 1.52.0
       source-map: 0.7.3
     dev: true
 
@@ -6014,7 +6014,7 @@ packages:
       depd: 1.1.2
       inherits: 2.0.3
       setprototypeof: 1.1.0
-      statuses: 1.4.0
+      statuses: 1.5.0
     dev: true
 
   /http-errors/2.0.0:
@@ -8988,8 +8988,8 @@ packages:
   /safer-buffer/2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sass/1.51.0:
-    resolution: {integrity: sha512-haGdpTgywJTvHC2b91GSq+clTKGbtkkZmVAb82jZQN/wTy6qs8DdFm2lhEQbEwrY0QDRgSQ3xDurqM977C3noA==}
+  /sass/1.52.0:
+    resolution: {integrity: sha512-6EnTglag2oVD8sNJCxUi2Jd3ICH9tJ5Mqudt/gIZNBR2uKJUBZuTpW9O1t04SkDLP7VFa76FCWTV2rwchqM8Kw==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:
@@ -9449,6 +9449,11 @@ packages:
 
   /statuses/1.4.0:
     resolution: {integrity: sha512-zhSCtt8v2NDrRlPQpCNtw/heZLtfUDqxBM1udqikb/Hbk52LK4nQSwr10u77iopCW5LsyHpuXS0GnEc48mLeew==}
+    engines: {node: '>= 0.6'}
+    dev: true
+
+  /statuses/1.5.0:
+    resolution: {integrity: sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=}
     engines: {node: '>= 0.6'}
     dev: true
 
