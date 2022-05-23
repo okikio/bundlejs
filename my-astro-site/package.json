@@ -1,0 +1,25 @@
+{
+  "name": "@example/portfolio",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^0.1.0",
+    "@astrojs/solid-js": "^0.1.2",
+    "@astrojs/tailwind": "^0.2.1",
+    "@iconify/json": "^2.1.47",
+    "astro": "^1.0.0-beta.31",
+    "astro-icon": "^0.7.1",
+    "astro-imagetools": "^0.6.9",
+    "astro-service-worker": "^0.1.2",
+    "sass": "^1.52.1",
+    "solid-js": "^1.3.6",
+    "unplugin-auto-import": "^0.7.2",
+    "unplugin-icons": "^0.14.3"
+  }
+}
