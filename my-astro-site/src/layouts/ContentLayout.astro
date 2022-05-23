@@ -1,0 +1,11 @@
+---
+  import BaseLayout from "./BaseLayout.astro";
+
+  let opts = Astro?.props?.content ?? Astro?.props;
+---
+
+<BaseLayout {...opts}>
+  <div class="container max-w-screen-lg">
+    <slot />
+  </div>
+</BaseLayout>

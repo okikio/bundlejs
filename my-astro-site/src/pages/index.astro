@@ -1,0 +1,535 @@
+---
+// Component Imports
+import { Markdown } from "astro/components";
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Full Astro Component Syntax:
+// https://docs.astro.build/core-concepts/astro-components/
+---
+
+<BaseLayout>
+  <div class="container">
+    <header>
+      <h1>bundlejs</h1>
+      <p> a quick npm package size checker </p>
+    </header>
+    <div class="search-container">
+      <div class="search">
+        <i class="icon">search</i>
+        <input id="search-input" type="text" autocomplete="off" placeholder="Type a package name..." />
+        <button class="btn clear umami--click--search-clear-button">
+          <i class="icon">clear</i>
+        </button>
+      </div>
+      <div class="search-results-container"></div>
+    </div>
+  </div>
+  <input type="text" id="copy-input" tabindex="-1" aria-hidden="true" />
+  <div class="container editor-section !max-w-screen-lg relative !pt-0 pb-12">
+    <div class="container info-pane">
+      <div class="tab-btns flex flex-nowrap">
+        <div class="action-btns">
+          <button class="btn tab-style input-btn active" type="button">Input</button>
+          <button class="btn tab-style output-btn umami--click--output-tab" type="button">Output</button>
+          <button class="btn tab-style settings-btn umami--click--config-tab" type="button" title="Setting Buttons">
+            <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12.012 2.25c.734.008 1.465.093 2.182.253a.75.75 0 0 1 .582.649l.17 1.527a1.384 1.384 0 0 0 1.927 1.116l1.401-.615a.75.75 0 0 1 .85.174 9.792 9.792 0 0 1 2.204 3.792.75.75 0 0 1-.271.825l-1.242.916a1.381 1.381 0 0 0 0 2.226l1.243.915a.75.75 0 0 1 .272.826 9.797 9.797 0 0 1-2.204 3.792.75.75 0 0 1-.848.175l-1.407-.617a1.38 1.38 0 0 0-1.926 1.114l-.169 1.526a.75.75 0 0 1-.572.647 9.518 9.518 0 0 1-4.406 0 .75.75 0 0 1-.572-.647l-.168-1.524a1.382 1.382 0 0 0-1.926-1.11l-1.406.616a.75.75 0 0 1-.849-.175 9.798 9.798 0 0 1-2.204-3.796.75.75 0 0 1 .272-.826l1.243-.916a1.38 1.38 0 0 0 0-2.226l-1.243-.914a.75.75 0 0 1-.271-.826 9.793 9.793 0 0 1 2.204-3.792.75.75 0 0 1 .85-.174l1.4.615a1.387 1.387 0 0 0 1.93-1.118l.17-1.526a.75.75 0 0 1 .583-.65c.717-.159 1.45-.243 2.201-.252Zm0 1.5a9.135 9.135 0 0 0-1.354.117l-.109.977A2.886 2.886 0 0 1 6.525 7.17l-.898-.394a8.293 8.293 0 0 0-1.348 2.317l.798.587a2.881 2.881 0 0 1 0 4.643l-.799.588c.32.842.776 1.626 1.348 2.322l.905-.397a2.882 2.882 0 0 1 4.017 2.318l.11.984c.889.15 1.798.15 2.687 0l.11-.984a2.881 2.881 0 0 1 4.018-2.322l.905.396a8.296 8.296 0 0 0 1.347-2.318l-.798-.588a2.881 2.881 0 0 1 0-4.643l.796-.587a8.293 8.293 0 0 0-1.348-2.317l-.896.393a2.884 2.884 0 0 1-4.023-2.324l-.11-.976a8.988 8.988 0 0 0-1.333-.117ZM12 8.25a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5Zm0 1.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="action-btns-overflow flex flex-grow lt-sm:hidden">
+        <div class="flex-grow">
+
+        </div>
+        <div class="action-btns justify-end">
+          <button class="btn build-btn umami--click--bundle-build-button" type="button">Build</button>
+          <button class="btn btn-permalink share-btn umami--click--bundle-share-button" type="button">Share</button>
+          <div class="file-size-container" title="Original -&gt; Compressed">
+            <div class="file-size">Wait...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-wrapper">
+      <div class="app" id="input">
+        <div class="editor-container">
+          <div class="center-container">
+            <div class="loading"></div>
+          </div>
+
+          <div id="editor"></div>
+
+          <div class="editor-btns overflow-hidden pt-24">
+            <div class="flex-1"></div>
+            <div class="relative">
+              <div class="flex flex-wrap gap-2 editor-btn-container">
+                <button class="icon-btn hide-btns umami--click--hide-editor-button" type="button"
+                  title="Hide Editor Buttons">
+                  <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M7.75 12a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0ZM13.75 12a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0ZM18 13.75a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" />
+                  </svg>
+                </button>
+                <div class="fading-editor-btns flex gap-1 lt-sm:flex-wrap">
+                  <button class="icon-btn clear-btn umami--click--clear-editor-button" type="button"
+                    title="Clear code editor">
+                    <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M12 1.75a3.25 3.25 0 0 1 3.245 3.066L15.25 5h5.25a.75.75 0 0 1 .102 1.493L20.5 6.5h-.796l-1.28 13.02a2.75 2.75 0 0 1-2.561 2.474l-.176.006H8.313a2.75 2.75 0 0 1-2.714-2.307l-.023-.174L4.295 6.5H3.5a.75.75 0 0 1-.743-.648L2.75 5.75a.75.75 0 0 1 .648-.743L3.5 5h5.25A3.25 3.25 0 0 1 12 1.75Zm6.197 4.75H5.802l1.267 12.872a1.25 1.25 0 0 0 1.117 1.122l.127.006h7.374c.6 0 1.109-.425 1.225-1.002l.02-.126L18.196 6.5ZM13.75 9.25a.75.75 0 0 1 .743.648L14.5 10v7a.75.75 0 0 1-1.493.102L13 17v-7a.75.75 0 0 1 .75-.75Zm-3.5 0a.75.75 0 0 1 .743.648L11 10v7a.75.75 0 0 1-1.493.102L9.5 17v-7a.75.75 0 0 1 .75-.75Zm1.75-6a1.75 1.75 0 0 0-1.744 1.606L10.25 5h3.5A1.75 1.75 0 0 0 12 3.25Z">
+                      </path>
+                    </svg>
+                  </button>
+                  <button class="icon-btn prettier-btn umami--click--format-editor-button" type="button"
+                    title="Format code using Prettier">
+                    <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M5.75 2a.75.75 0 0 0-.75.75v11.5a2.25 2.25 0 0 0 2.25 2.25H9.5v3a2.5 2.5 0 1 0 5 0v-3h2.25A2.25 2.25 0 0 0 19 14.25V2.75a.75.75 0 0 0-.75-.75H5.75Zm.75 9V3.5h6v1.752a.75.75 0 1 0 1.5 0V3.5h1v2.751a.75.75 0 1 0 1.5 0V3.5h1V11h-11Zm0 3.25V12.5h11v1.75a.75.75 0 0 1-.75.75h-3a.75.75 0 0 0-.75.75v3.75a1 1 0 0 1-2 0v-3.75a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 1-.75-.75Z">
+                      </path>
+                    </svg>
+                  </button>
+                  <button class="icon-btn reset-btn umami--click--reset-editor-button" type="button" title="Reset code">
+                    <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M12 4.5a7.5 7.5 0 1 1-7.419 6.392c.067-.454-.265-.892-.724-.892a.749.749 0 0 0-.752.623A9 9 0 1 0 6 5.292V4.25a.75.75 0 0 0-1.5 0v3c0 .414.336.75.75.75h3a.75.75 0 0 0 0-1.5H6.9a7.473 7.473 0 0 1 5.1-2Z">
+                      </path>
+                    </svg>
+                  </button>
+                  <div class="copy-container">
+                    <button class="icon-btn editor-info opacity-0" tabindex="-1" aria-hidden="true">Copied!</button>
+                    <button class="icon-btn copy-btn umami--click--copy-editor-button" type="button" title="Copy code">
+                      <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M5.503 4.627 5.5 6.75v10.504a3.25 3.25 0 0 0 3.25 3.25h8.616a2.251 2.251 0 0 1-2.122 1.5H8.75A4.75 4.75 0 0 1 4 17.254V6.75c0-.98.627-1.815 1.503-2.123ZM17.75 2A2.25 2.25 0 0 1 20 4.25v13a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-13A2.25 2.25 0 0 1 8.75 2h9Zm0 1.5h-9a.75.75 0 0 0-.75.75v13c0 .414.336.75.75.75h9a.75.75 0 0 0 .75-.75v-13a.75.75 0 0 0-.75-.75Z">
+                        </path>
+                      </svg>
+                    </button>
+                  </div>
+                  <button class="icon-btn code-wrap-btn umami--click--codewrap-editor-button" type="button"
+                    title="Toggle code wrap">
+                    <svg class="icon" width="24" height="24" fill="none" viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2.75 5a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5H2.75ZM2.75 11.5a.75.75 0 0 0 0 1.5H19a2.5 2.5 0 0 1 0 5h-4.44l.72-.72a.75.75 0 1 0-1.06-1.06l-2 2a.75.75 0 0 0 0 1.06l2 2a.75.75 0 1 0 1.06-1.06l-.72-.72H19a4 4 0 0 0 0-8H2.75Z">
+                      </path>
+                      <path d="M2 18.75a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75Z">
+                      </path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="drag-section dynamic">
+        <div class="drag-handle umami--pointermove--code-seperator-drag-handle">
+
+        </div>
+      </div>
+      <div class="app" id="console">
+        <pre class="console pt-0 leading-[0]">
+          <div class="console-btns">
+            <p class="tab-style text-sm" id="console">Console</p>
+            <div class="flex-grow">
+            
+          </div>
+          <div class="action-btns-overflow">
+            <div class="flex flex-nowrap action-btns gap-1">
+            <button class="btn console-to-top-btn flex items-center justify-center border border-gray-300 dark:border-gray-600" type="button" title="Scroll to Top">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
+            <path d="M4.21 10.733a.75.75 0 0 0 1.086 1.034l5.954-6.251V20.25a.75.75 0 0 0 1.5 0V5.516l5.955 6.251a.75.75 0 0 0 1.086-1.034l-7.067-7.42a.995.995 0 0 0-.58-.3.754.754 0 0 0-.29.001.995.995 0 0 0-.578.3L4.21 10.733Z" fill="currentColor">
+            
+          </path>
+          </svg>
+          </button>
+            <button class="btn console-to-bottom-btn flex items-center justify-center border border-gray-300 dark:border-gray-600" type="button" title="Scroll to Bottom">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
+            <path d="M19.79 13.267a.75.75 0 0 0-1.086-1.034l-5.954 6.251V3.75a.75.75 0 1 0-1.5 0v14.734l-5.955-6.251a.75.75 0 0 0-1.086 1.034l7.067 7.42c.16.168.366.268.58.3a.753.753 0 0 0 .29-.001.995.995 0 0 0 .578-.3l7.067-7.419Z" fill="currentColor">
+            
+          </path>
+          </svg>
+          </button>
+            <button class="btn fold-unfold-console-btn flex items-center justify-center border border-gray-300 dark:border-gray-600" type="button" title="Fold/Unfold Console Lines">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
+            <path d="M13.22 6.781a.75.75 0 0 1-.073-.976l.073-.085 2.367-2.37a.77.77 0 0 1 .664-.35c.252 0 .475.109.611.276l.053.075 2.367 2.37.073.084a.75.75 0 0 1 .007.882l-.08.094-.084.073a.75.75 0 0 1-.883.007l-.094-.08L17 5.56v3.784l-.007.089c-.05.32-.363.567-.743.567s-.694-.247-.743-.567l-.007-.09V5.56l-1.22 1.221-.084.073a.75.75 0 0 1-.976-.073ZM13.223 17.219a.75.75 0 0 1 .976-.073l.084.073 1.22 1.221v-3.784c0-.362.336-.656.75-.656.38 0 .693.247.743.567l.007.09v3.783l1.221-1.221a.75.75 0 0 1 .977-.073l.084.073a.75.75 0 0 1 .073.976l-.073.084-2.367 2.37a.77.77 0 0 1-.664.351.77.77 0 0 1-.664-.35l-2.367-2.37a.75.75 0 0 1 0-1.061ZM6.25 3.992A2.25 2.25 0 0 0 4 6.242v11.5a2.25 2.25 0 0 0 2.25 2.25h4a.75.75 0 0 0 0-1.5h-4a.75.75 0 0 1-.75-.75v-11.5a.75.75 0 0 1 .75-.75h4a.75.75 0 0 0 0-1.5h-4Z" fill="currentColor">
+            
+          </path>
+          </svg>
+          </button>
+            <button class="btn clear-console-btn flex items-center justify-center border border-gray-300 dark:border-gray-600" type="button" title="Clear Console">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
+            <path d="M12 1.75a3.25 3.25 0 0 1 3.245 3.066L15.25 5h5.25a.75.75 0 0 1 .102 1.493L20.5 6.5h-.796l-1.28 13.02a2.75 2.75 0 0 1-2.561 2.474l-.176.006H8.313a2.75 2.75 0 0 1-2.714-2.307l-.023-.174L4.295 6.5H3.5a.75.75 0 0 1-.743-.648L2.75 5.75a.75.75 0 0 1 .648-.743L3.5 5h5.25A3.25 3.25 0 0 1 12 1.75Zm6.197 4.75H5.802l1.267 12.872a1.25 1.25 0 0 0 1.117 1.122l.127.006h7.374c.6 0 1.109-.425 1.225-1.002l.02-.126L18.196 6.5ZM13.75 9.25a.75.75 0 0 1 .743.648L14.5 10v7a.75.75 0 0 1-1.493.102L13 17v-7a.75.75 0 0 1 .75-.75Zm-3.5 0a.75.75 0 0 1 .743.648L11 10v7a.75.75 0 0 1-1.493.102L9.5 17v-7a.75.75 0 0 1 .75-.75Zm1.75-6a1.75 1.75 0 0 0-1.744 1.606L10.25 5h3.5A1.75 1.75 0 0 0 12 3.25Z" fill="currentColor">
+            
+          </path>
+          </svg>
+          </button>
+          </div>
+        </div>
+        </div>
+          <code class="p-2 leading-normal min-h-10 no-highlight">
+            <div class="py-3">
+            <div class="content">
+            <p class="px-4 hljs-literal">No logs...</p>
+          </div>
+          </div>
+          </code>
+        </pre>
+      </div>
+    </div>
+    <div class="drag-section vertical" id="handle-2">
+      <div class="drag-handle umami--pointermove--code-height-drag-handle">
+
+      </div>
+    </div>
+    <div class="info-pane !pt-0">
+      <div class="action-btns-overflow flex flex-grow sm:hidden">
+        <div class="flex-grow">
+
+        </div>
+        <div class="action-btns justify-end">
+          <button class="btn build-btn umami--click--bundle-build-button" type="button">Build</button>
+          <button class="btn btn-permalink share-btn umami--click--bundle-share-button" type="button">Share</button>
+          <div class="file-size-container" title="Original -&gt; Compressed">
+            <div class="file-size">Wait...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <details
+      class="accordian umami--toggle--analysis-accordian bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md"
+      id="analysis">
+      <summary>
+        <p class="px-4 py-2 cursor-pointer select-none">Analysis</p>
+      </summary>
+      <div class="content pl-4 pr-2 py-4">
+        <p>
+          <Markdown>
+            Enable the `analysis` config to view the size of output files with interactive zoomable charts.
+
+            ```ts
+            {
+              "analysis": "treemap" | "network" | "sunburst" | true | false,
+              "esbuild": { ... }
+            }
+            ```
+          </Markdown>
+        </p>
+        <br />
+        <div class="relative w-full">
+          <div class="analyzer-loader">
+            <div class="text-center">
+              <p class="loader-content">Nothing to analyze...</p>
+              <div class="loading hidden"></div>
+            </div>
+          </div>
+          <iframe id="analyzer" src="about:blank" allowtransparency="true"></iframe>
+          <div class="drag-section vertical" id="handle-3">
+            <div class="drag-handle umami--pointermove--analysis-drag-handle"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+  <!-- <br />
+  <div class="container">
+    <blockquote class="mb-2">
+      📑 Official <a href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs">Docs</a> for <code>bundlejs</code>
+      are now available.
+    </blockquote>
+    <blockquote>✨ Update ✨ <a href="https://bundlejs.com">bundlejs.com</a> is the new official domain for
+      <code>bundlejs</code>.
+    </blockquote>
+    <details class="accordian umami--toggle--usage-docs-accordian" id="usage">
+      <summary>
+        <h3>Usage</h3>
+      </summary>
+      <div class="content py-4">
+        <p>When bundling packages that also export CSS and other external files, <strong>bundlejs.com</strong>
+          now checks the gzip/brotli size of these external files, even though it won't output any code. Keep
+          this in mind this isn't a bug, however, if it causes confusion I am willing to change this
+          behaviour.
+        </p>
+        <br />
+        <p>Treeshaking is available, but not all CDNs support access to each packages package.json so there
+          might be slight package version conflicts. The only verified CDN with access to the package.json is
+          <a href="https://unpkg.com" target="_blank" rel="noopener">unpkg.com</a>.
+        </p>
+        <br />
+        <p>Check the console for error messages and warnings.</p>
+        <br />
+        <p>You can use custom protocols to specify which CDN the module should come from.</p>
+        <br />
+        <p>
+        <ul class="list-disc">
+          <li>esm.run:react -> <a href="https://esm.run/react" target="_blank" rel="noopener">https://esm.run/react</a>
+          </li>
+          <li>esm.sh:react -> <a href="https://cdn.esm.sh/react" target="_blank"
+              rel="noopener">https://cdn.esm.sh/react</a> </li>
+          <li>esm:react -> <a href="https://cdn.esm.sh/react" target="_blank"
+              rel="noopener">https://cdn.esm.sh/react</a> </li>
+          <li>skypack:react -> <a href="https://cdn.skypack.dev/react" target="_blank"
+              rel="noopener">https://cdn.skypack.dev/react</a> </li>
+          <li>unpkg:react -> <a href="https://unpkg.com/react" target="_blank"
+              rel="noopener">https://unpkg.com/react</a> </li>
+          <li>deno:preact -> <a href="https://deno.land/x/preact" target="_blank"
+              rel="noopener">https://deno.land/x/preact</a> </li>
+          <li>jsdelivr:react -> <a href="https://cdn.jsdelivr.net/npm/react" target="_blank"
+              rel="noopener">https://cdn.jsdelivr.net/npm/react</a> </li>
+          <li>jsdelivr.gh:facebook/react/packages/react-dom/index.js -> <a
+              href="https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js" target="_blank"
+              rel="noopener">https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js</a>
+          </li>
+          <li>github:facebook/react/main/packages/react/index.js -> <a
+              href="https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js" target="_blank"
+              rel="noopener">https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js</a>
+          </li>
+        </ul>
+        </p>
+        <br />
+        <p>e.g.</p>
+        <Markdown>
+        ```ts
+          import { toStr } from "skypack:@okikio/animate";
+          // or
+          export * from "esm:@okikio/animate";
+          // or
+          export { animate } from "https://cdn.skypack.dev/@okikio/animate";
+          ```
+        </Markdown>
+        <br />
+        <p class="relative">
+          <span>* If an error occurs try using a different CDN, by default
+          </span>
+          <strong>bundle</strong> uses<a href="https://unpkg.com" target="_blank" rel="noopener">
+            unpkg.com</a> but you can use the others.
+        </p>
+        <br />
+        <p class="relative">
+          <span>* For some packages an error occurs where the default export is excluded from
+            the treeshaken bundle, the solution for this is to manually include the default export like so,
+          </span>
+          <Markdown>```ts
+            export * from "solid-dismiss";
+            // and
+            export { default } from "solid-dismiss";
+            ```
+          </Markdown>
+        </p>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"> </div>
+    </div>
+    <details class="accordian umami--toggle--sharing-docs-accordian" id="sharing">
+      <summary>
+        <h3>Sharing</h3>
+      </summary>
+      <div class="content py-4">
+        <p>You can now use search queries in <strong>bundle</strong>, all you need to do is add this to the url
+          <br />
+          <code>?q=\{packages\}&amp;treeshake=\{methods to treeshake\}</code> <br /> <br />
+          e.g. <br />
+          You want <code>react</code>, <code>react-dom</code>, <code>vue</code>, and
+          <code>@okikio/animate</code>, but only want the <code>Animate</code> and <code>toStr</code> methods
+          exported from <code>@okikio/animate</code>.
+          <br /> <br /> You would add this to the url <a
+            href="/?q=react,react-dom,vue,@okikio/animate&amp;treeshake=[*],[*],[*],[\{Animate,toStr\}]"
+            rel="noopener">?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[\{Animate,toStr\}]</a>
+          <br />
+          <br />If
+          you only want a couple packages and don't care to treeshake, then all you need is something like
+          this,<a href="/?q=react,react-dom,vue,@okikio/animate"
+            rel="noopener">?q=react,react-dom,vue,@okikio/animate</a>. There is another way to share a
+          reproduciable bundle, the sharable link. Shareble links look like this <a
+            href="/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA"
+            rel="noopener">/?share=PTAEGEBs...</a> with the string value of the input code editor being
+          compressed into a string and placed into the URL. <br />
+          <br />In order to create a shareble link,
+          you click the <code>Share</code> button, it copies the share url to your clipboard, and from there
+          you can paste where you wish. <br />
+          <br />
+        <details class="accordian bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md">
+          <summary>
+            <p class="px-4 py-2 cursor-pointer select-none">Auto-bundling shared URL's</p>
+          </summary>
+          <div class="content pl-4 pr-2 py-4">
+            <p>If you would like to bundle your code when the share URL is loaded, add <code>bundle</code>
+              to the url, e.g. <a href="/?q=@okikio/animate&amp;bundle" rel="noopener">/?bundle&q=@okikio/animate</a> or
+              <a href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA"
+                rel="noopener">/?bundle&share=PTAEGEBs...</a>
+            </p>
+          </div>
+        </details>
+        </p>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"></div>
+    </div>
+    <details class="accordian umami--toggle--externals-docs-accordian" id="externals">
+      <summary>
+        <h3>Externals</h3>
+      </summary>
+      <div class="content py-4">
+        <p>
+          Externals allow you to mark certain modules as modules to exclude from resolving, loading, and bundling, you use it the way you'd use the esbuild externals config option, e.g.
+          <Markdown>
+            ```ts
+            {
+              "esbuild": {
+                "external": ["react", "react-dom"],
+              }
+            }
+            ```
+          </Markdown>
+          <br />
+          <Markdown>
+            > You can try it out below,
+            [bundlejs.com/?config=\{"esbuild":\{"external":["@okikio/animate"]\}\}](https://bundlejs.com/?config=\{"esbuild":\{"external":["@okikio/animate"]\}\}).
+            > Check out a complex example of using the external config
+            [bundlejs.com/?q=@babel/core&config=\{"esbuild":\{"external":[...]\}\}](https://bundlejs.com/?q=@babel/core&config=\{%22esbuild%22:\{%22external%22:[%22debug%22,%22@babel/types%22,%22@babel/parser%22,%22@babel/generator%22,%22@babel/traverse%22,%22@babel/template%22,%22@babel/helper%22,%22semver%22,%22gensync%22,%22@babel/code-frame%22,%22json5%22,%22caniuse-lite%22,%22source-map%22,%22@ampproject/remapping%22,%22@babel/helper-compilation-targets%22,%22@babel/helper-validator-option%22,%22browserslist%22,%22@jridgewell/trace-mapping%22,%22convert-source-map%22,%22@babel/helpers%22,%22@babel/compat-data%22,%22@babel/helper-environment-visitor%22,%22@babel/helper-module-imports%22,%22@babel/helper-module-transforms%22,%22@babel/helper-validator-identifier%22,%22node-releases%22,%22@jridgewell/resolve-uri%22,%22@jridgewell/sourcemap-codec%22,%22electron-to-chromium%22]\}\})
+          </Markdown>
+        </p>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"> </div>
+    </div>
+    <details class="accordian umami--toggle--aliases-docs-accordian" id="aliases">
+      <summary>
+        <h3>Aliases</h3>
+      </summary>
+      <div class="content py-4">
+        <p>Aliases act as a redirect for modules, they are for replacing packages with different ones, e.g.
+          replace <code>fs</code> with <code>memfs</code>, so, it can work on the web, etc.. <br />
+          <br />You
+          use aliases like this<Markdown>```ts
+            {
+              "alias": {
+                "@okikio/animate": "react-dom"
+              }
+            }
+            ```
+          </Markdown>
+          <br />
+          <Markdown>> You can try out an example of using aliases,
+            [bundlejs.com/?config=\{"alias":\{"@okikio/animate":"react-dom"\}\}](https://bundlejs.com/?config=\{"alias":\{"@okikio/animate":"react-dom"\}\}).
+            > ⚠️ Warning: aliases currently don't care about the original packages version, e.g.
+            `@okikio/animate@beta` will be redirected to `react-dom` regardless of the package version in
+            use.</Markdown>
+        </p>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"> </div>
+    </div>
+    <details class="accordian umami--toggle--badges-docs-accordian" id="badges">
+      <summary>
+        <h3>Badges</h3>
+      </summary>
+      <div class="content py-4">
+        <p>You can also add bundle badges, they look like this,<br />
+          <br />
+        <div class="space-x-2">
+          <a class="inline-block" href="https://bundlejs.com/"> <img src="/badge-light.svg" alt="Open Bundle"
+              loading="lazy" width="150" height="40" />
+          </a>
+          <a class="inline-block" href="https://bundlejs.com/"> <img src="/badge-dark.svg" alt="Open Bundle"
+              loading="lazy" width="150" height="40" />
+          </a>
+        </div>
+        <br />All you need to do is to add this to your
+        <code>README.md</code>
+        <br />
+        <Markdown>```md
+          # Light Mode Badge
+          [![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/)
+          # Dark Mode Badge
+          [![Open Bundle](https://bundlejs.com/badge-dark.svg)](https://bundlejs.com/)
+          ```
+        </Markdown>
+        <br />You can use the <a href="#sharing">Sharing</a> section above, to create unique
+        bundles, when users clicks on the badge.</p>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"> </div>
+    </div>
+    <details class="accordian umami--toggle--community-docs-accordian" id="community">
+      <summary>
+        <h3>Community</h3>
+      </summary>
+      <div class="content py-4">
+        <blockquote>Tweet at me on <a href="https://twitter.com/@okikio_dev">@okikio_dev</a> with what you love
+          and what you think needs improvement in <code>bundle</code> to get added to the list users.
+        </blockquote>
+        <ul class="list-inside list-disc">
+          <li>
+            <a class="inline-flex" href="https://opencollective.com/bundle/organization/0/website">
+              <div class="flex gap-2">
+                <img class="inline-block"
+                  src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo"
+                  width="24" height="24" />
+                <span>@sheetjs</span>
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="inline-flex" href="https://opencollective.com/bundle/individual/0/website">
+              <div class="flex gap-2">
+                <img class="inline-block"
+                  src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128"
+                  alt="Dani Guardiola Logo" width="24" height="24" />
+                <span>@daniguardio_la</span>
+              </div>
+            </a>
+          </li>
+          <li>And more, etc...</li>
+        </ul>
+      </div>
+    </details>
+    <div class="px py-3">
+      <div class="w-full h-0 border-b border-gray-300 dark:border-gray-700"> </div>
+    </div>
+    <details class="accordian umami--toggle--discus-docs-accordian" id="discus">
+      <summary>
+        <h3>Discus</h3>
+      </summary>
+      <div class="content py-4">
+        <script src="https://giscus.bundlejs.com/client.js" data-repo="okikio/bundle"
+          data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=" data-category="General"
+          data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw" data-mapping="pathname" data-reactions-enabled="1"
+          data-emit-metadata="0" data-input-position="bottom" data-theme="transparent_dark" data-lang="en"
+          data-loading="lazy" crossorigin="anonymous" defer="defer" fetchpriority="low">
+          </script>
+      </div>
+    </details>
+    <br />
+    <blockquote>
+      <strong>Note</strong> You can also use <a href="https://bundlesize.com">bundlesize.com</a> to access
+      <code>bundlejs</code>.
+    </blockquote>
+    <blockquote> Special thanks to <a href="https://sheetjs.com">@sheetjs</a> and <a
+        href="https://daniguardio.la/">@daniguardio_la</a> for donating to <code>bundle</code> on <a
+        href="https://opencollective.com/bundle">OpenCollective</a>.</blockquote>
+    <br />
+    <div class="text-center">
+      <p
+        class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 inline-block px-4 py-2 rounded-md">
+        <a class="umami--click--public-analytics-link" href="https://analytics.bundlejs.com/share/jWI51PxZ/bundle">
+          <span class="inline-block" id="visit-counter">👋 00000 visits</span>
+        </a>
+      </p>
+    </div>
+    <br />
+  </div> 
+  -->
+</BaseLayout>

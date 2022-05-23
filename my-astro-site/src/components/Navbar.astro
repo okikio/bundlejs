@@ -1,0 +1,282 @@
+---
+  import { Img } from "astro-imagetools/components";
+  import Anchor from "./Anchor.astro";
+  import Icon from "astro-icon";
+---
+
+<!-- <nav class="navbar">
+    <div class="navbar-bg">
+        <div class="container">
+            <div class="navbar-shadow"></div>
+        </div>
+    </div>
+
+    <div class="navbar-bg">
+        <div class="container">
+            <div class="navbar-border"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="navbar-frame">
+        <Anchor class="navbar-logo flex gap-2" href="/">
+            <Icon name="logo" width="24" height="24" />
+            <span aria-label="The bundlejs.com logo">bundlejs</span>
+        </Anchor>
+        <div class="mobile pr-4">
+            <div class="flex gap-1 w-full space-x-0 items-center">
+            <div
+                class="offline-icon online"
+                title="You are offline"
+                aria-label="You are offline"
+            >
+                <Icon name="fluent:cloud-offline-24-regular" />
+            </div>
+            <Anchor
+                class="btn btn-highlight"
+                href="https://twitter.com/jsbundle"
+                aria-label="Twitter link"
+            >
+                <Icon name="mdi:twitter" />
+            </Anchor>
+            <Anchor
+                class="btn btn-highlight"
+                href="https://github.com/okikio/bundle"
+                aria-label="GitHub link"
+            >
+                <span class="desktop" aria-hidden="true">GitHub</span>
+                <Icon name="mdi:github" class="mobile" />
+            </Anchor>
+            
+            <button
+                class="btn btn-highlight navbar-toggle"
+                type="button"
+                aria-label="Navigation menu toggle"
+            >
+                <Icon name="fluent:navigation-24-filled" class="icon mobile" />
+                
+            </button>
+            </div>
+        </div> 
+        <div class="navbar-collapse collapse mobile">
+            <div class="navbar-list">
+                <Anchor href="/about" data-path="/about(.html)?">About</Anchor>
+                <Anchor href="/faq" data-path="/faq(.html)?">FAQ</Anchor>
+                <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs">Docs</Anchor>
+            </div>
+        </div> 
+        <div class="desktop">
+            <div class="navbar-collapse">
+                <div class="navbar-list">
+                    <Anchor href="/about" data-path="/about(.html)?">About</Anchor>
+                    <Anchor href="/faq" data-path="/faq(.html)?">FAQ</Anchor>
+                    <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs">Docs</Anchor>
+
+                    <Anchor
+                        class="btn btn-highlight"
+                        href="https://github.com/okikio/bundle"
+                        aria-label="GitHub link"
+                    >
+                        <span class="desktop" aria-hidden="true">GitHub</span>
+                        <Icon name="mdi:github" class="mobile" />
+                    </Anchor>
+
+                    <div
+                        class="offline-icon online"
+                        title="You are offline"
+                        aria-label="You are offline"
+                    >
+                        <Icon name="fluent:cloud-offline-24-regular" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav> -->
+
+
+<nav>
+  <div class="backdrop"></div>
+  <div class="container items">
+    <div class="logo">
+      <Anchor href="/"
+        aria-label="bundlejs's logo, it's used on all social media site to identify and represent bundlejs"
+        title="Logo">
+        <Icon name="logo" />
+        <span aria-hidden="true">bundlejs</span>
+      </Anchor>
+    </div>
+    <div class="flex-grow"></div>
+    <div class="menu px-1">
+      <Anchor href="/about" class="item">About</Anchor>
+      <Anchor href="/faq" class="item">FAQ</Anchor>
+
+      <div class="seperator"></div>
+      <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs" class="item">Docs</Anchor>
+
+      <div class="px-2 xsm:hidden"></div>
+      <div class="logo xsm:hidden">
+        <Anchor href="https://twitter.com/jsbundle" class="text-primary bg-primary/10 item"
+          aria-label="Link to the Okiki Ojo's Twitter profile" title="Twitter" external={false}>
+          <Icon name="mdi:twitter" />
+        </Anchor>
+      </div>
+    </div>
+
+    <div class="logo lt-xsm:hidden">
+      <Anchor href="https://twitter.com/okikio_dev" class="text-primary bg-primary/10 item"
+        aria-label="Link to the Okiki Ojo's Twitter profile" title="Twitter" external={false}>
+        <Icon name="mdi:twitter" />
+      </Anchor>
+    </div>
+
+    <div class="logo">
+      <Anchor href="https://github.com/okikio/bundle" class="text-primary bg-primary/10 item"
+        aria-label="Link to the bundlejs's Github repo" title="Github" external={false}>
+        <Icon name="mdi:github" />
+      </Anchor>
+    </div>
+
+    <!-- <div class="seperator sm:hidden"></div> -->
+    <button type="button" class="toggle">
+      <span class="text">Menu</span>
+      <span class="dot"></span>
+    </button>
+  </div>
+</nav>
+
+<div class="navbar-offset"></div>
+
+
+<style lang="scss">
+  nav {
+    @apply fixed top-0 left-0 w-full h-16;
+    @apply z-50;
+
+    .backdrop {
+      @apply transition duration-500;
+      @apply absolute top-0 left-0 w-full h-full;
+      @apply bg-black;
+
+      @supports (backdrop-filter: blur(10px)) {
+        @apply bg-opacity-50 backdrop-blur-md;
+      }
+    }
+
+    &.open .backdrop {
+      @apply lt-sm: h-32;
+    }
+
+    button,
+    a {
+      transition-property: background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+      @apply duration-200 ease-in-out;
+    }
+  }
+
+  .container {
+    @apply flex items-center px-5;
+    @apply w-full h-full max-w-screen-xl;
+  }
+
+  .logo {
+    @apply z-10;
+
+    a {
+      @apply px-3 py-3 border border-transparent rounded-lg;
+      @apply hover: text-primary hover:bg-primary/20;
+      @apply block;
+    }
+  }
+
+  .logo :global(svg) {
+    @apply min-w-[theme("spacing.6")] w-6 h-6;
+  }
+
+  .items-horiz {
+    @apply relative;
+    @apply flex flex-row justify-end;
+    @apply gap-1 sm: gap-2 items-center w-full;
+  }
+
+  .items {
+    @apply relative;
+    @apply flex flex-row justify-end;
+    @apply gap-1 sm: gap-2 items-center w-full;
+
+    .menu {
+      @apply duration-500;
+      @apply flex flex-row overflow-auto;
+      @apply gap-1 sm: gap-2 items-center xsm:justify-center;
+      @apply lt-sm: absolute lt-sm:top-16 lt-sm:left-0 lt-sm:w-full;
+      @apply lt-sm: h-16;
+    }
+
+    .item,
+    .toggle {
+      font-family: Lexend, Helvetica, Arial, Manrope, sans-serif;
+      @apply uppercase text-sm tracking-wide font-500;
+      @apply px-3 py-2 sm: px-5 sm:py-3 border border-transparent rounded-lg;
+      @apply no-underline;
+
+      &.active,
+      &:active,
+      &:focus,
+      &:hover {
+        @apply text-primary bg-primary/20;
+        text-decoration: 2px solid underline;
+        text-underline-offset: 0.2rem;
+        text-decoration-style: wavy;
+      }
+    }
+
+    .toggle {
+      @apply text-primary;
+      @apply flex items-center gap-2;
+      @apply sm: hidden;
+
+      .text,
+      .dot {
+        @apply transition-transform duration-500;
+      }
+
+      .text {
+        @apply translate-x-1.5;
+      }
+
+      .dot {
+        @apply w-3 h-3 rounded-full;
+        @apply block scale-[0.8] translate-x-1.5;
+        @apply bg-current;
+      }
+
+      &:hover {
+        .text {
+          @apply translate-x-0;
+        }
+
+        .dot {
+          @apply scale-[1.25] translate-x-0;
+        }
+      }
+    }
+
+    .seperator {
+      @apply border-l-2 border-primary/30 border-solid;
+      @apply h-[1.25em];
+    }
+  }
+
+  @screen lt-sm {
+    .menu {
+      @apply -translate-y-full opacity-0 pointer-events-none invisible;
+      /* @apply bg-gradient-to-b from-transparent to-black/10; */
+    }
+
+    nav.open {
+      .menu {
+        @apply translate-y-0 opacity-100 pointer-events-auto visible;
+      }
+    }
+  }
+</style>
