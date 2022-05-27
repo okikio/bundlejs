@@ -1,161 +1,100 @@
 ---
-  import { Img } from "astro-imagetools/components";
-  import Anchor from "./Anchor.astro";
   import Icon from "astro-icon";
+
+  import Anchor from "./Anchor.astro";
+  import OfflineBanner from "./OfflineBanner";
+
+  let activeNav = (regex: RegExp) => {
+    return regex.test(Astro.request.url) ? " active" : "";
+  };
 ---
 
-<!-- <nav class="navbar">
-    <div class="navbar-bg">
-        <div class="container">
-            <div class="navbar-shadow"></div>
-        </div>
-    </div>
-
-    <div class="navbar-bg">
-        <div class="container">
-            <div class="navbar-border"></div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="navbar-frame">
-        <Anchor class="navbar-logo flex gap-2" href="/">
-            <Icon name="logo" width="24" height="24" />
-            <span aria-label="The bundlejs.com logo">bundlejs</span>
-        </Anchor>
-        <div class="mobile pr-4">
-            <div class="flex gap-1 w-full space-x-0 items-center">
-            <div
-                class="offline-icon online"
-                title="You are offline"
-                aria-label="You are offline"
-            >
-                <Icon name="fluent:cloud-offline-24-regular" />
-            </div>
-            <Anchor
-                class="btn btn-highlight"
-                href="https://twitter.com/jsbundle"
-                aria-label="Twitter link"
-            >
-                <Icon name="mdi:twitter" />
-            </Anchor>
-            <Anchor
-                class="btn btn-highlight"
-                href="https://github.com/okikio/bundle"
-                aria-label="GitHub link"
-            >
-                <span class="desktop" aria-hidden="true">GitHub</span>
-                <Icon name="mdi:github" class="mobile" />
-            </Anchor>
-            
-            <button
-                class="btn btn-highlight navbar-toggle"
-                type="button"
-                aria-label="Navigation menu toggle"
-            >
-                <Icon name="fluent:navigation-24-filled" class="icon mobile" />
-                
-            </button>
-            </div>
-        </div> 
-        <div class="navbar-collapse collapse mobile">
-            <div class="navbar-list">
-                <Anchor href="/about" data-path="/about(.html)?">About</Anchor>
-                <Anchor href="/faq" data-path="/faq(.html)?">FAQ</Anchor>
-                <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs">Docs</Anchor>
-            </div>
-        </div> 
-        <div class="desktop">
-            <div class="navbar-collapse">
-                <div class="navbar-list">
-                    <Anchor href="/about" data-path="/about(.html)?">About</Anchor>
-                    <Anchor href="/faq" data-path="/faq(.html)?">FAQ</Anchor>
-                    <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs">Docs</Anchor>
-
-                    <Anchor
-                        class="btn btn-highlight"
-                        href="https://github.com/okikio/bundle"
-                        aria-label="GitHub link"
-                    >
-                        <span class="desktop" aria-hidden="true">GitHub</span>
-                        <Icon name="mdi:github" class="mobile" />
-                    </Anchor>
-
-                    <div
-                        class="offline-icon online"
-                        title="You are offline"
-                        aria-label="You are offline"
-                    >
-                        <Icon name="fluent:cloud-offline-24-regular" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav> -->
-
-
 <nav>
-  <div class="backdrop"></div>
+  <div class="backdrop">
+    <div class="container">
+      <div class="flex items-end w-full h-full">
+        <div class="w-full h-1 border-b border-b-elevated"></div>
+      </div>
+    </div>
+  </div>
   <div class="container items">
-    <div class="logo">
+    <div class="btn">
       <Anchor href="/"
+        class="logo"
         aria-label="bundlejs's logo, it's used on all social media site to identify and represent bundlejs"
         title="Logo">
         <Icon name="logo" />
         <span aria-hidden="true">bundlejs</span>
       </Anchor>
     </div>
+    
     <div class="flex-grow"></div>
-    <div class="menu px-1">
-      <Anchor href="/about" class="item">About</Anchor>
-      <Anchor href="/faq" class="item">FAQ</Anchor>
+    <div class="menu">
+      <div class="menu-items">
+        <Anchor href="/about" class={"item" + activeNav(/\/about/)}>About</Anchor>
+        <Anchor href="/faq" class={"item" + activeNav(/\/faq/)}>FAQ</Anchor>
 
-      <div class="seperator"></div>
-      <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs" class="item">Docs</Anchor>
+        <div class="seperator"></div>
+        <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs" class="item">Docs</Anchor>
 
-      <div class="px-2 xsm:hidden"></div>
-      <div class="logo xsm:hidden">
-        <Anchor href="https://twitter.com/jsbundle" class="text-primary bg-primary/10 item"
-          aria-label="Link to the Okiki Ojo's Twitter profile" title="Twitter" external={false}>
-          <Icon name="mdi:twitter" />
-        </Anchor>
+        <div class="btn xsm:hidden">
+          <Anchor href="https://twitter.com/jsbundle" class="text-primary bg-primary/10 item"
+            aria-label="Link to the Okiki Ojo's Twitter profile" title="Twitter" external={false}>
+            <Icon name="mdi:twitter" />
+          </Anchor>
+        </div>
       </div>
     </div>
 
-    <div class="logo lt-xsm:hidden">
+    <div class="btn lt-xsm:hidden">
       <Anchor href="https://twitter.com/okikio_dev" class="text-primary bg-primary/10 item"
         aria-label="Link to the Okiki Ojo's Twitter profile" title="Twitter" external={false}>
         <Icon name="mdi:twitter" />
       </Anchor>
     </div>
 
-    <div class="logo">
+    <div class="btn">
       <Anchor href="https://github.com/okikio/bundle" class="text-primary bg-primary/10 item"
         aria-label="Link to the bundlejs's Github repo" title="Github" external={false}>
         <Icon name="mdi:github" />
       </Anchor>
     </div>
 
-    <!-- <div class="seperator sm:hidden"></div> -->
-    <button type="button" class="toggle">
+    <div class="btn">
+      <OfflineBanner class="text-black bg-primary item offline-icon online" client:load />
+    </div>
+
+    <button type="button" data-nav-toggle class="toggle">
       <span class="text">Menu</span>
       <span class="dot"></span>
     </button>
   </div>
 </nav>
 
+<script>
+  let nav = document.querySelector("nav");
+  let navToggle = nav.querySelector("[data-nav-toggle]");
+
+  navToggle.addEventListener("click", function() {
+    nav.classList.toggle("open");
+  });
+</script>
+
 <div class="navbar-offset"></div>
 
 
 <style lang="scss">
+  .navbar-offset {
+    @apply pt-16;
+  }
+
   nav {
     @apply fixed top-0 left-0 w-full h-16;
     @apply z-50;
 
     .backdrop {
-      @apply transition duration-500;
-      @apply absolute top-0 left-0 w-full h-full;
+      @apply absolute top-0 left-0 w-full;
+      @apply -translate-y-1/2 h-[200%];
       @apply bg-black;
 
       @supports (backdrop-filter: blur(10px)) {
@@ -164,80 +103,120 @@
     }
 
     &.open .backdrop {
-      @apply lt-sm: h-32;
+      @apply lt-sm:translate-y-0;
     }
 
     button,
     a {
-      transition-property: background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-      @apply duration-200 ease-in-out;
+      @apply text-primary;
+    }
+
+    @at-root :global(.dom-loaded) nav {
+      .backdrop {
+        @apply transition-transform duration-500;
+      }
+
+      button,
+      a {
+        transition-property: background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+        @apply duration-200 ease-in-out;
+      }
     }
   }
 
   .container {
     @apply flex items-center px-5;
-    @apply w-full h-full max-w-screen-xl;
+    @apply w-full h-full max-w-screen-lg;
   }
 
-  .logo {
+  .logo,
+  .btn {
     @apply z-10;
 
     a {
-      @apply px-3 py-3 border border-transparent rounded-lg;
-      @apply hover: text-primary hover:bg-primary/20;
+      @apply px-3 py-2 border border-transparent rounded-lg;
+      @apply hover:text-primary hover:bg-primary/20;
       @apply block;
+    }
+
+    & :global(svg) {
+      @apply min-w-[theme("spacing.6")] w-6 h-6;
+      vertical-align: middle;
     }
   }
 
-  .logo :global(svg) {
-    @apply min-w-[theme("spacing.6")] w-6 h-6;
+  .logo {
+    @apply text-xl font-bold no-underline;
+    letter-spacing: .05em;
+    line-height: 1.75rem;
   }
 
   .items-horiz {
     @apply relative;
     @apply flex flex-row justify-end;
-    @apply gap-1 sm: gap-2 items-center w-full;
+    @apply gap-1 sm:gap-2 items-center w-full;
   }
 
   .items {
     @apply relative;
     @apply flex flex-row justify-end;
-    @apply gap-1 sm: gap-2 items-center w-full;
+    @apply gap-1 sm:gap-2 items-center w-full;
 
     .menu {
-      @apply duration-500;
       @apply flex flex-row overflow-auto;
-      @apply gap-1 sm: gap-2 items-center xsm:justify-center;
-      @apply lt-sm: absolute lt-sm:top-16 lt-sm:left-0 lt-sm:w-full;
-      @apply lt-sm: h-16;
+      @apply gap-1 sm:gap-2 items-center;
+      @apply lt-sm:absolute lt-sm:top-16 lt-sm:left-0 lt-sm:w-full;
+      @apply lt-sm:h-16;
+
+      .menu-items {
+        @apply p-1;
+        @apply flex items-center mx-auto gap-2;
+      }
+    }
+
+    @at-root :global(.dom-loaded) .items .menu {
+      @apply duration-500;
+    }
+
+    .item,
+    .toggle,
+    .logo {
+      @apply flex items-center gap-2;
     }
 
     .item,
     .toggle {
-      font-family: Lexend, Helvetica, Arial, Manrope, sans-serif;
-      @apply uppercase text-sm tracking-wide font-500;
-      @apply px-3 py-2 sm: px-5 sm:py-3 border border-transparent rounded-lg;
+      font-family: Manrope, "Manrope-fallback", Helvetica, Arial, sans-serif;
+      @apply capitalize text-sm tracking-wide font-500;
+      @apply px-4 py-3 sm:px-4 sm:py-2 border border-transparent rounded-lg;
       @apply no-underline;
+      @apply text-base;
 
-      &.active,
-      &:active,
-      &:focus,
-      &:hover {
-        @apply text-primary bg-primary/20;
-        text-decoration: 2px solid underline;
-        text-underline-offset: 0.2rem;
-        text-decoration-style: wavy;
+      &:not(.offline-icon) {
+        &.active,
+        &:active,
+        &:focus,
+        &:hover {
+          @apply text-primary bg-primary/20;
+          text-decoration: 2px solid underline;
+          text-underline-offset: 0.2rem;
+        }
       }
     }
 
+    .offline-icon {
+      display: flex;
+    }
+
     .toggle {
+      @apply py-4;
       @apply text-primary;
-      @apply flex items-center gap-2;
-      @apply sm: hidden;
+      @apply sm:hidden;
 
       .text,
       .dot {
         @apply transition-transform duration-500;
+        @apply leading-none;
       }
 
       .text {
@@ -256,7 +235,7 @@
         }
 
         .dot {
-          @apply scale-[1.25] translate-x-0;
+          @apply scale-[1.25];
         }
       }
     }

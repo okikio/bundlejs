@@ -1,0 +1,29 @@
+---
+// Component Imports
+import Snippet from './Snippet.astro';
+
+// @ts-ignore
+let snippets = await Astro.glob('../../snippets/*.md'); // returns an array of posts that live at ./src/pages/post/*.md
+
+let sortFn = (a, b) => {
+  let aPriority = a.frontmatter.priority as number;
+  let bPriority = b.frontmatter.priority as number;
+  if (aPriority < bPriority)
+    return -1;
+  else if (aPriority > bPriority)
+    return 1;
+  else
+    return 0;
+};
+---
+{
+  snippets
+    .sort(sortFn)
+    .map(async ({ Content, frontmatter }) => {
+      return (
+        <Snippet content={frontmatter}>
+          <Content />
+        </Snippet>
+      );
+    })
+}

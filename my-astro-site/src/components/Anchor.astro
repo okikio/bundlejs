@@ -1,6 +1,6 @@
 ---
 import Icon from "astro-icon";
-let { href, class: className, external, ...rest } = Astro.props;
+let { href, class: className = "", external, ...rest } = Astro.props;
 
 external = external ?? /^(http|mailto)/.test(href);
 let attrs = external ? { target: "_blank", rel: "noopener" } : {};
@@ -10,6 +10,7 @@ let attrs = external ? { target: "_blank", rel: "noopener" } : {};
   {href}
   class={(external ? "whitespace-nowrap " : "") + className}
   {...Object.assign(attrs, rest)}
+  custom-anchor
 >
   <slot />
   {external && <Icon name="fluent:arrow-up-right-24-filled" />}

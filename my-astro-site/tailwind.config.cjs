@@ -4,13 +4,16 @@ weights.forEach((val) => {
   fontWeight[val] = val;
 });
 
-
 module.exports = {
   darkMode: "class",
   content: ["./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}"],
 
   theme: {
     extend: {
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
+      },
       screens: {
         "3xl": "1633px",
         "1.5xl": "1333px",
@@ -43,13 +46,13 @@ module.exports = {
         ],
       },
       colors: {
-        primary: "#ffff00",
-        elevated: "#1C1C1E",
+        "primary": "#60a5fa",
+        "secondary": "#1d4ed8",
+        "elevated": "#1C1C1E",
         "elevated-2": "#262628",
-        label: "#ddd",
-        secondary: "#bbb",
-        tertiary: "#555",
-        quaternary: "#333",
+        "label": "#ddd",
+        "tertiary": "#555",
+        "quaternary": "#333",
         "center-container-dark": "#121212",
       },
       container: {

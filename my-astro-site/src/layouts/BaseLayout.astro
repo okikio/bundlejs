@@ -1,7 +1,8 @@
 ---
   import SEO from '../components/SEO.astro';
-  import Footer from '../components/Footer/index.tsx';
+  import Footer from '../components/Footer.astro';
   import Navbar from '../components/Navbar.astro';
+  import Anchor from '../components/Anchor.astro';
 
   const content = Astro?.props?.content ?? Astro?.props;
 ---
@@ -15,21 +16,7 @@
 
 <body>
   <Navbar />
-
-  <div class="prompt-container">
-    <div class="horz">
-      <div class="info-prompt offline-ready">
-        <p>Ready to work offline!</p>
-        <div class="flex-1"></div><button class="btn dismiss" type="button">DISMISS</button>
-      </div>
-      <div class="info-prompt reload">
-        <p>New content is available. Click OK to refresh all open tabs.</p>
-        <div class="flex-1"></div>
-        <div class="flex self-end"><button class="btn accept" type="button">OK</button><button class="btn dismiss"
-            type="button">DISMISS</button></div>
-      </div>
-    </div>
-  </div>
+  <Anchor id="skip-main" href="#content">Skip to main content</Anchor>
 
   <main id="main" data-wrapper>
     <slot />
@@ -37,10 +24,8 @@
 
   <Footer />
 
-  <!-- 
-  <script src="/js/measure.min.js" data-host-url="https://bundlejs.com" data-domains="bundlejs.com,bundle.js.org,bundlesize.com" data-website-id="8bc0c9cc-4c05-4667-971e-6f3cf4200de5" type="module" async></script>
-  <script src="/js/main.min.js" type="module" async fetchpriority="high"></script> 
-    -->
+  <script> import "../scripts/measure.ts"; </script>
+  <script> import "../scripts/main.ts"; </script>
 </body>
 
 </html>

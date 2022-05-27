@@ -1,0 +1,44 @@
+---
+let opts = Astro?.props?.content ?? Astro?.props;
+---
+
+<details class={`accordian umami--toggle--${opts["id"]}-docs-accordian`} id={opts.id}>
+  <summary>
+    <h3>{opts.title}</h3>
+  </summary>
+  <div class="content">
+    <slot />
+  </div>
+</details>
+
+
+<style lang="scss">
+  .accordian {
+    .content {
+      @apply flex flex-col gap-6;
+      @apply py-4;
+    }
+
+    :global(:is(h1, h2, h3, h4, h5, h6)) {
+      @apply pt-12 font-[600];
+    }
+
+    :global(h2) {
+      @apply pt-6 mb-2;
+      @apply text-5xl text-center;
+    }
+
+    :global(h3) {
+      @apply pt-6;
+      @apply text-2xl;
+    }
+
+    :global(p) {
+      @apply text-lg;
+    }
+
+    :global(ul) {
+      @apply list-disc list-inside;
+    }
+  }
+</style>
