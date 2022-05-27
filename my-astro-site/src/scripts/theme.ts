@@ -6,7 +6,7 @@ export const ThemeChange = new Event('theme-change', {
 
 // Based on [joshwcomeau.com/gatsby/dark-mode/]
 export let getTheme = (): string | null => {
-    let theme = window.localStorage.getItem("theme");
+    let theme = globalThis?.localStorage?.getItem?.("theme");
     // If the user has explicitly chosen light or dark,
     // let's use it. Otherwise, this value will be null.
     if (typeof theme === "string") return theme;
@@ -18,22 +18,21 @@ export let getTheme = (): string | null => {
 
 export let setTheme = (theme: string): void => {
     // If the user has explicitly chosen light or dark, store the default theme
-    if (typeof theme === "string") window.localStorage.setItem("theme", theme);
+    if (typeof theme === "string") globalThis?.localStorage?.setItem?.("theme", theme);
 };
 
 export let mediaTheme = (): string | null => {
     // If they haven't been explicitly set, let's check the media query
-    let mql = window.matchMedia("(prefers-color-scheme: dark)");
-    let hasMediaQueryPreference = typeof mql.matches === "boolean";
-    if (hasMediaQueryPreference) return mql.matches ? "dark" : "light";
+    let mql = globalThis?.matchMedia?.("(prefers-color-scheme: dark)");
+    let hasMediaQueryPreference = typeof mql?.matches === "boolean";
+    if (hasMediaQueryPreference) return mql?.matches ? "dark" : "light";
     return null;
 };
 
-let html = document.querySelector("html");
 // Get theme from html tag, if it has a theme or get it from localStorage
-export let themeGet = () => {
-    let themeAttr = html.getAttribute("data-theme");
-    if (typeof themeAttr === "string" && themeAttr.length) {
+export let themeGet = (html: HTMLHtmlElement) => {
+    let themeAttr = html?.getAttribute?.("data-theme");
+    if (typeof themeAttr === "string" && themeAttr?.length) {
         return themeAttr;
     }
 
@@ -41,31 +40,29 @@ export let themeGet = () => {
 };
 
 // Set theme in localStorage, as well as in the html tag
-export let themeSet = (theme: string) => {
+export let themeSet = (theme: string, html: HTMLHtmlElement) => {
     let themeColor = theme == "system" ? mediaTheme() : theme;
-    html.setAttribute("data-theme", theme);
-    html.classList.toggle("dark", themeColor == "dark");
+    html?.setAttribute?.("data-theme", theme);
+    html?.classList?.toggle?.("dark", themeColor == "dark");
     setTheme(theme);
-    document.dispatchEvent(ThemeChange);
+    document?.dispatchEvent?.(ThemeChange);
 };
 
-export let runTheme = () => {
+export let runTheme = (html: HTMLHtmlElement) => {
     try {
         let theme = getTheme();
         if (theme === null) {
-            themeSet("system");
-        } else themeSet(theme);
+            themeSet("system", html);
+        } else themeSet(theme, html);
 
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-            themeSet("system");
-        });
+        globalThis
+            ?.matchMedia?.("(prefers-color-scheme: dark)")
+            ?.addEventListener("change", () => themeSet("system", html));
 
-        window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
-            themeSet("system");
-        });
+        globalThis
+            ?.matchMedia?.("(prefers-color-scheme: light)")
+            ?.addEventListener("change", () => themeSet("system", html));
     } catch (e) {
         console.warn("Theming isn't available on this browser.", e);
     }
 };
-
-runTheme();

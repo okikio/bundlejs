@@ -2,13 +2,16 @@
 layout: ../layouts/ContentLayout.astro
 title: About - bundlejs
 description: Details about how bundle was made as well, as a list of links, sources, and tools used to make bundlejs.
+setup: | 
+    import ProductHunt from "../components/ProductHunt.astro";
+    import Anchor from "../components/Anchor.astro";
 ---
 ## About
 
-**bundlejs** is a quick and easy way to bundle your projects, minify and see their gzip and brotli size. It's an online tool similar to [bundlephobia](https://bundlephobia.com), but **bundlejs** does all the bundling locally on you browser and can treeshake and bundle multiple packages (both commonjs and esm) together, all without having to install any npm packages and with typescript support.  
+**bundlejs** is a quick and easy way to bundle your projects, minify and see their gzip and brotli size. It's an online tool similar to <Anchor href="https://bundlephobia.com">bundlephobia</Anchor>, but **bundlejs** does all the bundling locally on you browser and can treeshake and bundle multiple packages (both commonjs and esm) together, all without having to install any npm packages and with typescript support.  
   
 
-I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, [esbuild](https://github.com/evanw/esbuild) as bundler and treeshaker respectively, [denoflate](https://github.com/hazae41/denoflate) as a wasm port of gzip, [deno\_brotli](https://github.com/denosaurs/deno_brotli) as a wasm port of brotli, [deno\_lz4](https://github.com/denosaurs/deno_lz4) as a wasm port of lz4, [bytes](https://github.com/visionmedia/bytes.js) to convert the compressed size to human readable values, [esbuild-visualizer](https://github.com/btd/esbuild-visualizer) to visualize and analyze your esbuild bundle to see which modules are taking up space, [umami](https://github.com/mikecao/umami) for private, publicly available analytics and general usage stats all without cookies, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.  
+I used <Anchor href="https://github.com/microsoft/monaco-editor">monaco-editor</Anchor> for the code-editor, <Anchor href="https://github.com/evanw/esbuild">esbuild</Anchor> as bundler and treeshaker respectively, <Anchor href="https://github.com/hazae41/denoflate">deno\_brotli</Anchor> as a wasm port of gzip, <Anchor href="https://github.com/denosaurs/deno_brotli">denoflate</Anchor> as a wasm port of brotli, <Anchor href="https://github.com/denosaurs/deno_lz4">deno\_lz4</Anchor> as a wasm port of lz4, <Anchor href="https://github.com/visionmedia/bytes.js">bytes</Anchor> to convert the compressed size to human readable values, <Anchor href="https://github.com/btd/esbuild-visualizer">esbuild-visualizer</Anchor> to visualize and analyze your esbuild bundle to see which modules are taking up space, <Anchor href="https://github.com/mikecao/umami">umami</Anchor> for private, publicly available analytics and general usage stats all without cookies, and <Anchor href="https://github.com/mlomb/countapi-js">countapi-js</Anchor> to keep track of the number of page visits, in a private and secure way.  
   
 This project was greatly influenced by [@hardfists](https://github.com/hardfist) [neo-tools](https://github.com/hardfist/neo-tools) and [@mizchi's](https://github.com/mizchi) [uniroll](https://github.com/mizchi/uniroll) project.  
   
@@ -22,3 +25,5 @@ If there is something I missed, a mistake, or a feature you would like added ple
 **bundle** uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) as the style of commit, and the [Commitizen CLI](http://commitizen.github.io/cz-cli/) to make commits easier.  
   
 You can join the discussion on [github discussions](https://github.com/okikio/bundle/discussions).
+
+<ProductHunt />

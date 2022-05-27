@@ -1,0 +1,42 @@
+---
+import { Icon } from "astro-icon";
+---
+<div class="search">
+  <Icon name="fluent:search-24-filled" />
+
+  <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." />
+
+  <button class="clear umami--click--search-clear-button">
+    <Icon name="fluent:dismiss-24-filled" />
+  </button>
+</div>
+
+<dialog class="results"></dialog>
+
+<style lang="scss">
+  .search {
+    @apply focus-within:ring-4 focus-within:ring-blue-500 focus-within:ring-opacity-50;
+    @apply border border-gray-300;
+    @apply dark:bg-black dark:border-gray-700;
+
+    @apply flex items-center pl-4 rounded-lg;
+
+    input#input {
+      @apply w-full ml-2 p-2 bg-transparent align-middle focus:outline-none;
+
+      &::placeholder {
+        @apply text-gray-400;
+      }
+    }
+
+    :global([astro-icon]) {
+      @apply w-6 h-6;
+    }
+
+    // .clear {
+    //   @apply transform scale-[0.85] active:scale-75 active:bg-gray-600;
+    //   @apply hover:bg-gray-200 dark:hover:bg-tertiary;
+    //   @apply text-black dark:text-white m-0;
+    // }
+  }
+</style>

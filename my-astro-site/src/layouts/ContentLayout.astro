@@ -1,11 +1,32 @@
 ---
-  import BaseLayout from "./BaseLayout.astro";
+import BaseLayout from "./BaseLayout.astro";
+import Container from "../components/Container.astro";
 
-  let opts = Astro?.props?.content ?? Astro?.props;
+let opts = Astro?.props?.content ?? Astro?.props;
 ---
 
 <BaseLayout {...opts}>
-  <div class="container max-w-screen-lg">
+  <Container>
     <slot />
-  </div>
+  </Container>
 </BaseLayout>
+
+<style lang="scss">
+  [custom-container] {
+    @apply gap-6;
+
+    :global(h2) {
+      @apply pt-6 mb-2;
+      @apply text-5xl text-center;
+    }
+
+    :global(h3) {
+      @apply pt-6;
+      @apply text-2xl;
+    }
+
+    :global(p) {
+      @apply text-lg;
+    }
+  }
+</style>

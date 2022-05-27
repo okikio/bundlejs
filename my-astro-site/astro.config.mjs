@@ -1,8 +1,6 @@
 import { defineConfig } from "astro/config";
 import serviceWorker from 'astro-service-worker';
 
-import { astroImageTools } from "astro-imagetools";
-
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -22,6 +20,7 @@ export default defineConfig({
   },
   site: "https://bundlejs.com",
   markdown: {
+    // remarkPlugins: [],
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)
       // https://github.com/shikijs/shiki/blob/main/docs/themes.md
@@ -35,7 +34,11 @@ export default defineConfig({
     },
   },
   integrations: [
-    solid(), tailwind(), sitemap(), astroImageTools,
+    solid(),
+    tailwind({
+      config: { applyBaseStyles: false },
+    }),
+    sitemap(),
     // serviceWorker({
     //   workbox: {
     //       globDirectory: destFolder,

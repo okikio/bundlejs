@@ -1,0 +1,45 @@
+---
+import Icon from "astro-icon";
+import Anchor from "./Anchor.astro";
+import Container from "./Container.astro";
+import { ThemeSwitch } from "./ThemeSwitch";
+
+
+---
+
+<footer class="footer my-6">
+	<Container class="gap-2 flex-col sm:flex-row">
+		<div class="flex flex-grow">
+			<div class="lt-sm:space-y-2">
+				<label for="pet-select">Change Theme:</label>
+				<ThemeSwitch client:load />
+
+				<span class="ml-2"></span>
+				<button class="btn btn-highlight" id="reset-cache" type="button"
+					title="Clear Cache / Force Reload Site">
+					<Icon name="fluent:arrow-clockwise-24-filled" />
+				</button>
+			</div>
+
+			<div class="flex-grow text-right">
+				<div class="px-4 py-2 inline-block">
+					(c) 2022 <Anchor href="https://okikio.dev">Okiki Ojo</Anchor>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex-grow"></div>
+		<div class="flex flex-wrap gap-2 justify-end">
+			<p class="bg-gray-200 dark:bg-quaternary inline-block px-4 py-2 rounded-md">
+				<span> Made by </span>
+				<Anchor href="https://github.com/okikio">@okikio</Anchor>
+			</p>
+		</div>
+	</Container>
+</footer>
+
+<style lang="scss"> 
+:global(svg) {
+  @apply w-6 h-6;
+}
+</style>
