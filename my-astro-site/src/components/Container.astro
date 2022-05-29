@@ -7,7 +7,7 @@ export interface Props {
 
 let {
   max = "md",
-  class: className = "",
+  class: className = "col",
   ...attrs
 } = Astro?.props?.content ?? Astro?.props;
 ---
@@ -19,8 +19,11 @@ let {
 <style lang="scss">
   :where(.contain) {
     @apply container gap-3;
-    @apply flex flex-col;
     @apply px-3;
+
+    &.col {
+      @apply flex flex-col;
+    }
 
     &.md {
       @apply max-w-screen-md;
@@ -33,9 +36,5 @@ let {
     &.xl {
       @apply max-w-screen-xl;
     } 
-
-    :global(:is(h1, h2, h3, h4, h5, h6)) {
-      @apply pt-12 font-[600];
-    }
   }
 </style>

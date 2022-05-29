@@ -1,0 +1,30 @@
+---
+export interface Props {
+  title?: string;
+  subtitle?: string;
+}
+
+let {
+  title = "bundlejs",
+  subtitle = "a quick npm package size checker",
+} = Astro.props as Props;
+---
+<header>
+  <h1>{title}</h1>
+  <p>{subtitle}</p>
+</header>
+
+<style lang="scss">
+  header {
+    @apply flex flex-col gap-2 text-center;
+    @apply pt-8 pb-3;
+
+    h1 {
+      @apply pt-0;
+    }
+
+    p {
+      @apply text-lg
+    }
+  }
+</style>

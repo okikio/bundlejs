@@ -17,4 +17,4 @@ You use aliases like this:
 
 > You can try out an example of using aliases, [`bundlejs.com/?config={"alias":{"@okikio/animate":"react-dom"}}`](https://bundlejs.com/?config={"alias":{"@okikio/animate":"react-dom"}})
 
-> ⚠️ Warning: aliases currently don't care about the original packages version, e.g. `@okikio/animate@beta` will be redirected to `react-dom` regardless of the package version in use.
+> ⚠️ **Warning**: aliases currently don't care about the original packages version, e.g. `@okikio/animate@beta` will be redirected to `react-dom` regardless of the package version in use.

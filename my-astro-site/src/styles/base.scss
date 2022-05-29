@@ -19,10 +19,6 @@ body {
     line-height: 1.5;
 }
 
-main {
-    @apply py-16;
-}
-
 textarea,
 form,
 input,
@@ -31,15 +27,15 @@ select,
 details,
 summary,
 a {
-  &,
-  &:focus,
-  &:hover,
-  &:active {
-    -webkit-tap-highlight-color: transparent;
-  }
+    &,
+    &:focus,
+    &:hover,
+    &:active {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
-:is(h1, h2, h3, h4, h5, h6) {
+:where(:is(h1, h2, h3, h4, h5, h6)) {
     @apply pt-12 font-[600];
 }
 
@@ -55,7 +51,8 @@ h3 {
     @apply text-2xl;
 }
 
-b, strong {
+b,
+strong {
     @apply dark:font-500 dark:underline;
 }
 
@@ -72,7 +69,7 @@ a {
     @apply ring-offset-2 ring-offset-black;
     @apply rounded-md focus:outline-none;
     @apply scale-100;
-    @apply text-primary;
+    @apply text-secondary dark:text-primary;
 
     &:active {
         @apply scale-90;
@@ -86,17 +83,18 @@ a {
     cursor: pointer;
 
     &:hover {
-        @apply text-blue-200;
+        @apply text-primary dark:text-blue-200;
     }
 }
 
 blockquote {
     @apply mx-0 px-4 py-3;
+    @apply bg-primary/20 dark:bg-blue-700/30 rounded-lg;
+
     // border-left: 5px solid;
     // @apply border-blue-500;
-    @apply bg-blue-700/30 rounded-lg;
 }
-  
+
 blockquote p {
     margin-bottom: 0;
 }
@@ -116,7 +114,117 @@ code {
     background: #0d1117;
 }
 
-iframe {
+a code {
+  color: inherit;
+}
+
+iframe,
+.giscus-frame {
     @apply bg-transparent;
     color-scheme: none;
+}
+
+details {
+  & > summary {
+    @apply relative cursor-pointer;
+    @apply py-5;
+
+    &::marker {
+      content: "";
+    }
+
+    :is(h1, h2, h3, h4, h5, h6, p) {
+      @apply pt-0 font-light;
+    }
+
+    [astro-icon] {
+      @apply text-gray-600/80;
+      @apply dark:text-gray-200/80;
+
+      @apply absolute top-1/2;
+      @apply cursor-pointer;
+
+      transform: translate(0, -50%) rotateZ(0deg);
+    }
+
+    &:active [astro-icon] {
+      @apply text-primary;
+    }
+  }
+
+  &[open] > summary {
+    :is(h1, h2, h3, h4, h5, h6, p) {
+      @apply font-600;
+    }
+
+    [astro-icon] {
+      @apply text-primary;
+      transform: translate(0, -50%) rotateZ(90deg);
+    }
+
+    &:active [astro-icon] {
+      @apply text-gray-900;
+      @apply dark:text-gray-100;
+    }
+  }
+
+  @at-root .dom-loaded details > summary {
+    :is(h1, h2, h3, h4, h5, h6, p) {
+      transition: font-weight ease 0.4s;
+    }
+
+    [astro-icon] {
+      transition: transform 0.25s ease-in-out, color ease 0.25s;
+    }
+  }
+
+  &.inline-details {
+    & > summary {
+      @apply pl-[2ch] py-0;
+
+      [astro-icon] {
+        @apply left-[0.25ch];
+      }
+    }
+
+    & > .content {
+      @apply pl-[2ch] py-4;
+    }
+  }
+
+  &:not(.inline-details) { 
+    & > summary {
+      @apply pr-[2ch];
+
+      [astro-icon] {
+        @apply right-[0.25ch];
+      }
+    }
+
+    & > .content {
+      @apply pr-[2ch] py-4;
+    }
+  }
+
+  & > .content {
+    @apply flex flex-col gap-6;
+
+    // h2 {
+    //   @apply pt-6 mb-2;
+    //   @apply text-5xl text-center;
+    // }
+
+    // h3 {
+    //   @apply pt-6;
+    //   @apply text-2xl;
+    // }
+
+    // p {
+    //   @apply text-lg;
+    // }
+
+    ul {
+      @apply list-disc list-inside;
+    }
+  }
 }

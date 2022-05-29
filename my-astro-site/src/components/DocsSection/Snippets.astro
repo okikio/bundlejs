@@ -16,14 +16,23 @@ let sortFn = (a, b) => {
     return 0;
 };
 ---
-{
-  snippets
-    .sort(sortFn)
-    .map(async ({ Content, frontmatter }) => {
-      return (
-        <Snippet content={frontmatter}>
-          <Content />
-        </Snippet>
-      );
-    })
-}
+
+<div class="snippets divide-y divide-gray-500/10">
+  {
+    snippets
+      .sort(sortFn)
+      .map(async ({ Content, frontmatter }) => {
+        return (
+          <Snippet content={frontmatter}>
+            <Content />
+          </Snippet>
+        );
+      })
+  }
+</div>
+
+<style lang="scss">
+  .snippets {
+    @apply bg-gray-500/20 rounded-3xl p-6;
+  }  
+</style>
