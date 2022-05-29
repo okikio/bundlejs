@@ -14,8 +14,10 @@ let opts = Astro?.props?.content ?? Astro?.props;
 <style lang="scss">
   [custom-container] {
     @apply flex flex-col gap-10;
+    @apply pt-10 pb-12;
 
     :global(h2) {
+      @apply font-600;
       @apply pt-6 mb-2;
       @apply text-5xl text-center;
     }

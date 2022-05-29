@@ -11,6 +11,8 @@ specifiers:
   astro-compress: ^0.0.6
   astro-icon: ^0.7.1
   astro-service-worker: ^0.1.2
+  hastscript: ^7.0.2
+  rehype-autolink-headings: ^6.1.1
   rehype-external-links: ^1.0.1
   sass: ^1.52.1
   solid-js: ^1.3.6
@@ -30,6 +32,8 @@ devDependencies:
   astro-compress: 0.0.6
   astro-icon: 0.7.1
   astro-service-worker: 0.1.2
+  hastscript: 7.0.2
+  rehype-autolink-headings: 6.1.1
   rehype-external-links: 1.0.1
   sass: 1.52.1
   solid-js: 1.4.3
@@ -3093,6 +3097,16 @@ packages:
       web-namespaces: 2.0.1
     dev: true
 
+  /hast-util-has-property/2.0.0:
+    resolution: {integrity: sha512-4Qf++8o5v14us4Muv3HRj+Er6wTNGA/N9uCaZMty4JWvyFKLdhULrv4KE1b65AthsSO9TXSZnjuxS8ecIyhb0w==}
+    dev: true
+
+  /hast-util-heading-rank/2.1.0:
+    resolution: {integrity: sha512-w+Rw20Q/iWp2Bcnr6uTrYU6/ftZLbHKhvc8nM26VIWpDqDMlku2iXUVTeOlsdoih/UKQhY7PHQ+vZ0Aqq8bxtQ==}
+    dependencies:
+      '@types/hast': 2.3.4
+    dev: true
+
   /hast-util-is-element/2.1.2:
     resolution: {integrity: sha512-thjnlGAnwP8ef/GSO1Q8BfVk2gundnc2peGQqEg2kUt/IqesiGg/5mSwN2fE7nLzy61pg88NG6xV+UrGOrx9EA==}
     dependencies:
@@ -4691,6 +4705,18 @@ packages:
     hasBin: true
     dependencies:
       jsesc: 0.5.0
+    dev: true
+
+  /rehype-autolink-headings/6.1.1:
+    resolution: {integrity: sha512-NMYzZIsHM3sA14nC5rAFuUPIOfg+DFmf9EY1YMhaNlB7+3kK/ZlE6kqPfuxr1tsJ1XWkTrMtMoyHosU70d35mA==}
+    dependencies:
+      '@types/hast': 2.3.4
+      extend: 3.0.2
+      hast-util-has-property: 2.0.0
+      hast-util-heading-rank: 2.1.0
+      hast-util-is-element: 2.1.2
+      unified: 10.1.2
+      unist-util-visit: 4.1.0
     dev: true
 
   /rehype-external-links/1.0.1:

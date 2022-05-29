@@ -1,14 +1,19 @@
 import { defineConfig } from "astro/config";
 import serviceWorker from 'astro-service-worker';
+
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import AutoImport from 'unplugin-auto-import/vite';
+
 import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
+
 import { outDir } from "./shared.config.js";
 
 import compress from "astro-compress";
+
+import { h } from "hastscript";
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,6 +24,17 @@ export default defineConfig({
   },
   site: "https://bundlejs.com",
   markdown: {
+    rehypePlugins: [
+      [
+        "rehype-autolink-headings",
+        {
+          behavior: "append",
+          content: [h("i.material-symbols-rounded", { "aria-hidden": "true" }, "insert_link")],
+          test: ['h2', 'h3', 'h4', 'h5', 'h6']
+        },
+      ],
+      ["rehype-external-links", { target: "_blank", rel: ["noopener"] }]
+    ],
     // remarkPlugins: [],
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)
