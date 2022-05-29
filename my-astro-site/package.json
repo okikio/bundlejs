@@ -17,6 +17,8 @@
     "astro-compress": "^0.0.6",
     "astro-icon": "^0.7.1",
     "astro-service-worker": "^0.1.2",
+    "hastscript": "^7.0.2",
+    "rehype-autolink-headings": "^6.1.1",
     "rehype-external-links": "^1.0.1",
     "sass": "^1.52.1",
     "solid-js": "^1.3.6",
