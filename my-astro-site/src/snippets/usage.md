@@ -18,8 +18,8 @@ You can use custom protocols to specify which CDN the module should come from.
 * unpkg:react -> [https://unpkg.com/react](https://unpkg.com/react)
 * deno:preact -> [https://deno.land/x/preact](https://deno.land/x/preact)
 * jsdelivr:react -> [https://cdn.jsdelivr.net/npm/react](https://cdn.jsdelivr.net/npm/react)
-* jsdelivr.gh:facebook/react/packages/react-dom/index.js -> [https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js](https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js)
-* github:facebook/react/main/packages/react/index.js -> [https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js](https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js)
+* jsdelivr.gh:.../react-dom/index.js -> [https://cdn.jsdelivr.net/gh/.../react-dom/index.js](https://cdn.jsdelivr.net/gh/facebook/react/packages/react-dom/index.js)
+* github:.../react/index.js -> [https://raw.githubusercontent.com/.../react/index.js](https://raw.githubusercontent.com/facebook/react/main/packages/react/index.js)
 
 e.g.
 

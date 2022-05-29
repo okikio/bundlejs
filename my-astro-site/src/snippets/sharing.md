@@ -2,6 +2,9 @@
 title: Sharing
 id: sharing
 priority: 1
+setup: |
+  import Details from "../components/Details";
+  import Anchor from "../components/Anchor.astro";
 ---
 You can now use search queries in **bundlejs**, all you need to do is add this to the url  
 `?q={packages}&treeshake={methods to treeshake}`  
@@ -19,11 +22,11 @@ In order to create a shareble link, you click the `Share` button, it copies the 
 
 If you would like to bundle your code when the share URL is loaded, add `bundle` to the url, e.g. [/?bundle&q=@okikio/animate](/?q=@okikio/animate&bundle) or [/?bundle&share=PTAEGEBs...](/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA) -->
 
-<details class="accordian bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md">
-    <summary>
-        <p class="px-4 py-2 cursor-pointer select-none">Auto-bundling shared URL's</p>
-    </summary>
-    <div class="content pl-4 pr-2 py-4">
-        <p>If you would like to bundle your code when the share URL is loaded, add <code>bundle</code> to the url, e.g. <a href="/?q=@okikio/animate&amp;bundle" rel="noopener">/?bundle&q=@okikio/animate</a> or <a href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA" rel="noopener">/?bundle&share=PTAEGEBs...</a></p>
-    </div>
-</details>
+<Details
+  class="inline-details bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md"
+  summary="Auto-bundling shared URL's"
+  client:load>
+
+  If you would like to bundle your code when the share URL is loaded, add <code>bundle</code> to the url, e.g. <Anchor href="/?q=@okikio/animate&amp;bundle">/?bundle&q=@okikio/animate</Anchor> or <Anchor href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA">/?bundle&share=PTAEGEBs...</Anchor>
+
+</Details>

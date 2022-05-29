@@ -12,17 +12,20 @@ import SearchBar from "../components/SearchSection/SearchBar.astro";
 // import EditorSection from "../components/EditorSection/EditorSection.astro";
 
 import { Content as Docs } from "../components/DocsSection/Docs.md";
+import IntroHeader from "../components/IntroHeader.astro";
 ---
 
 <BaseLayout>
-  <Container max="lg">
-    <header>
-      <h1>bundlejs</h1>
-      <p> a quick npm package size checker </p>
-    </header>
+  <Container>
+    <IntroHeader 
+      title="bundlejs" 
+      subtitle="a quick npm package size checker" 
+    />
 
     <SearchBar />
+  </Container>
 
+  <Container max="lg">
     <!-- <EditorSection /> -->
   </Container>
 
