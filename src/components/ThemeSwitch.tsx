@@ -17,7 +17,7 @@ export function ThemeSwitch() {
 	});
 
 	return (
-		<select class="theme-options" name="Theme Selector" onChange={onChange} ref={ref} custom-theme-switch>
+		<select class="theme-options" id="theme-selector" name="Theme Selector" onChange={onChange} ref={ref} custom-theme-switch>
 			<option value="system" selected={true}>System</option>
 			<option value="light">Light</option>
 			<option value="dark">Dark</option>

@@ -1,18 +1,13 @@
-import type { ModuleLengths, ModuleTree, ModuleTreeLeaf, SizeKey, VisualizerData } from "../../types/types";
-
-import { h, createContext, render } from "preact";
-import { hierarchy, HierarchyNode, HierarchyRectangularNode, partition, PartitionLayout } from "d3-hierarchy";
-import { Arc, arc as d3arc } from "d3-shape";
-import { scaleLinear, scaleSqrt } from "d3-scale";
-
+import { ModuleLengths, ModuleTree, ModuleTreeLeaf, SizeKey, VisualizerData } from "../../types/types";
+import { hierarchy, HierarchyNode, HierarchyRectangularNode, partition, PartitionLayout, Arc, arc as d3arc, scaleLinear, scaleSqrt } from "d3";
 import { isModuleTree } from "../../utils/is-module-tree";
-
 import { Main } from "./main";
-
 import { getAvailableSizeOptions } from "../sizes";
 import { generateUniqueId, Id } from "../uid";
-
 import "../style/style-sunburst.scss";
+
+import { createContext } from "solid-js";
+import { render } from "solid-js/web";
 
 export interface StaticData {
   data: VisualizerData;
@@ -38,18 +33,15 @@ export interface ChartData {
 }
 
 export type Context = StaticData & ChartData;
-
 export const StaticContext = createContext<Context>({} as unknown as Context);
 
 const drawChart = (parentNode: Element, data: VisualizerData, width: number, height: number): void => {
   const availableSizeProperties = getAvailableSizeOptions(data.options);
 
   const layout = partition<ModuleTree | ModuleTreeLeaf>();
-
   const rawHierarchy = hierarchy<ModuleTree | ModuleTreeLeaf>(data.tree);
 
   const nodeSizesCache = new Map<ModuleTree | ModuleTreeLeaf, ModuleLengths>();
-
   const nodeIdsCache = new Map<ModuleTree | ModuleTreeLeaf, ModuleIds>();
 
   const getModuleSize = (node: ModuleTree | ModuleTreeLeaf, sizeKey: SizeKey) =>
@@ -89,20 +81,20 @@ const drawChart = (parentNode: Element, data: VisualizerData, width: number, hei
     .innerRadius((d) => y(d.y0))
     .outerRadius((d) => y(d.y1));
 
-  render(
+  render(() =>
     <StaticContext.Provider
       value={{
-        data,
-        availableSizeProperties,
-        width,
-        height,
-        getModuleSize,
-        rawHierarchy,
-        layout,
-        getModuleIds,
-        arc,
-        radius,
-        size,
+        data: data,
+        availableSizeProperties: availableSizeProperties,
+        width: width,
+        height: height,
+        getModuleSize: getModuleSize,
+        rawHierarchy: rawHierarchy,
+        layout: layout,
+        getModuleIds: getModuleIds,
+        arc: arc,
+        radius: radius,
+        size: size
       }}
     >
       <Main />

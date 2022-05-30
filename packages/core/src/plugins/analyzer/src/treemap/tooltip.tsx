@@ -1,14 +1,12 @@
-import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useState, useRef, useEffect, useMemo, useContext, type MutableRef } from "preact/hooks";
-
+import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 import { format as formatBytes } from "bytes";
-
 import { LABELS } from "../sizes";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { isModuleTree } from "../../utils/is-module-tree";
+
+import { Component, createSignal, createMemo, useContext } from "solid-js";
+import onMountWithCleaning from "../../utils/onMountWithCleaning";
 
 export interface TooltipProps {
   node?: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;
@@ -34,13 +32,13 @@ const COMPRESSED = (
   </span>
 );
 
-export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root, sizeProperty }) => {
+export const Tooltip: Component<TooltipProps> = ({ node, visible, root, sizeProperty }) => {
   const { availableSizeProperties, getModuleSize, data } = useContext(StaticContext);
 
-  const ref = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState({});
+  const ref: HTMLDivElement = null;
+  const [style, setStyle] = createSignal({});
 
-  const content = useMemo(() => {
+  const content = createMemo(() => {
     if (!node) return null;
 
     const mainSize = getModuleSize(node.data, sizeProperty);
@@ -88,9 +86,9 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
             <div>
               <b>Imported By</b>:
             </div>
-            {dataNode.importedBy.map(({ uid }) => {
-              const id = data.nodeMetas[uid].id;
-              return <div key={id}>{id}</div>;
+            {dataNode.importedBy.map((params) => {
+              const id = data.nodeMetas[params.uid].id;
+              return <div>{id}</div>;
             })}
           </div>
         )}
@@ -104,17 +102,17 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
         )}
       </>
     );
-  }, [availableSizeProperties, data, getModuleSize, node, root.data, sizeProperty]);
+  });
 
   const updatePosition = (mouseCoords: { x: number; y: number }) => {
-    if (!ref.current) return;
+    if (!ref) return;
 
     const pos = {
       left: mouseCoords.x + Tooltip_marginX,
       top: mouseCoords.y + Tooltip_marginY,
     };
 
-    const boundingRect = ref.current.getBoundingClientRect();
+    const boundingRect = ref.getBoundingClientRect();
 
     if (pos.left + boundingRect.width > window.innerWidth) {
       // Shifting horizontally
@@ -129,7 +127,7 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
     setStyle(pos);
   };
 
-  useEffect(() => {
+  onMountWithCleaning(() => {
     const handleMouseMove = (event: MouseEvent) => {
       updatePosition({
         x: event.pageX,
@@ -141,11 +139,11 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, root
     return () => {
       document.removeEventListener("mousemove", handleMouseMove, true);
     };
-  }, []);
+  });
 
   return (
-    <div className={`tooltip ${visible ? "" : "tooltip-hidden"}`} ref={ref} style={style}>
-      {content}
+    <div class={`tooltip ${visible ? "" : "tooltip-hidden"}`} ref={ref} style={style()}>
+      {content()}
     </div>
   );
 };

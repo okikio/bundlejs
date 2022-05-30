@@ -1,8 +1,9 @@
 import type { ModuleTree, ModuleTreeLeaf } from "../../types/types";
 
-import { h, FunctionalComponent } from "preact";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import color from "../color";
+
+import { Component } from "solid-js";
 
 type NodeEventHandler = (event: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
 
@@ -15,7 +16,7 @@ export interface NodeProps {
   onClick: NodeEventHandler;
 }
 
-export const Node: FunctionalComponent<NodeProps> = ({ node, onMouseOver, onClick, path, highlighted, selected }) => {
+export const Node: Component<NodeProps> = ({ node, onMouseOver, onClick, path, highlighted, selected }) => {
   return (
     <path
       d={path}

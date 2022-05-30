@@ -27,8 +27,8 @@ If you would like to bundle your code when the share URL is loaded, add `bundle`
   summary="Auto-bundling shared URL's"
   >
 
-  client:load 
-  
+  client:load
+
   If you would like to bundle your code when the share URL is loaded, add <code>bundle</code> to the url, e.g. <Anchor href="/?q=@okikio/animate&amp;bundle">/?bundle&q=@okikio/animate</Anchor> or <Anchor href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA">/?bundle&share=PTAEGEBs...</Anchor>
 
 </Details>

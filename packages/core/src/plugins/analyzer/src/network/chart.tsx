@@ -1,11 +1,10 @@
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useState, useEffect } from "preact/hooks";
 import webcola from "webcola";
-
-import type { SizeKey } from "../../types/types";
+import { SizeKey } from "../../types/types";
 import { Tooltip } from "./tooltip";
 import { Network } from "./network";
 import { NetworkLink, NetworkNode } from "./index";
+import { Component, createSignal } from "solid-js";
+import { onMountWithCleaning } from "../../utils/onMountWithCleaning";
 
 export interface ChartProps {
   sizeProperty: SizeKey;
@@ -14,11 +13,11 @@ export interface ChartProps {
   groups: Record<string, webcola.Group>;
 }
 
-export const Chart: FunctionalComponent<ChartProps> = ({ sizeProperty, links, nodes, groups }) => {
-  const [showTooltip, setShowTooltip] = useState<boolean>(false);
-  const [tooltipNode, setTooltipNode] = useState<NetworkNode | undefined>(undefined);
+export const Chart: Component<ChartProps> = ({ sizeProperty, links, nodes, groups }) => {
+  const [showTooltip, setShowTooltip] = createSignal<boolean>(false);
+  const [tooltipNode, setTooltipNode] = createSignal<NetworkNode | undefined>(undefined);
 
-  useEffect(() => {
+  onMountWithCleaning(() => {
     const handleMouseOut = () => {
       setShowTooltip(false);
     };
@@ -27,7 +26,7 @@ export const Chart: FunctionalComponent<ChartProps> = ({ sizeProperty, links, no
     return () => {
       document.removeEventListener("mouseover", handleMouseOut);
     };
-  }, []);
+  });
 
   return (
     <>
@@ -40,7 +39,7 @@ export const Chart: FunctionalComponent<ChartProps> = ({ sizeProperty, links, no
           setShowTooltip(true);
         }}
       />
-      <Tooltip visible={showTooltip} node={tooltipNode} sizeProperty={sizeProperty} />
+      <Tooltip visible={showTooltip()} node={tooltipNode()} sizeProperty={sizeProperty} />
     </>
   );
 };

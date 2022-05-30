@@ -1,14 +1,9 @@
-import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useContext, useMemo } from "preact/hooks";
-
+import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 import { format as formatBytes } from "bytes";
-
-import { HierarchyRectangularNode } from "d3-hierarchy";
-
+import { HierarchyRectangularNode } from "d3";
 import { LABELS } from "../sizes";
 import { StaticContext } from "./index";
+import { useContext, createMemo, Component } from "solid-js";
 
 export interface TooltipProps {
   node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;
@@ -16,10 +11,10 @@ export interface TooltipProps {
   sizeProperty: SizeKey;
 }
 
-export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, root, sizeProperty }) => {
+export const Tooltip: Component<TooltipProps> = ({ node, root, sizeProperty }) => {
   const { availableSizeProperties, getModuleSize } = useContext(StaticContext);
 
-  const content = useMemo(() => {
+  const content = createMemo(() => {
     if (!node) return null;
 
     const mainSize = getModuleSize(node.data, sizeProperty);
@@ -30,12 +25,12 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, root, sizePro
 
     return (
       <>
-        <div className="details-name">{node.data.name}</div>
-        <div className="details-percentage">{percentageString}</div>
+        <div class="details-name">{node.data.name}</div>
+        <div class="details-percentage">{percentageString}</div>
         {availableSizeProperties.map((sizeProp) => {
           if (sizeProp === sizeProperty) {
             return (
-              <div className="details-size">
+              <div class="details-size">
                 <b>
                   {LABELS[sizeProp]}: {formatBytes(getModuleSize(node.data, sizeProp))}
                 </b>
@@ -43,7 +38,7 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, root, sizePro
             );
           } else {
             return (
-              <div className="details-size">
+              <div class="details-size">
                 {LABELS[sizeProp]}: {formatBytes(getModuleSize(node.data, sizeProp))}
               </div>
             );
@@ -51,7 +46,7 @@ export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, root, sizePro
         })}
       </>
     );
-  }, [availableSizeProperties, getModuleSize, node, root.data, sizeProperty]);
+  });
 
-  return <div className="details">{content}</div>;
+  return <div class="details">{content()}</div>;
 };

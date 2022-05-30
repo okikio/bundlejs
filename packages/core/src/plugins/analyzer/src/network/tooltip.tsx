@@ -1,7 +1,7 @@
 import type { SizeKey } from "../../types/types";
 
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useContext, useEffect, useMemo, useRef, useState, type MutableRef } from "preact/hooks";
+import { h, Fragment, Component } from "react";
+import { useContext, useEffect, useMemo, useRef, useState, type MutableRef } from "react";
 import { format as formatBytes } from "bytes";
 import { StaticContext, NetworkNode } from "./index";
 import { LABELS } from "../sizes";
@@ -15,7 +15,7 @@ export interface TooltipProps {
 const Tooltip_marginX = 10;
 const Tooltip_marginY = 30;
 
-export const Tooltip: FunctionalComponent<TooltipProps> = ({ node, visible, sizeProperty }) => {
+export const Tooltip: Component<TooltipProps> = ({ node, visible, sizeProperty }) => {
   const { availableSizeProperties, data } = useContext(StaticContext);
 
   const ref = useRef<HTMLDivElement>(null);

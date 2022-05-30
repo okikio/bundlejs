@@ -1,5 +1,5 @@
-import { h, FunctionalComponent } from "preact";
-import { useContext } from "preact/hooks";
+import { h, Component } from "react";
+import { useContext } from "react";
 import webcola from "webcola";
 import { NetworkLink, NetworkNode, StaticContext } from "./index";
 import { COLOR_BASE } from "../color";
@@ -12,7 +12,7 @@ export interface NetworkProps {
   groups: Record<string, webcola.Group>;
 }
 
-export const Network: FunctionalComponent<NetworkProps> = ({ links, nodes, groups, onNodeHover }) => {
+export const Network: Component<NetworkProps> = ({ links, nodes, groups, onNodeHover }) => {
   const { width, height } = useContext(StaticContext);
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${height}`}>

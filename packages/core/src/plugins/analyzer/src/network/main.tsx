@@ -1,36 +1,30 @@
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useContext, useMemo, useState } from "preact/hooks";
-
-import { scaleSqrt } from "d3-scale";
-import { max } from "d3-array";
+import { scaleSqrt, max } from "d3";
 import webcola from "webcola";
-
-import type { SizeKey } from "../../types/types";
-
+import { SizeKey } from "../../types/types";
 import { SideBar } from "../sidebar";
 import { Chart } from "./chart";
 import { NODE_MODULES } from "./util";
-
 import { NetworkLink, NetworkNode, StaticContext } from "./index";
 import { getModuleColor } from "./color";
 import { useFilter } from "../use-filter";
+import { Component, useContext, createMemo, createSignal } from "solid-js";
 
-export const Main: FunctionalComponent = () => {
+export const Main: Component = () => {
   const { availableSizeProperties, nodes, data, width, height } = useContext(StaticContext);
 
-  const [sizeProperty, setSizeProperty] = useState<SizeKey>(availableSizeProperties[0]);
+  const [sizeProperty, setSizeProperty] = createSignal<SizeKey>(availableSizeProperties[0]);
 
   const { getModuleFilterMultiplier, setExcludeFilter, setIncludeFilter } = useFilter();
 
-  const sizeScale = useMemo(() => {
-    const maxLines = max(Object.values(nodes), (d) => d[sizeProperty]) as number;
+  const sizeScale = createMemo(() => {
+    const maxLines = max(Object.values(nodes), (d) => d[sizeProperty()]) as number;
     const size = scaleSqrt().domain([1, maxLines]).range([5, 30]);
     return size;
-  }, [nodes, sizeProperty]);
+  });
 
   const processedNodes = Object.values(nodes)
     .map((node) => {
-      const radius = sizeScale(node[sizeProperty]) + 1;
+      const radius = sizeScale()(node[sizeProperty()]) + 1;
       return {
         ...node,
         width: radius * 2,
@@ -137,13 +131,13 @@ export const Main: FunctionalComponent = () => {
   return (
     <>
       <SideBar
-        sizeProperty={sizeProperty}
+        sizeProperty={sizeProperty()}
         availableSizeProperties={availableSizeProperties}
         setSizeProperty={setSizeProperty}
         onExcludeChange={setExcludeFilter}
         onIncludeChange={setIncludeFilter}
       />
-      <Chart nodes={realGraphNodes} groups={{}} links={links} sizeProperty={sizeProperty} />
+      <Chart nodes={realGraphNodes} groups={{}} links={links} sizeProperty={sizeProperty()} />
     </>
   );
 };

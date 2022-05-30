@@ -1,11 +1,10 @@
-import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-
-import { h, Fragment, FunctionalComponent } from "preact";
-import { useState, useEffect, useMemo } from "preact/hooks";
-
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
+import { HierarchyRectangularNode } from "d3";
 import { Tooltip } from "./tooltip";
 import { SunBurst } from "./sunburst";
+
+import { createSignal, createMemo, Component, on } from "solid-js";
+import { createEffectWithCleaning } from "../../utils/createEffectWithCleaning";
 
 export interface ChartProps {
   root: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;
@@ -16,27 +15,32 @@ export interface ChartProps {
 
 type NodeSelectHandler = (node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => boolean;
 
-export const Chart: FunctionalComponent<ChartProps> = ({ root, sizeProperty, selectedNode, setSelectedNode }) => {
-  const [tooltipNode, setTooltipNode] = useState(root);
+export const Chart: Component<ChartProps> = ({ root, sizeProperty, selectedNode, setSelectedNode }) => {
+  const [tooltipNode, setTooltipNode] = createSignal(root);
 
-  const isNodeHighlighted = useMemo<NodeSelectHandler>(() => {
-    const highlightedNodes = new Set(tooltipNode === root ? root.descendants() : tooltipNode.ancestors());
+  const isNodeHighlighted = createMemo<NodeSelectHandler>(() => {
+    const highlightedNodes = new Set(tooltipNode() === root ? root.descendants() : tooltipNode().ancestors());
     return (node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>): boolean => {
       return highlightedNodes.has(node);
     };
-  }, [root, tooltipNode]);
+  });
 
-  useEffect(() => {
-    const handleMouseOut = () => {
-      setTooltipNode(root);
-    };
+  // @ts-ignore
+  createEffectWithCleaning(on(
+    () => [root],
+    () => {
+      const handleMouseOut = () => {
+        setTooltipNode(root);
+      };
 
-    handleMouseOut();
-    document.addEventListener("mouseover", handleMouseOut);
-    return () => {
-      document.removeEventListener("mouseover", handleMouseOut);
-    };
-  }, [root]);
+      handleMouseOut();
+      document.addEventListener("mouseover", handleMouseOut);
+
+      return () => {
+        document.removeEventListener("mouseover", handleMouseOut)
+      };
+    }
+  ));
 
   return (
     <>
@@ -45,13 +49,13 @@ export const Chart: FunctionalComponent<ChartProps> = ({ root, sizeProperty, sel
         onNodeHover={(node) => {
           setTooltipNode(node);
         }}
-        isNodeHighlighted={isNodeHighlighted}
+        isNodeHighlighted={isNodeHighlighted()}
         selectedNode={selectedNode}
         onNodeClick={(node) => {
           setSelectedNode(selectedNode === node ? undefined : node);
         }}
       />
-      <Tooltip node={tooltipNode} root={root} sizeProperty={sizeProperty} />
+      <Tooltip node={tooltipNode()} root={root} sizeProperty={sizeProperty} />
     </>
   );
 };

@@ -1,8 +1,9 @@
-import * as path from 'path';
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   build: {
+    sourcemap: true,
     outDir: "lib",
     lib: {
       entry: "./src/index.ts",
@@ -21,5 +22,11 @@ export default defineConfig({
         return `index.${format}.js`;
       }
     }
-  }
+  },
+  plugins: [
+    dts({
+      outputDir: "@types",
+      tsConfigFilePath: "./dts.tsconfig.json"
+    })
+  ]
 })
