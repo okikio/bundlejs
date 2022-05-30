@@ -1,8 +1,5 @@
 [build]
-  command = "npm run build"
-
-[build.environment]
-  NPM_FLAGS="--prefix=/dev/null --force"
+  command = "pnpm build || ( npm install pnpm && npx pnpm build )"
 
 [[plugins]]
   package = "/.netlify/netlify-plugin-pnpm"
