@@ -1,14 +1,12 @@
-import type { ModuleMeta, ModuleLengths, ModuleUID, SizeKey, VisualizerData } from "../../types/types";
-
-import { h, createContext, render } from "preact";
+import { ModuleMeta, ModuleLengths, ModuleUID, SizeKey, VisualizerData } from "../../types/types";
 import webcola from "webcola";
-
 import { Main } from "./main";
-
 import { getAvailableSizeOptions } from "../sizes";
 import { CssColor } from "../color";
-
 import "../style/style-treemap.scss";
+
+import { render } from "solid-js/web";
+import { createContext } from "solid-js";
 
 export type NetworkNode = NodeInfo & { color: CssColor; radius: number } & webcola.Node;
 export type NetworkLink = webcola.Link<NetworkNode>;
@@ -52,14 +50,14 @@ const drawChart = (parentNode: Element, data: VisualizerData, width: number, hei
     nodes[uid] = createNodeInfo(data, availableSizeProperties, uid);
   }
 
-  render(
+  render(() =>
     <StaticContext.Provider
       value={{
-        data,
-        availableSizeProperties,
-        width,
-        height,
-        nodes,
+        data: data,
+        availableSizeProperties: availableSizeProperties,
+        width: width,
+        height: height,
+        nodes: nodes
       }}
     >
       <Main />

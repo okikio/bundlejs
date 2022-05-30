@@ -1,24 +1,15 @@
-import type {
-  ModuleLengths,
-  ModuleTree,
-  ModuleTreeLeaf,
-  SizeKey,
-  VisualizerData,
-} from "../../types/types";
-
-import { h, createContext, render } from "preact";
-import { hierarchy, HierarchyNode, treemap, TreemapLayout, treemapResquarify } from "d3-hierarchy";
-
+import { ModuleLengths, ModuleTree, ModuleTreeLeaf, SizeKey, VisualizerData } from "../../types/types";
+import { hierarchy, HierarchyNode, treemap, TreemapLayout, treemapResquarify } from "d3";
 import { Main } from "./main";
-
 import { generateUniqueId, Id } from "../uid";
 import { getAvailableSizeOptions } from "../sizes";
 import createRainbowColor, { NodeColorGetter } from "./color";
-
 import { isModuleTree } from "../../utils/is-module-tree";
-
 import "../style/style-treemap.scss";
 import { PADDING, TOP_PADDING } from "./const";
+
+import { createContext } from "solid-js";
+import { render } from "solid-js/web";
 
 export interface StaticData {
   data: VisualizerData;
@@ -99,18 +90,18 @@ const drawChart = (parentNode: Element, data: VisualizerData, width: number, hei
   const getModuleColor = createRainbowColor(rawHierarchy);
   console.timeEnd("color");
 
-  render(
+  render(() =>
     <StaticContext.Provider
       value={{
-        data,
-        availableSizeProperties,
-        width,
-        height,
-        getModuleSize,
-        getModuleIds,
-        getModuleColor,
-        rawHierarchy,
-        layout,
+        data: data,
+        availableSizeProperties: availableSizeProperties,
+        width: width,
+        height: height,
+        getModuleSize: getModuleSize,
+        getModuleIds: getModuleIds,
+        getModuleColor: getModuleColor,
+        rawHierarchy: rawHierarchy,
+        layout: layout
       }}
     >
       <Main />

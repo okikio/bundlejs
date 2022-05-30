@@ -1,11 +1,8 @@
-import type { ModuleTree, ModuleTreeLeaf } from "../../types/types";
-
-import { h, FunctionalComponent } from "preact";
-import { HierarchyRectangularNode } from "d3-hierarchy";
-import { useContext } from "preact/hooks";
+import { ModuleTree, ModuleTreeLeaf } from "../../types/types";
+import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
-
 import { Node } from "./node";
+import { Component, useContext } from "solid-js";
 
 export interface SunBurstProps {
   root: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;
@@ -15,7 +12,7 @@ export interface SunBurstProps {
   onNodeClick: (node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
 }
 
-export const SunBurst: FunctionalComponent<SunBurstProps> = ({
+export const SunBurst: Component<SunBurstProps> = ({
   root,
   onNodeHover,
   isNodeHighlighted,
@@ -30,7 +27,6 @@ export const SunBurst: FunctionalComponent<SunBurstProps> = ({
         {root.descendants().map((node) => {
           return (
             <Node
-              key={getModuleIds(node.data).nodeUid.id}
               node={node}
               onMouseOver={onNodeHover}
               path={arc(node) as string}

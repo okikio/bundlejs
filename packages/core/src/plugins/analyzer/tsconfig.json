@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "jsx": "react-jsx",
-        "jsxImportSource": "preact",
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
         "moduleResolution": "node",
         "target": "ES2021",
         "module": "ES2020",

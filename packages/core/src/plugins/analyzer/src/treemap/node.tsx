@@ -1,11 +1,9 @@
-import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-
-import { h, FunctionalComponent } from "preact";
-import { useContext, useLayoutEffect, useRef } from "preact/hooks";
+import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 import { format as formatBytes } from "bytes";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { PADDING, TOP_PADDING } from "./const";
+import { Component, useContext, createRenderEffect, on } from "solid-js";
 
 type NodeEventHandler = (event: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
 
@@ -16,13 +14,13 @@ export interface NodeProps {
   onClick: NodeEventHandler;
 }
 
-export const Node: FunctionalComponent<NodeProps> = ({ node, onMouseOver, onClick, selected }) => {
+export const Node: Component<NodeProps> = ({ node, onMouseOver, onClick, selected }) => {
   const { getModuleColor } = useContext(StaticContext);
   const { backgroundColor, fontColor } = getModuleColor(node);
   const { x0, x1, y1, y0, data, children = null } = node;
 
-  const textRef = useRef<SVGTextElement>(null);
-  const textRectRef = useRef<DOMRect>();
+  const textRef: SVGTextElement = null;
+  let textRectRef: DOMRect = null;
 
   const width = x1 - x0;
   const height = y1 - y0;
@@ -39,33 +37,36 @@ export const Node: FunctionalComponent<NodeProps> = ({ node, onMouseOver, onClic
     textProps.y = height / 2;
   }
 
-  useLayoutEffect(() => {
-    if (width == 0 || height == 0 || !textRef.current) {
-      return;
-    }
+  createRenderEffect(on(
+    () => [children, height, width],
+    () => {
+      if (width == 0 || height == 0 || !textRef) {
+        return;
+      }
 
-    if (textRectRef.current == null) {
-      textRectRef.current = textRef.current.getBoundingClientRect();
-    }
+      if (textRectRef == null) {
+        textRectRef = textRef.getBoundingClientRect();
+      }
 
-    let scale = 1;
-    if (children != null) {
-      scale = Math.min(
-        (width * 0.9) / textRectRef.current.width,
-        Math.min(height, TOP_PADDING + PADDING) / textRectRef.current.height
-      );
-      scale = Math.min(1, scale);
-      textRef.current.setAttribute("y", String(Math.min(TOP_PADDING + PADDING, height) / 2 / scale));
-      textRef.current.setAttribute("x", String(width / 2 / scale));
-    } else {
-      scale = Math.min((width * 0.9) / textRectRef.current.width, (height * 0.9) / textRectRef.current.height);
-      scale = Math.min(1, scale);
-      textRef.current.setAttribute("y", String(height / 2 / scale));
-      textRef.current.setAttribute("x", String(width / 2 / scale));
-    }
+      let scale = 1;
+      if (children != null) {
+        scale = Math.min(
+          (width * 0.9) / textRectRef.width,
+          Math.min(height, TOP_PADDING + PADDING) / textRectRef.height
+        );
+        scale = Math.min(1, scale);
+        textRef.setAttribute("y", String(Math.min(TOP_PADDING + PADDING, height) / 2 / scale));
+        textRef.setAttribute("x", String(width / 2 / scale));
+      } else {
+        scale = Math.min((width * 0.9) / textRectRef.width, (height * 0.9) / textRectRef.height);
+        scale = Math.min(1, scale);
+        textRef.setAttribute("y", String(height / 2 / scale));
+        textRef.setAttribute("x", String(width / 2 / scale));
+      }
 
-    textRef.current.setAttribute("transform", `scale(${scale.toFixed(2)})`);
-  }, [children, height, width]);
+      textRef.setAttribute("transform", `scale(${scale.toFixed(2)})`);
+    }
+  ));
 
   if (width == 0 || height == 0) {
     return null;
@@ -73,7 +74,7 @@ export const Node: FunctionalComponent<NodeProps> = ({ node, onMouseOver, onClic
 
   return (
     <g
-      className="node"
+      class="node"
       transform={`translate(${x0},${y0})`}
       onClick={(event: MouseEvent) => {
         event.stopPropagation();

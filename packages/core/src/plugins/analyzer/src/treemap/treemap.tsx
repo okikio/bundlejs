@@ -1,12 +1,8 @@
-import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-
-import { h, FunctionalComponent } from "preact";
-import { useContext, useMemo } from "preact/hooks";
-import { group } from "d3-array";
-import { HierarchyNode, HierarchyRectangularNode } from "d3-hierarchy";
-
+import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
+import { group, HierarchyNode, HierarchyRectangularNode } from "d3";
 import { Node } from "./node";
 import { StaticContext } from "./index";
+import { Component, useContext, createMemo } from "solid-js";
 
 export interface TreeMapProps {
   root: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;
@@ -15,12 +11,12 @@ export interface TreeMapProps {
   onNodeClick: (node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
 }
 
-export const TreeMap: FunctionalComponent<TreeMapProps> = ({ root, onNodeHover, selectedNode, onNodeClick }) => {
+export const TreeMap: Component<TreeMapProps> = ({ root, onNodeHover, selectedNode, onNodeClick }) => {
   const { width, height, getModuleIds } = useContext(StaticContext);
 
   console.time("layering");
   // this will make groups by height
-  const nestedData = useMemo(() => {
+  const nestedData = createMemo(() => {
     const nestedDataMap = group(root.descendants(), (d: HierarchyNode<ModuleTree | ModuleTreeLeaf>) => d.height);
     const nestedData = Array.from(nestedDataMap, ([key, values]) => ({
       key,
@@ -28,18 +24,17 @@ export const TreeMap: FunctionalComponent<TreeMapProps> = ({ root, onNodeHover, 
     }));
     nestedData.sort((a, b) => b.key - a.key);
     return nestedData;
-  }, [root]);
+  });
   console.timeEnd("layering");
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${height}`}>
-      {nestedData.map(({ key, values }) => {
+      {nestedData().map((params) => {
         return (
-          <g className="layer" key={key}>
-            {values.map((node) => {
+          <g class="layer">
+            {params.values.map((node) => {
               return (
                 <Node
-                  key={getModuleIds(node.data).nodeUid.id}
                   node={node as HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>}
                   onMouseOver={onNodeHover}
                   selected={selectedNode === node}

@@ -4,21 +4,19 @@
   "access": "public",
   "type": "module",
   "description": "An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.",
-  "publishConfig": {
-    "main": "lib/index.js",
-    "types": "@types/index.d.ts",
-    "browser": "lib/index.mjs",
-    "module": "lib/index.mjs",
-    "exports": {
-      ".": {
-        "require": "lib/index.cjs",
-        "import": "lib/index.mjs",
-        "default": "lib/index.js"
-      },
-      "./lib/*": "lib/*"
-    }
+  "main": "lib/index.js",
+  "types": "@types/index.d.ts",
+  "browser": "lib/index.mjs",
+  "module": "lib/index.mjs",
+  "typedocMain": "src/index.ts",
+  "exports": {
+    ".": {
+      "require": "./lib/index.cjs",
+      "import": "./lib/index.mjs",
+      "default": "./lib/index.js"
+    },
+    "./lib/*": "./lib/*"
   },
-  "main": "src/index.ts",
   "directories": {
     "lib": "./lib",
     "src": "./src",
@@ -30,8 +28,8 @@
     "@types"
   ],
   "scripts": {
-    "build": "del-cli lib/ && vite build",
-    "watch": "del-cli lib/ && vite build --watch",
+    "build": "vite build",
+    "dev": "vite build --watch",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
     "pre-release": "pnpm build && pnpm dts"
   },
@@ -77,8 +75,8 @@
     "nanoid": "^3.3.4",
     "parse-package-name": "^1.0.0",
     "resolve.exports": "^1.1.0",
-    "solid-js": "^1.4.3",
     "rollup": "^2.75.3",
+    "solid-js": "^1.4.3",
     "typescript": "^4.7.2",
     "webcola": "^3.4.0"
   },
@@ -89,6 +87,7 @@
     "del-cli": "^4.0.1",
     "typescript-json-schema": "^0.53.1",
     "vite": "^2.9.9",
+    "vite-plugin-dts": "^1.2.0",
     "vitest": "^0.13.0"
   }
 }
