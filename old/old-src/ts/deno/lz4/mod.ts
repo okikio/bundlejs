@@ -4,7 +4,7 @@ import init, {
     source,
     lz4_compress,
     lz4_decompress,
-} from "./wasm.js.js.js";
+} from "./wasm.js";
 
 let initialized = false;
 const getWASM = async () => {

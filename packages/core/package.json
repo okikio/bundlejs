@@ -11,11 +11,11 @@
     "module": "lib/index.mjs",
     "exports": {
       ".": {
-        "require": "./lib/index.cjs",
-        "import": "./lib/index.mjs",
-        "default": "./lib/index.js"
+        "require": "lib/index.cjs",
+        "import": "lib/index.mjs",
+        "default": "lib/index.js"
       },
-      "./lib/*": "./lib/*"
+      "./lib/*": "lib/*"
     }
   },
   "main": "src/index.ts",

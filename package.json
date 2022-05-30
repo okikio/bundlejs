@@ -2,6 +2,7 @@
   "name": "root",
   "version": "0.0.5",
   "private": true,
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",

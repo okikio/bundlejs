@@ -3,7 +3,7 @@ title: Sharing
 id: sharing
 priority: 1
 setup: |
-  import Details from "../components/Details";
+  import Details from "../components/Details.tsx";
   import Anchor from "../components/Anchor.astro";
 ---
 You can now use search queries in **bundlejs**, all you need to do is add this to the url  
@@ -25,8 +25,10 @@ If you would like to bundle your code when the share URL is loaded, add `bundle`
 <Details
   class="inline-details bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md"
   summary="Auto-bundling shared URL's"
-  client:load>
+  >
 
+  client:load 
+  
   If you would like to bundle your code when the share URL is loaded, add <code>bundle</code> to the url, e.g. <Anchor href="/?q=@okikio/animate&amp;bundle">/?bundle&q=@okikio/animate</Anchor> or <Anchor href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA">/?bundle&share=PTAEGEBs...</Anchor>
 
 </Details>

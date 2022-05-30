@@ -9,7 +9,7 @@ import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 
-import { outDir } from "./shared.config.js";
+import { outDir } from "./shared.config.cjs";
 
 import compress from "astro-compress";
 import { h } from "hastscript";

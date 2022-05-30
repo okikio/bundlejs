@@ -7,6 +7,7 @@ import type { ComponentProps } from "solid-js";
 export function SearchInput(props: ComponentProps<'div'> & {
   onClear?: (e?: MouseEvent) => void;
   onKeyup?: (e?: KeyboardEvent) => void;
+  ref?: HTMLInputElement | ((el: HTMLInputElement) => void);
 }) { 
   return (
     <div class="search">
@@ -15,7 +16,7 @@ export function SearchInput(props: ComponentProps<'div'> & {
       </div>
 
       {/* @ts-ignore */}
-      <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." onKeyup={props?.onKeyup} />
+      <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." onKeyup={props?.onKeyup} ref={props?.ref} />
 
       <Button class="clear umami--click--search-clear-button" title="Clear search input" onClick={props?.onClear}>
         <IconClear astro-icon />

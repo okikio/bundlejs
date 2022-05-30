@@ -3,7 +3,7 @@ import init, {
     source,
     compress as wasm_compress,
     decompress as wasm_decompress,
-} from "./wasm.js.js.js";
+} from "./wasm.js";
 
 let initialized = false;
 export const getWASM = async () => {

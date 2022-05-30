@@ -1,5 +1,5 @@
-import type { BuildOptions } from "esbuild-wasm";
-import type { OutputOptions } from "rollup";
+import type { BuildOptions } from "esbuild-wasm/esm/browser";
+import type { OutputOptions } from "rollup/dist/es/rollup.browser";
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
 
 import { deepAssign } from "../utils/deep-equal";
