@@ -1,6 +1,6 @@
-// ./postcss.config.js
+// ./postcss.config.cjs
 const { postcssFontGrabber } = require("postcss-font-grabber");
-const { outDir } = require("./shared.config.js");
+const { outDir } = require("./shared.config.cjs");
 
 let cssFolder = `${outDir}/assets`;
 module.exports = {
