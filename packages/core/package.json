@@ -1,0 +1,94 @@
+{
+  "name": "@bundlejs/core",
+  "version": "0.0.0",
+  "access": "public",
+  "type": "module",
+  "description": "An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.",
+  "publishConfig": {
+    "main": "lib/index.js",
+    "types": "@types/index.d.ts",
+    "browser": "lib/index.mjs",
+    "module": "lib/index.mjs",
+    "exports": {
+      ".": {
+        "require": "./lib/index.cjs",
+        "import": "./lib/index.mjs",
+        "default": "./lib/index.js"
+      },
+      "./lib/*": "./lib/*"
+    }
+  },
+  "main": "src/index.ts",
+  "directories": {
+    "lib": "./lib",
+    "src": "./src",
+    "types": "./@types"
+  },
+  "files": [
+    "lib",
+    "src",
+    "@types"
+  ],
+  "scripts": {
+    "build": "del-cli lib/ && vite build",
+    "watch": "del-cli lib/ && vite build --watch",
+    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
+    "pre-release": "pnpm build && pnpm dts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikio/native.git"
+  },
+  "keywords": [
+    "modern",
+    "bundlejs",
+    "bundle size checker",
+    "esbuild-wasm",
+    "gzip",
+    "brotli",
+    "deno",
+    "bundler",
+    "treeshake",
+    "bundlephobia",
+    "cdn",
+    "github",
+    "skypack",
+    "unpkg",
+    "compressed",
+    "jsx",
+    "minify",
+    "typescript"
+  ],
+  "author": {
+    "name": "Okiki Ojo",
+    "email": "hey@okikio.dev",
+    "url": "https://okikio.dev"
+  },
+  "bugs": {
+    "url": "https://github.com/okikio/bundlejs/issues"
+  },
+  "homepage": "https://bundlejs.com",
+  "dependencies": {
+    "@amoutonbrady/lz-string": "^0.0.1",
+    "@okikio/emitter": "^2.1.7",
+    "bytes": "^3.1.2",
+    "d3": "^7.4.4",
+    "esbuild-wasm": "^0.14.42",
+    "nanoid": "^3.3.4",
+    "parse-package-name": "^1.0.0",
+    "resolve.exports": "^1.1.0",
+    "solid-js": "^1.4.3",
+    "rollup": "^2.75.3",
+    "typescript": "^4.7.2",
+    "webcola": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/bytes": "^3.1.1",
+    "@types/d3": "^7.4.0",
+    "@types/node": "^17.0.36",
+    "del-cli": "^4.0.1",
+    "typescript-json-schema": "^0.53.1",
+    "vite": "^2.9.9",
+    "vitest": "^0.13.0"
+  }
+}

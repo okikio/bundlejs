@@ -1,141 +1,85 @@
 {
-    "name": "bundle",
-    "version": "0.0.5",
-    "private": true,
-    "license": "MIT",
-    "type": "module",
-    "workspaces": [
-        "packages/*",
-        "my-astro-site"
+  "name": "root",
+  "version": "0.0.5",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "pnpm build",
+    "pre-release": "pnpm test",
+    "semantic-release": "semantic-release",
+    "repl": "tsm repl.ts"
+  },
+  "release": {
+    "branches": [
+      "main"
     ],
-    "scripts": {
-        "commit": "git cz",
-        "build": "gulp build",
-        "watch": "gulp --watch",
-        "test": "pnpm build",
-        "pre-release": "pnpm test",
-        "semantic-release": "semantic-release",
-        "repl": "tsm repl.ts"
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  },
+  "changelog": {
+    "repo": "bundlejs",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":memo: Documentation",
+      "internal": ":house: Internal"
     },
-    "release": {
-        "branches": [
-            "main"
-        ],
-        "plugins": [
-            "@semantic-release/commit-analyzer",
-            "@semantic-release/release-notes-generator",
-            "@semantic-release/changelog",
-            "@semantic-release/git",
-            "@semantic-release/github"
-        ]
-    },
-    "changelog": {
-        "repo": "bundle",
-        "labels": {
-            "breaking": ":boom: Breaking Change",
-            "enhancement": ":rocket: Enhancement",
-            "bug": ":bug: Bug Fix",
-            "documentation": ":memo: Documentation",
-            "internal": ":house: Internal"
-        },
-        "cacheDir": ".changelog"
-    },
-    "husky": {
-        "hooks": {
-            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
-        }
-    },
-    "author": {
-        "name": "Okiki Ojo",
-        "email": "hey@okikio.dev",
-        "url": "https://okikio.dev"
-    },
-    "bugs": {
-        "url": "https://github.com/okikio/bundle/issues"
-    },
-    "homepage": "https://bundlejs.com",
-    "dependencies": {
-        "@amoutonbrady/lz-string": "^0.0.1",
-        "@dprint/formatter": "^0.2.0",
-        "@okikio/animate": "beta",
-        "@okikio/emitter": "^2.1.7",
-        "@okikio/native": "^3.0.1",
-        "@okikio/sharedworker": "^1.0.4",
-        "@typescript/ata": "^0.9.3",
-        "bytes": "^3.1.2",
-        "countapi-js": "^1.0.2",
-        "d3": "^7.4.4",
-        "d3-array": "^3.1.6",
-        "d3-color": "^3.1.0",
-        "d3-hierarchy": "^3.1.2",
-        "d3-scale": "^4.0.2",
-        "d3-shape": "^3.1.0",
-        "esbuild-wasm": "^0.14.39",
-        "monaco-editor": "^0.33.0",
-        "nanoid": "^3.3.4",
-        "parse-package-name": "^1.0.0",
-        "preact": "^10.7.2",
-        "resolve.exports": "^1.1.0",
-        "solid-js": "^1.4.3",
-        "typescript": "^4.7.2",
-        "web-animations-js": "^2.3.2",
-        "webcola": "^3.4.0",
-        "workbox-window": "^6.5.3"
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^16.3.0",
-        "@commitlint/config-conventional": "^16.2.4",
-        "@csstools/postcss-sass": "^5.0.1",
-        "@semantic-release/changelog": "^6.0.1",
-        "@semantic-release/git": "^10.0.1",
-        "@types/bytes": "^3.1.1",
-        "@types/d3": "^7.4.0",
-        "@types/d3-array": "^3.0.3",
-        "@types/d3-color": "^3.1.0",
-        "@types/d3-hierarchy": "^3.1.0",
-        "@types/d3-scale": "^4.0.2",
-        "@types/d3-shape": "^3.1.0",
-        "@types/node": "^17.0.35",
-        "astro": "1.0.0-beta.36",
-        "autoprefixer": "^10.4.7",
-        "browser-sync": "^2.27.10",
-        "commitizen": "^4.2.4",
-        "cssnano": "^5.1.9",
-        "del": "^6.1.1",
-        "esbuild": "^0.14.39",
-        "esbuild-plugin-solid": "^0.4.2",
-        "gulp": "^4.0.2",
-        "gulp-esbuild": "^0.10.3",
-        "gulp-if": "^3.0.0",
-        "gulp-plumber": "^1.2.1",
-        "gulp-postcss": "^9.0.1",
-        "gulp-posthtml": "^3.0.5",
-        "gulp-pug": "^5.0.0",
-        "gulp-rename": "^2.0.0",
-        "gulp-sitemap": "^8.0.0",
-        "gulp-size": "^4.0.1",
-        "hastscript": "^7.0.2",
-        "husky": "^8.0.1",
-        "jstransformer-markdown-it": "^2.1.0",
-        "postcss": "^8.4.14",
-        "postcss-font-grabber": "^3.0.2",
-        "postcss-replace": "^2.0.0",
-        "postcss-scss": "^4.0.4",
-        "posthtml-parser": "^0.11.0",
-        "posthtml-render": "^3.0.0",
-        "rehype": "^12.0.1",
-        "rehype-autolink-headings": "^6.1.1",
-        "rehype-external-links": "^1.0.1",
-        "rehype-highlight": "^5.0.2",
-        "rehype-slug": "^5.0.1",
-        "rollup": "^2.74.1",
-        "sass": "^1.52.1",
-        "semantic-release": "^19.0.2",
-        "standard-version": "^9.5.0",
-        "tailwindcss": "^3.0.24",
-        "tiny-glob": "^0.2.9",
-        "tsm": "^2.2.1",
-        "typescript-json-schema": "^0.53.1",
-        "workbox-build": "^6.5.3"
+    "cacheDir": ".changelog"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
     }
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^0.1.0",
+    "@astrojs/solid-js": "^0.1.2",
+    "@astrojs/tailwind": "^0.2.1",
+    "@commitlint/cli": "^17.0.1",
+    "@commitlint/config-conventional": "^17.0.0",
+    "@iconify/json": "^2.1.53",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "astro": "1.0.0-beta.36",
+    "astro-compress": "^0.0.6",
+    "astro-icon": "^0.7.1",
+    "astro-service-worker": "^0.1.2",
+    "autoprefixer": "^10.4.7",
+    "commitizen": "^4.2.4",
+    "hastscript": "^7.0.2",
+    "husky": "^8.0.1",
+    "pnpm": "^7.1.7",
+    "postcss-font-grabber": "^3.0.2",
+    "rehype-autolink-headings": "^6.1.1",
+    "rehype-external-links": "^1.0.1",
+    "sass": "^1.52.1",
+    "semantic-release": "^19.0.2",
+    "solid-js": "^1.4.3",
+    "tsm": "^2.2.1",
+    "unplugin-auto-import": "^0.8.6",
+    "unplugin-icons": "^0.14.3",
+    "vitest": "^0.13.0"
+  },
+  "dependencies": {
+    "@bundlejs/core": "workspace:^0.0.0",
+    "@dprint/formatter": "^0.2.0",
+    "@okikio/animate": "^2.3.1",
+    "@okikio/emitter": "^2.1.7",
+    "@okikio/native": "^3.0.1",
+    "@okikio/sharedworker": "^1.0.4",
+    "@typescript/ata": "^0.9.3",
+    "countapi-js": "^1.0.2",
+    "monaco-editor": "^0.33.0",
+    "workbox-window": "^6.5.3"
+  }
 }

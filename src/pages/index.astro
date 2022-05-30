@@ -1,0 +1,35 @@
+---
+// Component Imports
+import { Markdown } from "astro/components";
+import Icon from "astro-icon";
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+import Anchor from "../components/Anchor.astro";
+import Container from "../components/Container.astro";
+import ProductHunt from "../components/ProductHunt.astro";
+import SearchContainer from "../components/SearchSection/SearchContainer";
+// import EditorSection from "../components/EditorSection/EditorSection.astro";
+
+import { Content as Docs } from "../components/DocsSection/Docs.md";
+import IntroHeader from "../components/IntroHeader.astro";
+---
+
+<BaseLayout>
+  <Container>
+    <IntroHeader 
+      title="bundlejs" 
+      subtitle="a quick npm package size checker" 
+    />
+
+    <SearchContainer client:load />
+  </Container>
+
+  <Container max="lg">
+    <!-- <EditorSection /> -->
+  </Container>
+
+  <Container>
+    <Docs />
+  </Container> 
+</BaseLayout>
