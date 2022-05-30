@@ -1,27 +1,27 @@
 {
-    "compilerOptions": {
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "moduleResolution": "node",
-        "target": "ES2021",
-        "module": "ES2020",
-        "lib": [
-            "ES2021",
-            "DOM",
-            "DOM.Iterable",
-            "WebWorker"
-        ],
-        "sourceMap": true,
-        "outDir": "lib",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "esModuleInterop": true
-    },
-    "include": [
-        "src"
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    // Enable top-level await, and other modern ESM features.
+    "target": "ESNext",
+    "module": "ESNext",
+    // Enable node-style module resolution, for things like npm package imports.
+    "moduleResolution": "node",
+    // Enable JSON imports.
+    "resolveJsonModule": true,
+    // Enable stricter transpilation for better output.
+    "isolatedModules": true,
+    // Add type definitions for our Vite runtime.
+    "types": [
+      "unplugin-icons/types/solid",
+      "vite/client"
     ],
-    "exclude": [
-        "node_modules",
-        "docs"
-    ]
+    // Add support for Web Workers
+    "lib": [
+        "ES2021",
+        "DOM",
+        "DOM.Iterable",
+        "WebWorker"
+    ],
+  }
 }
