@@ -1,5 +1,5 @@
-[build]
-  command = "pnpm build || ( npm install pnpm && npx pnpm build )"
+[build.environment]
+NPM_FLAGS="--version"
 
-[[plugins]]
-  package = "/.netlify/netlify-plugin-pnpm"
+[build]
+command = "npx pnpm@7 install --store-dir=.pnpm --frozen-lockfile && npx pnpm@7 build"
