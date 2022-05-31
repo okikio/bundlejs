@@ -646,7 +646,7 @@ export const InitialRender = (shareURL: URL) => {
                     setState(
                         // result?.results   ->   api.npms.io
                         // result?.objects   ->   registry.npmjs.com
-                        result?.results.map((obj) => {
+                        result?.objects.map((obj) => {
                             const { name, description, date, publisher } =
                                 obj.package;
                             return {
