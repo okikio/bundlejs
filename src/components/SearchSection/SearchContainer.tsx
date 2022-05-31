@@ -7,18 +7,13 @@ import SearchResults from "./SearchResults";
 export function SearchContainer() {
   const [getQuery, setQuery] = createSignal("");
 
-  let ref: HTMLDivElement = null;
-  function onFocus(e?: FocusEvent) {
-    // @ts-ignore
-    if (!ref?.open) ref.open = true; 
-  }
-  
+  let ref: HTMLDivElement = null;  
   function onClick(e?: MouseEvent) {
     let target = e.target as HTMLElement;
-
+  
     if (ref.contains(target)) {
       // @ts-ignore
-      if (!ref?.open && target.id == 'input') ref.open = true;
+      if (!ref?.open) ref.open = true;
     }
 
     // @ts-ignore
@@ -32,17 +27,19 @@ export function SearchContainer() {
 
   onMount(() => {
     document.addEventListener("click", onClick);
+    document.addEventListener("focusin", onClick);
   });
 
   onCleanup(() => {
     document.removeEventListener("click", onClick);
+    document.removeEventListener("focusin", onClick);
   });
 
   return (
     <div class="relative">
       <div class="search-offset"></div>
       <dialog class="search-container" ref={ref}>
-        <SearchInput query={setQuery} onFocus={onFocus} />
+        <SearchInput query={setQuery} />
 
         <div class="search-results">
           <SearchResults query={getQuery} />

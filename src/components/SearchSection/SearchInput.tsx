@@ -22,7 +22,7 @@ export function SearchInput(props: ComponentProps<'div'> & {
   }, 250);
 
   return (
-    <div class="search" onFocusIn={props?.onFocus} >
+    <div class="search">
       <div class="px-3 py-2 gap-3 flex flex-row justify-center">
         <IconSearch astro-icon />
       </div>

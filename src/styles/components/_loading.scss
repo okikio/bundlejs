@@ -1,5 +1,10 @@
 .loading-container {
-	@apply flex items-center justify-center;
+	@apply absolute inset-0;
+	@apply flex items-center justify-center z-20;
+
+	@supports (backdrop-filter: blur(8px)) {
+		@apply backdrop-blur-lg bg-white/50 dark:bg-black/50;
+	}
 }
 
 .loading {

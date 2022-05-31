@@ -1,4 +1,4 @@
-import { type ComponentProps, type Accessor, For, createResource, Show } from "solid-js";
+import { type ComponentProps, type Accessor, For, createResource, Show, onMount, createEffect, on } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
 import Loading from "../Loading";
 
@@ -6,10 +6,24 @@ import { getPackages } from "@bundlejs/core";
 export function SearchResults(props?: ComponentProps<'dialog'> & {
   query?: Accessor<string>;
 }) {
+  let ref: HTMLDivElement = null;
+  let heightRef: HTMLDivElement = null;
+  let opacityRef: HTMLDivElement = null;
   const [data] = createResource(props?.query, async (source) => {
-    if (source == "") return [];
+    if (ref) {
+      let anim = heightRef.animate({
+        opacity: "0",
+        pointerEvents: "none"
+      }, {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'both'
+      });
+      await anim?.finished;
+    }
 
     try {
+        if (source == "") return [];
       let { packages } = await getPackages(source);
 
       // @ts-ignore
@@ -23,20 +37,60 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
     }
   });
 
+  onMount(() => {
+    if (data.loading) {
+      heightRef.animate({
+        opacity: "0",
+        pointerEvents: "none"
+      }, {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'both'
+      });
+    }
+  });
+
+  createEffect(on(
+    data,
+    (value) => {
+      let last = heightRef?.getBoundingClientRect();
+      if (!value?.loading) {
+        heightRef.animate({
+          opacity: "1",
+          pointerEvents: "auto"
+        }, {
+          duration: 300,
+          easing: 'ease-in-out',
+          fill: 'both'
+        });
+
+        ref.animate({
+          height: `${last?.height}px`
+        }, {
+          duration: 350,
+          easing: 'ease',
+          fill: 'both'
+        });
+      }
+    })
+  );
+
   return (
-    <div class="results-list divide-y divide-gray-200 dark:divide-quaternary">
-      <For
-        each={data() as SearchResultProps[]}
-        fallback={
-          <ErrorResult />
-        }>
-        {(item) => {
-          // @ts-ignore
-          if (item?.type == "error")
-            return <ErrorResult {...item} />
-          return <SearchResult {...item} />;
-        }}
-      </For>
+    <div class="results-list relative" ref={ref}>
+      <div class="divide-y divide-gray-200 dark:divide-quaternary" ref={heightRef}>
+        <For
+          each={data() as SearchResultProps[]}
+          fallback={
+            <ErrorResult />
+          }>
+          {(item) => {
+            // @ts-ignore
+            if (item?.type == "error")
+              return <ErrorResult {...item} />
+            return <SearchResult {...item} />;
+          }}
+        </For>
+      </div>
     </div>
   );
 }
