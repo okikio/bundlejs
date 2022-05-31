@@ -226,11 +226,11 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     
                 // result?.results   ->   api.npms.io
                 // result?.objects   ->   registry.npmjs.com
-                if (result?.results.length <= 0) return;
+                if (result?.objects.length <= 0) return;
     
                 // result?.results   ->   api.npms.io
                 // result?.objects   ->   registry.npmjs.com
-                const { name, description, version, date, publisher, links } = result?.results?.[0]?.package ?? {};
+                const { name, description, version, date, publisher, links } = result?.objects?.[0]?.package ?? {};
                 let author = publisher?.username;
                 let _date = toLocaleDateString(date);
                 let _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
