@@ -1,7 +1,3 @@
-export declare const parseInput: (value: string) => {
-    url: string;
-    version: string;
-};
 /**
  * Treeshake exports/imports. It allows for specifing multiple exports per package, through this syntax
  * ```ts
@@ -37,7 +33,7 @@ export declare const parseTreeshakeExports: (str: string) => string[];
 * - `treeshake` represents the exports to treeshake. Read more about this here, {@link parseTreeshakeExports}
 * - `share` represents all other code that isn't export/import
 */
-export declare const parseSearchQuery: (shareURL: URL) => string;
+export declare const parseShareQuery: (shareURL: URL) => string;
 /**
 * Converts URL's into config.
 * - `config` represents the JSON config

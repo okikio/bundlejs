@@ -4,11 +4,11 @@
   "access": "public",
   "type": "module",
   "description": "An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.",
+  "typedocMain": "src/index.ts",
   "main": "lib/index.js",
   "types": "@types/index.d.ts",
   "browser": "lib/index.mjs",
   "module": "lib/index.mjs",
-  "typedocMain": "src/index.ts",
   "exports": {
     ".": {
       "require": "./lib/index.cjs",

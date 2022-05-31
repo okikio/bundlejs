@@ -99,23 +99,30 @@ blockquote p {
     margin-bottom: 0;
 }
 
+code {
+    @apply rounded-lg;
+    @apply px-2 py-1;
+    
+    color: #24292e;
+    background: #ffffffc4;
+}
+
+.dark code {
+  color: #adbac7;
+  background: #0d1117;
+}
+
+a code {
+  color: inherit;
+}
+
 pre {
     @apply rounded-lg cursor-auto p-5;
 
     code {
         @apply p-0;
+        @apply bg-inherit;
     }
-}
-
-code {
-    @apply rounded-lg;
-    @apply px-2 py-1;
-    color: #adbac7;
-    background: #0d1117;
-}
-
-a code {
-  color: inherit;
 }
 
 iframe,
@@ -208,20 +215,6 @@ details {
 
   & > .content {
     @apply flex flex-col gap-6;
-
-    // h2 {
-    //   @apply pt-6 mb-2;
-    //   @apply text-5xl text-center;
-    // }
-
-    // h3 {
-    //   @apply pt-6;
-    //   @apply text-2xl;
-    // }
-
-    // p {
-    //   @apply text-lg;
-    // }
 
     ul {
       @apply list-disc list-inside;

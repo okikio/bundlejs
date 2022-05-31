@@ -3,7 +3,7 @@
 import Snippet from './Snippet.astro';
 
 // @ts-ignore
-let snippets = await Astro.glob('../../snippets/*.md'); // returns an array of posts that live at ./src/pages/post/*.md
+let snippets = await Astro.glob('../../snippets/*.md');
 
 let sortFn = (a, b) => {
   let aPriority = a.frontmatter.priority as number;

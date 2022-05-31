@@ -1,13 +1,7 @@
 ---
-// Component Imports
-// import { Markdown } from "astro/components";
-import Icon from "astro-icon";
-
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-import Anchor from "../components/Anchor.astro";
 import Container from "../components/Container.astro";
-import ProductHunt from "../components/ProductHunt.astro";
 import SearchContainer from "../components/SearchSection/SearchContainer";
 // import EditorSection from "../components/EditorSection/EditorSection.astro";
 
@@ -19,7 +13,7 @@ import IntroHeader from "../components/IntroHeader.astro";
   <Container>
     <IntroHeader 
       title="bundlejs" 
-      subtitle="a quick npm package size checker" 
+      subtitle="A quick and easy way to bundle, minify, and compress your ts, js, jsx and npm projects, while viewing the bundles file size." 
     />
 
     <SearchContainer client:load />

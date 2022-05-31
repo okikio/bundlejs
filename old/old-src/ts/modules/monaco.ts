@@ -17,6 +17,8 @@ import {
 } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api.js";
 import type { Environment } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api";
 
+import { getPackage } from "@bundlejs/core";
+
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
 import WebWorker, { WorkerConfig } from "../util/WebWorker";
@@ -213,24 +215,12 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
                 pkg = pkg.replace(/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/, "");
     
             return (async () => {
-                let { url, version: inputedVersion } = parseInput(pkg);
-                let result: any;
-    
-                try {
-                    let response = await getRequest(url, false);
-                    result = await response.json();
-                } catch (e) {
-                    console.warn(e);
-                    return;
-                }
+                let info = await getPackage(pkg);
+                if (!info) return;
     
                 // result?.results   ->   api.npms.io
                 // result?.objects   ->   registry.npmjs.com
-                if (result?.results.length <= 0) return;
-    
-                // result?.results   ->   api.npms.io
-                // result?.objects   ->   registry.npmjs.com
-                const { name, description, version, date, publisher, links } = result?.results?.[0]?.package ?? {};
+                const { name, description, version, date, publisher, links } = info ?? {};
                 let author = publisher?.username;
                 let _date = toLocaleDateString(date);
                 let _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
@@ -240,7 +230,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
                 return {
                     contents: [].concat({
                         value: `\
-### [${name}](${links?.npm}) v${inputedVersion || version}
+### [${name}](${links?.npm}) v${version}
 ${description}
 
 Published on ${_date} ${_author}

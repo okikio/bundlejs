@@ -14,7 +14,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "pnpm build",
-    "pre-release": "pnpm test",
+    "pre-release": "pnpm -r build && pnpm test",
     "semantic-release": "semantic-release",
     "repl": "tsm repl.ts"
   },
@@ -63,7 +63,9 @@
     "@okikio/sharedworker": "^1.0.4",
     "@typescript/ata": "^0.9.3",
     "countapi-js": "^1.0.2",
-    "monaco-editor": "^0.33.0"
+    "monaco-editor": "^0.33.0",
+    "typescript": "^4.7.2",
+    "workbox-window": "^6.5.3"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^0.1.0",
@@ -71,10 +73,10 @@
     "@astrojs/tailwind": "^0.2.1",
     "@commitlint/cli": "^17.0.1",
     "@commitlint/config-conventional": "^17.0.0",
-    "@iconify/json": "^2.1.53",
+    "@iconify/json": "^2.1.54",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "astro": "1.0.0-beta.36",
+    "astro": "1.0.0-beta.37",
     "astro-compress": "^0.0.6",
     "astro-icon": "^0.7.1",
     "astro-service-worker": "^0.1.2",
@@ -96,7 +98,7 @@
     "solid-js": "^1.4.3",
     "tiny-glob": "^0.2.9",
     "tsm": "^2.2.1",
-    "typedoc": "^0.22.15",
+    "typedoc": "^0.22.16",
     "typedoc-plugin-extras": "^2.2.3",
     "typedoc-plugin-mdn-links": "^1.0.6",
     "typedoc-plugin-missing-exports": "^0.22.6",
