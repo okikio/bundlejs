@@ -4,7 +4,6 @@ import { TreeMap } from "./treemap";
 import { Tooltip } from "./tooltip";
 
 import { Component, createSignal } from "solid-js";
-import { onCleanup, onMount } from "solid-js";
 import { onMountWithCleaning } from "../../utils/onMountWithCleaning";
 
 export interface ChartProps {
