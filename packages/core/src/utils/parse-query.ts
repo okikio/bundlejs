@@ -2,26 +2,6 @@ import { decompressFromURL } from "@amoutonbrady/lz-string";
 import { EasyDefaultConfig } from "../configs/options";
 import { deepAssign } from "./deep-equal";
 
-export const parseInput = (value: string) => {
-  // const host = "https://registry.npmjs.com/-/v1/search?text";
-  const host = "https://api.npms.io/v2/search?q";
-  let urlScheme = `${host}=${encodeURIComponent(
-    value
-  )}&size=30`; // &popularity=0.5
-  let version = "";
-
-  let exec = /([\S]+)@([\S]+)/g.exec(value);
-  if (exec) {
-    let [, pkg, ver] = exec;
-    version = ver;
-    urlScheme = `${host}=${encodeURIComponent(
-      pkg
-    )}&size=30`; // &popularity=0.5
-  }
-
-  return { url: urlScheme, version };
-};
-
 /**
  * Treeshake exports/imports. It allows for specifing multiple exports per package, through this syntax
  * ```ts
@@ -60,7 +40,7 @@ export const parseTreeshakeExports = (str: string) =>
 * - `treeshake` represents the exports to treeshake. Read more about this here, {@link parseTreeshakeExports}
 * - `share` represents all other code that isn't export/import
 */
-export const parseSearchQuery = (shareURL: URL) => {
+export const parseShareQuery = (shareURL: URL) => {
   try {
     const searchParams = shareURL.searchParams;
     let result = "";

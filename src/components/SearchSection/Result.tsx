@@ -24,15 +24,15 @@ export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;
   description?: string;
   date?: string;
-  author?: string;
+  publisher?: { username?: string; };
   version?: string;
 }
 
 export function SearchResult(props?: SearchResultProps) {
-  let _name = props?.name ?? "@okikio/native";
-  let _description = props?.description ?? "Lorem Ipsium...";
-  let _date = toLocaleDateString(props?.date ?? "2021-01-23T07:29:32.575Z");
-  let _author = props?.author ?? "okikio";
+  let _name = props?.name;
+  let _description = props?.description;
+  let _date = props?.date ? toLocaleDateString(props?.date) : null;
+  let _author = props?.publisher?.username;
   let _version = props?.version ? "@" + props?.version : "";
 
   let _package = `${_name}${_version}`;
@@ -77,24 +77,26 @@ export function SearchResult(props?: SearchResultProps) {
   };
 
   return (
-    <div class="card">
-      <section class="content">
+    <div class="result">
+      <div class="content">
         <h2 class="font-semibold text-lg">
           <a href={_packageHref} target="_blank">{_name}</a>
         </h2>
-        <p>{_description}</p>
-        <p class="updated-time">
-          {props?.date && `Updated ${_date} `}
-          {props?.author && (<>
-            by <a href={_authorHref} target="_blank" rel="noopener">@{_author}</a>.
-          </>)}
-        </p>
-      </section>
-      <section class="add">
+        <div>
+          <p>{_description}</p>
+          <p class="updated-time">
+            {_date && `Updated ${_date} `}
+            {_author && (<>
+              by <a href={_authorHref} target="_blank" rel="noopener">@{_author}</a>.
+            </>)}
+          </p>
+        </div>
+      </div>
+      <div class="add">
         <button ref={btnEl} class="btn" onClick={onclick}>
           <span class="btn-text" ref={btnTextEl}>Add Module</span>
         </button>
-      </section>
+      </div>
     </div>
   );
 }
@@ -104,14 +106,14 @@ export function ErrorResult(props?: SearchResultProps) {
   let _description = props?.description ?? "";
 
   return (
-    <div class="card">
-      <section class="content error">
+    <div class="result">
+      <div class="content error">
         <h2 class="font-semibold text-lg">
           <div class="text-center">{_name}</div>
         </h2>
 
         <p class="text-center">{_description}</p>
-      </section>
+      </div>
     </div>
   );
 }

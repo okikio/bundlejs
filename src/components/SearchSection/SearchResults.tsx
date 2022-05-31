@@ -1,40 +1,30 @@
-import { type ComponentProps, type Accessor, createSignal, For, createResource } from "solid-js";
+import { type ComponentProps, type Accessor, For, createResource, Show } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
+import Loading from "../Loading";
 
-import { getRequest, parseInput } from "@bundlejs/core";
+import { getPackages } from "@bundlejs/core";
 export function SearchResults(props?: ComponentProps<'dialog'> & {
   query?: Accessor<string>;
 }) {
   const [data] = createResource(props?.query, async (source) => {
     if (source == "") return [];
-    
-    try { 
-      let { url, version } = parseInput(source);
-      let response = await getRequest(url);
-      let result = await response.json();
-      console.log(result);
 
-      // result?.results   ->   api.npms.io
-      // result?.objects   ->   registry.npmjs.com
-      return result?.results.map((obj) => {
-        const { publisher, ...rest } = obj.package;
-        return {
-          ...rest,
-          version,
-          author: publisher?.username,
-        };
-      }) ?? [];
-    } catch (err) { 
+    try {
+      let { packages } = await getPackages(source);
+
+      // @ts-ignore
+      return packages.map(({ package: pkg }) => pkg) ?? [];
+    } catch (err) {
       return [{
         type: "error",
         name: "Error...",
-        description: err?.message 
+        description: err?.message
       }]
     }
   });
-  
+
   return (
-    <dialog class="search-results" custom-search-results>
+    <div class="results-list divide-y divide-gray-200 dark:divide-quaternary">
       <For
         each={data() as SearchResultProps[]}
         fallback={
@@ -47,7 +37,7 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
           return <SearchResult {...item} />;
         }}
       </For>
-    </dialog>
+    </div>
   );
 }
 

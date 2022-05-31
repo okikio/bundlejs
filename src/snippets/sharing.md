@@ -6,6 +6,7 @@ setup: |
   import Details from "../components/Details.tsx";
   import Anchor from "../components/Anchor.astro";
 ---
+
 You can now use search queries in **bundlejs**, all you need to do is add this to the url  
 `?q={packages}&treeshake={methods to treeshake}`  
   
@@ -18,7 +19,8 @@ If you only want a couple packages and don't care to treeshake, then all you nee
   
 In order to create a shareble link, you click the `Share` button, it copies the share url to your clipboard, and from there you can paste where you wish.  
   
-<!-- **Auto-bundling shared URL's**
+<!-- 
+**Auto-bundling shared URL's**
 
 If you would like to bundle your code when the share URL is loaded, add `bundle` to the url, e.g. [/?bundle&q=@okikio/animate](/?q=@okikio/animate&bundle) or [/?bundle&share=PTAEGEBs...](/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA) -->
 
@@ -27,7 +29,7 @@ If you would like to bundle your code when the share URL is loaded, add `bundle`
   summary="Auto-bundling shared URL's"
   >
 
-  client:load
+<!-- client:load -->
 
   If you would like to bundle your code when the share URL is loaded, add <code>bundle</code> to the url, e.g. <Anchor href="/?q=@okikio/animate&amp;bundle">/?bundle&q=@okikio/animate</Anchor> or <Anchor href="/?bundle&amp;share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA">/?bundle&share=PTAEGEBs...</Anchor>
 

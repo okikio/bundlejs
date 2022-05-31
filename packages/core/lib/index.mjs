@@ -256,134 +256,6 @@ function render(ansi) {
   }
   return buffer.done();
 }
-const heap$1 = new Array(32);
-heap$1.fill(void 0);
-heap$1.push(void 0, null, true, false);
-let heap_next$1 = heap$1.length;
-function addHeapObject$1(obj) {
-  if (heap_next$1 === heap$1.length)
-    heap$1.push(heap$1.length + 1);
-  const idx = heap_next$1;
-  heap_next$1 = heap$1[idx];
-  heap$1[idx] = obj;
-  return idx;
-}
-function getObject$1(idx) {
-  return heap$1[idx];
-}
-function dropObject$1(idx) {
-  if (idx < 36)
-    return;
-  heap$1[idx] = heap_next$1;
-  heap_next$1 = idx;
-}
-function takeObject$1(idx) {
-  const ret = getObject$1(idx);
-  dropObject$1(idx);
-  return ret;
-}
-const __wbindgen_string_new = function(arg0, arg1) {
-  const ret = getStringFromWasm(arg0, arg1);
-  return addHeapObject$1(ret);
-};
-const __wbindgen_rethrow = function(arg0) {
-  throw takeObject$1(arg0);
-};
-const wasmPath = "./node_modules/wasm-brotli/wasm_brotli_browser_bg.wasm";
-const wasmImportObjects = {
-  [wasmPath]: function() {
-    return {
-      "./wasm_brotli_browser.js": {
-        "__wbindgen_string_new": function(p0i32, p1i32) {
-          return __wbindgen_string_new(p0i32, p1i32);
-        },
-        "__wbindgen_rethrow": function(p0i32) {
-          return __wbindgen_rethrow(p0i32);
-        }
-      }
-    };
-  }
-};
-let wasmExports;
-let promises = [];
-let promise;
-let importObject = wasmImportObjects[wasmPath]();
-let req = fetch("/wasm_brotli_browser_bg.wasm");
-if (importObject instanceof Promise && typeof WebAssembly.compileStreaming === "function") {
-  promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
-    return WebAssembly.instantiate(items[0], items[1]);
-  });
-} else if (typeof WebAssembly.instantiateStreaming === "function") {
-  promise = WebAssembly.instantiateStreaming(req, importObject);
-} else {
-  let bytesPromise = req.then(function(x2) {
-    return x2.arrayBuffer();
-  });
-  promise = bytesPromise.then(function(bytes) {
-    return WebAssembly.instantiate(bytes, importObject);
-  });
-}
-promises.push(promise.then(function(res) {
-  return wasmExports = (res.instance || res).exports;
-}));
-let wasmPromise = Promise.all(promises);
-async function getWASM$3() {
-  if (!wasmExports)
-    await wasmPromise;
-  return wasmPromise;
-}
-let cachegetUint8Memory = null;
-async function getUint8Memory() {
-  await getWASM$3();
-  if (cachegetUint8Memory === null || cachegetUint8Memory.buffer !== wasmExports["memory"].buffer) {
-    cachegetUint8Memory = new Uint8Array(wasmExports["memory"].buffer);
-  }
-  return cachegetUint8Memory;
-}
-let WASM_VECTOR_LEN$1 = 0;
-async function passArray8ToWasm(arg) {
-  await getWASM$3();
-  const ptr = wasmExports["__wbindgen_malloc"](arg.length * 1);
-  (await getUint8Memory()).set(arg, ptr / 1);
-  WASM_VECTOR_LEN$1 = arg.length;
-  return ptr;
-}
-let cachegetInt32Memory = null;
-async function getInt32Memory() {
-  await getWASM$3();
-  if (cachegetInt32Memory === null || cachegetInt32Memory.buffer !== wasmExports["memory"].buffer) {
-    cachegetInt32Memory = new Int32Array(wasmExports["memory"].buffer);
-  }
-  return cachegetInt32Memory;
-}
-async function getArrayU8FromWasm(ptr, len) {
-  await getWASM$3();
-  return (await getUint8Memory()).subarray(ptr / 1, ptr / 1 + len);
-}
-async function compress$3(buffer) {
-  await getWASM$3();
-  const retptr = 8;
-  wasmExports["compress"](retptr, await passArray8ToWasm(buffer), WASM_VECTOR_LEN$1);
-  const memi32 = await getInt32Memory();
-  const v0 = (await getArrayU8FromWasm(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1])).slice();
-  wasmExports["__wbindgen_free"](memi32[retptr / 4 + 0], memi32[retptr / 4 + 1] * 1);
-  return v0;
-}
-async function decompress$3(buffer) {
-  await getWASM$3();
-  const retptr = 8;
-  wasmExports["decompress"](retptr, await passArray8ToWasm(buffer), WASM_VECTOR_LEN$1);
-  const memi32 = await getInt32Memory();
-  const v0 = (await getArrayU8FromWasm(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1])).slice();
-  wasmExports["__wbindgen_free"](memi32[retptr / 4 + 0], memi32[retptr / 4 + 1] * 1);
-  return v0;
-}
-let cachedTextDecoder$1 = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true });
-cachedTextDecoder$1.decode();
-async function getStringFromWasm(ptr, len) {
-  await getWASM$3();
-  return cachedTextDecoder$1.decode((await getUint8Memory()).subarray(ptr, ptr + len));
-}
 const debounce = (func, wait = 300, immediate) => {
   let timeout;
   return function(...args) {
@@ -1328,20 +1200,8 @@ function A$2(r2, s, f2) {
     g2.push(o2), p2[i++] = d2 + o2.charAt(0), h2--, d2 = o2, h2 == 0 && (h2 = Math.pow(2, w2), w2++);
   }
 }
-const parseInput = (value) => {
-  const host = "https://api.npms.io/v2/search?q";
-  let urlScheme = `${host}=${encodeURIComponent(value)}&size=30`;
-  let version = "";
-  let exec = /([\S]+)@([\S]+)/g.exec(value);
-  if (exec) {
-    let [, pkg, ver] = exec;
-    version = ver;
-    urlScheme = `${host}=${encodeURIComponent(pkg)}&size=30`;
-  }
-  return { url: urlScheme, version };
-};
 const parseTreeshakeExports = (str) => (str != null ? str : "").split(/\],/).map((str2) => str2.replace(/\[|\]/g, ""));
-const parseSearchQuery = (shareURL) => {
+const parseShareQuery = (shareURL) => {
   try {
     const searchParams = shareURL.searchParams;
     let result = "";
@@ -1380,6 +1240,51 @@ const parseConfig = (shareURL) => {
     return deepAssign({}, EasyDefaultConfig, JSON.parse(config ? config : "{}"));
   } catch (e) {
   }
+};
+var RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
+var RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
+function parse(input) {
+  const m2 = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
+  if (!m2) {
+    throw new Error(`[parse-package-name] invalid package name: ${input}`);
+  }
+  return {
+    name: m2[1] || "",
+    version: m2[2] || "latest",
+    path: m2[3] || ""
+  };
+}
+const getRegistryURL = (input) => {
+  const host = "https://registry.npmjs.com";
+  let { name, version, path: path2 } = parse(input);
+  let searchURL = `${host}/-/v1/search?text=${encodeURIComponent(name)}&popularity=0.5&size=30`;
+  let packageURL = `${host}/${name}/${version}`;
+  return { searchURL, packageURL, version, name, path: path2 };
+};
+const getPackages = async (input) => {
+  let { searchURL } = getRegistryURL(input);
+  let result;
+  try {
+    let response = await getRequest(searchURL, false);
+    result = await response.json();
+  } catch (e) {
+    console.warn(e);
+    throw e;
+  }
+  let packages = result == null ? void 0 : result.objects;
+  return { packages, info: result };
+};
+const getPackage = async (input) => {
+  let { packageURL } = getRegistryURL(input);
+  let result;
+  try {
+    let response = await getRequest(packageURL, false);
+    result = await response.json();
+  } catch (e) {
+    console.warn(e);
+    throw e;
+  }
+  return result;
 };
 function loop$1(imports, keys) {
   if (typeof imports === "string") {
@@ -10940,19 +10845,6 @@ const treeshake = async (code, options = {}, rollupOpts = {}) => {
   let content = output[0].code;
   return (_b = content == null ? void 0 : content.trim) == null ? void 0 : _b.call(content);
 };
-var RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
-var RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
-function parse(input) {
-  const m2 = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
-  if (!m2) {
-    throw new Error(`[parse-package-name] invalid package name: ${input}`);
-  }
-  return {
-    name: m2[1] || "",
-    version: m2[2] || "latest",
-    path: m2[3] || ""
-  };
-}
 const EXTERNALS_NAMESPACE = "external-globals";
 const EMPTY_EXPORT = encode(`export default {}`);
 const PolyfillMap = {
@@ -11223,7 +11115,7 @@ const fetchAssets = async (path2, content, namespace, logger = console.log) => {
   const parentURL = new URL("./", path2).toString();
   const code = decode(content);
   const matches = Array.from(code.matchAll(rgx));
-  const promises2 = matches.map(async ([, assetURL]) => {
+  const promises = matches.map(async ([, assetURL]) => {
     let { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), logger);
     setFile(namespace + ":" + url, content);
     return {
@@ -11234,7 +11126,7 @@ const fetchAssets = async (path2, content, namespace, logger = console.log) => {
       }
     };
   });
-  return await Promise.allSettled(promises2);
+  return await Promise.allSettled(promises);
 };
 const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
   return async (args) => {
@@ -11722,5 +11614,5 @@ var mod = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   zlib,
   unzlib
 }, Symbol.toStringTag, { value: "Module" }));
-export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEARCH_EXTENSIONS, SEP, SEP_PATTERN, __wbindgen_rethrow, __wbindgen_string_new, bail$1 as bail, basename, mod$1 as brotli, compress$3 as compress, debounce, decode, decompress$3 as decompress, deepAssign, deepDiff, deepEqual, delimiter, mod as denoflate, dirname, encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getFile, getPureImportPath, getRequest, getResolvedPath, globToRegExp, htmlEscape, inferLoader, isAbsolute, isAlias, isBareImport, isExternal, isFileSchema, isGlob, isObject, isPrimitive, isRelativePath, isValidKey, join, joinGlobs, loop$1 as loop, mod$2 as lz4, newRequest, normalize, normalizeGlob, parse$1 as parse, parseConfig, parseInput, parseSearchQuery, parseTreeshakeExports, mod$3 as path, posix, relative, render, resolve$1 as resolve, resolveImports, searchFile, sep, setFile, stripSchema, toFileUrl, toName$1 as toName, toNamespacedPath, treeshake, urlJoin, virtualfs, wasmExports };
+export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEARCH_EXTENSIONS, SEP, SEP_PATTERN, bail$1 as bail, basename, mod$1 as brotli, debounce, decode, deepAssign, deepDiff, deepEqual, delimiter, mod as denoflate, dirname, encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getFile, getPackage, getPackages, getPureImportPath, getRegistryURL, getRequest, getResolvedPath, globToRegExp, htmlEscape, inferLoader, isAbsolute, isAlias, isBareImport, isExternal, isFileSchema, isGlob, isObject, isPrimitive, isRelativePath, isValidKey, join, joinGlobs, loop$1 as loop, mod$2 as lz4, newRequest, normalize, normalizeGlob, parse$1 as parse, parseConfig, parseShareQuery, parseTreeshakeExports, mod$3 as path, posix, relative, render, resolve$1 as resolve, resolveImports, searchFile, sep, setFile, stripSchema, toFileUrl, toName$1 as toName, toNamespacedPath, treeshake, urlJoin, virtualfs };
 //# sourceMappingURL=index.mjs.map

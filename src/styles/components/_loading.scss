@@ -1,0 +1,21 @@
+.loading-container {
+	@apply flex items-center justify-center;
+}
+
+.loading {
+  @apply block mx-auto rounded-full;
+	@apply border-gray-300/50 border-t-secondary dark:border-t-primary;
+	@apply animate-spin;
+
+	&[data-size=sm] {
+		@apply w-4 h-4 border-2;
+	}
+
+	&[data-size=md] {
+		@apply w-8 h-8 border-4;
+	}
+
+	&[data-size=lg] {
+		@apply w-12 h-12 border-4;
+	}
+}
