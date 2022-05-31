@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "✨ root",
+			"path": "."
+		},
+		{
+			"name": "📦 @bundlejs/core",
+			"path": "packages/core"
+		}
+	],
+	"settings": {}
+}

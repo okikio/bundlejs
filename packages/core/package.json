@@ -83,7 +83,7 @@
   "devDependencies": {
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
-    "@types/node": "^17.0.36",
+    "@types/node": "^17.0.37",
     "del-cli": "^4.0.1",
     "typescript-json-schema": "^0.53.1",
     "vite": "^2.9.9",
