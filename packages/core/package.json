@@ -88,6 +88,6 @@
     "typescript-json-schema": "^0.53.1",
     "vite": "^2.9.9",
     "vite-plugin-dts": "^1.2.0",
-    "vitest": "^0.13.0"
+    "vitest": "^0.13.1"
   }
 }

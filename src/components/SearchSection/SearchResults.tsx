@@ -1,4 +1,4 @@
-import { type ComponentProps, type Accessor, For, createResource, Show, onMount, createEffect, on } from "solid-js";
+import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
 import Loading from "../Loading";
 
@@ -8,12 +8,10 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
 }) {
   let ref: HTMLDivElement = null;
   let heightRef: HTMLDivElement = null;
-  let opacityRef: HTMLDivElement = null;
   const [data] = createResource(props?.query, async (source) => {
     if (ref) {
       let anim = heightRef.animate({
-        opacity: "0",
-        pointerEvents: "none"
+        opacity: "0"
       }, {
         duration: 300,
         easing: 'ease-in-out',
@@ -40,8 +38,7 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
   onMount(() => {
     if (data.loading) {
       heightRef.animate({
-        opacity: "0",
-        pointerEvents: "none"
+        opacity: "0"
       }, {
         duration: 300,
         easing: 'ease-in-out',
@@ -56,8 +53,7 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
       let last = heightRef?.getBoundingClientRect();
       if (!value?.loading) {
         heightRef.animate({
-          opacity: "1",
-          pointerEvents: "auto"
+          opacity: "1"
         }, {
           duration: 300,
           easing: 'ease-in-out',
