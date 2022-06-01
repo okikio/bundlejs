@@ -106,13 +106,13 @@ export function ErrorResult(props?: SearchResultProps) {
   let _description = props?.description ?? "";
 
   return (
-    <div class="result">
-      <div class="content error">
+    <div class="result error">
+      <div class="content">
         <h2 class="font-semibold text-lg">
           <div class="text-center">{_name}</div>
         </h2>
 
-        <p class="text-center">{_description}</p>
+        <p class={"text-center" + (_description == "" ? " hidden" : "")}>{_description}</p>
       </div>
     </div>
   );

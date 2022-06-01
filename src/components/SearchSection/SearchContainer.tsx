@@ -7,32 +7,42 @@ import SearchResults from "./SearchResults";
 export function SearchContainer() {
   const [getQuery, setQuery] = createSignal("");
 
-  let ref: HTMLDivElement = null;  
+  let ref: HTMLDivElement & { open?: boolean } = null;  
   function onClick(e?: MouseEvent) {
+    let target = e.target as HTMLElement;
+
+    if (ref?.open && !ref.contains(target)) {
+      e?.stopPropagation?.();
+
+      ref.open = false;
+      ref.style.pointerEvents = "none";
+    }
+  }
+
+  function onFocus(e?: MouseEvent) {
     let target = e.target as HTMLElement;
   
     if (ref.contains(target)) {
-      // @ts-ignore
-      if (!ref?.open) ref.open = true;
+      if (!ref?.open) {
+        ref.open = true; 
+        ref.style.pointerEvents = "auto";
+      }
     }
 
-    // @ts-ignore
     else if (ref?.open) {
       e?.stopPropagation?.();
-
-      // @ts-ignore
       ref.open = false;
     }
   }
 
   onMount(() => {
     document.addEventListener("click", onClick);
-    document.addEventListener("focusin", onClick);
+    document.addEventListener("focusin", onFocus);
   });
 
   onCleanup(() => {
     document.removeEventListener("click", onClick);
-    document.removeEventListener("focusin", onClick);
+    document.removeEventListener("focusin", onFocus);
   });
 
   return (

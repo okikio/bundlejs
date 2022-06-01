@@ -20,7 +20,7 @@ dialog.search-container {
   &:before {  
     content: "";
     @apply absolute inset-0;
-    @apply opacity-0 scale-x-95;
+    @apply opacity-0;
     @apply z-10;
   }
 
@@ -33,7 +33,10 @@ dialog.search-container {
 
   @at-root .dom-loaded dialog.search-container {
     &,
-    &:before,
+    &:before {
+      @apply transition-all duration-[400ms];
+    }
+
     & .search,
     & .search-results {
       @apply transition-all duration-300;
@@ -46,10 +49,10 @@ dialog.search-container {
   }
 
   &[open] {
-    @apply p-3 pointer-events-auto;
+    @apply px-3 pt-3 pointer-events-auto;
     
     &:before {
-      @apply scale-x-100 shadow-transparent border-transparent;
+      @apply shadow-transparent border-transparent;
     }
 
     &:before,
@@ -119,13 +122,12 @@ dialog.search-container {
   @apply grid gap-6 sm:grid-cols-12;
   @apply p-5;
 
-  .content {
-    @apply flex flex-col gap-3;
-    @apply col-span-12;
+  &.error {
+    @apply flex items-center justify-center;
+  }
 
-    &:not(.error) {
-      @apply sm:col-span-9;
-    }
+  .content {
+    @apply flex flex-col gap-3 break-words lt-md:break-all;
 
     h3 {
       font-size: 1rem;
@@ -147,7 +149,7 @@ dialog.search-container {
     align-items: center;
 
     .btn {
-      @apply py-2;
+      @apply px-3 py-2;
       @apply w-full relative block m-0;
       @apply bg-secondary/10 dark:bg-primary/10;
       @apply hover:bg-secondary/30 dark:hover:bg-primary/30;
