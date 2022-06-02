@@ -1,13 +1,16 @@
 .editor-container {
   @apply relative w-full h-full;
-  @apply bg-white shadow-[0_0_15px_-3px_rgb(0_0_0_/_0.1),0_6px_6px_-4px_rgb(0_0_0_/_0.1),0_-2px_6px_-4px_rgb(0_0_0_/_0.1)];
-  @apply dark:bg-elevated dark:shadow-none;
+  @apply bg-white shadow-lg;
+
+  @apply dark:bg-[#0d1117] dark:shadow-none;
+  @apply border border-gray-300 dark:border-gray-700/90;
 
   min-width: 200px;
   min-height: 100px;
+  @apply sm:w-[calc(100%-18.5rem)] md:w-[calc(100%-25.5rem)];
   
   @screen sm {
-    min-height: 400px;
+    min-height: 300px;
   }
   
   &,

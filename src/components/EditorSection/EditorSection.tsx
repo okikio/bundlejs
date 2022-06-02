@@ -4,12 +4,12 @@ import Activity from "./Activity";
 import DragHandle from "./DragHandle";
 import Editor from "./Editor";
 import Console from "./Console";
+import Analysis from "./Analysis";
 
 export function EditorSection(props?: ComponentProps<'div'>) {
   const [direction, setDirection] = createSignal<"x" | "y">("x");
 
   function onResize(e: MediaQueryListEvent | MediaQueryList) {
-    // leftSide.style.removeProperty(e.matches ? 'height' : 'width');
     setDirection(e.matches ? 'x' : 'y');
   }
 
@@ -28,11 +28,16 @@ export function EditorSection(props?: ComponentProps<'div'>) {
     <div class="contain lg editor-section">
       <Tabs />
       <Activity />
+
       <div class="core">
         <Editor />
         <DragHandle direction={direction()} contrain={true} />
         <Console />
       </div>
+
+      <DragHandle drag-height direction="y" />
+
+      <Analysis />
     </div>
   )
 }

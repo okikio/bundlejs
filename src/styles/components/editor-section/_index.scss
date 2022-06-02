@@ -3,25 +3,33 @@
 @import "./editor";
 @import "./drag-handles";
 @import "./console";
+@import "./analysis";
+
+@import "./editor-btns";
+@import "./console-btns";
 
 .editor-section {
   @apply grid pb-5;
   grid-template:
     "tabs activity"
-    "core core";
+    "core core"
+    "handle handle"
+    "analysis analysis";
 
   @screen lt-sm {
     grid-template:
       "tabs"
       "core"
-      "activity";
+      "handle"
+      "activity"
+      "analysis";
   }
 
   .core {
     grid-area: core;
     @apply flex flex-col sm:flex-row;
-    @apply w-full pt-5;
+    @apply w-full;
 
-    min-height: 400px;
+    min-height: 300px;
   }
 }

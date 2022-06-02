@@ -1,9 +1,19 @@
-import { ComponentProps } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import ConsoleButtons from "./ConsoleButtons";
 
 export function Console(props?: ComponentProps<'div'>) {
   return (
     <div class="console-container">
-      <p class="tab-style">Console</p>
+      <div class="console-head">
+        <p>Console</p>
+        <ConsoleButtons />
+      </div>
+
+      <pre>
+        <code>
+          <p>No logs...</p>
+        </code>
+      </pre>
     </div>
   )
 }

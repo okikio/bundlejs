@@ -1,13 +1,24 @@
 .console-container {
-  @apply bg-gray-200 dark:bg-gray-800/80;
+  @apply bg-gray-200 dark:bg-black/50;
+  @apply dark:border dark:border-gray-700/90;
+
   @apply relative p-3;
   @apply rounded-lg;
-  @apply flex-grow;
+  @apply flex flex-col flex-grow;
 
   min-width: 15rem;
   min-height: 100px;
 
   @screen sm {
-    min-height: 400px;
+    min-height: 300px;
+  }
+
+  .console-head {
+    @apply flex items-center justify-between;
+  }
+
+  pre {
+    @apply px-0 h-full;
+    @apply overflow-auto;
   }
 }
