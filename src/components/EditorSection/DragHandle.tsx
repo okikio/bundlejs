@@ -1,4 +1,4 @@
-import { type ComponentProps, onMount, onCleanup } from "solid-js";
+import { type ComponentProps, onMount, onCleanup, createEffect } from "solid-js";
 import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
 import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import { debounce } from "@bundlejs/core";
@@ -64,6 +64,15 @@ export function DragHandle(props?: ComponentProps<'button'> & {
         }, 50)
       );
     }
+
+    createEffect(() => { 
+      console.log(props?.direction)
+      targetEl?.style?.removeProperty?.(sizeProp);
+  
+      sizeProp = props?.direction == "x" ? "width" : "height";
+      mouseDir = props?.direction == "x" ? "clientX" : "clientY";
+      cursorProp = props?.direction == "x" ? "col-resize" : "row-resize";
+    });
   });
 
   onCleanup(() => { 

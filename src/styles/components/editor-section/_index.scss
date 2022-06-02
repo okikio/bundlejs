@@ -4,7 +4,7 @@
 @import "./drag-handles";
 @import "./console";
 
-.bundle-app-wrapper {
+.editor-section {
   @apply grid pb-5;
   grid-template:
     "tabs activity"
@@ -20,6 +20,8 @@
   .core {
     grid-area: core;
     @apply flex flex-col sm:flex-row;
-    @apply w-full max-w-full;
+    @apply w-full pt-5;
+
+    min-height: 400px;
   }
 }

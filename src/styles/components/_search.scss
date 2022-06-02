@@ -1,4 +1,3 @@
-
 .search-offset {
   @apply w-full;
   @apply py-12;
@@ -9,15 +8,24 @@ dialog.search-container {
   @apply absolute top-2 w-full;
   @apply p-1;
 
+  &:not([open]) {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+
+    &::-webkit-scrollbar {
+      width: 0; /* Remove scrollbar space */
+    }
+  }
+
   height: fit-content;
   max-height: 410px;
   @apply overflow-auto pointer-events-none;
   @apply border border-transparent;
   @apply shadow-lg shadow-transparent;
   @apply bg-transparent;
-  @apply z-10;
-  
-  &:before {  
+  @apply z-30;
+
+  &:before {
     content: "";
     @apply absolute inset-0;
     @apply opacity-0;
@@ -50,18 +58,18 @@ dialog.search-container {
 
   &[open] {
     @apply px-3 pt-3 pointer-events-auto;
-    
+
     &:before {
       @apply shadow-transparent border-transparent;
     }
 
     &:before,
-    & .search-results { 
+    & .search-results {
       @apply opacity-100;
     }
 
     .search {
-      @apply bg-gray-100 dark:bg-gray-900; 
+      @apply bg-gray-100 dark:bg-gray-900;
       @apply border-transparent;
     }
   }
