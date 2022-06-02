@@ -1,0 +1,38 @@
+.activity-section {
+  grid-area: activity;
+  @apply overflow-auto;
+
+  .activity-container {
+    @apply p-2;
+    @apply inline-flex xsm:flex justify-end gap-2;
+    @apply rounded-lg;
+  }
+
+  svg {
+    @apply w-6 h-6;
+  }
+
+  [custom-button] {
+    @apply px-5 py-3 gap-3;
+    @apply flex flex-row justify-center;
+    @apply hover:bg-secondary/20;
+    @apply dark:hover:bg-primary/20;
+  }
+
+  .bundle-results {
+    @apply bg-gray-100 dark:bg-primary/30;
+    @apply flex items-center justify-center;
+    @apply text-center leading-none;
+    @apply relative px-4 py-2;
+    @apply text-ellipsis;
+
+    min-height: theme("spacing.9");
+    min-width: 12ch;
+    white-space: nowrap;
+
+    &,
+    [custom-loading] {
+      @apply rounded-lg;
+    }
+  }
+}

@@ -1,34 +1,32 @@
 ---
-  import Icon from "astro-icon";
+import Icon from "astro-icon";
 
-  import Anchor from "./Anchor.astro";
-  import OfflineBanner from "./OfflineBanner";
+import Anchor from "./Anchor.astro";
+import OfflineBanner from "./OfflineBanner";
 
-  let activeNav = (regex: RegExp) => {
-    return regex.test(Astro.request.url) ? " active" : "";
-  };
+let activeNav = (regex: RegExp) => {
+  return regex.test(Astro.request.url) ? " active" : "";
+};
 ---
 
 <nav>
   <div class="backdrop">
     <div class="container">
       <div class="flex items-end w-full h-full">
-        <div class="w-full h-1 border-b border-b-gray-300/40 dark:border-b-elevated"></div>
+        <div class="w-full h-1 border-b border-b-gray-300/40 dark:border-b-elevated-2"></div>
       </div>
     </div>
   </div>
   <div class="container items">
     <div class="btn">
-      <Anchor 
-        href="/"
-        class="logo"
+      <Anchor href="/" class="logo"
         aria-label="bundlejs's logo, it's used on all social media site to identify and represent bundlejs"
         title="Logo">
         <Icon name="logo" />
         <span aria-hidden="true">bundlejs</span>
       </Anchor>
     </div>
-    
+
     <div class="flex-grow"></div>
     <div class="menu">
       <div class="menu-items">
@@ -79,7 +77,7 @@
   let nav = document.querySelector("nav");
   let navToggle = nav.querySelector("[data-nav-toggle]");
 
-  navToggle.addEventListener("click", function() {
+  navToggle.addEventListener("click", function () {
     nav.classList.toggle("open");
   });
 </script>
@@ -120,7 +118,7 @@
           @apply bg-opacity-20 backdrop-blur-xl backdrop-saturate-200;
         }
       }
-      
+
       button,
       a {
         @apply text-primary;
@@ -203,6 +201,7 @@
     .toggle,
     .logo {
       @apply flex items-center gap-2;
+      @apply whitespace-nowrap;
     }
 
     .item,
@@ -214,6 +213,7 @@
       @apply text-base;
 
       &:not(.offline-icon) {
+
         &.active,
         &:active,
         &:focus,
@@ -223,11 +223,13 @@
           text-underline-offset: 0.2rem;
         }
       }
-      
+
       @at-root :global(.dark) .items {
-        .item, 
+
+        .item,
         .toggle {
-          &:not(.offline-icon) { 
+          &:not(.offline-icon) {
+
             &.active,
             &:active,
             &:focus,
@@ -242,7 +244,7 @@
     .icon-btn {
       @apply text-secondary bg-secondary/10;
     }
-      
+
     @at-root :global(.dark) .items {
       .icon-btn {
         @apply text-primary bg-primary/10;
@@ -253,7 +255,7 @@
       display: flex;
       @apply text-white bg-secondary;
     }
-      
+
     @at-root :global(.dark) .items {
       .offline-icon {
         @apply text-black bg-primary;
@@ -264,7 +266,7 @@
       @apply py-4;
       @apply text-secondary;
       @apply sm:hidden;
-      
+
       @at-root :global(.dark) .items {
         .toggle {
           @apply text-primary;
@@ -303,7 +305,7 @@
       @apply border-secondary/30;
       @apply h-[1.25em];
     }
-      
+
     @at-root :global(.dark) .items {
       .seperator {
         @apply border-primary/30;

@@ -1,0 +1,13 @@
+.editor-container {
+  @apply relative w-full h-full;
+  @apply bg-white shadow-lg;
+  @apply dark:bg-elevated dark:shadow-transparent;
+
+  min-height: 400px;
+  min-width: 200px;
+  
+  &,
+  [custom-loading] {
+    @apply rounded-lg;
+  }
+}
