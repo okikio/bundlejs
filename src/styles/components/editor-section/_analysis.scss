@@ -1,0 +1,7 @@
+.analysis-section {
+  grid-area: analysis;
+
+  [custom-handle] {
+    @apply w-full;
+  }
+}

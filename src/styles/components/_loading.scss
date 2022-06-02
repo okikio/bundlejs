@@ -5,6 +5,10 @@
 	@supports (backdrop-filter: blur(8px)) {
 		@apply backdrop-blur-lg bg-white/50 dark:bg-black/50;
 	}
+
+	&[hidden]{ 
+		@apply hidden;
+	}
 }
 
 .loading {

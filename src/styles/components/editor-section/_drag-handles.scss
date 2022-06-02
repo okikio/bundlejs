@@ -12,4 +12,8 @@
       @apply cursor-col-resize;
     }
   }
+
+  &[drag-height] {
+    grid-area: handle;
+  }
 }

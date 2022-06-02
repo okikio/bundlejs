@@ -80,7 +80,7 @@ export function createDetailsEffect() {
           height: [startHeight, endHeight],
         },
         {
-          duration: 500,
+          duration: 500 * (end / 600),
           easing: "ease-out",
         }
       );
@@ -120,7 +120,7 @@ export function createDetailsEffect() {
           height: [startHeight, endHeight],
         },
         {
-          duration: 500,
+          duration: 500 * (start / 600),
           easing: "ease-out",
         }
       );

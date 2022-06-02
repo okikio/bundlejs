@@ -66,7 +66,6 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     }
 
     createEffect(() => { 
-      console.log(props?.direction)
       targetEl?.style?.removeProperty?.(sizeProp);
   
       sizeProp = props?.direction == "x" ? "width" : "height";
