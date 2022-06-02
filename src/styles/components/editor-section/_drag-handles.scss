@@ -5,7 +5,6 @@
   touch-action: none;
 
   &:active {
-    @apply scale-x-90 scale-y-100;
     @apply bg-secondary/20;
     @apply cursor-row-resize;
 
