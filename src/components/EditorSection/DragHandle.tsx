@@ -1,18 +1,25 @@
 import { type ComponentProps, onMount, onCleanup } from "solid-js";
 import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
 import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
+import { debounce } from "@bundlejs/core";
 
-export function DragHandle(props?: ComponentProps<'div'> & {
+export function DragHandle(props?: ComponentProps<'button'> & {
   direction?: 'x' | 'y';
+  contrain?: boolean;
 }) {
-  let ref: HTMLDivElement = null;
+  let ref: HTMLButtonElement = null;
   let targetEl: HTMLElement = null;
+  let parentEl: HTMLElement = null;
+  let observer: ResizeObserver = null;
 
   // The current position of mouse
   let position = 0;
 
   // Size of previous element
   let size = 0;
+
+  // Size of parent element
+  let parentSize = 0;
 
   let sizeProp = props?.direction == "x" ? "width" : "height";
   let mouseDir = props?.direction == "x" ? "clientX" : "clientY";
@@ -21,9 +28,10 @@ export function DragHandle(props?: ComponentProps<'div'> & {
   function drag (e: MouseEvent) {
     // How far the mouse has been moved
     const diff = e[mouseDir] - position;
-    const newSize = size + diff;
+    const newSize = props?.contrain ? (size + diff) * 100 / parentSize : size + diff;
+    const unit = props?.contrain ? "%" : "px";
 
-    targetEl.style[sizeProp] = `${newSize}px`;
+    targetEl.style[sizeProp] = `${newSize}${unit}`;
     document.body.style.cursor = cursorProp;
 
     targetEl.style.userSelect = 'none';
@@ -39,15 +47,33 @@ export function DragHandle(props?: ComponentProps<'div'> & {
 
     document.removeEventListener('pointermove', drag);
     document.removeEventListener('pointerup', stopDrag);
+
+    if (props?.contrain) {
+      observer?.unobserve?.(parentEl);
+    }
   }
 
   onMount(() => {
-    targetEl = ref.previousElementSibling as HTMLElement;
+    targetEl = (ref?.previousElementSibling ?? ref?.parentElement?.previousElementSibling) as HTMLElement;
+    parentEl = targetEl?.parentElement as HTMLElement;
+
+    if (props?.contrain) {
+      observer = new ResizeObserver(
+        debounce(() => {
+          parentSize = parentEl.getBoundingClientRect()[sizeProp];
+        }, 50)
+      );
+    }
   });
 
   onCleanup(() => { 
     document.removeEventListener('pointermove', drag);
     document.removeEventListener('pointerup', stopDrag);
+
+    if (props?.contrain) {
+      observer?.unobserve?.(parentEl);
+      observer?.disconnect?.();
+    }
   });
 
   // Handle the pointerdown event
@@ -56,16 +82,21 @@ export function DragHandle(props?: ComponentProps<'div'> & {
     // Get the current mouse position
     position = e[mouseDir];
     size = targetEl.getBoundingClientRect()[sizeProp];
+    parentSize = parentEl.getBoundingClientRect()[sizeProp];
 
     // Attach the listeners to `document`
     document.addEventListener('pointermove', drag);
     document.addEventListener('pointerup', stopDrag);
+
+    if (props?.contrain) {
+      observer?.observe?.(parentEl);
+    } 
   }
   
   return (
-    <div {...props} class="drag-handle" ref={ref} onPointerDown={pointerDown}>
+    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown}>
       {props?.direction == "x" ? <IconDragHandleX /> : <IconDragHandleY />}
-    </div>
+    </button>
   );
 }
 

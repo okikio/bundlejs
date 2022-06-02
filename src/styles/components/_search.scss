@@ -102,6 +102,7 @@ dialog.search-container {
 }
 
 .search-results {
+  @apply py-1.5;
   @apply relative bg-transparent;
 
   @apply w-full z-10;
@@ -127,7 +128,7 @@ dialog.search-container {
   }
 
   .content {
-    @apply flex flex-col gap-3 break-words lt-md:break-all;
+    @apply flex flex-col gap-3 break-words lt-md:break-all sm:col-span-9;
 
     h3 {
       font-size: 1rem;

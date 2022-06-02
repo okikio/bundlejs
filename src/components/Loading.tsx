@@ -7,7 +7,7 @@ export interface LoadingProps extends ComponentProps<"div"> {
 export function Loading(props?: LoadingProps) {
   let size = props?.size ?? "md";
   return (
-    <div class="loading-container relative" {...props}>
+    <div class="loading-container relative" custom-loading {...props}>
       <div class="loading" data-size={size}></div>
     </div>
   );

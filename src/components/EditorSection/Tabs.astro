@@ -5,43 +5,11 @@ import Button from "../Button";
 ---
 
 <div class="tab-bar">
-  <Button class="active">Input</Button>
-  <Button>Output</Button>
-  <Button>
-    <Icon name="fluent:settings-24-regular" />
-  </Button>
+  <div class="tab-container">
+    <Button class="active" aria-label="Input Editor Tab">Input</Button>
+    <Button class="umami--click--output-tab" aria-label="Output Editor Tab">Output</Button>
+    <Button class="umami--click--config-tab" aria-label="Setting Configuration Tab" title="Config Tab">
+      <Icon name="fluent:settings-24-regular" />
+    </Button>
+  </div>
 </div>
-
-<style lang="scss">
-  .tab-bar {
-    @apply p-2;
-    @apply flex gap-2;
-
-    :global(svg) {
-      @apply w-6 h-6;
-    }
-
-    :global([custom-button]) {
-      text-decoration: 2px solid underline;
-      text-underline-offset: 0.2rem;
-
-      @apply px-5 py-3 gap-3;
-      @apply flex flex-row justify-center;
-      @apply hover:bg-secondary/20;
-
-      &.active {
-        @apply bg-secondary text-white;
-      }
-    }
-
-    @at-root :global(.dark) .tab-bar {
-      :global([custom-button]) {
-        @apply hover:bg-primary/20;
-
-        &.active {
-          @apply bg-primary text-black;
-        }
-      }
-    }
-  }
-</style>

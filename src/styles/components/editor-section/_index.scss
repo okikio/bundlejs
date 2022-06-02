@@ -1,0 +1,25 @@
+@import "./tabs";
+@import "./activity";
+@import "./editor";
+@import "./drag-handles";
+@import "./console";
+
+.bundle-app-wrapper {
+  @apply grid pb-5;
+  grid-template:
+    "tabs activity"
+    "core core";
+
+  @screen lt-sm {
+    grid-template:
+      "tabs"
+      "core"
+      "activity";
+  }
+
+  .core {
+    grid-area: core;
+    @apply flex flex-col sm:flex-row;
+    @apply w-full max-w-full;
+  }
+}
