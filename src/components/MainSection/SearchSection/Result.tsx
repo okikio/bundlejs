@@ -1,5 +1,6 @@
 
 import type { ComponentProps } from "solid-js";
+import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 
 // import { EventEmitter } from "@okikio/emitter";
 // import { timeline, animate } from "@okikio/animate";
@@ -10,15 +11,6 @@ import type { ComponentProps } from "solid-js";
 
 // export const [pending, start] = useTransition();
 // export const updateState = (state: any[]) => () => start(() => setState(state));
-
-export const toLocaleDateString = (date: string | number | Date) => {
-  return new Date(date)
-    .toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
-}
 
 export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;

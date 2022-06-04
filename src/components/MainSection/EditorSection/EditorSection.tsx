@@ -30,7 +30,7 @@ export function EditorSection(props?: ComponentProps<'div'>) {
 
       <div class="core">
         <Editor />
-        <DragHandle direction={direction()} contrain={true} />
+        <DragHandle direction={direction()} contrain={direction() == "x"} />
         <Console />
       </div>
 

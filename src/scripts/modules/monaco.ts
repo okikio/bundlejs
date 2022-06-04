@@ -1,43 +1,57 @@
-import "../../../node_modules/monaco-editor/esm/vs/language/typescript/monaco.contribution.js";
-import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution.js";
+// import 'monaco-editor/esm/vs/editor/editor.all.js';
 
-import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js";
-// import "../../../node_modules/monaco-editor/esm/vs/basic-languages/json/json.contribution.js";
+// import 'monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
+// import 'monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js';
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
+// import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+// import 'monaco-editor/esm/vs/language/typescript/monaco.contribution.js';
+// import 'monaco-editor/esm/vs/basic-languages/monaco.contribution.js';
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
-// import "./editor.all.ts";
+// import "monaco-editor/esm/vs/language/json/monaco.contribution.js";
+// import "monaco-editor/esm/vs/language/typescript/monaco.contribution.js";
+// import "monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution.js";
 
 import {
+  type Environment,
   editor as Editor,
   languages,
   Uri
-} from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api.js";
-import type { Environment } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api";
+} from "monaco-editor";
+// import type { Environment } from "monaco-editor/esm/vs/editor/editor.api";
+// import { editor as Editor, languages, Uri } from "monaco-editor/esm/vs/editor/editor.api.js";
 
-import { getPackage, parseShareQuery, parseConfig } from "@bundlejs/core";
+import { getPackage, getRequest, parseShareQuery, parseConfig } from "@bundlejs/core";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
-import WebWorker, { WorkerConfig } from "../utils/WebWorker";
+// import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import { mediaTheme, themeGet } from "../theme";
+// import TS_WORKER_FACTORY_URL from "../workers/ts-worker-factory.ts?url";
 
-import TS_WORKER_FACTORY_URL from "../workers/ts-worker-factory.ts?url";
-import TYPESCRIPT_WORKER_URL from "../workers/typescript.ts?url";
-import JSON_WORKER_URL from "../workers/json.ts?url";
-import EDITOR_WORKER_URL from "../workers/editor.ts?url";
+// import TYPESCRIPT_WORKER_URL from "../workers/typescript.ts?url";
+// import JSON_WORKER_URL from "../workers/json.ts?url";
+// import EDITOR_WORKER_URL from "../workers/editor.ts?url";
+
+// import TS_WORKER from "../workers/typescript.ts?worker";
+// import JSON_WORKER from "../workers/json.ts?worker";
+// import EDITOR_WORKER from "../workers/editor.ts?worker";
 
 // import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
 
-// import { getRequest } from "../util/fetch-and-cache.js";
-import { USE_SHAREDWORKER } from "../../env";
-import { EasyDefaultConfig } from "../configs/options.js";
-// import { toLocaleDateString } from "../components/SearchResults.jsx";
+// const TYPESCRIPT_WORKER_URL = "../workers/typescript.ts";
+// const JSON_WORKER_URL = "../workers/json.ts";
+// const EDITOR_WORKER_URL = "../workers/editor.ts";
 
-export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
+import { USE_SHAREDWORKER } from "../../env";
+import { EasyDefaultConfig } from "../configs/options";
+import { toLocaleDateString } from "../utils/locale-date-string";
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -45,15 +59,22 @@ export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL,
 (window as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
-      return TS_WORKER;
+      return new Worker(
+        "/monacoeditorwork/typescript.bundle.js",
+        { name: "ts-worker" }
+      );
     } else if (label === "json") {
-      // JSON Language Workers currently have no exports so I can't get SharedWorkers to work with them
-      const JSON_WORKER = new Worker(JSON_WORKER_URL, { name: "json-worker" }); // USE_SHAREDWORKER ? new WebWorker(JSON_WORKER_URL, { name: "json-worker" }) : 
-      return JSON_WORKER;
+      return new Worker(
+        "/monacoeditorwork/json.bundle.js",
+        { name: "json-worker" }
+      );
     }
 
     return (() => {
-      let EditorWorker = new Worker(EDITOR_WORKER_URL, { name: "editor-worker" });
+      const EditorWorker = new Worker(
+        "/monacoeditorwork/editor.bundle.js",
+        { name: "editor-worker" }
+      );
       EditorWorker?.terminate();
       return EditorWorker;
     })();
@@ -143,9 +164,9 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     Editor.setTheme(theme == "system" ? mediaTheme() : theme);
   });
 
-  languages.typescript.typescriptDefaults.setWorkerOptions({
-    customWorkerPath: new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
-  });
+  // languages.typescript.typescriptDefaults.setWorkerOptions({
+  //   customWorkerPath: TS_WORKER_FACTORY_URL // new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
+  // });
 
   languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
@@ -195,50 +216,50 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   const IMPORTS_REXPORTS_REQUIRE_REGEX =
     /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
 
-//   languages.registerHoverProvider("typescript", {
-//     provideHover(model, position) {
-//       let content = model.getLineContent(position.lineNumber);
-//       if (typeof content != "string" || content.length == 0) return;
+  //   languages.registerHoverProvider("typescript", {
+  //     provideHover(model, position) {
+  //       let content = model.getLineContent(position.lineNumber);
+  //       if (typeof content != "string" || content.length == 0) return;
 
-//       let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
-//       if (matches.length <= 0) return;
+  //       let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
+  //       if (matches.length <= 0) return;
 
-//       let matchArr = matches.map(([, pkg]) => pkg);
-//       let pkg = matchArr[0];
+  //       let matchArr = matches.map(([, pkg]) => pkg);
+  //       let pkg = matchArr[0];
 
-//       if (/\.|http(s)?\:/.test(pkg)) return;
+  //       if (/\.|http(s)?\:/.test(pkg)) return;
 
-//       // npm supporting CDN's only, as in exclude deno, github, etc...
-//       else if (/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg))
-//         pkg = pkg.replace(/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/, "");
+  //       // npm supporting CDN's only, as in exclude deno, github, etc...
+  //       else if (/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg))
+  //         pkg = pkg.replace(/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/, "");
 
-//       return (async () => {
-//         let info = await getPackage(pkg);
-//         if (!info) return;
+  //       return (async () => {
+  //         let info = await getPackage(pkg);
+  //         if (!info) return;
 
-//         // result?.results   ->   api.npms.io
-//         // result?.objects   ->   registry.npmjs.com
-//         const { name, description, version, date, publisher, links } = info ?? {};
-//         let author = publisher?.username;
-//         let _date = toLocaleDateString(date);
-//         let _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
-//         let _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
+  //         // result?.results   ->   api.npms.io
+  //         // result?.objects   ->   registry.npmjs.com
+  //         const { name, description, version, date, publisher, links } = info ?? {};
+  //         let author = publisher?.username;
+  //         let _date = toLocaleDateString(date);
+  //         let _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
+  //         let _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
 
 
-//         return {
-//           contents: [].concat({
-//             value: `\
-// ### [${name}](${links?.npm}) v${version}
-// ${description}
+  //         return {
+  //           contents: [].concat({
+  //             value: `\
+  // ### [${name}](${links?.npm}) v${version}
+  // ${description}
 
-// Published on ${_date} ${_author}
+  // Published on ${_date} ${_author}
 
-// ${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
-//           }),
-//         };
-//       })();
-//     },
-//   });
+  // ${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
+  //           }),
+  //         };
+  //       })();
+  //     },
+  //   });
 
   // Configure the JSON language support with schemas and schema associations
   // languages.json.jsonDefaults.setDiagnosticsOptions({

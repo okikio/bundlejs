@@ -1,10 +1,15 @@
 import { defineConfig } from "astro/config";
 import serviceWorker from 'astro-service-worker';
+
+import * as path from "node:path";
 import { lookupCollection } from '@iconify/json';
 
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import AutoImport from 'unplugin-auto-import/vite';
+
+import PluginMonacoEditor from "vite-plugin-monaco-editor";
+const MonacoEditorPlugin = PluginMonacoEditor.default;
 
 import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
@@ -18,6 +23,8 @@ import { h, s } from "hastscript";
 const { icons: fluentIcons } = await lookupCollection("fluent");
 const IconLink = fluentIcons["link-24-regular"];
 const IconArrow = fluentIcons["arrow-up-right-24-regular"];
+
+const __dirname = path.resolve(path.dirname(""));
 
 // https://astro.build/config
 export default defineConfig({
@@ -127,8 +134,11 @@ export default defineConfig({
     // })
   ],
   vite: {
+    build: {
+      assetsInlineLimit: 0,
+    },
     worker: {
-      format: "es"
+      format: "iife"
     },
     ssr: {
       external: ["svgo"]
@@ -143,10 +153,17 @@ export default defineConfig({
         ]
       }),
       Icons({
-        // expiremental
         autoInstall: true,
         compiler: 'solid',
         defaultClass: "icon"
+      }),
+      MonacoEditorPlugin({
+        languageWorkers: [],
+        customWorkers: [
+          { label: "typescript", entry: path.join(__dirname, "./src/scripts/workers/typescript") },
+          { label: "json", entry: path.join(__dirname, "./src/scripts/workers/json") },
+          { label: "editor", entry: path.join(__dirname, "./src/scripts/workers/editor") },
+        ]
       })
     ]
   }

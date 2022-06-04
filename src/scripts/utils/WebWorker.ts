@@ -3,7 +3,7 @@ import {
     SharedWorkerSupported,
 } from "@okikio/sharedworker";
 
-import EMPTY_WORKER_URL from "../workers/empty.ts?url";
+import EMPTY_WORKER_URL from "../workers/empty.js?url";
 
 // https://stackoverflow.com/questions/62954570/javascript-feature-detect-module-support-for-web-workers
 export const ModuleWorkerTest = () => {
@@ -29,7 +29,7 @@ export const ModuleWorkerTest = () => {
 
         // Use an empty worker file, to avoid 
         const worker = new Worker(
-            EMPTY_WORKER_URL, //.replace(/\.js$/, ".mjs"),
+            EMPTY_WORKER_URL, 
             test as WorkerOptions
         );
 

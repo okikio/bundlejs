@@ -1,18 +1,24 @@
 .editor-container {
   @apply self-center;
   
-  @apply relative w-full h-full;
+  @apply relative;
   @apply bg-white shadow-lg;
 
   @apply dark:bg-[#0d1117] dark:shadow-none;
   @apply border border-gray-300 dark:border-gray-700/90;
 
-  min-width: 200px;
   min-height: 100px;
   @apply sm:w-[calc(100%-18.5rem)] md:w-[calc(100%-25.5rem)];
   
   @screen sm {
+    min-width: 200px;
     min-height: 300px;
+    @apply w-full h-full; 
+  }
+
+  @screen lt-sm {
+    @apply max-w-full;
+    @apply h-[200px];
   }
   
   &,
@@ -21,6 +27,6 @@
   }
 
   .editor {
-    @apply w-full h-full;
+    @apply py-2 lt-sm:w-[inherit] w-full h-full;
   }
 }
