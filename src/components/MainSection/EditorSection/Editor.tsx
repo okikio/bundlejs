@@ -1,12 +1,16 @@
-import type { ComponentProps } from "solid-js";
-import Loading from "../Loading";
+import { ComponentProps, lazy, Suspense } from "solid-js";
+
+import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
 
+
 export function Editor(props?: ComponentProps<'div'>) {
+  const CodeEditor = lazy(() => import("./CodeEditor"));
   return (
     <div class="editor-container">
-      <Loading />
-      <div class="editor"></div>
+      {/* <Loading /> */}
+
+      <CodeEditor />
       <EditorButtons />
     </div>
   )

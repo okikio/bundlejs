@@ -9,7 +9,7 @@
 @import "./console-btns";
 
 .editor-section {
-  @apply grid pb-5;
+  @apply grid pb-5 gap-3;
   grid-template:
     "tabs activity"
     "core core"

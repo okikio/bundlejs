@@ -9,7 +9,7 @@ let opts = Astro?.props?.content ?? Astro?.props;
     id={opts.id} 
     summary={opts.title}
     class={`umami--toggle--${opts["id"]}-docs-accordian`} 
-    client:load>
+    client:visible>
     <slot />
   </SnippetDetails>
 </div>

@@ -16,7 +16,6 @@ export function EditorSection(props?: ComponentProps<'div'>) {
   onMount(() => {
     let mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
     onResize(mediaQuery);
-
     mediaQuery?.addEventListener?.("change", onResize);
 
     onCleanup(() => {

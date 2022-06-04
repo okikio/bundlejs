@@ -7,7 +7,7 @@ import SearchResults from "./SearchResults";
 export function SearchContainer() {
   const [getQuery, setQuery] = createSignal("");
 
-  let ref: HTMLDivElement & { open?: boolean } = null;  
+  let ref: HTMLDivElement & { open?: boolean } = null;
   function onClick(e?: MouseEvent) {
     let target = e.target as HTMLElement;
 
@@ -21,10 +21,10 @@ export function SearchContainer() {
 
   function onFocus(e?: MouseEvent) {
     let target = e.target as HTMLElement;
-  
+
     if (ref.contains(target)) {
       if (!ref?.open) {
-        ref.open = true; 
+        ref.open = true;
         ref.style.pointerEvents = "auto";
       }
     }
@@ -49,7 +49,9 @@ export function SearchContainer() {
     <div class="relative">
       <div class="search-offset"></div>
       <dialog class="search-container" ref={ref}>
-        <SearchInput query={setQuery} />
+        <div class="search-input">
+          <SearchInput query={setQuery} />
+        </div>
 
         <div class="search-results">
           <SearchResults query={getQuery} />

@@ -1,22 +1,22 @@
 html {
-    color-scheme: light;
-    @apply bg-white text-black;
+  color-scheme: light;
+  @apply bg-white text-black;
 }
 
 html.dark {
-    color-scheme: dark;
-    @apply bg-black text-white;
+  color-scheme: dark;
+  @apply bg-black text-white;
 }
 
 html,
 body {
-    @apply font-manrope font-400;
-    @apply scroll-smooth;
-    @apply scroll-p-24;
-    @apply text-base;
+  @apply font-manrope font-400;
+  @apply scroll-smooth;
+  @apply scroll-p-24;
+  @apply text-base;
 
-    font-size: 1rem;
-    line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 textarea,
@@ -27,86 +27,94 @@ select,
 details,
 summary,
 a {
-    &,
-    &:focus,
-    &:hover,
-    &:active {
-        -webkit-tap-highlight-color: transparent;
-    }
+  &,
+  &:focus,
+  &:hover,
+  &:active {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 :where(:is(h1, h2, h3, h4, h5, h6)) {
-    @apply pt-12 font-[600];
+  @apply pt-12 font-[600];
 }
 
 h1 {
-    @apply text-5xl;
+  @apply text-5xl;
 }
 
 h2 {
-    @apply text-3xl;
+  @apply text-3xl;
 }
 
 h3 {
-    @apply text-2xl;
+  @apply text-2xl;
 }
 
 b,
 strong {
-    @apply dark:font-500 dark:underline;
+  @apply dark:font-500 dark:underline;
 }
 
 .dom-loaded {
-    button,
-    a {
-        @apply transition duration-200 ease-out;
-    }
+  button,
+  a {
+    @apply transition duration-200 ease-out;
+  }
 }
 
 button,
 a {
-    @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-90;
-    @apply ring-offset-2 ring-offset-black;
-    @apply rounded-md focus:outline-none;
-    @apply scale-100;
-    @apply text-secondary dark:text-primary;
+  @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-90;
+  @apply ring-offset-2 ring-offset-black;
+  @apply rounded-md focus:outline-none;
+  @apply scale-100;
+  @apply text-secondary dark:text-primary;
 
-    &:active {
-        @apply scale-90;
-    }
+  &:active {
+    @apply scale-90;
+  }
 }
 
 a {
-    text-decoration: 2px solid underline;
-    text-underline-offset: 0.2rem;
+  text-decoration: 2px solid underline;
+  text-underline-offset: 0.2rem;
+  display: inline-block;
+  cursor: pointer;
+
+  @apply break-words lt-md:break-all;
+
+  &:hover {
+    @apply text-primary dark:text-blue-200;
+  }
+
+  [rehype-icon] {
     display: inline-block;
-    cursor: pointer;
-
-    @apply break-words lt-md:break-all;
-
-    &:hover {
-        @apply text-primary dark:text-blue-200;
-    }
+    width: 1em;
+    height: 1em;
+    opacity: 0.6;
+  }
 }
 
-blockquote {
-    @apply mx-0 px-4 py-3;
-    @apply bg-primary/20 dark:bg-blue-700/30 rounded-lg;
 
-    // border-left: 5px solid;
-    // @apply border-blue-500;
+blockquote {
+  @apply mx-0 px-4 py-3;
+  @apply bg-primary/20 dark:bg-blue-700/30 rounded-lg;
+
+  // border-left: 5px solid;
+  // @apply border-blue-500;
 }
 
 blockquote p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 code {
-    @apply rounded-lg;
-    @apply px-2 py-1;
-    
-    color: #24292e;
-    background: #ffffffc4;
+  @apply rounded-lg;
+  @apply px-2 py-1;
+
+  color: #24292e;
+  background: #ffffffc4;
 }
 
 .dark code {
@@ -119,18 +127,18 @@ a code {
 }
 
 pre {
-    @apply rounded-lg cursor-auto p-5;
+  @apply rounded-lg cursor-auto p-5;
 
-    code {
-        @apply p-0;
-        @apply bg-inherit;
-    }
+  code {
+    @apply p-0;
+    @apply bg-inherit;
+  }
 }
 
 iframe,
 .giscus-frame {
-    @apply bg-transparent;
-    color-scheme: none;
+  @apply bg-transparent;
+  color-scheme: none;
 }
 
 details {
@@ -201,7 +209,7 @@ details {
     }
   }
 
-  &:not(.inline-details) { 
+  &:not(.inline-details) {
     & > summary {
       @apply pr-[2ch];
 

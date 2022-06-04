@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import serviceWorker from 'astro-service-worker';
+import { lookupCollection } from '@iconify/json';
 
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
@@ -12,7 +13,11 @@ import sitemap from "@astrojs/sitemap";
 import { outDir } from "./shared.config.cjs";
 
 import compress from "astro-compress";
-import { h } from "hastscript";
+import { h, s } from "hastscript";
+
+const { icons: fluentIcons } = await lookupCollection("fluent");
+const IconLink = fluentIcons["link-24-regular"];
+const IconArrow = fluentIcons["arrow-up-right-24-regular"];
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,15 +29,37 @@ export default defineConfig({
   site: "https://bundlejs.com",
   markdown: {
     rehypePlugins: [
+      "rehype-slug",
       [
         "rehype-autolink-headings",
         {
           behavior: "append",
-          content: [h("i.material-symbols-rounded", { "aria-hidden": "true" }, "insert_link")],
-          test: ['h2', 'h3', 'h4', 'h5', 'h6']
+          content: [
+            s("svg", {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: IconLink.width,
+              height: IconLink.height,
+              viewBox: `0 0 ${IconLink.width} ${IconLink.height}`,
+              class: "icon"
+            }, [IconLink.body])
+          ],
+          test: ['h2', 'h3', 'h4', 'h5', 'h6', 'details', 'summary', 'astro-root']
         },
       ],
-      ["rehype-external-links", { target: "_blank", rel: ["noopener"] }]
+      ["rehype-external-links", {
+        target: "_blank",
+        rel: ["noopener"],
+        content: [
+          s("svg", {
+            xmlns: "http://www.w3.org/2000/svg",
+            width: IconArrow.width,
+            height: IconArrow.height,
+            viewBox: `0 0 ${IconArrow.width} ${IconArrow.height}`,
+            class: "icon",
+            "rehype-icon": "arrow-up-right-24-regular",
+          }, [IconArrow.body])
+        ]
+      }]
     ],
     // remarkPlugins: [],
     shikiConfig: {
@@ -100,6 +127,9 @@ export default defineConfig({
     // })
   ],
   vite: {
+    worker: {
+      format: "es"
+    },
     ssr: {
       external: ["svgo"]
     },

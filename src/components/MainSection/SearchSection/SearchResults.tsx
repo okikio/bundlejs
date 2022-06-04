@@ -1,6 +1,6 @@
 import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
-import Loading from "../Loading";
+import Loading from "../../Loading";
 
 import { getPackages } from "@bundlejs/core";
 export function SearchResults(props?: ComponentProps<'dialog'> & {

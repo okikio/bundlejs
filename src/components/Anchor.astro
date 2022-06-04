@@ -13,10 +13,11 @@ let attrs = external ? { target: "_blank", rel: "noopener" } : {};
   custom-anchor
 >
   <slot />
-  {external && <Icon name="fluent:arrow-up-right-24-filled" />}
+  {external && <Icon name="fluent:arrow-up-right-24-regular" />}
 </a>
 
 <style lang="scss">
+  :global([rehype-icon]),
   svg {
     display: inline-block;
     width: 1em;

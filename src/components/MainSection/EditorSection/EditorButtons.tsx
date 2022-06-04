@@ -1,4 +1,4 @@
-import Button from "../Button";
+import Button from "../../Button";
 
 import IconMore from "~icons/fluent/more-24-regular";
 import IconDelete from "~icons/fluent/delete-24-regular";

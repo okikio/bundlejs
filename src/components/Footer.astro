@@ -1,7 +1,7 @@
 ---
 import Icon from "astro-icon";
 import Anchor from "./Anchor.astro";
-import Container from "./Container.astro";
+import Container from "./Container";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 import Button from "./Button";
@@ -45,16 +45,16 @@ import Button from "./Button";
     :global([custom-theme-switch]) {
       @apply px-2 py-2 rounded-md;
     }
-
-    :global(svg) {
-      @apply w-6 h-6;
-    }
   }
 
   [custom-button] {
     @apply px-3 py-2 gap-3;
     @apply flex flex-row justify-center;
     @apply bg-secondary/20 hover:bg-secondary/40;
+    
+    :global(svg) {
+      @apply w-6 h-6;
+    }
   }
 
   @at-root :global(.dark) {
