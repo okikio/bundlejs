@@ -1,7 +1,7 @@
 .editor-container {
   @apply self-center;
   
-  @apply relative;
+  @apply relative w-full;
   @apply bg-white shadow-lg;
 
   @apply dark:bg-[#0d1117] dark:shadow-none;
@@ -13,11 +13,10 @@
   @screen sm {
     min-width: 200px;
     min-height: 300px;
-    @apply w-full h-full; 
+    @apply h-full; 
   }
 
   @screen lt-sm {
-    @apply max-w-full;
     @apply h-[200px];
   }
   
@@ -27,6 +26,6 @@
   }
 
   .editor {
-    @apply py-2 lt-sm:w-[inherit] w-full h-full;
+    @apply py-2 w-full h-full;
   }
 }
