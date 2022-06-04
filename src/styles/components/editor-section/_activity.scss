@@ -1,9 +1,8 @@
 .activity-section {
   grid-area: activity;
-  @apply overflow-auto py-2;
+  @apply overflow-auto self-center;
 
   .activity-container {
-    @apply p-2;
     @apply inline-flex xsm:flex justify-end gap-2;
     @apply rounded-lg;
   }

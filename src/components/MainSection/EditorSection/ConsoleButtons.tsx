@@ -1,4 +1,4 @@
-import Button from "../Button";
+import Button from "../../Button";
 
 import IconUp from "~icons/fluent/arrow-up-24-regular";
 import IconDown from "~icons/fluent/arrow-down-24-regular";

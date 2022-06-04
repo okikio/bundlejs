@@ -1,10 +1,8 @@
 ---
-import '../styles/global.scss';
-
-const { 
-    title = 'bundlejs - Online bundler + npm package bundle size checker', 
-    description = 'A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all online, while viewing the file size of the final bundle.',
-    keywords = "bundle js, bundle npm packages, bundle size checker, online bundler, treeshake bundles"
+const {
+  title = 'bundlejs - Online bundler + npm package bundle size checker',
+  description = 'A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all online, while viewing the file size of the final bundle.',
+  keywords = "bundle js, bundle npm packages, bundle size checker, online bundler, treeshake bundles"
 } = Astro?.props;
 ---
 
@@ -37,18 +35,19 @@ const {
 <meta name="twitter:site" content="@jsbundle" />
 <meta name="twitter:creator" content="@okikio_dev" />
 
-<meta property="image" content={Astro.site.toString() + "/favicon/social-preview.png"} />
-<meta property="og:image" content={Astro.site.toString() + "/favicon/social-preview.png"} />
-<meta name="twitter:image" content={Astro.site.toString() + "/favicon/social-preview.png"} />
+<meta property="image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
+<meta property="og:image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
+<meta name="twitter:image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
 
-<meta name="twitter:url" property="og:site_name" content={Astro.site.toString()} />
-    
+<meta name="twitter:url" property="og:site_name" content={Astro.site.origin.toString()} />
+
 <link rel="canonical" href={Astro.request.url.toString()} />
 <meta itemprop="url" content={Astro.request.url.toString()} />
 <meta name="shortlink" content={Astro.request.url.toString()} />
 <meta property="og:url" content={Astro.request.url.toString()} />
 
-<link rel="search" href={Astro.site.toString() + "/open-search.xml"} type="application/opensearchdescription+xml" title="bundlejs">
+<link rel="search" href={Astro.site.origin.toString() + "/open-search.xml" }
+  type="application/opensearchdescription+xml" title="bundlejs">
 
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -75,121 +74,32 @@ const {
 
 <!-- Theme set-->
 <script>
-    import "../scripts/theme.ts";
+  import "../scripts/theme.ts";
 </script>
 
-<script 
-    type="application/ld+json" 
-    set:text={JSON.stringify({
-      "@context":"https://schema.org",
-      "@graph":[
-        {
-          "@type":"Organization",
-          "@id": Astro.site.toString() + "/#organization",
-          "name": "bundlejs",
-          "url": Astro.site.toString(),
-          "sameAs": [
-            Astro.site.toString(),
-            "https://www.producthunt.com/posts/bundle-6",
-            "https://bundlejs.com",
-            "https://bundlesize.com",
-            "https://bundle.js.org",
-            "https://github.com/okikio/bundle",
-            "https://okikio.github.io/bundle",
-            "https://opencollective.com/bundle",
-            "https://bestofjs.org/projects/bundle",
-            "https://www.saashub.com/bundlejs-alternatives",
-            "https://alternativeto.net/software/bundle",
-            "https://www.opensourcealternative.to/project/Bundlejs"
-          ],
-          "description":description,
-          "logo":{
-            "name":"bundle",
-            "@type":"ImageObject",
-            "@id":Astro.site.toString() +"/#logo",
-            "url":Astro.site.toString() + "/favicon/android-chrome-512x512.png",
-            "width":512,
-            "height":512,
-            "caption":"bundlejs's logo"
-          },
-          "contactPoint":[
-            {
-              "@type":"ContactPoint",
-              "url":Astro.site.toString(),
-              "email":"mailto:hey@okikio.dev",
-              "contactType":"customer service"
-            }
-          ]
-        },
-        {
-          "@type":"WebSite",
-          "@id":Astro.site.toString() + "/#website",
-          "url":Astro.site.toString(),
-          "description":description,
-          "logo":{
-            "name":"bundlejs",
-            "@type":"ImageObject",
-            "@id":Astro.site.toString() + "/#logo",
-            "url":Astro.site.toString() + "/favicon/android-chrome-512x512.png",
-            "width":512,
-            "height":512,
-            "caption":"bundlejs's logo"
-          },
-          "contactPoint":[
-            {
-              "@type":"ContactPoint",
-              "url":Astro.site.toString(),
-              "email":"mailto:hey@okikio.dev",
-              "contactType":"customer service"
-            }
-          ],
-          "sameAs":[
-            Astro.site.toString(),
-            "https://www.producthunt.com/posts/bundle-6",
-            "https://bundlejs.com",
-            "https://bundlesize.com",
-            "https://bundle.js.org",
-            "https://github.com/okikio/bundle",
-            "https://okikio.github.io/bundle",
-            "https://opencollective.com/bundle",
-            "https://bestofjs.org/projects/bundle",
-            "https://www.saashub.com/bundlejs-alternatives",
-            "https://alternativeto.net/software/bundle",
-            "https://www.opensourcealternative.to/project/Bundlejs"
-          ],
-          "mainEntityOfPage":{
-            "@type":"WebPage",
-            "@id":Astro.site.toString() + "/index.html#main",
-            "lastReviewed":"Sun May 22 2022 16:00:00 GMT-0400"
-          },
-          "about":{
-            "@id":Astro.site.toString() + "/about.html"
-          },
-          "name":"bundle",
-          "publisher":{
-            "@id":"https://github.com/okikio"
-          },
-          "copyrightYear":"2022",
-          "copyrightHolder":[
-            {
-              "@id":"https://github.com/okikio"
-            }
-          ]
-        },
-        {
-          "@type":"WebPage",
-          "@id":Astro.request.url.toString() + "#webpage",
-          "url":Astro.request.url.toString(),
-          "description":description,
-          "inLanguage":"en",
-          "name":title,
-          "isPartOf":{
-            "@id":Astro.site.toString() + "/#website"
-          },
-          "about":{
-            "@id":Astro.site.toString() + "/about.html"
-          }
-        }
-      ]
-    })} 
-/>
+<script type="application/ld+json" set:html={JSON.stringify({ "@context" :"https://schema.org", "@graph" :[ { "@type"
+  :"Organization", "@id" : Astro.site.origin.toString() + "/#organization" , "name" : "bundlejs" , "url" :
+  Astro.site.origin.toString(), "sameAs" : [ Astro.site.origin.toString(), "https://www.producthunt.com/posts/bundle-6"
+  , "https://bundlejs.com" , "https://bundlesize.com" , "https://bundle.js.org" , "https://github.com/okikio/bundle"
+  , "https://okikio.github.io/bundle" , "https://opencollective.com/bundle" , "https://bestofjs.org/projects/bundle"
+  , "https://www.saashub.com/bundlejs-alternatives" , "https://alternativeto.net/software/bundle"
+  , "https://www.opensourcealternative.to/project/Bundlejs" ], "description" :description, "logo" :{ "name"
+  :"bundle", "@type" :"ImageObject", "@id" :Astro.site.origin.toString() +"/#logo", "url" :Astro.site.origin.toString()
+  + "/favicon/android-chrome-512x512.png" , "width" :512, "height" :512, "caption" :"bundlejs's logo" }, "contactPoint"
+  :[ { "@type" :"ContactPoint", "url" :Astro.site.origin.toString(), "email" :"mailto:hey@okikio.dev", "contactType"
+  :"customer service" } ] }, { "@type" :"WebSite", "@id" :Astro.site.origin.toString() + "/#website" , "url"
+  :Astro.site.origin.toString(), "description" :description, "logo" :{ "name" :"bundlejs", "@type" :"ImageObject", "@id"
+  :Astro.site.origin.toString() + "/#logo" , "url" :Astro.site.origin.toString() + "/favicon/android-chrome-512x512.png"
+  , "width" :512, "height" :512, "caption" :"bundlejs's logo" }, "contactPoint" :[ { "@type" :"ContactPoint", "url"
+  :Astro.site.origin.toString(), "email" :"mailto:hey@okikio.dev", "contactType" :"customer service" } ], "sameAs" :[
+  Astro.site.origin.toString(), "https://www.producthunt.com/posts/bundle-6" , "https://bundlejs.com"
+  , "https://bundlesize.com" , "https://bundle.js.org" , "https://github.com/okikio/bundle"
+  , "https://okikio.github.io/bundle" , "https://opencollective.com/bundle" , "https://bestofjs.org/projects/bundle"
+  , "https://www.saashub.com/bundlejs-alternatives" , "https://alternativeto.net/software/bundle"
+  , "https://www.opensourcealternative.to/project/Bundlejs" ], "mainEntityOfPage" :{ "@type" :"WebPage", "@id"
+  :Astro.site.origin.toString() + "/index.html#main" , "lastReviewed" :"Sun June 05 2022 16:00:00 GMT-0400" }, "about"
+  :{ "@id" :Astro.site.origin.toString() + "/about.html" }, "name" :"bundlejs", "publisher" :{ "@id"
+  :"https://okikio.dev" }, "copyrightYear" :"2022", "copyrightHolder" :[ { "@id" :"https://okikio.dev" } ] }, { "@type"
+  :"WebPage", "@id" :Astro.request.url.toString() + "#webpage" , "url" :Astro.request.url.toString(), "description"
+  :description, "inLanguage" :"en", "name" :title, "isPartOf" :{ "@id" :Astro.site.origin.toString() + "/#website"
+  }, "about" :{ "@id" :Astro.site.origin.toString() + "/about.html" } } ] })} />

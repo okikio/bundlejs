@@ -1,6 +1,6 @@
 .tab-bar {
   grid-area: tabs;
-  @apply overflow-auto py-2;
+  @apply overflow-auto self-center;
 
   .tab-container {
     @apply p-2;

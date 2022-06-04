@@ -64,7 +64,7 @@
     "@typescript/ata": "^0.9.3",
     "countapi-js": "^1.0.2",
     "monaco-editor": "^0.33.0",
-    "typescript": "^4.7.2",
+    "typescript": "^4.7.3",
     "workbox-window": "^6.5.3"
   },
   "devDependencies": {
@@ -73,7 +73,7 @@
     "@astrojs/tailwind": "^0.2.1",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
-    "@iconify/json": "^2.1.55",
+    "@iconify/json": "^2.1.56",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "astro": "1.0.0-beta.39",
@@ -93,7 +93,7 @@
     "rehype-slug": "^5.0.1",
     "rehype-stringify": "^9.0.3",
     "rehype-urls": "^1.1.1",
-    "sass": "^1.52.1",
+    "sass": "^1.52.2",
     "semantic-release": "^19.0.2",
     "solid-js": "^1.4.3",
     "tiny-glob": "^0.2.9",
@@ -104,7 +104,7 @@
     "typedoc-plugin-missing-exports": "^0.22.6",
     "ultra-runner": "^3.10.5",
     "unified": "^10.1.2",
-    "unplugin-auto-import": "^0.8.6",
+    "unplugin-auto-import": "^0.8.7",
     "unplugin-icons": "^0.14.3",
     "vitest": "^0.13.1"
   }

@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-import Container from "../components/Container.astro";
-import SearchContainer from "../components/SearchSection/SearchContainer";
-import EditorSection from "../components/EditorSection/EditorSection";
+import Container from "../components/Container";
+import MainSection from '../components/MainSection/MainSection';
 
 import { Content as Docs } from "../components/DocsSection/Docs.md";
 import IntroHeader from "../components/IntroHeader.astro";
@@ -16,12 +15,9 @@ import IntroHeader from "../components/IntroHeader.astro";
       subtitle="A quick and easy way to bundle, minify, and compress your ts, js, jsx and npm projects, while viewing the file size of the final bundle." 
     />
 
-    <SearchContainer client:load />
   </Container>
 
-  <Container max="lg">
-    <EditorSection client:load />
-  </Container>
+  <MainSection client:load />
 
   <Container>
     <Docs />

@@ -1,6 +1,6 @@
 import { type ComponentProps, type JSX, onCleanup, onMount } from "solid-js";
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
-import { createDetailsEffect } from "../scripts/details";
+import { createDetailsEffect } from "../scripts/modules/details";
 
 export function Details(props: ComponentProps<'details'> & {
   children?: JSX.Element;

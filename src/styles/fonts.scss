@@ -20,27 +20,27 @@ $icon-font: "Material Symbols Rounded", "Material Icons-fallback";
   src: local("Arial");
 }
 
-.icon {
-  -webkit-font-feature-settings: "liga" off, "dlig";
-  -moz-font-feature-settings: "liga=0, dlig=1";
-  font-feature-settings: "liga", "dlig";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-family: $icon-font;
-  vertical-align: middle;
-  letter-spacing: normal;
-  display: inline-block;
-  text-decoration: none;
-  text-transform: none;
-  white-space: nowrap;
-  font-weight: normal;
-  position: relative;
-  font-style: normal;
-  word-wrap: normal;
-  font-size: 24px;
-  line-height: 1;
-  direction: ltr;
-  height: 1em;
-  width: 1em;
-}
+// .icon {
+//   -webkit-font-feature-settings: "liga" off, "dlig";
+//   -moz-font-feature-settings: "liga=0, dlig=1";
+//   font-feature-settings: "liga", "dlig";
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   text-rendering: optimizeLegibility;
+//   font-family: $icon-font;
+//   vertical-align: middle;
+//   letter-spacing: normal;
+//   display: inline-block;
+//   text-decoration: none;
+//   text-transform: none;
+//   white-space: nowrap;
+//   font-weight: normal;
+//   position: relative;
+//   font-style: normal;
+//   word-wrap: normal;
+//   font-size: 24px;
+//   line-height: 1;
+//   direction: ltr;
+//   height: 1em;
+//   width: 1em;
+// }

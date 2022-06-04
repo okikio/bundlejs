@@ -1,5 +1,5 @@
 import { ComponentProps } from "solid-js";
-import Button from "../Button";
+import Button from "../../Button";
 
 import IconSettings from "~icons/fluent/settings-24-regular";
 export function Tabs(props?: ComponentProps<'div'>) { 

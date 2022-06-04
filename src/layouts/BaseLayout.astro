@@ -1,10 +1,12 @@
 ---
-  import SEO from '../components/SEO.astro';
-  import Footer from '../components/Footer.astro';
-  import Navbar from '../components/Navbar.astro';
-  import Anchor from '../components/Anchor.astro';
+import '../styles/global.scss';
 
-  const content = Astro?.props?.content ?? Astro?.props;
+import SEO from '../components/SEO.astro';
+import Footer from '../components/Footer.astro';
+import Navbar from '../components/Navbar.astro';
+import Anchor from '../components/Anchor.astro';
+
+const content = Astro?.props?.content ?? Astro?.props;
 ---
 
 <!DOCTYPE html>

@@ -102,7 +102,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   }
   
   return (
-    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown}>
+    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(props?.direction == "x" ? "Horizontal" : "Vertical") + " Drag Handle"}>
       {props?.direction == "x" ? <IconDragHandleX /> : <IconDragHandleY />}
     </button>
   );

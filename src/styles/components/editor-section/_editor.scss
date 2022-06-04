@@ -1,4 +1,6 @@
 .editor-container {
+  @apply self-center;
+  
   @apply relative w-full h-full;
   @apply bg-white shadow-lg;
 
@@ -16,5 +18,9 @@
   &,
   [custom-loading] {
     @apply rounded-lg;
+  }
+
+  .editor {
+    @apply w-full h-full;
   }
 }

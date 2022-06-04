@@ -1,12 +1,12 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import Container from "../components/Container.astro";
+import Container from "../components/Container";
 
 let opts = Astro?.props?.content ?? Astro?.props;
 ---
 
 <BaseLayout {...opts}>
-  <Container>
+  <Container class="col main-container">
     <slot />
   </Container>
 </BaseLayout>

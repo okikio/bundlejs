@@ -29,7 +29,7 @@ export const ModuleWorkerTest = () => {
 
         // Use an empty worker file, to avoid 
         const worker = new Worker(
-            EMPTY_WORKER_URL.replace(/\.js$/, ".mjs"),
+            EMPTY_WORKER_URL, //.replace(/\.js$/, ".mjs"),
             test as WorkerOptions
         );
 

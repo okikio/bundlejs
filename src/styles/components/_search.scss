@@ -1,12 +1,12 @@
 .search-offset {
   @apply w-full;
-  @apply py-12;
+  @apply py-8;
 }
 
 dialog.search-container {
   @apply bg-transparent;
   @apply absolute top-2 w-full;
-  @apply p-1;
+  @apply p-0;
 
   &:not([open]) {
     -ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -46,7 +46,9 @@ dialog.search-container {
     }
 
     & .search,
-    & .search-results {
+    & .search-input,
+    & .search-results,
+    & .results-list {
       @apply transition-all duration-300;
     }
   }
@@ -57,7 +59,7 @@ dialog.search-container {
   }
 
   &[open] {
-    @apply px-3 pt-3 pointer-events-auto;
+    @apply pointer-events-auto;
 
     &:before {
       @apply shadow-transparent border-transparent;
@@ -68,11 +70,24 @@ dialog.search-container {
       @apply opacity-100;
     }
 
-    .search {
+    & .results-list {
+      @apply scale-100;
+    }
+
+    & .search-input { 
+      @apply p-4;
+    }
+
+    & .search {
       @apply bg-gray-100 dark:bg-gray-900;
       @apply border-transparent;
     }
   }
+}
+
+.search-input {
+  @apply sticky top-0 z-20 pointer-events-auto;
+  @apply p-1;
 }
 
 .search {
@@ -85,8 +100,6 @@ dialog.search-container {
 
   @apply flex items-center rounded-lg;
   @apply px-1 py-1;
-
-  @apply sticky top-0 z-20 pointer-events-auto;
 
   input#input {
     @apply w-full ml-2 p-2 bg-transparent align-middle focus:outline-none;
@@ -110,7 +123,7 @@ dialog.search-container {
 }
 
 .search-results {
-  @apply py-1.5;
+  @apply px-5;
   @apply relative bg-transparent;
 
   @apply w-full z-10;
@@ -120,6 +133,7 @@ dialog.search-container {
 
   .results-list {
     @apply flex flex-col;
+    @apply scale-x-[102%] origin-top;
   }
 
   :is(h1, h2, h3, h4, h5, h6, p) {
@@ -129,7 +143,7 @@ dialog.search-container {
 
 .result {
   @apply grid gap-6 sm:grid-cols-12;
-  @apply p-5;
+  @apply px-3 py-5;
 
   &.error {
     @apply flex items-center justify-center;

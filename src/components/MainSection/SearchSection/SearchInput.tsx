@@ -1,4 +1,4 @@
-import Button from "../Button";
+import Button from "../../Button";
 import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 

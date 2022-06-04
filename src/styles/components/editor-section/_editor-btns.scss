@@ -1,25 +1,14 @@
 .editor-btn-container {
   @apply absolute bottom-0 right-0; 
   @apply flex gap-2 px-2 pb-2;
-  @apply z-50;
 
   .editor-btns {
     @apply flex flex-wrap gap-[inherit];
-
-    .copy-container {
-      @apply relative;
-    }
-
-    [copy-banner] {
-      @apply absolute top-0 left-1/2;
-      @apply p-3 rounded-lg;
-      @apply bg-secondary/20 dark:bg-primary/20;
-      @apply -translate-x-1/2 -translate-y-[120%];
-    }
   }
 
   [custom-button] {
     @apply p-3;
     @apply bg-secondary/20 dark:bg-primary/20;
+    @apply hover:bg-secondary/40 hover:dark:bg-primary/40;
   }
 }

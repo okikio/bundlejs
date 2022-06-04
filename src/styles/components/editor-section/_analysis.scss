@@ -1,7 +1,20 @@
 .analysis-section {
   grid-area: analysis;
+  @apply self-center;
 
   [custom-handle] {
     @apply w-full;
   }
+  
+  [custom-details] {
+    @apply bg-gray-100 dark:bg-primary/20 rounded-3xl;
+
+    &[open] {
+      @apply rounded-2xl;
+    }
+  }
+}
+
+.dom-loaded .analysis-section [custom-details] {
+  transition: border-radius 0.35s ease;
 }

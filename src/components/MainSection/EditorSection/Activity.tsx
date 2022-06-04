@@ -1,6 +1,6 @@
 import { ComponentProps } from "solid-js";
-import Button from "../Button";
-import Loading from "../Loading";
+import Button from "../../Button";
+import Loading from "../../Loading";
 
 import IconLayer from "~icons/fluent/layer-24-regular";
 import IconShare from "~icons/fluent/share-24-regular";
