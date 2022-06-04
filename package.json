@@ -76,8 +76,8 @@
     "@iconify/json": "^2.1.56",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "astro": "1.0.0-beta.39",
-    "astro-compress": "^0.0.6",
+    "astro": "1.0.0-beta.40",
+    "astro-compress": "^0.0.8",
     "astro-icon": "^0.7.1",
     "astro-service-worker": "^0.1.2",
     "autoprefixer": "^10.4.7",
@@ -106,6 +106,7 @@
     "unified": "^10.1.2",
     "unplugin-auto-import": "^0.8.7",
     "unplugin-icons": "^0.14.3",
+    "vite-plugin-monaco-editor": "^1.0.10",
     "vitest": "^0.13.1"
   }
 }
