@@ -1,14 +1,16 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { OnLoadArgs, OnResolveArgs, OnResolveResult, OutputFile, Plugin } from 'esbuild-wasm';
-import { FileSystem, getResolvedPath, setFile } from '../utils/filesystem';
+import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
+import type { BundleConfigOptions } from '../configs/options';
+import type { EVENTS } from '../configs/events';
+import type { STATE } from '../configs/state';
 
-import { getRequest } from '../utils/fetch-and-cache';
-import { decode } from '../utils/encode-decode';
+import { getRequest } from '../../utils/fetch-and-cache';
+import { decode } from '../../utils/encode-decode';
 
-import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle, getPureImportPath } from '../utils/util-cdn';
-import { inferLoader } from '../utils/loader';
+import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from '../../utils/util-cdn';
+import { inferLoader } from '../../utils/loader';
 
-import { urlJoin, extname, isBareImport } from "../utils/path";
+import { urlJoin, extname, isBareImport } from "../../utils/path";
 import { CDN_RESOLVE } from './cdn';
 
 /** HTTP Plugin Namespace */
@@ -20,13 +22,13 @@ export const HTTP_NAMESPACE = 'http-url';
  * @param url package url to fetch
  * @param logger Console log
  */
-export const fetchPkg = async (url: string, logger = console.log) => {
+export const fetchPkg = async (url: string, events: typeof EVENTS) => {
   try {
     let response = await getRequest(url);
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url} (${response.status} code)`);
 
-    logger(`Fetch ${url}`, "info");
+    events.emit("logger.info", `Fetch ${url}`);
 
     return {
       url: response.url,
@@ -47,21 +49,20 @@ export const fetchPkg = async (url: string, logger = console.log) => {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, logger = console.log) => {
+export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, config: BundleConfigOptions) => {
   const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
   const parentURL = new URL("./", path).toString();
+  const FileSystem = config.filesystem; 
 
   const code = decode(content);
   const matches = Array.from(code.matchAll(rgx)) as RegExpMatchArray[];
 
   const promises = matches.map(async ([, assetURL]) => {
-    let { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), logger);
+    let { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), events);
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
-    setFile(namespace + ":" + url, content);
-    // let { pathname } = new URL(getPureImportPath(url), "https://local.com");
-    // setFile("/node_modules" + pathname, content);
+    FileSystem.set(namespace + ":" + url, content);
 
     return {
       path: assetURL, contents: asset,
@@ -78,7 +79,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
+export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
   return async (args: OnResolveArgs): Promise<OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     let argPath = args.path.replace(/\/$/, "/index");
@@ -105,7 +106,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return CDN_RESOLVE(origin, logger)(args);
+        return CDN_RESOLVE(origin, events)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -146,7 +147,11 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const HTTP = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+  // Convert CDN values to URL origins
+  let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const FileSystem = config.filesystem;
+  const assets = state.assets ?? [];
   return {
     name: HTTP_NAMESPACE,
     setup(build) {
@@ -166,7 +171,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, logger));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, events));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to
@@ -181,19 +186,19 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
 
         try {
           // Fetch the path without the `.ts` extension
-          ({ content, url } = await fetchPkg(argPath(), logger));
+          ({ content, url } = await fetchPkg(argPath(), events));
         } catch (err) {
           // If the ^ above fetch doesn't work, try again with a `.ts` extension
           // Some typescript files don't have file extensions but you can't fetch a file without their file extension
           try {
-            ({ content, url } = await fetchPkg(argPath(".ts"), logger));
+            ({ content, url } = await fetchPkg(argPath(".ts"), events));
           } catch (e) {
             // If the ^ above fetch doesn't work, try again with a `.tsx` extension
             // Some typescript files use `.tsx`
             try {
-              ({ content, url } = await fetchPkg(argPath(".tsx"), logger));
+              ({ content, url } = await fetchPkg(argPath(".tsx"), events));
             } catch (e) {
-              // logger(e.toString(), "error");
+              events.emit("logger.error", e.toString());
               throw err;
             }
           }
@@ -201,15 +206,13 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
 
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
-        setFile(args.namespace + ":" + args.path, content);
-        // let { pathname } = new URL(getPureImportPath(url), "https://local.com");
-        // setFile("/node_modules" + pathname, content);
+        await FileSystem.set(args.namespace + ":" + args.path, content);
 
         let _assetResults =
-          (await fetchAssets(url, content, args.namespace, logger))
+          (await fetchAssets(url, content, args.namespace, events, config))
             .filter((result) => {
               if (result.status == "rejected") {
-                logger("Asset fetch failed.\n" + result?.reason?.toString(), "warning");
+                events.emit("logger:warn", "Asset fetch failed.\n" + result?.reason?.toString());
                 return false;
               } else return true;
             })
@@ -218,7 +221,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                 return result.value;
             });
 
-        assets = assets.concat(_assetResults);
+        state.assets = assets.concat(_assetResults);
         return {
           contents: content,
           loader: inferLoader(url),
