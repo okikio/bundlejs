@@ -1,16 +1,19 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-
-import { HTTP_NAMESPACE } from './http';
-import { isBareImport } from '../utils/path';
-import { getRequest } from '../utils/fetch-and-cache';
-
-import { getCDNUrl, getCDNStyle } from '../utils/util-cdn';
-import { resolveImports } from '../utils/resolve-imports';
+import type { BundleConfigOptions } from '../configs/options';
+import type { EVENTS } from '../configs/events';
+import type { STATE } from '../configs/state';
 
 import { resolve, legacy } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 
-import { DEFAULT_CDN_HOST } from '../utils/util-cdn';
+import { HTTP_NAMESPACE } from './http';
+
+import { isBareImport } from '../../utils/path';
+import { getRequest } from '../../utils/fetch-and-cache';
+
+import { getCDNUrl, getCDNStyle } from '../../utils/util-cdn';
+import { resolveImports } from '../../utils/resolve-imports';
+import { DEFAULT_CDN_HOST } from '../../utils/util-cdn';
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = 'cdn-url';
@@ -21,7 +24,7 @@ export const CDN_NAMESPACE = 'cdn-url';
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
   return async (args: OnResolveArgs): Promise<OnResolveResult> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
@@ -92,8 +95,12 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
           if (subpath && subpath[0] !== "/")
             subpath = `/${subpath}`;
         } catch (e) {
-          logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
-          console.warn(e);
+          events
+            .emit(
+              "logger.warn",
+              `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`
+            )
+            .emit("logger.warn", e);
         }
       }
 
@@ -116,13 +123,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN = (cdn: string, logger = console.log): Plugin => {
+export const CDN = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+  // Convert CDN values to URL origins
+  let { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const FileSystem = config.filesystem; 
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, logger));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, logger));
+      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, events));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, events));
     },
   };
 };

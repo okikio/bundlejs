@@ -30,6 +30,9 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
+    "test": "vitest",
+    "repl": "pnpm build && tsm repl.ts",
+    "deno": "pnpm build && deno run --allow-net --allow-env --allow-read ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
     "pre-release": "pnpm build && pnpm dts"
   },
@@ -83,11 +86,15 @@
   "devDependencies": {
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
-    "@types/node": "^17.0.39",
+    "@types/node": "^17.0.40",
+    "@vitest/ui": "^0.14.1",
     "del-cli": "^4.0.1",
+    "esbuild": "^0.14.43",
+    "polyfill-crypto.getrandomvalues": "^1.0.0",
+    "tsm": "^2.2.1",
     "typescript-json-schema": "^0.53.1",
-    "vite": "^2.9.9",
+    "vite": "^2.9.10",
     "vite-plugin-dts": "^1.2.0",
-    "vitest": "^0.13.1"
+    "vitest": "^0.14.1"
   }
 }

@@ -2,38 +2,55 @@
 import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions, InitializeOptions } from "esbuild-wasm";
 
-import { FileSystem, setFile } from "./utils/filesystem";
+import { FileSystem, setFile } from "../utils/filesystem";
 import { initialize, build, transform, transformSync, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
 import * as bytes from "bytes";
 
-import { treeshake } from "./utils/treeshake";
-import { gzip, getWASM } from "./deno/denoflate/mod";
-import { compress } from "./deno/brotli/mod";
-import { compress as lz4_compress } from "./deno/lz4/mod";
+import { treeshake } from "../utils/treeshake";
+import { gzip, getWASM } from "../deno/denoflate/mod";
+import { compress } from "../deno/brotli/mod";
+import { compress as lz4_compress } from "../deno/lz4/mod";
 
 import { EXTERNAL } from "./plugins/external";
 import { HTTP } from "./plugins/http";
 import { CDN } from "./plugins/cdn";
 
-import { encode, decode } from "./utils/encode-decode";
-import { render as ansi } from "./utils/ansi";
-import { deepAssign } from "./utils/deep-equal";
+import { encode, decode } from "../utils/encode-decode";
+import { render as ansi } from "../utils/ansi";
+import { deepAssign } from "../utils/deep-equal";
 
 import { DefaultConfig } from "./configs/options";
 
 import { ALIAS } from "./plugins/alias";
-import { getCDNUrl } from "./utils/util-cdn";
+import { getCDNUrl } from "../utils/util-cdn";
 import { analyze } from "./plugins/analyzer";
 
 export let _initialized = false;
-export const initEvent = new EventEmitter();
+export const CONFIG_OPTS = {
+  "virtual-console": true
+};
+export const EVENTS_INPUT = {
+  "init.start": () => { },
+  "init.complete": () => { },
+  "init.error": () => { },
+
+  "logger.log": console.log,
+  "logger.error": console.error,
+  "logger.warn": console.warn,
+  "logger.info": console.info
+};
+
+export const EVENTS = new EventEmitter();
+EVENTS.on(EVENTS_INPUT);
 
 import ESBUILD_WASM_URL from "esbuild-wasm/esbuild.wasm?url";
 export const init = async (opts: InitializeOptions = {}) => {
   try {
     if (!_initialized) {
+      EVENTS.emit("init.start");
+
       await getWASM();
       await initialize({
         worker: false,
@@ -42,10 +59,10 @@ export const init = async (opts: InitializeOptions = {}) => {
       });
 
       _initialized = true;
-      initEvent.emit("init");
+      EVENTS.emit("init.complete");
     }
   } catch (error) {
-    initEvent.emit("error", error);
+    EVENTS.emit("init.error", error);
   }
 }
 
@@ -152,7 +169,7 @@ export const start = async (port: MessagePort) => {
 
   try {
     // Catch esbuild errors 
-    setFile("/input.tsx", `${input}`);
+    await setFile("/input.tsx", `${input}`);
 
     try {
       // Convert CDN values to URL origins

@@ -1,9 +1,12 @@
-import type { BuildOptions } from "esbuild-wasm/esm/browser";
-import type { OutputOptions } from "rollup/dist/es/rollup.browser";
+import type { BuildOptions, InitializeOptions, OutputFile } from "esbuild-wasm";
+import type { OutputOptions } from "rollup";
+
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
 
-import { deepAssign } from "../utils/deep-equal";
-import { DEFAULT_CDN_HOST } from "../utils/util-cdn";
+import { FileSystem, getFile, setFile, getResolvedPath } from "../../utils/filesystem";
+
+import { deepAssign } from "../../utils/deep-equal";
+import { DEFAULT_CDN_HOST } from "../../utils/util-cdn";
 
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export type CompressionType = "gzip" | "brotli" | "lz4";
@@ -63,9 +66,66 @@ export type BundleConfigOptions = {
    * It's a great way to determine what causes the bundle size to be so large. 
    */
   analysis?: TemplateType | boolean
+
+  /**
+   * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
+   */
+  ascii?: "html" | "html-and-ascii" | "ascii",
+  
+  /**
+   * A virtual file system where you can input files, get, set and read files
+   */
+  filesystem?: { 
+    /** Virtual Filesystem Storage */
+    files?: typeof FileSystem,
+
+    /**
+     * Retrevies file from virtual file system storage in either string or uint8array buffer format
+     * 
+     * @param path path of file in virtual file system storage
+     * @param type format to retrieve file in, buffer and string are the 2 option available
+     * @param importer an absolute path to use to determine a relative file path
+     * @returns file from file system storage in either string format or as a Uint8Array buffer
+     */
+    get?: typeof getFile,
+
+    /**
+     * Writes file to filesystem in either string or uint8array buffer format
+     * 
+     * @param path path of file in virtual file system storage
+     * @param content contents of file to store, you can store buffers and/or strings
+     * @param importer an absolute path to use to determine a relative file path
+     */
+    set?: typeof setFile,
+
+    /**
+     * Resolves path to a file in the virtual file system storage 
+     * 
+     * @param path the relative or absolute path to resolve to
+     * @param importer an absolute path to use to determine relative file paths
+     * @returns resolved final path
+     */
+    resolve?: typeof getResolvedPath,
+
+    /**
+     * Clear all files from the virtual filesystem storage
+     */
+    clear?: typeof FileSystem.clear,
+  },
+
+  /**
+   * Configures how esbuild-wasm is initialized 
+   */
+  init?: InitializeOptions & { platform?: "node" | "deno" | "browser" }
+
+  /**
+   * Documentation: https://esbuild.github.io/api/#entry-points
+   */
+  entryPoints?: BuildOptions["entryPoints"]
 };
 
 export const EasyDefaultConfig: BundleConfigOptions = {
+  entryPoints: ["/index.tsx"],
   "cdn": DEFAULT_CDN_HOST,
   "compression": "gzip",
   "analysis": false,
@@ -88,5 +148,17 @@ export const DefaultConfig: BundleConfigOptions = deepAssign({}, EasyDefaultConf
     "logLevel": "info",
     "sourcemap": false,
     "incremental": false,
+  },
+  
+  "ascii": "ascii",
+  filesystem: { 
+    files: FileSystem,
+    get: getFile,
+    set: setFile,
+    resolve: getResolvedPath,
+    clear: () => FileSystem.clear(),
+  },
+  init: {
+    platform: "node"
   }
-});
+} as BundleConfigOptions);

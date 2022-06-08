@@ -1,11 +1,14 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
+import type { BundleConfigOptions } from '../configs/options';
+import type { EVENTS } from '../configs/events';
+import type { STATE } from '../configs/state';
 
 import { parse as parsePackageName } from "parse-package-name";
 import { EXTERNALS_NAMESPACE } from './external';
 import { HTTP_RESOLVE } from './http';
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from '../utils/util-cdn';
-import { isBareImport } from '../utils/path';
+import { getCDNUrl, DEFAULT_CDN_HOST } from '../../utils/util-cdn';
+import { isBareImport } from '../../utils/path';
 
 /** Alias Plugin Namespace */
 export const ALIAS_NAMESPACE = 'alias-globals';
@@ -35,7 +38,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log) => {
+export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
   return async (args: OnResolveArgs): Promise<OnResolveResult> => {
     let path = args.path.replace(/^node\:/, "");
     let { path: argPath } = getCDNUrl(path);
@@ -43,7 +46,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = co
     if (isAlias(argPath, aliases)) {
       let pkgDetails = parsePackageName(argPath);
       let aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, logger)({
+      return HTTP_RESOLVE(host, events)({
         ...args,
         path: aliasPath
       });
@@ -58,7 +61,10 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = co
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const ALIAS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+  // Convert CDN values to URL origins
+  let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  let aliases = config.alias ?? {};
   return {
     name: ALIAS_NAMESPACE,
     setup(build) {
@@ -68,7 +74,7 @@ export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.lo
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host, logger)(args);
+          return ALIAS_RESOLVE(aliases, host, events)(args);
 
         return {
           path: args.path,
@@ -82,8 +88,8 @@ export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.lo
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, logger));
-      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, logger));
+      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, events));
+      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, events));
     },
   };
 };
