@@ -1,4 +1,4 @@
-import type { BuildOptions, InitializeOptions, OutputFile } from "esbuild-wasm";
+import type { BuildOptions, InitializeOptions } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
 import { FileSystem, getFile, setFile, getResolvedPath } from "../../utils/filesystem";
@@ -95,16 +95,13 @@ export declare type BundleConfigOptions = {
     /**
      * Configures how esbuild-wasm is initialized
      */
-    init?: InitializeOptions;
+    init?: InitializeOptions & {
+        platform?: "node" | "deno" | "browser";
+    };
     /**
      * Documentation: https://esbuild.github.io/api/#entry-points
      */
     entryPoints?: BuildOptions["entryPoints"];
-    /**
-     * Assets are files during the build process that esbuild can't handle natively,
-     * e.g. fetching web workers using the `new URL("...", import.meta.url)`
-     */
-    assets?: OutputFile[];
 };
 export declare const EasyDefaultConfig: BundleConfigOptions;
 export declare const DefaultConfig: BundleConfigOptions;

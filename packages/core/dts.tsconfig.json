@@ -6,10 +6,10 @@
         "emitDeclarationOnly": true,
         "declarationDir": "./@types"
     },
-    "include": [
-        "./src/**/*"
-    ],
     "exclude": [
+        "./src/esbuild.ts",
+        "./src/plugins/analyzer/**/*",
+
         "node_modules",
         "**/node_modules/*",
         "./tests/**/*",
