@@ -2,29 +2,29 @@
 import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions, InitializeOptions } from "esbuild-wasm";
 
-import { FileSystem, setFile } from "../utils/filesystem";
+import { FileSystem, setFile } from "./utils/filesystem";
 import { initialize, build, transform, transformSync, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
 import * as bytes from "bytes";
 
-import { treeshake } from "../utils/treeshake";
-import { gzip, getWASM } from "../deno/denoflate/mod";
-import { compress } from "../deno/brotli/mod";
-import { compress as lz4_compress } from "../deno/lz4/mod";
+import { treeshake } from "./utils/treeshake";
+import { gzip, getWASM } from "./deno/denoflate/mod";
+import { compress } from "./deno/brotli/mod";
+import { compress as lz4_compress } from "./deno/lz4/mod";
 
 import { EXTERNAL } from "./plugins/external";
 import { HTTP } from "./plugins/http";
 import { CDN } from "./plugins/cdn";
 
-import { encode, decode } from "../utils/encode-decode";
-import { render as ansi } from "../utils/ansi";
-import { deepAssign } from "../utils/deep-equal";
+import { encode, decode } from "./utils/encode-decode";
+import { render as ansi } from "./utils/ansi";
+import { deepAssign } from "./utils/deep-equal";
 
 import { DefaultConfig } from "./configs/options";
 
 import { ALIAS } from "./plugins/alias";
-import { getCDNUrl } from "../utils/util-cdn";
+import { getCDNUrl } from "./utils/util-cdn";
 import { analyze } from "./plugins/analyzer";
 
 export let _initialized = false;

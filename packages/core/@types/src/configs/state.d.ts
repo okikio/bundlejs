@@ -1,6 +1,6 @@
 import type { OutputFile } from "esbuild-wasm";
-import type * as ESBUILD from "esbuild-wasm";
-export declare let STATE: {
+import type * as ESBUILD from "esbuild";
+export declare const STATE: {
     initialized: boolean;
     /**
      * Assets are files during the build process that esbuild can't handle natively,

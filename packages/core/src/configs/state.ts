@@ -1,7 +1,7 @@
 import type { OutputFile } from "esbuild-wasm";
-import type * as ESBUILD from "esbuild-wasm";
+import type * as ESBUILD from "esbuild";
 
-export let STATE = {
+export const STATE = {
   initialized: false,
 
   /**

@@ -2,11 +2,13 @@ import type { BuildOptions, InitializeOptions, OutputFile } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
+import type { PLATFORM } from "./platform";
 
-import { FileSystem, getFile, setFile, getResolvedPath } from "../../utils/filesystem";
+import { PLATFORM_AUTO } from "./platform";
 
-import { deepAssign } from "../../utils/deep-equal";
-import { DEFAULT_CDN_HOST } from "../../utils/util-cdn";
+import { FileSystem, getFile, setFile, getResolvedPath } from "../utils/filesystem";
+import { DEFAULT_CDN_HOST } from "../utils/util-cdn";
+import { deepAssign } from "../utils/deep-equal";
 
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export type CompressionType = "gzip" | "brotli" | "lz4";
@@ -116,7 +118,7 @@ export type BundleConfigOptions = {
   /**
    * Configures how esbuild-wasm is initialized 
    */
-  init?: InitializeOptions & { platform?: "node" | "deno" | "browser" }
+  init?: InitializeOptions & { platform?: PLATFORM }
 
   /**
    * Documentation: https://esbuild.github.io/api/#entry-points
@@ -159,6 +161,6 @@ export const DefaultConfig: BundleConfigOptions = deepAssign({}, EasyDefaultConf
     clear: () => FileSystem.clear(),
   },
   init: {
-    platform: "node"
+    platform: PLATFORM_AUTO
   }
 } as BundleConfigOptions);

@@ -8,12 +8,12 @@ import { parse as parsePackageName } from "parse-package-name";
 
 import { HTTP_NAMESPACE } from './http';
 
-import { isBareImport } from '../../utils/path';
-import { getRequest } from '../../utils/fetch-and-cache';
+import { isBareImport } from '../utils/path';
+import { getRequest } from '../utils/fetch-and-cache';
 
-import { getCDNUrl, getCDNStyle } from '../../utils/util-cdn';
-import { resolveImports } from '../../utils/resolve-imports';
-import { DEFAULT_CDN_HOST } from '../../utils/util-cdn';
+import { getCDNUrl, getCDNStyle } from '../utils/util-cdn';
+import { resolveImports } from '../utils/resolve-imports';
+import { DEFAULT_CDN_HOST } from '../utils/util-cdn';
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = 'cdn-url';

@@ -3,8 +3,8 @@ import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
 import type { STATE } from '../configs/state';
 
-import { encode } from "../../utils/encode-decode";
-import { getCDNUrl } from '../../utils/util-cdn';
+import { encode } from "../utils/encode-decode";
+import { getCDNUrl } from '../utils/util-cdn';
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = 'external-globals';

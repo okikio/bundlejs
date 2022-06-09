@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import { splitVendorChunkPlugin } from "vite";
 
 import dts from 'vite-plugin-dts';
 import WASM_TO_JS from "./vite-plugins/wasm-to-js/index";
@@ -30,11 +29,8 @@ export default defineConfig({
     },
     rollupOptions: {
       manualChunks: {
-        esbuild: ["esbuild-wasm"],
-        "esbuild-wasm": ["esbuild-wasm/esbuild.wasm?to-js"],
-        lz4: ["/deno/lz4/mod.ts"],
-        gzip: ["/deno/denoflate/mod.ts"],
-        brotli: ["/deno/brotli/mod.ts"]
+        "esbuild-wasm": ["esbuild-wasm/esbuild.wasm?to-js", "esbuild-wasm"],
+        compress: ["/src/deno/lz4/mod.ts", "/src/deno/denoflate/mod.ts", "/src/deno/brotli/mod.ts"]
       },
       external: ["esbuild"]
     }
@@ -44,6 +40,6 @@ export default defineConfig({
     dts({
       outputDir: "@types",
       tsConfigFilePath: "./dts.tsconfig.json"
-    }),
+    })
   ]
 })
