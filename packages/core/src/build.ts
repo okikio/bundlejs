@@ -45,7 +45,10 @@ export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ES
       case "node":
         return await import("esbuild");
       case "deno":
-        return await import(`https://deno.land/x/esbuild@v${version}/mod.js`);
+        return await import(
+          /* @vite-ignore */
+          `https://deno.land/x/esbuild@v${version}/mod.js`
+        );
       default:
         return await import("esbuild-wasm");
     }
