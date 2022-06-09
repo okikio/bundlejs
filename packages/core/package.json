@@ -31,8 +31,8 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "test": "vitest",
-    "repl": "pnpm build && tsm repl.ts",
-    "deno": "pnpm build && deno run --allow-net --allow-env --allow-read ./repl.ts",
+    "repl": "tsm repl.ts",
+    "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
     "pre-release": "pnpm build && pnpm dts"
   },
@@ -87,6 +87,7 @@
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
     "@types/node": "^17.0.40",
+    "@types/webcola": "^3.2.0",
     "@vitest/ui": "^0.14.1",
     "del-cli": "^4.0.1",
     "esbuild": "^0.14.43",

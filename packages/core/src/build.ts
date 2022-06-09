@@ -61,15 +61,14 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
       EVENTS.emit("init.start");
 
       STATE.esbuild = await getESBUILD(platform);
-      await getWASM();
-
-      if (platform !== "node") {
+      if (platform !== "node" && platform !== "deno") {
         await STATE.esbuild.initialize({
-          worker: false,
           wasmModule: new WebAssembly.Module(await ESBUILD_WASM),
           ...opts
         });
       }
+      await getWASM();
+
 
       STATE.initialized = true;
       EVENTS.emit("init.complete");

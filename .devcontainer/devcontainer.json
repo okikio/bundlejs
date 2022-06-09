@@ -1,23 +1,36 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.192.0/containers/typescript-node
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.236.0/containers/javascript-node
 {
-	"name": "Node.js & TypeScript",
+	"name": "Node.js",
 	"build": {
 		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick a Node version: 12, 14, 16
-		"args": { 
-			"VARIANT": "16"
-		}
+		// Update 'VARIANT' to pick a Node version: 18, 16, 14.
+		// Append -bullseye or -buster to pin to an OS version.
+		// Use -bullseye variants on local arm64/Apple Silicon.
+		"args": { "VARIANT": "18" }
 	},
 
-	// Set *default* container specific settings.json values on container create.
-	"settings": {},
-
-
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"vivaxy.vscode-conventional-commits"
-	],
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				// Enables the project as a Deno project
+				"deno.enable": true,
+				// Enables Deno linting for the project
+				"deno.lint": true,
+				// Sets Deno as the default formatter for the project
+				"editor.defaultFormatter": "denoland.vscode-deno"
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"denoland.vscode-deno",
+				"vivaxy.vscode-conventional-commits"
+			]
+		}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
@@ -25,6 +38,6 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "pnpm install",
 
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node"
 }

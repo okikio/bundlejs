@@ -2,6 +2,7 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
 import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
+import type { STATE } from '../configs/state';
 /** HTTP Plugin Namespace */
 export declare const HTTP_NAMESPACE = "http-url";
 /**
@@ -43,4 +44,4 @@ export declare const HTTP_RESOLVE: (host: string, events: typeof EVENTS) => (arg
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export declare const HTTP: (events: typeof EVENTS, config: BundleConfigOptions) => Plugin;
+export declare const HTTP: (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions) => Plugin;

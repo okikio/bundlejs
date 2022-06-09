@@ -1,6 +1,7 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
 import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
+import type { STATE } from '../configs/state';
 /** Alias Plugin Namespace */
 export declare const ALIAS_NAMESPACE = "alias-globals";
 /**
@@ -25,4 +26,4 @@ export declare const ALIAS_RESOLVE: (aliases: {}, host: string, events: typeof E
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export declare const ALIAS: (events: typeof EVENTS, config: BundleConfigOptions) => Plugin;
+export declare const ALIAS: (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions) => Plugin;
