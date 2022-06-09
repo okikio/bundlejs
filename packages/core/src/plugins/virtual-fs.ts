@@ -4,7 +4,7 @@ import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from "../configs/events";
 import type { STATE } from '../configs/state';
 
-import { inferLoader } from "../../utils/loader";
+import { inferLoader } from "../utils/loader";
 export const VIRTUAL_FILESYSTEM_NAMESPACE = 'virtual-filesystem';
 export const VIRTUAL_FS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
   const FileSystem = config.filesystem;

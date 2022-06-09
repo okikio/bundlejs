@@ -1,22 +1,21 @@
 import type { Plugin } from "vite";
 export const fileRegex = /\.wasm\?to-js$/;
 
-import { encode as base64 } from "../../deno/base64/mod";
-import { encode } from "../../utils/encode-decode";
-import { compress } from "../../deno/lz4/mod";
+import { encode as base64 } from "../../src/deno/base64/mod";
+import { compress } from "../../src/deno/lz4/mod";
 import * as fs from "node:fs/promises";
 
 export function WASM_TO_JS(): Plugin {
   return {
     name: 'wasm-to-js', // this name will show up in warnings and errors,
-    async transform(code, id) {
+    async transform(_, id) {
       if (fileRegex.test(id)) {
         id = id.replace(/\?to-js/, "");
-        // console.log(, id)
+        
         const compressed = await compress(await fs.readFile(id));
         const encoded = base64(compressed);
         
-        const source = `import * as lz4 from "/deno/lz4/mod";
+        const source = `import * as lz4 from "/src/deno/lz4/mod";
         export const source = lz4.decompress(Uint8Array.from(atob("${encoded}"), c => c.charCodeAt(0)));
         export default source`;
         return {

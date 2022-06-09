@@ -7,8 +7,8 @@ import { parse as parsePackageName } from "parse-package-name";
 import { EXTERNALS_NAMESPACE } from './external';
 import { HTTP_RESOLVE } from './http';
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from '../../utils/util-cdn';
-import { isBareImport } from '../../utils/path';
+import { getCDNUrl, DEFAULT_CDN_HOST } from '../utils/util-cdn';
+import { isBareImport } from '../utils/path';
 
 /** Alias Plugin Namespace */
 export const ALIAS_NAMESPACE = 'alias-globals';

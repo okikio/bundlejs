@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import type { BundleConfigOptions } from "../src/configs/options";
+import type { BundleConfigOptions } from "../configs/options";
 import type { Plugin } from "rollup";
 
 import { rollup } from "rollup";

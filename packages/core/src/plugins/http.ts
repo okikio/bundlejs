@@ -4,13 +4,13 @@ import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
 import type { STATE } from '../configs/state';
 
-import { getRequest } from '../../utils/fetch-and-cache';
-import { decode } from '../../utils/encode-decode';
+import { getRequest } from '../utils/fetch-and-cache';
+import { decode } from '../utils/encode-decode';
 
-import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from '../../utils/util-cdn';
-import { inferLoader } from '../../utils/loader';
+import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from '../utils/util-cdn';
+import { inferLoader } from '../utils/loader';
 
-import { urlJoin, extname, isBareImport } from "../../utils/path";
+import { urlJoin, extname, isBareImport } from "../utils/path";
 import { CDN_RESOLVE } from './cdn';
 
 /** HTTP Plugin Namespace */

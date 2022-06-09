@@ -2,20 +2,19 @@
 import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
 import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions, InitializeOptions } from "esbuild-wasm";
 import type * as ESBUILD from "esbuild";
+import type { PLATFORM } from "./configs/platform";
 
 import ESBUILD_WASM from "esbuild-wasm/esbuild.wasm?to-js";
-
 import { version } from "esbuild-wasm";
-import * as pkg from "../package.json";
 
 import * as _bytes from "bytes";
 // @ts-ignore
 const bytes = _bytes.default;
 
-import { treeshake } from "../utils/treeshake";
-import { gzip, getWASM } from "../deno/denoflate/mod";
-import { compress } from "../deno/brotli/mod";
-import { compress as lz4_compress } from "../deno/lz4/mod";
+import { treeshake } from "./utils/treeshake";
+import { gzip, getWASM } from "./deno/denoflate/mod";
+import { compress } from "./deno/brotli/mod";
+import { compress as lz4_compress } from "./deno/lz4/mod";
 
 import { EXTERNAL } from "./plugins/external";
 import { HTTP } from "./plugins/http";
@@ -28,19 +27,19 @@ import { DefaultConfig } from "./configs/options";
 import { EVENTS } from "./configs/events";
 import { STATE } from "./configs/state";
 
-import { encode, decode } from "../utils/encode-decode";
-import { render as ansi } from "../utils/ansi";
-import { deepAssign } from "../utils/deep-equal";
-import { getCDNUrl } from "../utils/util-cdn";
+import { encode, decode } from "./utils/encode-decode";
+import { render as ansi } from "./utils/ansi";
+import { deepAssign } from "./utils/deep-equal";
+import { getCDNUrl } from "./utils/util-cdn";
 
-import { createNotice } from "../utils/create-notice";
+import { createNotice } from "./utils/create-notice";
 
 export const INPUT_EVENTS = {
   "build": build,
   "init": init
 };
 
-export async function getESBUILD(platform: BundleConfigOptions["init"]["platform"] = "node"): Promise<typeof ESBUILD> {
+export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ESBUILD> {
   try {
     switch (platform) {
       case "node":
@@ -84,11 +83,9 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
 export async function build(opts: BundleConfigOptions = {}) {
   if (!STATE.initialized)
     EVENTS.emit("init.loading");
-
-  const { build: bundle, transform, transformSync, formatMessages } = await init(opts.init);
+  
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
-  const FileSystem = CONFIG.filesystem;
-
+  const { build: bundle, transform, transformSync, formatMessages } = await init(CONFIG.init);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files

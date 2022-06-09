@@ -1,5 +1,5 @@
-import { gzip, getWASM } from "../../../../deno/denoflate/mod";
-import { compress } from "../../../../deno/brotli/mod";
+import { gzip, getWASM } from "../../../deno/denoflate/mod";
+import { compress } from "../../../deno/brotli/mod";
 
 export type SizeGetter = (code: Uint8Array) => Promise<number>;
 

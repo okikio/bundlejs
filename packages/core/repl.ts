@@ -1,19 +1,11 @@
-import { build, FileSystem, setFile } from "./lib/index.mjs";
+import { build, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
 
 console.log("\n");
-setFile("/index.tsx", `
-  export * from "@okikio/animate";
-`);
+setFile("/index.tsx", `export * from "@okikio/animate";`);
 
-let result = await build({ 
-  init: {
-    platform: ("Deno" in globalThis) ? "deno" : ("process" in globalThis) ? "node" : "browser"
-    // worker: true
-  }
-});
+let result = await build();
+console.log(result);
 
-console.log(result)
-
-if ("Deno" in globalThis) { 
+if (PLATFORM_AUTO == "deno") { 
   globalThis?.Deno?.exit?.();
 }

@@ -1,5 +1,5 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
-import { EasyDefaultConfig } from "../src/configs/options";
+import { EasyDefaultConfig } from "../configs/options";
 import { deepAssign } from "./deep-equal";
 
 /**
