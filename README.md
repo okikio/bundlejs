@@ -45,7 +45,7 @@ In order to create a shareble link, you click the `Share` button, it copies the 
 
 You can also add bundle badges, they look like this,
 
-[![Open Bundle](./src/assets/badge-light.svg)](https://bundlejs.com/) [![Open Bundle](./src/assets/badge-dark.svg)](https://bundlejs.com/)
+[![Open Bundle](./public/badge-light.svg)](https://bundlejs.com/) [![Open Bundle](./public/badge-dark.svg)](https://bundlejs.com/)
 
 All you need to do is to add this to your `README.md`
 ```md
