@@ -68,15 +68,15 @@
     "workbox-window": "^6.5.3"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "^0.1.0",
+    "@astrojs/sitemap": "^0.1.2",
     "@astrojs/solid-js": "^0.1.4",
     "@astrojs/tailwind": "^0.2.1",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
-    "@iconify/json": "^2.1.58",
+    "@iconify/json": "^2.1.59",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "astro": "1.0.0-beta.42",
+    "astro": "1.0.0-beta.44",
     "astro-compress": "^0.0.10",
     "astro-icon": "^0.7.1",
     "astro-service-worker": "^0.1.2",
@@ -84,7 +84,7 @@
     "commitizen": "^4.2.4",
     "hastscript": "^7.0.2",
     "husky": "^8.0.1",
-    "pnpm": "^7.1.9",
+    "pnpm": "^7.2.1",
     "postcss-font-grabber": "^3.0.2",
     "rehype-accessible-emojis": "^0.3.2",
     "rehype-autolink-headings": "^6.1.1",
@@ -95,7 +95,7 @@
     "rehype-urls": "^1.1.1",
     "sass": "^1.52.3",
     "semantic-release": "^19.0.3",
-    "solid-js": "^1.4.3",
+    "solid-js": "^1.4.4",
     "tiny-glob": "^0.2.9",
     "tsm": "^2.2.1",
     "typedoc": "^0.22.17",
@@ -107,6 +107,6 @@
     "unplugin-auto-import": "^0.8.7",
     "unplugin-icons": "^0.14.3",
     "vite-plugin-monaco-editor": "^1.0.10",
-    "vitest": "^0.14.1"
+    "vitest": "^0.14.2"
   }
 }
