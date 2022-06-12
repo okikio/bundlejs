@@ -1,0 +1,22 @@
+{
+  "imports": {
+    "@amoutonbrady/lz-string": "https://cdn.esm.sh/@amoutonbrady/lz-string@0.0.1?dts",
+    "@okikio/emitter": "https://cdn.esm.sh/@okikio/emitter@2.1.8?dts",
+    "bytes": "https://cdn.esm.sh/bytes@3.1.2?dts",
+    "d3": "https://cdn.esm.sh/d3@7.4.4?dts",
+    "esbuild-wasm": "https://cdn.skypack.dev/esbuild-wasm@0.14.43?dts",
+    "nanoid": "https://cdn.esm.sh/nanoid@4.0.0?dts",
+    "parse-package-name": "https://cdn.esm.sh/parse-package-name@1.0.0?dts",
+    "resolve-exports": "https://cdn.esm.sh/resolve.exports@1.1.0?dts",
+    "rollup": "https://cdn.esm.sh/rollup@2.75.6?dts",
+    "solid-js": "https://cdn.esm.sh/solid-js@1.4.4?dts",
+    "webcola": "https://cdn.esm.sh/webcola@3.4.0?dts",
+    "deno/": "https://deno.land/x/",
+    "deno/lz4": "https://deno.land/x/lz4@v0.1.2/mod.ts",
+    "deno/base64": "https://deno.land/std@0.76.0/encoding/base64.ts",
+    "deno/brotli": "https://deno.land/x/brotli@v0.1.4/mod.ts",
+    "deno/denoflate": "https://deno.land/x/denoflate@1.2.1/mod.ts",
+    "deno/path": "https://deno.land/std@0.143.0/path/mod.ts",
+    "deno/path/_util.ts": "https://deno.land/std@0.143.0/path/_util.ts"
+  }
+}

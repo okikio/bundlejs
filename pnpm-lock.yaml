@@ -56,7 +56,7 @@ importers:
       vitest: ^0.14.1
       workbox-window: ^6.5.3
     dependencies:
-      '@bundlejs/core': link:packages/core
+      '@bundlejs/core': link:packages/deno/npm
       '@dprint/formatter': 0.2.0
       '@okikio/animate': 2.3.1
       '@okikio/emitter': 2.1.7
@@ -163,6 +163,19 @@ importers:
       vite: 2.9.10
       vite-plugin-dts: 1.2.0_vite@2.9.10
       vitest: 0.14.1_@vitest+ui@0.14.1
+
+  packages/deno/npm:
+    specifiers:
+      '@deno/shim-deno': ~0.6.0
+      '@types/node': 16.11.37
+      chalk: 4.1.2
+      undici: ^5.3.0
+    dependencies:
+      '@deno/shim-deno': 0.6.0
+      undici: 5.4.0
+    devDependencies:
+      '@types/node': 16.11.37
+      chalk: 4.1.2
 
 packages:
 
@@ -1644,6 +1657,17 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
+  /@deno/shim-deno-test/0.3.2:
+    resolution: {integrity: sha512-STxWMnLuA0/bT0F41yKx6AbyzVVSjXYvgleFE4xit/m4aooMG/0Bs0MiQUe95EVS8DrzYmWbuCtdIlWymAdlsw==}
+    dev: false
+
+  /@deno/shim-deno/0.6.0:
+    resolution: {integrity: sha512-f8JD7kwSX1pEMO+bCl/Ooi6ucJ1HHKlAbYw6Na1uFsPeF4iOPaVdc8AcxWO6bSSQ8MBKjELitJ3nG2euBO9kCA==}
+    dependencies:
+      '@deno/shim-deno-test': 0.3.2
+      which: 2.0.2
+    dev: false
+
   /@dprint/formatter/0.2.0:
     resolution: {integrity: sha512-E1q1JaOPeEUBhG//IUayqJQvNpqprZ0OCF8B/bIhUqSsMIp0Y74PgF8JPvDCrOdq43qiGUYAavVO8iCBHOoU/A==}
     dev: false
@@ -2494,6 +2518,10 @@ packages:
 
   /@types/node/12.20.24:
     resolution: {integrity: sha512-yxDeaQIAJlMav7fH5AQqPH1u8YIuhYJXYBzxaQ4PifsU0GDO38MSdmEDeRlIxrKbC6NbEaaEHDanWb+y30U8SQ==}
+    dev: true
+
+  /@types/node/16.11.37:
+    resolution: {integrity: sha512-U8+EA3a23YkBLKQFE9rxFw4A2YWFttRyQ15mz+dMsXiAo9zbdizFndBMz1aLpV2k7M+syncZy/cady/9pC3sPg==}
     dev: true
 
   /@types/node/16.11.39:
@@ -5690,7 +5718,6 @@ packages:
 
   /isexe/2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
-    dev: true
 
   /issue-parser/6.0.0:
     resolution: {integrity: sha512-zKa/Dxq2lGsBIXQ7CUZWTHfvxPC2ej0KfO7fIPqLlHB9J2hJ7rGhZ5rilhuufylr4RXYPzJUeFjKxz305OsNlA==}
@@ -8962,6 +8989,11 @@ packages:
       which-boxed-primitive: 1.0.2
     dev: true
 
+  /undici/5.4.0:
+    resolution: {integrity: sha512-A1SRXysDg7J+mVP46jF+9cKANw0kptqSFZ8tGyL+HBiv0K1spjxPX8Z4EGu+Eu6pjClJUBdnUPlxrOafR668/g==}
+    engines: {node: '>=12.18'}
+    dev: false
+
   /unherit/3.0.0:
     resolution: {integrity: sha512-UmvIQZGEc9qdLIQ8mv8/61n6PiMgfbOoASPKHpCvII5srShCQSa6jSjBjlZOR4bxt2XnT6uo6csmPKRi+zQ0Jg==}
     dev: true
@@ -9624,7 +9656,6 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
-    dev: true
 
   /widest-line/4.0.1:
     resolution: {integrity: sha512-o0cyEG0e8GPzT4iGHphIOh0cJOV8fivsXxddQasHPHfoZf1ZexrfeA21w2NaEN1RHE+fXlfISmOE8R9N3u3Qig==}

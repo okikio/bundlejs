@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "strict": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "lib": [
+      "deno.window"
+    ]
+  }
+}
