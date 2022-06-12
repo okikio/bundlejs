@@ -1,0 +1,36 @@
+@import "./base";
+
+.details {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  top: calc(50% - 85px);
+  left: calc(50% - 85px);
+
+  width: 170px;
+  height: 170px;
+
+  font-size: 14px;
+  text-align: center;
+  color: var(--font-color);
+  z-index: 100;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.details-size {
+  font-size: 0.8em;
+}
+
+.details-name {
+  font-weight: bold;
+}
+
+.details-percentage {
+  margin: 0.4em 0em;
+  font-size: 2.4em;
+  line-height: 1em;
+}

@@ -1,0 +1,46 @@
+// https://deno.land/x/brotli@v0.1.4/mod.ts
+// Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
+import init, { source, compress as wasm_compress, decompress as wasm_decompress, } from "./wasm.js";
+let initialized = false;
+export const getWASM = async () => {
+    if (!initialized)
+        await init(source);
+    return (initialized = true);
+};
+/**
+ * Compress a byte array.
+ *
+ * ```typescript
+ * import { compress } from "https://deno.land/x/brotli/mod.ts";
+ * const text = new TextEncoder().encode("X".repeat(64));
+ * console.log(text.length);                   // 64 Bytes
+ * console.log(compress(text).length);         // 10 Bytes
+ * ```
+ *
+ * @param input Input data.
+ * @param bufferSize Read buffer size
+ * @param quality Controls the compression-speed vs compression-
+ * density tradeoff. The higher the quality, the slower the compression.
+ * @param lgwin Base 2 logarithm of the sliding window size.
+ */
+export async function compress(input, bufferSize = 4096, quality = 6, lgwin = 22) {
+    await getWASM();
+    return wasm_compress(input, bufferSize, quality, lgwin);
+}
+/**
+ * Decompress a byte array.
+ *
+ * ```typescript
+ * import { decompress } from "https://deno.land/x/brotli/mod.ts";
+ * const compressed = Uint8Array.from([ 27, 63, 0, 0, 36, 176, 226, 153, 64, 18 ]);
+ * console.log(compressed.length);             // 10 Bytes
+ * console.log(decompress(compressed).length); // 64 Bytes
+ * ```
+ *
+ * @param input Input data.
+ * @param bufferSize Read buffer size
+ */
+export async function decompress(input, bufferSize = 4096) {
+    await getWASM();
+    return wasm_decompress(input, bufferSize);
+}

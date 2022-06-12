@@ -7,7 +7,30 @@
 		{
 			"name": "📦 @bundlejs/core",
 			"path": "packages/core"
+		},
+		{
+			"name": "📦 @bundlejs/deno",
+			"path": "packages/deno"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"deno.enable": true,
+		"deno.lint": true,
+		"deno.codeLens.implementations": true,
+		"deno.codeLens.references": true,
+		"deno.suggest.completeFunctionCalls": true,
+		"deno.suggest.autoImports": true,
+		"deno.suggest.imports.autoDiscover": true,
+		"deno.suggest.paths": true,
+		"deno.suggest.imports.hosts": {
+			"https://deno.land": true,
+			"https://x.nest.land": true,
+			"https://crux.land": true,
+			"https://cdn.skypack.dev": true,
+			"https://cdn.esm.sh": true
+		},
+		"deno.config":"packages/deno/deno.jsonc",
+		"deno.unstable": false,
+		"deno.importMap": "packages/deno/import_map.json",
+	}
 }
