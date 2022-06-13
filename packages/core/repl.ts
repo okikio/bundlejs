@@ -1,4 +1,3 @@
-// @deno-types="./@types/src/index.d.ts"
 import { build, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
 
 console.log("\n");

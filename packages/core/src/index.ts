@@ -17,8 +17,8 @@ export * from "./utils/npm-search";
 
 export * from "./utils/path";
 export * from "./utils/resolve-imports";
-export * from "./utils/treeshake";
 export * from "./utils/util-cdn";
+// export * from "./utils/treeshake";
 
 // export * from "./plugins/analyzer/index";
 export * from "./plugins/alias";

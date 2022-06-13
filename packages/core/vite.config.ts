@@ -1,6 +1,5 @@
 import { defineConfig } from "vitest/config";
 
-import dts from 'vite-plugin-dts';
 export default defineConfig({
   test: { },
   build: {
@@ -10,33 +9,29 @@ export default defineConfig({
     assetsInlineLimit: 0,
     lib: {
       entry: "./src/index.ts",
-      name: 'bundlejs',
-      formats: ["es"], //, "cjs", "umd"],
-      fileName(format) {
-        switch (format) { 
-          case "es":
-            return `index.mjs`;
-          case "cjs":
-            return `index.cjs`;
-          case "umd":
-            return `index.js`;
-        }
-
-        return `index.${format}.js`;
-      },
+      name: 'bundlejs'
     },
     rollupOptions: {
-      manualChunks: {
-        "esbuild-wasm": ["/src/wasm.ts", "esbuild-wasm"],
-        compress: ["/src/deno/lz4/mod.ts", "/src/deno/denoflate/mod.ts", "/src/deno/brotli/mod.ts"]
-      },
+      output: [
+        {
+          format: "es",
+          manualChunks: {
+            "esbuild": ["/src/wasm.ts", "esbuild-wasm"],
+            "compress": ["/src/deno/lz4/mod.ts", "/src/deno/denoflate/mod.ts", "/src/deno/brotli/mod.ts"]
+          },
+          chunkFileNames: "[name].mjs",
+          entryFileNames: "[name].mjs"
+        },
+        {
+          format: "cjs",
+          entryFileNames: "[name].cjs"
+        },
+        {
+          format: "umd",
+          entryFileNames: "[name].js"
+        }
+      ],
       external: ["esbuild"]
     }
-  },
-  plugins: [     
-    dts({
-      outputDir: "@types",
-      tsConfigFilePath: "./dts.tsconfig.json"
-    })
-  ]
+  }
 })

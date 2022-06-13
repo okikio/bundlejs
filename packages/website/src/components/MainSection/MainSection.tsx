@@ -8,7 +8,7 @@ export function MainSection(props?: ComponentProps<'div'>) {
 
   return (
     <Container max="lg">
-      <Container>
+      <Container class="px-none">
         <SearchContainer />
       </Container>
 

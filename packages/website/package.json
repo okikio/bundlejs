@@ -5,10 +5,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "dev": "astro dev --experimental-integrations",
+    "start": "astro dev --experimental-integrations",
+    "build": "astro build --experimental-integrations",
+    "preview": "astro preview --experimental-integrations",
     "test": "vitest",
     "test:run": "vitest run",
     "pre-release": "pnpm build && pnpm test:run"
@@ -29,7 +29,8 @@
     "@astrojs/sitemap": "^0.1.2",
     "@astrojs/solid-js": "^0.1.4",
     "@astrojs/tailwind": "^0.2.1",
-    "@iconify/json": "^2.1.59",
+    "@babel/core": "^7.18.2",
+    "@iconify/json": "^2.1.60",
     "astro": "1.0.0-beta.44",
     "astro-compress": "^0.0.10",
     "astro-icon": "^0.7.1",
@@ -38,19 +39,17 @@
     "esno": "^0.16.3",
     "hastscript": "^7.0.2",
     "pnpm": "^7.2.1",
+    "postcss": "^8.4.14",
     "postcss-font-grabber": "^3.0.2",
     "rehype-autolink-headings": "^6.1.1",
     "rehype-external-links": "^1.0.1",
     "rehype-slug": "^5.0.1",
     "sass": "^1.52.3",
     "solid-js": "^1.4.4",
+    "typescript": "^4.7.3",
     "unplugin-auto-import": "^0.8.7",
     "unplugin-icons": "^0.14.3",
     "vite": "^2.9.12",
-    "vite-plugin-monaco-editor": "^1.0.10",
-    "vitest": "^0.14.2",
-    "@babel/core": "^7.18.2",
-    "postcss": "^8.4.14",
-    "typescript": "^4.7.3"
+    "vitest": "^0.14.2"
   }
 }

@@ -45,6 +45,11 @@ dialog.search-container {
       @apply transition-all duration-[400ms];
     }
 
+    &[open],
+    &:before {
+      @apply rounded-lg sm:rounded-xl;
+    }
+
     & .search,
     & .search-input,
     & .search-results,
@@ -75,7 +80,7 @@ dialog.search-container {
     }
 
     & .search-input { 
-      @apply p-4;
+      @apply p-3 sm:p-4;
     }
 
     & .search {
@@ -98,7 +103,7 @@ dialog.search-container {
   @apply dark:bg-black;
   @apply dark:border-gray-700;
 
-  @apply flex items-center rounded-lg;
+  @apply flex items-center rounded-md sm:rounded-lg;
   @apply px-1 py-1;
 
   input#input {
@@ -123,7 +128,7 @@ dialog.search-container {
 }
 
 .search-results {
-  @apply px-5;
+  @apply px-2 sm:px-5;
   @apply relative bg-transparent;
 
   @apply w-full z-10;

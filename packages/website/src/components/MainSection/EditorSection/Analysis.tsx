@@ -11,7 +11,7 @@ export function Analysis(props?: ComponentProps<'details'>) {
         summary="Analysis">
 
         <p>
-          {/* <!-- <Markdown>
+          {/* <Markdown>
           Enable the `analysis` config to view the size of output files with interactive zoomable charts.
 
           ```ts
@@ -21,7 +21,7 @@ export function Analysis(props?: ComponentProps<'details'>) {
           }
           ```
 
-        </Markdown> --> */}
+        </Markdown> */}
         </p>
         <br />
         <div class="relative w-full">
