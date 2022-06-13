@@ -12,12 +12,13 @@ import type { InitOutput } from "./pkg/denoflate";
 import init from "./pkg/denoflate.js"; 
 
 // @ts-ignore
-import { wasm as WASM } from "./pkg/denoflate_bg.wasm.js";
+// import { wasm as WASM } from "./pkg/denoflate_bg.wasm.js";
+import { source } from "./pkg/wasm.ts";
 
 export let wasm: InitOutput;
-export const getWASM = async () => {
+export const getWASM = async (src?: Uint8Array) => {
   if (wasm) return wasm;
-  return (wasm = await init(WASM));
+  return (wasm = await init(src ?? await source()));
 }
 
 export default wasm;

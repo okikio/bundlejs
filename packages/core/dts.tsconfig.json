@@ -1,19 +1,21 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "outDir": "./lib",
         "declaration": true,
         "emitDeclarationOnly": true,
         "declarationDir": "./@types"
     },
+    "includes": [
+        "src/**/*"
+    ],
     "exclude": [
-        "./src/esbuild.ts",
-        "./src/plugins/analyzer/**/*",
+        "src/plugins/analyzer/**/*",
 
         "node_modules",
-        "**/node_modules/*",
-        "./tests/**/*",
-        "./@types/**/*",
-        "./lib/**/*"
+        "tests/**/*",
+        "@types/**/*",
+        "lib/**/*",
+        "scripts/*",
+        "*.ts"
     ]
 }

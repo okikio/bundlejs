@@ -1,36 +1,26 @@
-/// <reference lib="webworker" />
 import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
-import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions, InitializeOptions } from "esbuild-wasm";
 import type * as ESBUILD from "esbuild";
 import type { PLATFORM } from "./configs/platform";
 
-import ESBUILD_WASM from "esbuild-wasm/esbuild.wasm?to-js";
+import ESBUILD_WASM from "./wasm";
 import { version } from "esbuild-wasm";
 
 import * as _bytes from "bytes";
 // @ts-ignore
 const bytes = _bytes.default;
 
-import { treeshake } from "./utils/treeshake";
-import { gzip, getWASM } from "./deno/denoflate/mod";
-import { compress } from "./deno/brotli/mod";
-import { compress as lz4_compress } from "./deno/lz4/mod";
-
 import { EXTERNAL } from "./plugins/external";
 import { HTTP } from "./plugins/http";
 import { CDN } from "./plugins/cdn";
 import { ALIAS } from "./plugins/alias";
-import { analyze } from "./plugins/analyzer";
 import { VIRTUAL_FS } from "./plugins/virtual-fs";
 
 import { DefaultConfig } from "./configs/options";
 import { EVENTS } from "./configs/events";
 import { STATE } from "./configs/state";
 
-import { encode, decode } from "./utils/encode-decode";
-import { render as ansi } from "./utils/ansi";
+import { encode } from "./utils/encode-decode";
 import { deepAssign } from "./utils/deep-equal";
-import { getCDNUrl } from "./utils/util-cdn";
 
 import { createNotice } from "./utils/create-notice";
 
@@ -65,12 +55,10 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
       STATE.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
         await STATE.esbuild.initialize({
-          wasmModule: new WebAssembly.Module(await ESBUILD_WASM),
+          wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
           ...opts
         });
       }
-      await getWASM();
-
 
       STATE.initialized = true;
       EVENTS.emit("init.complete");
@@ -83,18 +71,18 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
   }
 }
 
-export async function build(opts: BundleConfigOptions = {}) {
+export async function build(opts: BundleConfigOptions = {}): Promise<any> {
   if (!STATE.initialized)
     EVENTS.emit("init.loading");
   
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
-  const { build: bundle, transform, transformSync, formatMessages } = await init(CONFIG.init);
+  const { build: bundle } = await init(CONFIG.init);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-  let outputs: Uint8Array[] = [];
+  let outputs: ESBUILD.OutputFile[] = [];
   let content: Uint8Array[] = [];
-  let result: BuildResult | BuildIncremental;
+  let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental;
 
   try {
     try {
@@ -130,34 +118,30 @@ export async function build(opts: BundleConfigOptions = {}) {
     } catch (e) {
       if (e.errors) {
         // Log errors with added color info. to the virtual console
-        let asciMsgs = [...await createNotice(e.errors, "error", false)];
-        let htmlMsgs = [...await createNotice(e.errors, "error")];
+        const asciMsgs = [...await createNotice(e.errors, "error", false)];
+        const htmlMsgs = [...await createNotice(e.errors, "error")];
 
         EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
 
-        let message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
         return EVENTS.emit("logger.error", message);
       } else throw e;
-      console.error(e);
     }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
-    content = await Promise.all(
+    outputs = await Promise.all(
       [...STATE.assets]
-        .concat(result?.outputFiles)
-        ?.map(async ({ path, text, contents }) => {
-          let ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
-          // if (path == "/stdin.js") {
-          //   output = text;
-          //   // config?.rollup && esbuildOpts?.treeShaking ? 
-          //   // await treeshake(text, esbuildOpts, config?.rollup) :
-          // }
-
+        .concat(result?.outputFiles as ESBUILD.OutputFile[])
+    );
+    content = await Promise.all(
+      outputs
+        ?.map(({ path, text, contents }) => {
           if (/\.map$/.test(path))
             return encode("");
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
           if (esbuildOpts?.logLevel == "verbose") {
+            const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
             if (ignoreFile) {
               EVENTS.emit("logger.log", "Output File: " + path);
             } else {
@@ -178,19 +162,31 @@ export async function build(opts: BundleConfigOptions = {}) {
     let totalByteLength = bytes(
       content.reduce((acc, { byteLength }) => acc + byteLength, 0)
     );
-    let totalCompressedSize = bytes(
-      (await Promise.all(
-        content.map((code: Uint8Array) => {
-          switch (type) {
-            case "lz4":
-              return lz4_compress(code);
-            case "brotli":
-              return compress(code, code.length, level);
-            default:
-              return gzip(code, level);
+
+    // Choose a different compression function based on the compression type
+    let compressionMap = await (async () => {
+      switch (type) {
+        case "lz4":
+          const { compress: lz4_compress } = await import("./deno/lz4/mod");
+          return async (code: Uint8Array) => {
+            return await lz4_compress(code);
+          };
+        case "brotli":
+          const { compress } = await import("./deno/brotli/mod");
+          return (code: Uint8Array) => {
+            return compress(code, code.length, level);
           }
-        })
-      )).reduce((acc, { length }) => acc + length, 0)
+        default:
+          const { gzip, getWASM } = await import("./deno/denoflate/mod");
+          await getWASM();
+          return async (code: Uint8Array) => {
+            return await gzip(code, level);
+          };
+      }
+    })();
+    let totalCompressedSize = bytes(
+      (await Promise.all(content.map(compressionMap)))
+        .reduce((acc, { length }) => acc + length, 0)
     );
 
     // // Ensure a fresh filesystem on every run
@@ -204,7 +200,7 @@ export async function build(opts: BundleConfigOptions = {}) {
       result,
       outputFiles: result.outputFiles,
       initialSize: `${totalByteLength}`,
-      size: `${totalCompressedSize} (${type})`
+      // size: `${totalCompressedSize} (${type})`
     };
   } catch (e) { }
 }

@@ -1,4 +1,3 @@
-/// <reference lib="webworker" />
 import type { VisualizerData } from "../types/types";
 import type { TemplateType } from "../types/template-types";
 
