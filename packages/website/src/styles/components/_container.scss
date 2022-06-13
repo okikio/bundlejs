@@ -3,6 +3,10 @@
     @apply container gap-3;
     @apply px-3;
 
+    &.px-none {
+      @apply px-0;
+    }
+
     &.col {
       @apply flex flex-col;
     }

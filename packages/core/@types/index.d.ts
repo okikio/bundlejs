@@ -14,7 +14,6 @@ export * from "./utils/parse-query";
 export * from "./utils/npm-search";
 export * from "./utils/path";
 export * from "./utils/resolve-imports";
-export * from "./utils/treeshake";
 export * from "./utils/util-cdn";
 export * from "./plugins/alias";
 export * from "./plugins/cdn";

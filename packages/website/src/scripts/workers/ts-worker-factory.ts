@@ -7,11 +7,9 @@
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
 import { createStreaming, Formatter } from "@dprint/formatter";
-import { compressToURL } from "@amoutonbrady/lz-string";
 import type * as ts from "typescript";
 
-import { DefaultConfig } from "../configs/options";
-import { deepAssign, deepDiff, getRequest } from "@bundlejs/core";
+import { deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {

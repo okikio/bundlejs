@@ -1,3 +1,4 @@
+export * from "@amoutonbrady/lz-string";
 /**
  * Treeshake exports/imports. It allows for specifing multiple exports per package, through this syntax
  * ```ts

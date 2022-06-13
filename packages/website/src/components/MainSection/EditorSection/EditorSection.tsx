@@ -24,7 +24,7 @@ export function EditorSection(props?: ComponentProps<'div'>) {
   });
 
   return (
-    <div class="contain lg editor-section">
+    <div class="contain px-none lg editor-section">
       <Tabs />
       <Activity />
 
@@ -35,7 +35,6 @@ export function EditorSection(props?: ComponentProps<'div'>) {
       </div>
 
       <DragHandle drag-height direction="y" />
-
       <Analysis />
     </div>
   )

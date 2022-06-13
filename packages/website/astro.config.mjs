@@ -8,9 +8,6 @@ import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import AutoImport from 'unplugin-auto-import/vite';
 
-import PluginMonacoEditor from "vite-plugin-monaco-editor";
-const MonacoEditorPlugin = PluginMonacoEditor.default;
-
 import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
@@ -65,16 +62,9 @@ export default defineConfig({
         ]
       }]
     ],
-    // remarkPlugins: [],
     shikiConfig: {
-      // Choose from Shiki's built-in themes (or add your own)
-      // https://github.com/shikijs/shiki/blob/main/docs/themes.md
       theme: "github-dark",
-      // Add custom languages
-      // Note: Shiki has countless langs built-in, including .astro!
-      // https://github.com/shikijs/shiki/blob/main/docs/languages.md
       langs: [],
-      // Enable word wrap to prevent horizontal scrolling
       wrap: false
     }
   },
@@ -86,7 +76,7 @@ export default defineConfig({
       }
     }),
     sitemap(),
-    // compress(),
+    compress(),
     // serviceWorker({
     //   workbox: {
     //       globDirectory: destFolder,
@@ -132,10 +122,7 @@ export default defineConfig({
   ],
   vite: {
     build: {
-      assetsInlineLimit: 0,
-    },
-    worker: {
-      format: "iife"
+      assetsInlineLimit: 0
     },
     ssr: {
       external: ["svgo"]
@@ -153,14 +140,6 @@ export default defineConfig({
         autoInstall: true,
         compiler: 'solid',
         defaultClass: "icon"
-      }),
-      MonacoEditorPlugin({
-        languageWorkers: [],
-        customWorkers: [
-          { label: "typescript", entry: path.join(__dirname, "./src/scripts/workers/typescript") },
-          { label: "json", entry: path.join(__dirname, "./src/scripts/workers/json") },
-          { label: "editor", entry: path.join(__dirname, "./src/scripts/workers/editor") },
-        ]
       })
     ]
   }
