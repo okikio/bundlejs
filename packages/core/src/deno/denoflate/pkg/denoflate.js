@@ -1,4 +1,3 @@
-
 let wasm;
 
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
@@ -226,7 +225,8 @@ async function load(module, imports) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('denoflate_bg.wasm', import.meta.url);
+        // input = new URL('denoflate_bg.wasm', import.meta.url);
+        input = new URL('denoflate_bg.wasm');
     }
     const imports = {};
     imports.wbg = {};

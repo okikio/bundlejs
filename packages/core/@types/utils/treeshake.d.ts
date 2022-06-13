@@ -1,4 +1,3 @@
-/// <reference lib="webworker" />
 import type { BundleConfigOptions } from "../configs/options";
 import type { Plugin } from "rollup";
 export declare const isFileSchema: (id: string) => boolean;

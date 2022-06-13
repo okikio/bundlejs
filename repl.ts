@@ -1,7 +1,7 @@
-import { encode, decode } from "./old/old-src/ts/util/encode-decode";
-import { compress } from "./old/old-src/ts/deno/lz4/mod";
-import { gzip, getWASM } from "./old/old-src/ts/deno/denoflate/mod";
-import { compress as brotli } from "./old/old-src/ts/deno/brotli/mod";
+import { encode, decode } from "./packages/old/old-src/ts/util/encode-decode";
+import { compress } from "./packages/old/old-src/ts/deno/lz4/mod";
+import { gzip, getWASM } from "./packages/old/old-src/ts/deno/denoflate/mod";
+import { compress as brotli } from "./packages/old/old-src/ts/deno/brotli/mod";
 
 // let input = `\
 // import * as convert from '@csstools/convert-colors';

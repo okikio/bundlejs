@@ -1,8 +1,6 @@
 import { defineConfig } from "vitest/config";
 
 import dts from 'vite-plugin-dts';
-import WASM_TO_JS from "./vite-plugins/wasm-to-js/index";
-
 export default defineConfig({
   test: { },
   build: {
@@ -29,14 +27,13 @@ export default defineConfig({
     },
     rollupOptions: {
       manualChunks: {
-        "esbuild-wasm": ["esbuild-wasm/esbuild.wasm?to-js", "esbuild-wasm"],
+        "esbuild-wasm": ["/src/wasm.ts", "esbuild-wasm"],
         compress: ["/src/deno/lz4/mod.ts", "/src/deno/denoflate/mod.ts", "/src/deno/brotli/mod.ts"]
       },
       external: ["esbuild"]
     }
   },
   plugins: [     
-    WASM_TO_JS(),
     dts({
       outputDir: "@types",
       tsConfigFilePath: "./dts.tsconfig.json"

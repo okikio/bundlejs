@@ -20,8 +20,7 @@
     "lib": [
         "ES2021",
         "DOM",
-        "DOM.Iterable",
-        "WebWorker"
+        "DOM.Iterable"
     ],
   }
 }

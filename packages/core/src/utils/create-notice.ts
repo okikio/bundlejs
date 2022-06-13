@@ -1,6 +1,5 @@
 import type { PartialMessage } from "esbuild-wasm";
 import { formatMessages } from "esbuild-wasm";
-import { createNodeArray } from "typescript";
 
 import { ansi } from "./ansi";
 
