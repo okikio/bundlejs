@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           
+      - name: Use Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+          
       - name: Cache .pnpm-store
         uses: actions/cache@v1
         with:
@@ -35,11 +40,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Pre-release
+        run: pnpm -w pre-release
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm semantic-release
+        run: pnpm -w semantic-release
       
       - name: Push changes
         if: ${{ github.ref == 'refs/heads/main' }}
