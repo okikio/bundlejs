@@ -394,6 +394,7 @@ export const build = async (app: App) => {
                 let hideBtn = parentEl.querySelector(".hide-btns");
                 let clearBtn = parentEl.querySelector(".clear-btn");
                 let prettierBtn = parentEl.querySelector(".prettier-btn");
+                let downloadBtn = parentEl.querySelector(".download-btn");
                 let resetBtn = parentEl.querySelector(".reset-btn");
                 let copyBtn = parentEl.querySelector(".copy-btn");
                 let codeWrapBtn = parentEl.querySelector(".code-wrap-btn");
@@ -412,6 +413,43 @@ export const build = async (app: App) => {
 
                 clearBtn.addEventListener("click", () => {
                     editor.setValue("");
+                }); 
+                
+                function downloadBlob(blob: Blob, name = 'file.txt') {
+                    // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    // Create a link element
+                    const link = document.createElement("a");
+
+                    // Set link's href to point to the Blob URL
+                    link.href = blobUrl;
+                    link.download = name;
+
+                    // Append link to the body
+                    document.body.appendChild(link);
+
+                    // Dispatch click event on the link
+                    // This is necessary as link.click() does not work on the latest firefox
+                    link.dispatchEvent(
+                        new MouseEvent('click', {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        })
+                    );
+
+                    // Remove link from body
+                    document.body.removeChild(link);
+                }
+
+                downloadBtn.addEventListener("click", () => {
+                    const model = editor.getModel();
+                    const blob = new Blob([model.getValue()], {
+                        type: "text/javascript;charset=utf-8"
+                    });
+
+                    downloadBlob(blob, model?.uri?.authority ?? "download.ts");
                 });
 
                 prettierBtn.addEventListener("click", () => {
