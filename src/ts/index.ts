@@ -445,8 +445,9 @@ export const build = async (app: App) => {
 
                 downloadBtn.addEventListener("click", () => {
                     const model = editor.getModel();
+                    model.getLanguageId()
                     const blob = new Blob([model.getValue()], {
-                        type: "text/javascript;charset=utf-8"
+                        type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
                     });
 
                     downloadBlob(blob, model?.uri?.authority ?? "download.ts");
