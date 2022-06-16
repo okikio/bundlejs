@@ -3,6 +3,7 @@ import type { ComponentProps } from "solid-js";
 import Container from "../Container";
 import SearchContainer from "./SearchSection/SearchContainer";
 import EditorSection from "./EditorSection/EditorSection";
+import Analysis from "./Analysis";
 
 export function MainSection(props?: ComponentProps<'div'>) {
 
@@ -13,6 +14,10 @@ export function MainSection(props?: ComponentProps<'div'>) {
       </Container>
 
       <EditorSection />
+
+      <Container class="pb-4">
+        <Analysis />
+      </Container>
     </Container>
   );
 }

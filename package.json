@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "typedoc": "rm -r -f packages/website/dists/docs/ && node ./.typedoc/build.js && typedoc && node ./rehype.js",
-    "pre-release": "pnpm run -r pre-release && pnpm -w typedoc",
+    "typedoc": "rm -r -f website/dists/docs/ && node ./.typedoc/build.js && typedoc && node ./rehype.js",
+    "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
     "semantic-release": "semantic-release",
     "repl": "esno repl.ts"
   },

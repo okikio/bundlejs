@@ -1,4 +1,4 @@
-import type { ComponentProps } from "solid-js";
+import { ComponentProps, onCleanup } from "solid-js";
 import { onMount, createSignal, Show } from "solid-js";
 
 import Loading from "../../Loading";
@@ -9,22 +9,25 @@ export function Editor(props?: ComponentProps<'div'>) {
   let loadingRef: HTMLDivElement = null;
 
   const [isLoading, setIsLoading] = createSignal(true);
-  onMount(() => { 
+  onMount(() => {
     (async () => {
       const { build } = await import("../../../scripts/modules/monaco");
-      build(ref);
+      const [editor] = build(ref);
       setIsLoading(false);
+      onCleanup(() => {
+        editor.dispose();
+      });
     })();
   });
 
   return (
     <div class="editor-container">
-      <div ref={ref} class="editor" custom-code-editor></div>
-      
+      <div ref={ref} id="editor" custom-code-editor></div>
+      <EditorButtons />
+
       <Show when={isLoading()}>
         <Loading ref={loadingRef} />
       </Show>
-      <EditorButtons />
     </div>
   )
 }

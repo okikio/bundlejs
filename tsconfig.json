@@ -11,9 +11,9 @@
     "isolatedModules": true,
     // Add support for Web Workers
     "lib": [
-        "ES2021",
-        "DOM",
-        "DOM.Iterable"
+      "ES2021",
+      "DOM",
+      "DOM.Iterable"
     ],
   }
 }

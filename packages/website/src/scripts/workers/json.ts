@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 // export * from "../../../node_modules/monaco-editor/esm/vs/language/json/json.worker.js";
-import '../../../node_modules/monaco-editor/esm/vs/language/json/json.worker.js';
+import 'monaco-editor/esm/vs/language/json/json.worker.js';
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.

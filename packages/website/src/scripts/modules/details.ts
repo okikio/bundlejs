@@ -16,11 +16,13 @@ export function createDetailsEffect() {
   let ref: HTMLDetailsElement;
   let summaryRef: HTMLElement;
   let contentRef: HTMLDivElement;
+  let anchorRef: HTMLAnchorElement;
 
   function onMount(_ref?: HTMLDetailsElement, _summaryRef?: HTMLElement, _contentRef?: HTMLDivElement) {
     ref = _ref;
     summaryRef = _summaryRef;
     contentRef = _contentRef;
+    anchorRef = _summaryRef?.querySelector?.('a');
 
     createEffect(() => {
       // @ts-ignore
@@ -31,11 +33,11 @@ export function createDetailsEffect() {
     });
 
     hashChange();
-    globalThis.addEventListener('hashchange', hashChange);
+    globalThis?.addEventListener?.('hashchange', hashChange);
   }
 
   function hashChange() {
-    let { hash } = document.location;
+    let { hash } = globalThis.location;
 
     if (ref && hash && hash.length) {
       if (ref.open != true && ref.id == hash.slice(1)) {
@@ -45,6 +47,14 @@ export function createDetailsEffect() {
   }
 
   function onClick(e?: MouseEvent) {
+    if (
+      e?.target &&
+      (
+        anchorRef == (e?.target as HTMLElement) ||
+        anchorRef?.contains?.((e?.target as HTMLElement))
+      )
+    ) return;
+
     e && e?.preventDefault?.();
 
     // Add an overflow on the <details> to avoid content overflowing
@@ -134,8 +144,8 @@ export function createDetailsEffect() {
     animation = null;
     contentAnimation = null;
 
-    isClosing = null;
-    isExpanding = null;
+    setIsClosing(false);
+    setIsExpanding(false);
 
     globalThis?.removeEventListener?.('hashchange', hashChange);
   }

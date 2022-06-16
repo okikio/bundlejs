@@ -4,7 +4,7 @@
     "**/test.ts",
     "**/@types/*.d.ts"
   ],
-  "entryPoints": ["."],
+  "entryPoints": ["./packages/core/src/index.ts"],
   "name": "spring-easing",
   "out": "docs",
   "media": "media",
@@ -14,7 +14,7 @@
   "includeVersion": true,
   "readme": "./README.md",
   "customCss": "./.typedoc/typedoc.css",
-  "tsconfig": "./tsconfig.json",
+  "tsconfig": "./.typedoc/tsconfig.json",
   "umami-id": "4921ec19-210c-45b0-b5b8-cb9aaae292e9",
   "internalNamespace": "External",
   "plugin": [

@@ -5,18 +5,18 @@ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a2, b3) => {
-  for (var prop in b3 || (b3 = {}))
-    if (__hasOwnProp.call(b3, prop))
-      __defNormalProp(a2, prop, b3[prop]);
+var __spreadValues = (a, b2) => {
+  for (var prop in b2 || (b2 = {}))
+    if (__hasOwnProp.call(b2, prop))
+      __defNormalProp(a, prop, b2[prop]);
   if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b3)) {
-      if (__propIsEnum.call(b3, prop))
-        __defNormalProp(a2, prop, b3[prop]);
+    for (var prop of __getOwnPropSymbols(b2)) {
+      if (__propIsEnum.call(b2, prop))
+        __defNormalProp(a, prop, b2[prop]);
     }
-  return a2;
+  return a;
 };
-var __spreadProps = (a2, b3) => __defProps(a2, __getOwnPropDescs(b3));
+var __spreadProps = (a, b2) => __defProps(a, __getOwnPropDescs(b2));
 var __objRest = (source2, exclude) => {
   var target = {};
   for (var prop in source2)
@@ -30,7 +30,9 @@ var __objRest = (source2, exclude) => {
   return target;
 };
 import { a as browser, s as source } from "./esbuild.mjs";
-export { m as brotli, a as denoflate, b as lz4 } from "./compress.mjs";
+export { m as brotli } from "./brotli.mjs";
+export { m as denoflate } from "./gzip.mjs";
+export { m as lz4 } from "./lz4.mjs";
 var bytes$2 = { exports: {} };
 /*!
  * bytes
@@ -1173,14 +1175,14 @@ function legacy(pkg, options = {}) {
 var RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 var RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 function parse(input) {
-  const m2 = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
-  if (!m2) {
+  const m4 = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
+  if (!m4) {
     throw new Error(`[parse-package-name] invalid package name: ${input}`);
   }
   return {
-    name: m2[1] || "",
-    version: m2[2] || "latest",
-    path: m2[3] || ""
+    name: m4[1] || "",
+    version: m4[2] || "latest",
+    path: m4[3] || ""
   };
 }
 function loop(imports, keys) {
@@ -1728,17 +1730,17 @@ var h = ({ callback: p = () => {
     if (typeof e == "undefined" || e == null)
       return this;
     typeof e == "string" && (e = e.trim().split(/\s/g));
-    let r, i, a2 = typeof e == "object" && !Array.isArray(e), l = a2 ? t : n;
-    return a2 || (i = t), Object.keys(e).forEach((s) => {
-      r = a2 ? s : e[s], a2 && (i = e[s]), this.newListener(r, i, l);
+    let r, i, a = typeof e == "object" && !Array.isArray(e), l = a ? t : n;
+    return a || (i = t), Object.keys(e).forEach((s) => {
+      r = a ? s : e[s], a && (i = e[s]), this.newListener(r, i, l);
     }, this), this;
   }
   removeListener(e, t, n) {
     let r = this.get(e);
     if (r instanceof c && t) {
       let i = h({ name: e, callback: t, scope: n });
-      r.forEach((a2, l) => {
-        if (a2.callback === i.callback && a2.scope === i.scope)
+      r.forEach((a, l) => {
+        if (a.callback === i.callback && a.scope === i.scope)
           return r.remove(l);
       });
     }
@@ -1748,9 +1750,9 @@ var h = ({ callback: p = () => {
     if (typeof e == "undefined" || e == null)
       return this;
     typeof e == "string" && (e = e.trim().split(/\s/g));
-    let r, i, a2 = typeof e == "object" && !Array.isArray(e), l = a2 ? t : n;
-    return a2 || (i = t), Object.keys(e).forEach((s) => {
-      r = a2 ? s : e[s], a2 && (i = e[s]), typeof i == "function" ? this.removeListener(r, i, l) : this.remove(r);
+    let r, i, a = typeof e == "object" && !Array.isArray(e), l = a ? t : n;
+    return a || (i = t), Object.keys(e).forEach((s) => {
+      r = a ? s : e[s], a && (i = e[s]), typeof i == "function" ? this.removeListener(r, i, l) : this.remove(r);
     }, this), this;
   }
   once(e, t, n) {
@@ -1759,18 +1761,18 @@ var h = ({ callback: p = () => {
     typeof e == "string" && (e = e.trim().split(/\s/g));
     let r = typeof e == "object" && !Array.isArray(e);
     return Object.keys(e).forEach((i) => {
-      let a2 = r ? i : e[i], l = r ? e[i] : t, s = r ? t : n, u = (...f) => {
-        l.apply(s, f), this.removeListener(a2, u, s);
+      let a = r ? i : e[i], l = r ? e[i] : t, s = r ? t : n, u = (...f) => {
+        l.apply(s, f), this.removeListener(a, u, s);
       };
-      this.newListener(a2, u, s);
+      this.newListener(a, u, s);
     }, this), this;
   }
   emit(e, ...t) {
     return typeof e == "undefined" || e == null ? this : (typeof e == "string" && (e = e.trim().split(/\s/g)), e.forEach((n) => {
       let r = this.get(n);
       r instanceof c && r.forEach((i) => {
-        let { callback: a2, scope: l } = i;
-        a2.apply(l, t);
+        let { callback: a, scope: l } = i;
+        a.apply(l, t);
       });
     }, this), this);
   }
@@ -1871,10 +1873,10 @@ function render(ansi) {
   ansi = ansi.trimEnd();
   let i = 0;
   const buffer = new AnsiBuffer();
-  for (let m2 of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
-    const escape = m2[1];
-    buffer.text(ansi.slice(i, m2.index));
-    i = m2.index + m2[0].length;
+  for (let m4 of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
+    const escape = m4[1];
+    buffer.text(ansi.slice(i, m4.index));
+    i = m4.index + m4[0].length;
     if (escape === "0") {
       buffer.reset();
     } else if (escape === "1") {
@@ -2005,22 +2007,22 @@ async function build(opts = {}) {
     let compressionMap = await (async () => {
       switch (type) {
         case "lz4":
-          const { compress: lz4_compress } = await import("./compress.mjs").then(function(n) {
-            return n.b;
+          const { compress: lz4_compress } = await import("./lz4.mjs").then(function(n) {
+            return n.m;
           });
           return async (code) => {
             return await lz4_compress(code);
           };
         case "brotli":
-          const { compress } = await import("./compress.mjs").then(function(n) {
+          const { compress } = await import("./brotli.mjs").then(function(n) {
             return n.m;
           });
           return (code) => {
             return compress(code, code.length, level);
           };
         default:
-          const { gzip, getWASM } = await import("./compress.mjs").then(function(n) {
-            return n.a;
+          const { gzip, getWASM } = await import("./gzip.mjs").then(function(n) {
+            return n.m;
           });
           await getWASM();
           return async (code) => {
@@ -2065,7 +2067,7 @@ function M(r, s) {
 function S(r) {
   if (r == null)
     return "";
-  let s = b2(r, 6, (f) => v.charAt(f));
+  let s = b(r, 6, (f) => v.charAt(f));
   switch (s.length % 4) {
     default:
     case 0:
@@ -2082,23 +2084,23 @@ function O(r) {
   return r == null ? "" : r == "" ? null : A(r.length, 32, (s) => M(v, r.charAt(s)));
 }
 function j(r) {
-  return r == null ? "" : b2(r, 6, (s) => y.charAt(s));
+  return r == null ? "" : b(r, 6, (s) => y.charAt(s));
 }
 function k(r) {
   return r == null ? "" : r == "" ? null : (r = r.replaceAll(" ", "+"), A(r.length, 32, (s) => M(y, r.charAt(s))));
 }
 function D(r) {
-  return b2(r, 16, String.fromCharCode);
+  return b(r, 16, String.fromCharCode);
 }
 function R(r) {
   return r == null ? "" : r == "" ? null : A(r.length, 32768, (s) => r.charCodeAt(s));
 }
-function b2(r, s, f) {
+function b(r, s, f) {
   if (r == null)
     return "";
-  let p = [], m2 = {}, h2 = {}, i, w, o2, g = "", u = "", d = "", l = 2, a2 = 3, c2 = 2, e = 0, t = 0;
+  let p = [], m4 = {}, h2 = {}, i, w, o2, g = "", u = "", d = "", l = 2, a = 3, c2 = 2, e = 0, t = 0;
   for (w = 0; w < r.length; w += 1)
-    if (g = r.charAt(w), Object.prototype.hasOwnProperty.call(m2, g) || (m2[g] = a2++, h2[g] = true), d = u + g, Object.prototype.hasOwnProperty.call(m2, d))
+    if (g = r.charAt(w), Object.prototype.hasOwnProperty.call(m4, g) || (m4[g] = a++, h2[g] = true), d = u + g, Object.prototype.hasOwnProperty.call(m4, d))
       u = d;
     else {
       if (Object.prototype.hasOwnProperty.call(h2, u)) {
@@ -2115,9 +2117,9 @@ function b2(r, s, f) {
         }
         l--, l == 0 && (l = Math.pow(2, c2), c2++), delete h2[u];
       } else
-        for (o2 = m2[u], i = 0; i < c2; i++)
+        for (o2 = m4[u], i = 0; i < c2; i++)
           e = e << 1 | o2 & 1, t == s - 1 ? (t = 0, p.push(f(e)), e = 0) : t++, o2 = o2 >> 1;
-      l--, l == 0 && (l = Math.pow(2, c2), c2++), m2[d] = a2++, u = String(g);
+      l--, l == 0 && (l = Math.pow(2, c2), c2++), m4[d] = a++, u = String(g);
     }
   if (u !== "") {
     if (Object.prototype.hasOwnProperty.call(h2, u)) {
@@ -2134,7 +2136,7 @@ function b2(r, s, f) {
       }
       l--, l == 0 && (l = Math.pow(2, c2), c2++), delete h2[u];
     } else
-      for (o2 = m2[u], i = 0; i < c2; i++)
+      for (o2 = m4[u], i = 0; i < c2; i++)
         e = e << 1 | o2 & 1, t == s - 1 ? (t = 0, p.push(f(e)), e = 0) : t++, o2 = o2 >> 1;
     l--, l == 0 && (l = Math.pow(2, c2), c2++);
   }
@@ -2149,20 +2151,20 @@ function b2(r, s, f) {
   return p.join("");
 }
 function A(r, s, f) {
-  let p = [], h2 = 4, i = 4, w = 3, o2 = "", g = [], u, d, l, a2, c2, e, t, n = { val: f(0), position: s, index: 1 };
+  let p = [], h2 = 4, i = 4, w = 3, o2 = "", g = [], u, d, l, a, c2, e, t, n = { val: f(0), position: s, index: 1 };
   for (u = 0; u < 3; u += 1)
     p[u] = u;
   for (l = 0, c2 = Math.pow(2, 2), e = 1; e != c2; )
-    a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+    a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
   switch (l) {
     case 0:
       for (l = 0, c2 = Math.pow(2, 8), e = 1; e != c2; )
-        a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+        a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
       t = String.fromCharCode(l);
       break;
     case 1:
       for (l = 0, c2 = Math.pow(2, 16), e = 1; e != c2; )
-        a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+        a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
       t = String.fromCharCode(l);
       break;
     case 2:
@@ -2172,16 +2174,16 @@ function A(r, s, f) {
     if (n.index > r)
       return "";
     for (l = 0, c2 = Math.pow(2, w), e = 1; e != c2; )
-      a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+      a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
     switch (t = l) {
       case 0:
         for (l = 0, c2 = Math.pow(2, 8), e = 1; e != c2; )
-          a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+          a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
         p[i++] = String.fromCharCode(l), t = i - 1, h2--;
         break;
       case 1:
         for (l = 0, c2 = Math.pow(2, 16), e = 1; e != c2; )
-          a2 = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a2 > 0 ? 1 : 0) * e, e <<= 1;
+          a = n.val & n.position, n.position >>= 1, n.position == 0 && (n.position = s, n.val = f(n.index++)), l |= (a > 0 ? 1 : 0) * e, e <<= 1;
         p[i++] = String.fromCharCode(l), t = i - 1, h2--;
         break;
       case 2:
