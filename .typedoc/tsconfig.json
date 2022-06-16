@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "**/@types/*.d.ts",
+    "./packages/website/**/*"
+  ]
+}

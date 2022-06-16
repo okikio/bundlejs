@@ -17,11 +17,13 @@ let attrs = external ? { target: "_blank", rel: "noopener" } : {};
 </a>
 
 <style lang="scss">
-  :global([rehype-icon]),
-  svg {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    opacity: 0.6;
-  }
+  a {
+    :where(:global([rehype-icon])),
+    :where(svg) {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      opacity: 0.6;
+    }
+}
 </style>

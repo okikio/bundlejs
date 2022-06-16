@@ -1,10 +1,12 @@
-import { ComponentProps, createSignal, onCleanup, onMount } from "solid-js";
-import Tabs from "./Tabs";
-import Activity from "./Activity";
+import { createSignal, onCleanup, onMount, type ComponentProps } from "solid-js";
+
 import DragHandle from "./DragHandle";
-import Editor from "./Editor";
+
+import Activity from "./Activity";
 import Console from "./Console";
-import Analysis from "./Analysis";
+
+import Editor from "./Editor";
+import Tabs from "./Tabs";
 
 export function EditorSection(props?: ComponentProps<'div'>) {
   const [direction, setDirection] = createSignal<"x" | "y">("x");
@@ -35,7 +37,6 @@ export function EditorSection(props?: ComponentProps<'div'>) {
       </div>
 
       <DragHandle drag-height direction="y" />
-      <Analysis />
     </div>
   )
 }

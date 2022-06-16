@@ -15,10 +15,6 @@
 		{
 			"name": "🚀 @bundlejs/website",
 			"path": "packages/website"
-		},
-		{
-			"name": "📦 @bundlejs/deno",
-			"path": "packages/deno"
 		}
 	],
 	"settings": {}

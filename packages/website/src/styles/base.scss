@@ -50,15 +50,33 @@ h2 {
 h3 {
   @apply text-2xl;
 }
-
 b,
 strong {
   @apply dark:font-500 dark:underline;
 }
 
+:where(h1, h2, h3, h4, h5, h6, p) {
+  [custom-slug-link] {
+    @apply opacity-0 pointer-events-none;
+    @apply px-2;
+
+    @apply text-secondary dark:text-primary hover:text-blue-500;
+
+    svg {
+      @apply opacity-100;
+    }
+  }
+
+  &:hover [custom-slug-link] {
+    @apply opacity-100 pointer-events-auto;
+  }
+}
+
+
 .dom-loaded {
   button,
-  a {
+  a,
+  [custom-slug-link] {
     @apply transition duration-200 ease-out;
   }
 }
@@ -96,13 +114,26 @@ a {
   }
 }
 
+.blockquote-container {
+  @apply bg-primary/20 dark:bg-blue-700/30;
+  @apply divide-y divide-secondary/40 ;
+  @apply rounded-2xl;
+  @apply px-4 py-2;
+
+  blockquote {
+    @apply bg-transparent dark:bg-transparent;
+    @apply px-2 py-4;
+    @apply rounded-none;
+  }
+}
 
 blockquote {
   @apply mx-0 px-4 py-3;
-  @apply bg-primary/20 dark:bg-blue-700/30 rounded-lg;
+  @apply bg-primary/20 dark:bg-blue-700/30;
+}
 
-  // border-left: 5px solid;
-  // @apply border-blue-500;
+blockquote {
+  @apply rounded-lg;
 }
 
 blockquote p {

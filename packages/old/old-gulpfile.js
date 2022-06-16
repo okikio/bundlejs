@@ -1,6 +1,6 @@
 // Import external modules
 const mode = process.argv.includes("--watch") ? "watch" : "build";
-import { ENABLE_SW } from "./env.js.js";
+import { ENABLE_SW } from "./env.js.js.js";
 
 // Gulp utilities
 import {
@@ -11,7 +11,7 @@ import {
     stream,
     streamList,
     parallelFn,
-} from "./util.js.js";
+} from "./util.js.js.js";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
@@ -214,9 +214,9 @@ task("js", async () => {
         import("gulp-size"),
         import("gulp-if"),
 
-        import("./plugins/worker.js.js"),
+        import("./plugins/worker.js.js.js"),
         import("esbuild-plugin-solid"),
-        import("./plugins/ts-to-json.js.js"),
+        import("./plugins/ts-to-json.js.js.js"),
     ]);
 
     const esbuild =
@@ -285,7 +285,7 @@ task("js-analyzer", async () => {
         import("gulp-size"),
         import("gulp-if"),
 
-        import("./plugins/sass.js.js"),
+        import("./plugins/sass.js.js.js"),
     ]);
 
     const TEMPLATE = ["sunburst", "treemap", "network"];

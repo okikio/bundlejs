@@ -41,7 +41,7 @@ jobs:
         run: pnpm install
 
       - name: Pre-release
-        run: pnpm -w pre-release
+        run: pnpm -w pre-release:all
 
       - name: Release
         env:

@@ -64,4 +64,4 @@ export async function build(src = `./node_modules/esbuild-wasm/esbuild.wasm`, ta
 }
 
 await build();
-await build("./src/deno/denoflate/pkg/denoflate_bg.wasm", "src/deno/denoflate/pkg/wasm.ts", "lz4");
+// await build("./src/deno/denoflate/pkg/denoflate_bg.wasm", "src/deno/denoflate/pkg/wasm.ts", "lz4");

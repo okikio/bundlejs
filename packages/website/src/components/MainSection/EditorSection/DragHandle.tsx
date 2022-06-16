@@ -1,6 +1,8 @@
-import { type ComponentProps, onMount, onCleanup, createEffect } from "solid-js";
-import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
+import { createEffect, onCleanup, onMount, type ComponentProps } from "solid-js";
+
 import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
+import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
+
 import { debounce } from "@bundlejs/core";
 
 export function DragHandle(props?: ComponentProps<'button'> & {

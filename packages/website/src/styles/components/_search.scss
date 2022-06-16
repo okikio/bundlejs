@@ -53,7 +53,8 @@ dialog.search-container {
     & .search,
     & .search-input,
     & .search-results,
-    & .results-list {
+    & .results-list,
+    & [custom-button]#clear {
       @apply transition-all duration-300;
     }
   }
@@ -86,6 +87,10 @@ dialog.search-container {
     & .search {
       @apply bg-gray-100 dark:bg-gray-900;
       @apply border-transparent;
+
+      & [custom-button]#clear {
+        @apply opacity-100 pointer-events-auto;
+      }
     }
   }
 }
@@ -112,6 +117,10 @@ dialog.search-container {
     &::placeholder {
       @apply text-gray-400;
     }
+  }
+
+  [custom-button]#clear {
+    @apply opacity-0 pointer-events-none;
   }
 
   [astro-icon] {

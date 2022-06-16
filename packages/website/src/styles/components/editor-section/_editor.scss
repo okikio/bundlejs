@@ -1,31 +1,27 @@
 .editor-container {
   @apply self-center;
-  
-  @apply relative w-full;
   @apply bg-white shadow-lg;
 
   @apply dark:bg-[#0d1117] dark:shadow-none;
   @apply border border-gray-300 dark:border-gray-700/90;
 
-  min-height: 100px;
-  @apply sm:w-[calc(100%-18.5rem)] md:w-[calc(100%-25.5rem)];
+  @apply relative w-full;
+  @apply min-w-[200px];
+  @apply min-h-[100px] h-[200px];
   
   @screen sm {
-    min-width: 200px;
-    min-height: 300px;
+    @apply min-h-[300px];
     @apply h-full; 
   }
 
-  @screen lt-sm {
-    @apply h-[200px];
-  }
-  
   &,
   [custom-loading] {
     @apply rounded-lg;
   }
 
-  .editor {
+  #editor {
     @apply py-2 w-full h-full;
+    @apply max-w-full;
+    height: 100%;
   }
 }

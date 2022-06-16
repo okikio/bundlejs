@@ -1,25 +1,24 @@
+:where(.contain) {
+  @apply container gap-3;
+  @apply px-3;
 
-  :where(.contain) {
-    @apply container gap-3;
-    @apply px-3;
-
-    &.px-none {
-      @apply px-0;
-    }
-
-    &.col {
-      @apply flex flex-col;
-    }
-
-    &.md {
-      @apply max-w-screen-md;
-    } 
-
-    &.lg {
-      @apply max-w-screen-lg;
-    } 
-
-    &.xl {
-      @apply max-w-screen-xl;
-    } 
+  &.px-none {
+    @apply px-0;
   }
+
+  &.col {
+    @apply flex flex-col;
+  }
+
+  &.md {
+    @apply max-w-screen-md;
+  }
+
+  &.lg {
+    @apply max-w-screen-lg;
+  }
+
+  &.xl {
+    @apply max-w-screen-xl;
+  }
+}

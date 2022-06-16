@@ -6,7 +6,7 @@ setup: |
     import ProductHunt from "../components/ProductHunt.astro";
     import Anchor from "../components/Anchor.astro";
 ---
-## About
+# About
 
 **bundlejs** is a quick and easy way to bundle your projects, minify and see their gzip and brotli size. It's an online tool similar to <Anchor href="https://bundlephobia.com">bundlephobia</Anchor>, but **bundlejs** does all the bundling locally on you browser and can treeshake and bundle multiple packages (both commonjs and esm) together, all without having to install any npm packages and with typescript support.  
   

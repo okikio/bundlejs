@@ -17,7 +17,9 @@ export default defineConfig({
           format: "es",
           manualChunks: {
             "esbuild": ["/src/wasm.ts", "esbuild-wasm"],
-            "compress": ["/src/deno/lz4/mod.ts", "/src/deno/denoflate/mod.ts", "/src/deno/brotli/mod.ts"]
+            "lz4": ["/src/deno/lz4/mod.ts"],
+            "gzip": ["/src/deno/denoflate/mod.ts"],
+            "brotli": ["/src/deno/brotli/mod.ts"]
           },
           chunkFileNames: "[name].mjs",
           entryFileNames: "[name].mjs"
