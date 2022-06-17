@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 
+import IIFE_URL from "./.vite/iife-url.mjs";
 import AutoImport from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
@@ -73,7 +74,7 @@ export default defineConfig({
     }),
     Partytown({
       config: {
-        forward: ['dataLayer.push'],
+        // forward: ['dataLayer.push'],
       }
     }),
     Sitemap(),
@@ -84,6 +85,7 @@ export default defineConfig({
     build: { assetsInlineLimit: 0 },
     ssr: { external: ["svgo"] },
     plugins: [
+      // IIFE_URL(),
       AutoImport({
         resolvers: [
           IconsResolver({

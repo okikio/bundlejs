@@ -1,7 +1,7 @@
 ---
 import '../styles/global.scss';
 
-import SEO from '../components/SEO.astro';
+import HeadMetadata from '../components/HeadMetadata.astro';
 import Footer from '../components/Footer.astro';
 import Navbar from '../components/Navbar.astro';
 import Anchor from '../components/Anchor.astro';
@@ -13,7 +13,7 @@ const content = Astro?.props?.content ?? Astro?.props;
 <html class="dark" lang={content.lang || 'en' }>
 
 <head>
-  <SEO title={content.title} description={content.description} />
+  <HeadMetadata title={content.title} description={content.description} />
 </head>
 
 <body>

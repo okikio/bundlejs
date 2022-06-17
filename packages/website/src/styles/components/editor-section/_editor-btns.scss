@@ -1,9 +1,22 @@
 .editor-btn-container {
   @apply absolute bottom-0 right-0; 
-  @apply flex gap-2 px-2 pb-2;
+  @apply flex gap-2 px-3.5 pb-2;
+  @apply overflow-x-hidden;
+
+  .editor-btn-shell {
+    @apply inline-flex gap-[inherit];
+  }
 
   .editor-btns {
     @apply flex flex-wrap gap-[inherit];
+  }
+
+  &,
+  .editor-btn-shell,
+  .editor-btns,
+  [hide-btn] {
+    transform: translateX(0);
+    @apply opacity-100;
   }
 
   [custom-button] {
