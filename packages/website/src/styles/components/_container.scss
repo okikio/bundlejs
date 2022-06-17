@@ -6,6 +6,10 @@
     @apply px-0;
   }
 
+  &.lt-md\:px-none {
+    @apply lt-md:px-0;
+  }
+
   &.col {
     @apply flex flex-col;
   }

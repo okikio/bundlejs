@@ -4,20 +4,29 @@ import { onMount, createSignal, Show } from "solid-js";
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
 
+import type { Editor as MonacoEditor } from "../../../scripts/modules/monaco";
+
+import { state, setState } from "../store";
+
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
-  const [isLoading, setIsLoading] = createSignal(true);
   onMount(() => {
     (async () => {
-      const { build } = await import("../../../scripts/modules/monaco");
-      const [editor] = build(ref);
-      setIsLoading(false);
-      onCleanup(() => {
-        editor.dispose();
+      const { build, languages } = await import("../../../scripts/modules/monaco");
+      const [editor, ...models] = build(ref);
+      setState("monaco", {
+        loading: false,
+        editor,
+        languages,
+        models
       });
     })();
+  });
+
+  onCleanup(() => {
+    state.monaco.editor?.dispose?.();
   });
 
   return (
@@ -25,7 +34,7 @@ export function Editor(props?: ComponentProps<'div'>) {
       <div ref={ref} id="editor" custom-code-editor></div>
       <EditorButtons />
 
-      <Show when={isLoading()}>
+      <Show when={state.monaco.loading}>
         <Loading ref={loadingRef} />
       </Show>
     </div>

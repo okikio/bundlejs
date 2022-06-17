@@ -2,16 +2,19 @@
 export interface Props {
   title?: string;
   subtitle?: string;
+  mobile?: string;
 }
 
 let {
   title = "bundlejs",
   subtitle = "a quick npm package size checker",
+  mobile = "quick npm package"
 } = Astro.props as Props;
 ---
 <header>
   <h1>{title}</h1>
-  <p>{subtitle}</p>
+  <p class="hidden sm:block">{subtitle}</p>
+  <p class="hidden lt-sm:block">{mobile}</p>
 </header>
 
 <style lang="scss">

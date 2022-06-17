@@ -13,7 +13,7 @@ import GithubDark from "../utils/github-dark";
 import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import { mediaTheme, themeGet } from "../theme";
-import TS_WORKER_FACTORY_URL from "../workers/ts-worker-factory.ts?url";
+import TS_WORKER_FACTORY_URL from "../workers/ts-worker-factory.ts?iife-url";
 
 import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
 import JSON_SHARED_WORKER from "../workers/json.ts?sharedworker";

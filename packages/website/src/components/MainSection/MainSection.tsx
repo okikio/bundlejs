@@ -15,7 +15,7 @@ export function MainSection(props?: ComponentProps<'div'>) {
 
       <EditorSection />
 
-      <Container class="pb-4">
+      <Container class="lt-md:px-none pb-4">
         <Analysis />
       </Container>
     </Container>

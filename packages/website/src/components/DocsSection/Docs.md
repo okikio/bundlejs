@@ -13,7 +13,7 @@ setup: |
 
 </div>
 
-<Snippets />
+<Snippets client:visible />
 
 <div class="blockquote-container">
   

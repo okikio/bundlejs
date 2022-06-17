@@ -1,5 +1,5 @@
 import { ComponentProps, onMount } from "solid-js";
-import { themeSet, themeGet, runTheme } from "../scripts/theme";
+import { themeSet, themeGet } from "../scripts/theme";
 
 export function ThemeSwitch() {
 	let ref: HTMLSelectElement;
@@ -12,7 +12,6 @@ export function ThemeSwitch() {
 
 	onMount(() => {
 		html = html ?? document.querySelector('html');
-		runTheme(html);
 		ref.value = themeGet(html);
 	});
 
