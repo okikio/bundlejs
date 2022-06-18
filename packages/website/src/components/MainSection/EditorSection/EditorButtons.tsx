@@ -141,12 +141,12 @@ export function EditorButtons() {
                     (async () => {
                       const worker = state.monaco.workers.other;
                       const thisWorker = await worker.getWorker();
-
-                      // @ts-ignore
-                      thisWorker.writeFile(model.uri.toString(), model.getValue());
                       
                       // @ts-ignore
-                      const formattedCode = await thisWorker.format(model.uri.toString());
+                      const formattedCode = await thisWorker.format(model.uri.toString(), model.getValue());
+                      
+                      // @ts-ignore
+                      console.log(await thisWorker.getShareableURL(model.uri.toString(), formattedCode))
                       state.monaco.editor.setValue(formattedCode);
                     })();
                   } catch (e) {
