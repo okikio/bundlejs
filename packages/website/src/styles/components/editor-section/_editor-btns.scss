@@ -2,6 +2,7 @@
   @apply absolute bottom-0 right-0; 
   @apply flex gap-2 px-3.5 pb-2;
   @apply overflow-x-hidden;
+  @apply pointer-events-none;
 
   .editor-btn-shell {
     @apply inline-flex gap-[inherit];
@@ -23,5 +24,7 @@
     @apply p-3;
     @apply bg-secondary/20 dark:bg-primary/20;
     @apply hover:bg-secondary/40 hover:dark:bg-primary/40;
+
+    @apply pointer-events-auto;
   }
 }

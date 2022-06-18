@@ -4,29 +4,46 @@ import { onMount, createSignal, Show } from "solid-js";
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
 
-import type { Editor as MonacoEditor } from "../../../scripts/modules/monaco";
+import { state, setState, initial } from "../store";
 
-import { state, setState } from "../store";
+import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
+  let otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+
   onMount(() => {
+
     (async () => {
-      const { build, languages } = await import("../../../scripts/modules/monaco");
-      const [editor, ...models] = build(ref);
+      const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = await import("../../../scripts/modules/monaco");
+      const [editor, input, output, config] = build(ref);
+
       setState("monaco", {
         loading: false,
         editor,
         languages,
-        models
+        workers: {
+          other: otherTSWorker
+        },
+        initialValue: {
+          input: inputModelResetValue,
+          output: outputModelResetValue,
+          config: configModelResetValue,
+        },
+        models: {
+          input,
+          output,
+          config
+        }
       });
     })();
   });
 
   onCleanup(() => {
     state.monaco.editor?.dispose?.();
+    setState(initial);
   });
 
   return (
