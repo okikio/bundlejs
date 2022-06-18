@@ -169,25 +169,17 @@ export class OtherTSWorker {
     this._inlayHintsOptions = createData.inlayHintsOptions;
   }
 
-  writeFile(fileName, text) {
-    let file = fileName.replace("file://", "/");
-    // host.createFile(fileName, text);
-    system.writeFile(file, text);
-    console.log(fsMap.get(file), file);
-    console.log(system.readFile(file));
-    console.log(program.getSourceFiles().map(x => x.fileName));
+  createFile(fileName, content) {
+    return ts.createSourceFile(fileName, content, compilerOpts.target, false);
   }
 
-  async format(fileName) {
-    const source = program.getSourceFile(fileName);
-
-    // program
+  async format(fileName, content) {
     if (!formatter) formatter = await getFormatter();
-    return await Promise.resolve(formatter.formatText(fileName, source.getFullText()));
+    return await Promise.resolve(formatter.formatText(fileName, content));
   }
 
-  async getShareableURL(fileName, config = "{}") {
-    const source = program.getSourceFile(fileName);
+  async getShareableURL(fileName, content, config = "{}") {
+    const source = this.createFile(fileName, content);
     config = JSON.parse(config ? config : "{}") ?? {};
 
     // Basically only keep the config options that have changed from the default
@@ -214,7 +206,7 @@ export class OtherTSWorker {
           ImportExportStatements.push({
             kind: isImport ? "import" : "export",
             clause: clause?.getText() ?? "*",
-            module: node.moduleSpecifier.getText(),
+            module: node.moduleSpecifier?.getText(),
             pos: {
               start: node.pos,
               end: node.end,

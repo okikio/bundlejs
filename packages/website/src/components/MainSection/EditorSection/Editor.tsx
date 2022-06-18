@@ -8,11 +8,11 @@ import { state, setState, initial } from "../store";
 
 import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
 
+let otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
-
-  let otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
 
   onMount(() => {
 
