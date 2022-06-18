@@ -202,6 +202,7 @@ export class OtherTSWorker {
           let clause = isImport ?
             (node as ts.ImportDeclaration)?.importClause :
             (node as ts.ExportDeclaration)?.exportClause;
+          console.log(clause, node)
 
           ImportExportStatements.push({
             kind: isImport ? "import" : "export",
