@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 
-import IIFE_URL from "./.vite/iife-url.mjs";
 import AutoImport from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
@@ -35,6 +34,8 @@ function createSVG(icon, iconlist = fluentIcons) {
     "rehype-icon": icon,
   }, [IconData.body]);
 }
+
+import { build } from 'esbuild';
 
 // https://astro.build/config
 export default defineConfig({
@@ -82,10 +83,11 @@ export default defineConfig({
   ],
   experimental: { integrations: true },
   vite: {
-    build: { assetsInlineLimit: 0 },
+    build: {
+      assetsInlineLimit: 0,
+    },
     ssr: { external: ["svgo"] },
     plugins: [
-      // IIFE_URL(),
       AutoImport({
         resolvers: [
           IconsResolver({
@@ -98,7 +100,7 @@ export default defineConfig({
         autoInstall: true,
         compiler: "solid",
         defaultClass: "icon",
-      }),
+      })
     ],
   },
 });
