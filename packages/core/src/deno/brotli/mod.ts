@@ -1,15 +1,21 @@
 // https://deno.land/x/brotli@v0.1.4/mod.ts
 // Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
-import init, {
-    source,
-    compress as wasm_compress,
-    decompress as wasm_decompress,
-} from "./wasm";
+// import init, {
+//     source,
+//     compress as wasm_compress,
+//     decompress as wasm_decompress,
+// } from "./wasm";
 
 let initialized = false;
+let initWASM: typeof import("./wasm");
 export const getWASM = async () => {
-    if (!initialized) await init(source);
-    return (initialized = true);
+    if (initWASM) return initWASM;
+
+    const wasm = await import("./wasm");
+    const { default: init, source } = wasm;
+    
+    if (!initialized) await init(await source());
+    return (initWASM = wasm);
 }
 
 /**
@@ -34,8 +40,8 @@ export async function compress(
     quality: number = 6,
     lgwin: number = 22,
 ): Promise<Uint8Array> {
-    await getWASM();
-    return wasm_compress(input, bufferSize, quality, lgwin);
+    const { compress } = await getWASM();
+    return compress(input, bufferSize, quality, lgwin);
 }
 
 /**
@@ -55,6 +61,6 @@ export async function decompress(
     input: Uint8Array,
     bufferSize: number = 4096,
 ): Promise<Uint8Array> {
-    await getWASM();
-    return wasm_decompress(input, bufferSize);
+    const { decompress } = await getWASM();
+    return decompress(input, bufferSize);
 }

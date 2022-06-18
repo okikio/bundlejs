@@ -1,8 +1,8 @@
 import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
-import type * as ESBUILD from "esbuild";
 import type { PLATFORM } from "./configs/platform";
+import type * as ESBUILD from "esbuild-wasm";
 
-import ESBUILD_WASM from "./wasm";
+// import ESBUILD_WASM from "./wasm";
 import { version } from "esbuild-wasm";
 
 import * as _bytes from "bytes";
@@ -54,6 +54,7 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
 
       STATE.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
+        const { default: ESBUILD_WASM } = await import("./wasm");
         await STATE.esbuild.initialize({
           wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
           ...opts
@@ -173,8 +174,8 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
           };
         case "brotli":
           const { compress } = await import("./deno/brotli/mod");
-          return (code: Uint8Array) => {
-            return compress(code, code.length, level);
+          return async (code: Uint8Array) => {
+            return await compress(code, code.length, level);
           }
         default:
           const { gzip, getWASM } = await import("./deno/denoflate/mod");

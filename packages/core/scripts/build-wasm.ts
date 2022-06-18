@@ -20,7 +20,7 @@ export async function build(src = `./node_modules/esbuild-wasm/esbuild.wasm`, ta
 
   let compressed: Uint8Array;
   if (mode == "gzip") {
-    await getWASM(await WASM);
+    await getWASM(await WASM());
     compressed = await gzip(wasm, 11);
   } else {
     compressed = await compress(wasm);

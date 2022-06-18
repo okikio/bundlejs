@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, onMount, type ComponentProps } from "solid-js";
+import { createEffect, onCleanup, onMount, Show, type ComponentProps } from "solid-js";
 
 import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
@@ -26,6 +26,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   let sizeProp = props?.direction == "x" ? "width" : "height";
   let mouseDir = props?.direction == "x" ? "clientX" : "clientY";
   let cursorProp = props?.direction == "x" ? "col-resize" : "row-resize";
+  console.log(props.direction)
   
   function drag (e: MouseEvent) {
     // How far the mouse has been moved
@@ -105,7 +106,9 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   
   return (
     <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(props?.direction == "x" ? "Horizontal" : "Vertical") + " Drag Handle"}>
-      {props?.direction == "x" ? <IconDragHandleX /> : <IconDragHandleY />}
+      <Show when={props?.direction == "x"} fallback={<IconDragHandleY />}>
+        <IconDragHandleX />
+      </Show>
     </button>
   );
 }

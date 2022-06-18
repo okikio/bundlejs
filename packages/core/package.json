@@ -28,7 +28,7 @@
     "@types"
   ],
   "scripts": {
-    "build-wasm": "esno ./scripts/build-wasm.ts",
+    "build:wasm": "esno ./scripts/build-wasm.ts",
     "build": "vite build",
     "dev": "vite",
     "test:run": "vitest run && pnpm deno",
@@ -36,7 +36,7 @@
     "repl": "esno repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "pre-release": "pnpm build-wasm && pnpm build && pnpm test:run && pnpm dts"
+    "pre-release": "pnpm build:wasm && pnpm build && pnpm test:run && pnpm dts"
   },
   "repository": {
     "type": "git",

@@ -5,44 +5,41 @@ import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
 
 import { state, setState, initial } from "../store";
-
 import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
 
-let otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
   onMount(() => {
+    const [editor, input, output, config] = build(ref);
 
-    (async () => {
-      const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = await import("../../../scripts/modules/monaco");
-      const [editor, input, output, config] = build(ref);
-
-      setState("monaco", {
-        loading: false,
-        editor,
-        languages,
-        workers: {
-          other: otherTSWorker
-        },
-        initialValue: {
-          input: inputModelResetValue,
-          output: outputModelResetValue,
-          config: configModelResetValue,
-        },
-        models: {
-          input,
-          output,
-          config
-        }
-      });
-    })();
+    setState("monaco", {
+      loading: false,
+      editor,
+      languages,
+      workers: {
+        other: otherTSWorker
+      },
+      initialValue: {
+        input: inputModelResetValue,
+        output: outputModelResetValue,
+        config: configModelResetValue,
+      },
+      models: {
+        input,
+        output,
+        config
+      }
+    });
   });
 
   onCleanup(() => {
     state.monaco.editor?.dispose?.();
+    state.monaco.workers?.other?.dispose?.();
     setState(initial);
   });
 

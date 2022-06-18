@@ -20,6 +20,37 @@
     @apply opacity-100;
   }
 
+  .editor-btn-shell[switch-mode=true] {
+    &,
+    [hide-btn] {
+      transform: translateX(0);
+    }
+    
+    .editor-btns {
+      @apply opacity-100;
+    }
+  }
+
+  .editor-btn-shell[switch-mode=false] {
+    transform: translateX(100%);
+    
+    .editor-btns {
+      @apply opacity-0;
+    }
+    
+    [hide-btn] {
+      transform: translateX(-100%);
+    }
+  }
+
+  @at-root .dom-loaded .editor-btn-container {
+    .editor-btn-shell,
+    .editor-btns,
+    [hide-btn] {
+      @apply transition duration-500;
+    }
+  }
+
   [custom-button] {
     @apply p-3;
     @apply bg-secondary/20 dark:bg-primary/20;

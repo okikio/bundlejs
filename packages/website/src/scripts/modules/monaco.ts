@@ -31,7 +31,7 @@ import { toLocaleDateString } from "../utils/locale-date-string";
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
 // bundles that contain the web workers.
-(window as any).MonacoEnvironment = {
+(globalThis as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
       return USE_SHAREDWORKER ? new TS_SHARED_WORKER() : new TS_WORKER();

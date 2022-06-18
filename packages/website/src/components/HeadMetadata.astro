@@ -77,6 +77,13 @@ const {
   import { runTheme } from "../scripts/theme.ts";
   const html = document.querySelector('html');
   runTheme(html);
+
+  setTimeout(() => {
+    html?.classList?.add?.("dom-loaded");
+  }, 100);
+
+  import "../scripts/measure.ts";
+  import "../scripts/main.ts";
 </script>
 
 <script type="application/ld+json" set:html={JSON.stringify({ "@context" :"https://schema.org", "@graph" :[ { "@type"

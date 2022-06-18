@@ -51,7 +51,7 @@
     "solid-js": "^1.4.4",
     "typescript": "^4.7.4",
     "unplugin-auto-import": "^0.8.8",
-    "unplugin-icons": "^0.14.4",
+    "unplugin-icons": "^0.14.5",
     "vite": "^2.9.12",
     "vitest": "^0.15.1"
   }

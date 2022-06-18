@@ -1,16 +1,22 @@
 // https://deno.land/x/lz4@v0.1.2/mod.ts
 // Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
 
-import init, {
-    source,
-    lz4_compress,
-    lz4_decompress,
-} from "./wasm";
+// import init, {
+//     source,
+//     lz4_compress,
+//     lz4_decompress,
+// } from "./wasm";
 
 let initialized = false;
+let initWASM: typeof import("./wasm");
 const getWASM = async () => {
-    if (!initialized) await init(source);
-    return (initialized = true);
+    if (initWASM) return initWASM;
+
+    const wasm = await import("./wasm");
+    const { default: init, source } = wasm;
+    
+    if (!initialized) await init(await source());
+    return (initWASM = wasm);
 }
 
 /**
@@ -26,7 +32,7 @@ const getWASM = async () => {
  * @param input Input data.
  */
 export async function compress(input: Uint8Array): Promise<Uint8Array> {
-    await getWASM();
+    const { lz4_compress } = await getWASM();
     return lz4_compress(input);
 }
 
@@ -43,6 +49,6 @@ export async function compress(input: Uint8Array): Promise<Uint8Array> {
  * @param input Input data.
  */
 export async function decompress(input: Uint8Array): Promise<Uint8Array> {
-    await getWASM();
+    const { lz4_decompress } = await getWASM();
     return lz4_decompress(input);
 }
