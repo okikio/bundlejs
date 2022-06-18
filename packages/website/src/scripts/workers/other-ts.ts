@@ -106,7 +106,7 @@ const compilerOpts: ts.CompilerOptions = {
   ],
 };
 
-const libFiles = import.meta.glob('/node_modules/typescript/lib/lib.*.ts', { as: 'raw' })
+const libFiles = import.meta.globEager('/node_modules/typescript/lib/lib.*.ts', { as: 'raw' })
 
 const fsMap = new Map<string, string>();
 // await createDefaultMapFromCDN(compilerOpts, ts.version, false, ts, lzstring, async (url: string) => { 
