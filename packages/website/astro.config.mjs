@@ -35,8 +35,6 @@ function createSVG(icon, iconlist = fluentIcons) {
   }, [IconData.body]);
 }
 
-import { build } from 'esbuild';
-
 // https://astro.build/config
 export default defineConfig({
   outDir,
@@ -73,11 +71,11 @@ export default defineConfig({
         applyBaseStyles: false
       }
     }),
-    Partytown({
-      config: {
-        // forward: ['dataLayer.push'],
-      }
-    }),
+    // Partytown({
+    //   config: {
+    //     // forward: ['dataLayer.push'],
+    //   }
+    // }),
     Sitemap(),
     PRODUCTION_MODE ? Compress() : { name: "blank" },
   ],
