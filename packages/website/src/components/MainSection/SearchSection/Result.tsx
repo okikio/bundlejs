@@ -12,6 +12,9 @@ import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 // export const [pending, start] = useTransition();
 // export const updateState = (state: any[]) => () => start(() => setState(state));
 
+
+import { state } from "../store";
+
 export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;
   description?: string;
@@ -35,7 +38,7 @@ export function SearchResult(props?: SearchResultProps) {
   let btnEl: HTMLButtonElement;
 
   // When user clicks the "Add Module button" give the user some feedback
-  let onclick = () => {
+  let onClick = () => {
     let text = btnTextEl.innerText;
     let opts = {
       target: btnTextEl,
@@ -43,6 +46,19 @@ export function SearchResult(props?: SearchResultProps) {
       fillMode: "forwards"
     };
 
+    let inputValue = state.monaco.models.input.getValue();
+    let initialValue = state.monaco.initialValue.input;
+
+    // Ths initial values starting comment
+    let startingComment = initialValue.split("\n")[0];
+
+    state.monaco.models.input.setValue(
+      // If the input model has change from it's initial value then 
+      // add the module under the rest of the code
+      // Otherwise, replace the input model value with the new export
+      (inputValue !== initialValue ? inputValue : startingComment) +
+      `\nexport * from "${_package}";`
+    );
     // timeline()
     //     .add({
     //         ...opts,
@@ -85,7 +101,7 @@ export function SearchResult(props?: SearchResultProps) {
         </div>
       </div>
       <div class="add">
-        <button ref={btnEl} class="btn" onClick={onclick}>
+        <button ref={btnEl} class="btn" onClick={onClick}>
           <span class="btn-text" ref={btnTextEl}>Add Module</span>
         </button>
       </div>

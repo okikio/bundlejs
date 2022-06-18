@@ -15,48 +15,6 @@ import { state, setState } from "../store";
 
 export function EditorButtons() {
   let shellRef: HTMLDivElement = null;
-  let btnsListRef: HTMLDivElement = null;
-
-  let expandBtnRef: HTMLButtonElement = null;
-
-  const opts: KeyframeAnimationOptions = {
-    duration: 500,
-    easing: "ease",
-    fill: "both"
-  };
-
-  function onEffect() {
-    if (state.editorBtnsOpen) {
-      shellRef.animate({
-        transform: "translateX(0%)"
-      }, opts);
-
-      btnsListRef.animate({
-        opacity: 1
-      }, opts);
-
-      expandBtnRef.animate({
-        transform: "translateX(0%)"
-      }, opts);
-    } else {
-      shellRef.animate({
-        transform: "translateX(100%)",
-      }, opts);
-
-      btnsListRef.animate({
-        opacity: 0
-      }, opts);
-
-      expandBtnRef.animate({
-        transform: "translateX(-100%)"
-      }, opts);
-    }
-  }
-
-  createEffect(onEffect);
-  onMount(() => {
-    onEffect();
-  });
 
   function getModelType() {
     if (!state.monaco.loading) {
@@ -86,8 +44,6 @@ export function EditorButtons() {
       state.monaco.editor.setValue(resetValue);
     }
   }
-
-
 
   function downloadBlob(blob: Blob, name = 'file.txt') {
     // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
@@ -119,46 +75,54 @@ export function EditorButtons() {
 
   return (
     <div class="editor-btn-container">
-      <div class="editor-btn-shell" ref={shellRef}>
-        <Button hide-btn class="umami--click--hide-editor-button" aria-label="Show/Hide Editor Buttons" title="Show/Hide Editor Buttons" ref={expandBtnRef}
+      <div class="editor-btn-shell" ref={shellRef} switch-mode={state.editorBtnsOpen}>
+        <Button hide-btn
+          class="umami--click--hide-editor-button"
+          aria-label="Show/Hide Editor Buttons" title="Show/Hide Editor Buttons"
           onClick={() => setState("editorBtnsOpen", !state.editorBtnsOpen)}>
           <IconMore />
         </Button>
 
-        <div class="editor-btns" ref={btnsListRef}>
-          <Button clear-btn class="umami--click--clear-editor-button" aria-label="Clear Code Editor" title="Clear Code Editor"
+        <div class="editor-btns">
+          <Button clear-btn
+            class="umami--click--clear-editor-button"
+            aria-label="Clear Code Editor" title="Clear Code Editor"
             onClick={() => !state.monaco.loading && state.monaco.editor?.setValue("")}>
             <IconDelete />
           </Button>
 
-          <Button format-btn class="umami--click--format-editor-button" aria-label="Format Code" title="Format Code"
+          <Button format-btn
+            class="umami--click--format-editor-button"
+            aria-label="Format Code" title="Format Code"
             onClick={() => {
               if (!state.monaco.loading) {
-                state.monaco.editor.getAction("editor.action.formatDocument").run();
-                const model = state.monaco.editor.getModel();
-                if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())) {
-                  try {
-                    (async () => {
+                (async () => {
+                  const model = state.monaco.editor.getModel();
+                  if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())) {
+                    try {
                       const worker = state.monaco.workers.other;
                       const thisWorker = await worker.getWorker();
-                      
+
                       // @ts-ignore
-                      const formattedCode = await thisWorker.format(model.uri.toString(), model.getValue());
-                      
-                      // @ts-ignore
-                      console.log(await thisWorker.getShareableURL(model.uri.toString(), formattedCode))
+                      const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
                       state.monaco.editor.setValue(formattedCode);
-                    })();
-                  } catch (e) {
-                    console.warn(e)
+                    } catch (e) {
+                      console.warn(e);
+
+                      await state.monaco.editor.getAction("editor.action.formatDocument").run();
+                    }
+                  } else {
+                    await state.monaco.editor.getAction("editor.action.formatDocument").run();
                   }
-                }
+                })();
               }
             }}>
             <IconFormat />
           </Button>
 
-          <Button reset-btn class="umami--click--reset-editor-button" aria-label="Reset Code Editor" title="Reset Code Editor"
+          <Button reset-btn
+            class="umami--click--reset-editor-button"
+            aria-label="Reset Code Editor" title="Reset Code Editor"
             onClick={() => {
               if (!state.monaco.loading) {
                 let modelType = getModelType();
@@ -169,7 +133,9 @@ export function EditorButtons() {
             <IconReset />
           </Button>
 
-          <Button copy-btn class="umami--click--copy-editor-button" aria-label="Copy Code" title="Copy Code"
+          <Button copy-btn
+            class="umami--click--copy-editor-button"
+            aria-label="Copy Code" title="Copy Code"
             onClick={() => {
               if (!state.monaco.loading) {
                 const range = state.monaco.editor.getModel().getFullModelRange();
@@ -182,12 +148,14 @@ export function EditorButtons() {
             <IconCopy />
           </Button>
 
-          <Button download-btn class="umami--click--download-editor-button" aria-label="Download Code" title="Download Code"
+          <Button download-btn
+            class="umami--click--download-editor-button"
+            aria-label="Download Code" title="Download Code"
             onClick={() => {
               if (!state.monaco.loading) {
                 const model = state.monaco.editor.getModel();
                 const blob = new Blob([model.getValue()], {
-                    type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
+                  type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
                 });
 
                 downloadBlob(blob, model?.uri?.authority ?? "download.ts");

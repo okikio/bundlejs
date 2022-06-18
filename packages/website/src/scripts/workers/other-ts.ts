@@ -89,10 +89,10 @@ const getFormatter = async () => {
 
 getFormatter().then(result => (formatter = result));
 
-const SyntaxKind = {
-  ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
-  ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
-};
+// const SyntaxKind = {
+//   ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
+//   ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
+// };
 
 globalThis.localStorage = globalThis.localStorage ?? {} as Storage;
 
@@ -120,16 +120,6 @@ await Promise.all(
     return fsMap.set(lib.replace("/node_modules/typescript/lib/", "/"), libFiles[lib] as unknown as string);
   })
 );
-
-const system = createSystem(fsMap);
-// const env = createVirtualTypeScriptEnvironment(system, ["index.ts"], ts, compilerOpts);
-const host = createVirtualCompilerHost(system, compilerOpts, ts)
-
-const program = ts.createProgram({
-  rootNames: [...fsMap.keys()],
-  options: compilerOpts,
-  host: host.compilerHost,
-})
 
 export interface IExtraLibs {
   [path: string]: {
@@ -170,7 +160,12 @@ export class OtherTSWorker {
   }
 
   createFile(fileName, content) {
-    return ts.createSourceFile(fileName, content, compilerOpts.target, false);
+    fsMap.set(fileName, content);
+
+    const system = createSystem(fsMap);
+    const env = createVirtualTypeScriptEnvironment(system, [...fsMap.keys()], ts, compilerOpts);
+    const program = env.languageService.getProgram();
+    return program.getSourceFile(fileName);
   }
 
   async format(fileName, content) {
@@ -192,22 +187,22 @@ export class OtherTSWorker {
     source.forEachChild(
       (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
         let isImport =
-          node.kind == SyntaxKind.ImportDeclaration;
+          node.kind == ts.SyntaxKind.ImportDeclaration;
         let isExport =
-          node.kind == SyntaxKind.ExportDeclaration;
+          node.kind == ts.SyntaxKind.ExportDeclaration;
         if (!BackToBackImportExport) return;
 
-        BackToBackImportExport = isImport || isExport || Boolean(node.moduleSpecifier);
+        BackToBackImportExport = (isImport || isExport) && Boolean(node.moduleSpecifier);
         if (BackToBackImportExport) {
           let clause = isImport ?
             (node as ts.ImportDeclaration)?.importClause :
             (node as ts.ExportDeclaration)?.exportClause;
-          console.log(clause, node)
 
           ImportExportStatements.push({
             kind: isImport ? "import" : "export",
-            clause: clause?.getText() ?? "*",
-            module: node.moduleSpecifier?.getText(),
+            clause: clause?.getText?.() ?? "*",
+            module: node?.moduleSpecifier?.getText?.(),
+            assert: node?.assertClause?.getText?.() ?? "",
             pos: {
               start: node.pos,
               end: node.end,

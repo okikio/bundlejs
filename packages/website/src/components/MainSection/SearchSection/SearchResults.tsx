@@ -1,6 +1,5 @@
 import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
-import Loading from "../../Loading";
 
 import { getPackages } from "@bundlejs/core";
 export function SearchResults(props?: ComponentProps<'dialog'> & {
@@ -50,8 +49,8 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
   createEffect(on(
     data,
     (value) => {
-      let last = heightRef?.getBoundingClientRect();
       if (!value?.loading) {
+        let last = heightRef?.getBoundingClientRect();
         heightRef.animate({
           opacity: "1"
         }, {

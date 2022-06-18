@@ -17,22 +17,19 @@ var __spreadValues = (a, b2) => {
   return a;
 };
 var __spreadProps = (a, b2) => __defProps(a, __getOwnPropDescs(b2));
-var __objRest = (source2, exclude) => {
+var __objRest = (source, exclude) => {
   var target = {};
-  for (var prop in source2)
-    if (__hasOwnProp.call(source2, prop) && exclude.indexOf(prop) < 0)
-      target[prop] = source2[prop];
-  if (source2 != null && __getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(source2)) {
-      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source2, prop))
-        target[prop] = source2[prop];
+  for (var prop in source)
+    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+      target[prop] = source[prop];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+        target[prop] = source[prop];
     }
   return target;
 };
-import { a as browser, s as source } from "./esbuild.mjs";
-export { m as brotli } from "./brotli.mjs";
-export { m as denoflate } from "./gzip.mjs";
-export { m as lz4 } from "./lz4.mjs";
+import { a as browser } from "./esbuild.mjs";
 var bytes$2 = { exports: {} };
 /*!
  * bytes
@@ -1034,7 +1031,7 @@ const {
   toFileUrl,
   toNamespacedPath
 } = path;
-var mod$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+var mod$4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   posix,
   basename,
@@ -1175,14 +1172,14 @@ function legacy(pkg, options = {}) {
 var RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 var RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 function parse(input) {
-  const m4 = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
-  if (!m4) {
+  const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
+  if (!m) {
     throw new Error(`[parse-package-name] invalid package name: ${input}`);
   }
   return {
-    name: m4[1] || "",
-    version: m4[2] || "latest",
-    path: m4[3] || ""
+    name: m[1] || "",
+    version: m[2] || "latest",
+    path: m[3] || ""
   };
 }
 function loop(imports, keys) {
@@ -1873,10 +1870,10 @@ function render(ansi) {
   ansi = ansi.trimEnd();
   let i = 0;
   const buffer = new AnsiBuffer();
-  for (let m4 of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
-    const escape = m4[1];
-    buffer.text(ansi.slice(i, m4.index));
-    i = m4.index + m4[0].length;
+  for (let m of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
+    const escape = m[1];
+    buffer.text(ansi.slice(i, m.index));
+    i = m.index + m[0].length;
     if (escape === "0") {
       buffer.reset();
     } else if (escape === "1") {
@@ -1927,8 +1924,9 @@ async function init(_a = {}) {
       EVENTS.emit("init.start");
       STATE.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
+        const { default: ESBUILD_WASM } = await import("./esbuild-wasm.mjs");
         await STATE.esbuild.initialize(__spreadValues({
-          wasmModule: new WebAssembly.Module(await source())
+          wasmModule: new WebAssembly.Module(await ESBUILD_WASM())
         }, opts));
       }
       STATE.initialized = true;
@@ -2007,26 +2005,26 @@ async function build(opts = {}) {
     let compressionMap = await (async () => {
       switch (type) {
         case "lz4":
-          const { compress: lz4_compress } = await import("./lz4.mjs").then(function(n) {
-            return n.m;
+          const { compress: lz4_compress } = await Promise.resolve().then(function() {
+            return mod$1;
           });
           return async (code) => {
             return await lz4_compress(code);
           };
         case "brotli":
-          const { compress } = await import("./brotli.mjs").then(function(n) {
-            return n.m;
+          const { compress: compress2 } = await Promise.resolve().then(function() {
+            return mod$3;
           });
-          return (code) => {
-            return compress(code, code.length, level);
+          return async (code) => {
+            return await compress2(code, code.length, level);
           };
         default:
-          const { gzip, getWASM } = await import("./gzip.mjs").then(function(n) {
-            return n.m;
+          const { gzip: gzip2, getWASM: getWASM2 } = await Promise.resolve().then(function() {
+            return mod$2;
           });
-          await getWASM();
+          await getWASM2();
           return async (code) => {
-            return await gzip(code, level);
+            return await gzip2(code, level);
           };
       }
     })();
@@ -2098,9 +2096,9 @@ function R(r) {
 function b(r, s, f) {
   if (r == null)
     return "";
-  let p = [], m4 = {}, h2 = {}, i, w, o2, g = "", u = "", d = "", l = 2, a = 3, c2 = 2, e = 0, t = 0;
+  let p = [], m = {}, h2 = {}, i, w, o2, g = "", u = "", d = "", l = 2, a = 3, c2 = 2, e = 0, t = 0;
   for (w = 0; w < r.length; w += 1)
-    if (g = r.charAt(w), Object.prototype.hasOwnProperty.call(m4, g) || (m4[g] = a++, h2[g] = true), d = u + g, Object.prototype.hasOwnProperty.call(m4, d))
+    if (g = r.charAt(w), Object.prototype.hasOwnProperty.call(m, g) || (m[g] = a++, h2[g] = true), d = u + g, Object.prototype.hasOwnProperty.call(m, d))
       u = d;
     else {
       if (Object.prototype.hasOwnProperty.call(h2, u)) {
@@ -2117,9 +2115,9 @@ function b(r, s, f) {
         }
         l--, l == 0 && (l = Math.pow(2, c2), c2++), delete h2[u];
       } else
-        for (o2 = m4[u], i = 0; i < c2; i++)
+        for (o2 = m[u], i = 0; i < c2; i++)
           e = e << 1 | o2 & 1, t == s - 1 ? (t = 0, p.push(f(e)), e = 0) : t++, o2 = o2 >> 1;
-      l--, l == 0 && (l = Math.pow(2, c2), c2++), m4[d] = a++, u = String(g);
+      l--, l == 0 && (l = Math.pow(2, c2), c2++), m[d] = a++, u = String(g);
     }
   if (u !== "") {
     if (Object.prototype.hasOwnProperty.call(h2, u)) {
@@ -2136,7 +2134,7 @@ function b(r, s, f) {
       }
       l--, l == 0 && (l = Math.pow(2, c2), c2++), delete h2[u];
     } else
-      for (o2 = m4[u], i = 0; i < c2; i++)
+      for (o2 = m[u], i = 0; i < c2; i++)
         e = e << 1 | o2 & 1, t == s - 1 ? (t = 0, p.push(f(e)), e = 0) : t++, o2 = o2 >> 1;
     l--, l == 0 && (l = Math.pow(2, c2), c2++);
   }
@@ -2270,6 +2268,98 @@ const getPackage = async (input) => {
   }
   return result;
 };
+let initWASM$2;
+const getWASM$2 = async () => {
+  if (initWASM$2)
+    return initWASM$2;
+  const wasm2 = await import("./brotli.mjs");
+  const { default: init2, source } = wasm2;
+  await init2(await source());
+  return initWASM$2 = wasm2;
+};
+async function compress$1(input, bufferSize = 4096, quality = 6, lgwin = 22) {
+  const { compress: compress2 } = await getWASM$2();
+  return compress2(input, bufferSize, quality, lgwin);
+}
+async function decompress$1(input, bufferSize = 4096) {
+  const { decompress: decompress2 } = await getWASM$2();
+  return decompress2(input, bufferSize);
+}
+var mod$3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  getWASM: getWASM$2,
+  compress: compress$1,
+  decompress: decompress$1
+}, Symbol.toStringTag, { value: "Module" }));
+let wasm;
+let initWASM$1;
+const getWASM$1 = async (src) => {
+  if (initWASM$1)
+    return initWASM$1;
+  const _exports = await import("./denoflate.mjs");
+  const { default: init2 } = _exports;
+  const { wasm: WASM } = await import("./gzip.mjs");
+  wasm = await init2(src ?? await WASM());
+  return initWASM$1 = _exports;
+};
+async function deflate(input, compression) {
+  return (await getWASM$1()).deflate(input, compression);
+}
+async function inflate(input) {
+  return (await getWASM$1()).inflate(input);
+}
+async function gzip(input, compression) {
+  return (await getWASM$1()).gzip(input, compression);
+}
+async function gunzip(input) {
+  return (await getWASM$1()).gunzip(input);
+}
+async function zlib(input, compression) {
+  return (await getWASM$1()).zlib(input, compression);
+}
+async function unzlib(input) {
+  return (await getWASM$1()).unzlib(input);
+}
+var wasm$1 = wasm;
+var mod$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  get wasm() {
+    return wasm;
+  },
+  get initWASM() {
+    return initWASM$1;
+  },
+  getWASM: getWASM$1,
+  deflate,
+  inflate,
+  gzip,
+  gunzip,
+  zlib,
+  unzlib,
+  "default": wasm$1
+}, Symbol.toStringTag, { value: "Module" }));
+let initWASM;
+const getWASM = async () => {
+  if (initWASM)
+    return initWASM;
+  const wasm2 = await import("./lz4.mjs");
+  const { default: init2, source } = wasm2;
+  await init2(await source());
+  return initWASM = wasm2;
+};
+async function compress(input) {
+  const { lz4_compress } = await getWASM();
+  return lz4_compress(input);
+}
+async function decompress(input) {
+  const { lz4_decompress } = await getWASM();
+  return lz4_decompress(input);
+}
+var mod$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  compress,
+  decompress
+}, Symbol.toStringTag, { value: "Module" }));
 function encode(data) {
   if (typeof data === "string") {
     return btoa(data);
@@ -2299,5 +2389,5 @@ var mod = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   decode,
   decodeString
 }, Symbol.toStringTag, { value: "Module" }));
-export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EVENTS, EVENTS_OPTS, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, INPUT_EVENTS, PLATFORM_AUTO, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEP, SEP_PATTERN, STATE, VIRTUAL_FILESYSTEM_NAMESPACE, VIRTUAL_FS, render as ansi, bail, mod as base64, basename, build, D as compress, S as compressToBase64, j as compressToURL, debounce, decode$1 as decode, R as decompress, O as decompressFromBase64, k as decompressFromURL, deepAssign, deepDiff, deepEqual, delimiter, dirname, encode$1 as encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getESBUILD, getFile, getPackage, getPackages, getPureImportPath, getRegistryURL, getRequest, getResolvedPath, globToRegExp, htmlEscape, inferLoader, init, isAbsolute, isAlias, isBareImport, isExternal, isGlob, isObject, isPrimitive, isValidKey, join, joinGlobs, loop, newRequest, normalize, normalizeGlob, parse$1 as parse, parseConfig, parseShareQuery, parseTreeshakeExports, mod$1 as path, posix, relative, render, resolve$1 as resolve, resolveImports, sep, setFile, toFileUrl, toName, toNamespacedPath, urlJoin };
+export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EVENTS, EVENTS_OPTS, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, INPUT_EVENTS, PLATFORM_AUTO, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEP, SEP_PATTERN, STATE, VIRTUAL_FILESYSTEM_NAMESPACE, VIRTUAL_FS, render as ansi, bail, mod as base64, basename, mod$3 as brotli, build, D as compress, S as compressToBase64, j as compressToURL, debounce, decode$1 as decode, R as decompress, O as decompressFromBase64, k as decompressFromURL, deepAssign, deepDiff, deepEqual, delimiter, mod$2 as denoflate, dirname, encode$1 as encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getESBUILD, getFile, getPackage, getPackages, getPureImportPath, getRegistryURL, getRequest, getResolvedPath, globToRegExp, htmlEscape, inferLoader, init, isAbsolute, isAlias, isBareImport, isExternal, isGlob, isObject, isPrimitive, isValidKey, join, joinGlobs, loop, mod$1 as lz4, newRequest, normalize, normalizeGlob, parse$1 as parse, parseConfig, parseShareQuery, parseTreeshakeExports, mod$4 as path, posix, relative, render, resolve$1 as resolve, resolveImports, sep, setFile, toFileUrl, toName, toNamespacedPath, urlJoin };
 //# sourceMappingURL=index.mjs.map

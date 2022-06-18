@@ -16,10 +16,11 @@ export default defineConfig({
         {
           format: "es",
           manualChunks: {
-            "esbuild": ["/src/wasm.ts", "esbuild-wasm"],
-            "lz4": ["/src/deno/lz4/mod.ts"],
-            "gzip": ["/src/deno/denoflate/mod.ts"],
-            "brotli": ["/src/deno/brotli/mod.ts"]
+            "esbuild": [ "esbuild-wasm"],
+            "esbuild-wasm": ["/src/wasm.ts"],
+            "lz4": ["/src/deno/lz4/wasm.ts"],
+            "gzip": ["/src/deno/denoflate/pkg/denoflate_bg.wasm.js"],
+            "brotli": ["/src/deno/brotli/wasm.ts"]
           },
           chunkFileNames: "[name].mjs",
           entryFileNames: "[name].mjs"
@@ -28,10 +29,11 @@ export default defineConfig({
           format: "cjs",
           entryFileNames: "[name].cjs"
         },
-        {
-          format: "umd",
-          entryFileNames: "[name].js"
-        }
+        // {
+        //   format: "umd",
+        //   entryFileNames: "[name].js",
+        //   manualChunks: () => 'index.js'
+        // }
       ],
       external: ["esbuild"]
     }

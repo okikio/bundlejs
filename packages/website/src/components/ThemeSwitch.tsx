@@ -1,9 +1,14 @@
 import { ComponentProps, onMount } from "solid-js";
 import { themeSet, themeGet } from "../scripts/theme";
 
+let html: HTMLHtmlElement;
+
+if ("document" in globalThis) { 
+	html = html ?? document.querySelector('html');
+}
+
 export function ThemeSwitch() {
 	let ref: HTMLSelectElement;
-	let html: HTMLHtmlElement;
 	let onChange: ComponentProps<'select'>['onChange'] = ({ currentTarget: el }) => {
 		html = html ?? document.querySelector('html');
 		themeSet(el.value, html);
