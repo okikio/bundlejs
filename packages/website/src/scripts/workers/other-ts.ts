@@ -15,8 +15,6 @@ import * as ts from "typescript";
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
 
-import lzstring from "lz-string";
-
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
   // TypeScript & JavaScript config goes here
@@ -89,13 +87,6 @@ const getFormatter = async () => {
 
 getFormatter().then(result => (formatter = result));
 
-// const SyntaxKind = {
-//   ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
-//   ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
-// };
-
-globalThis.localStorage = globalThis.localStorage ?? {} as Storage;
-
 const compilerOpts: ts.CompilerOptions = {
   target: ts.ScriptTarget.Latest,
   module: ts.ModuleKind.ESNext,
@@ -105,21 +96,6 @@ const compilerOpts: ts.CompilerOptions = {
     "dom"
   ],
 };
-
-const libFiles = import.meta.globEager('/node_modules/typescript/lib/lib.*.ts', { as: 'raw' })
-
-const fsMap = new Map<string, string>();
-// await createDefaultMapFromCDN(compilerOpts, ts.version, false, ts, lzstring, async (url: string) => { 
-//   return await getRequest(url.replace(`https://typescript.azureedge.net/cdn/${ts.version}/typescript/lib/`, `https://unpkg.com/typescript@${ts.version}/lib/`));
-// });
-const ENTRY_POINT = "index.ts";
-fsMap.set(ENTRY_POINT, "const hello = 'hi'");
-
-await Promise.all(
-  Object.keys(libFiles).map(lib => {
-    return fsMap.set(lib.replace("/node_modules/typescript/lib/", "/"), libFiles[lib] as unknown as string);
-  })
-);
 
 export interface IExtraLibs {
   [path: string]: {
@@ -159,7 +135,22 @@ export class OtherTSWorker {
     this._inlayHintsOptions = createData.inlayHintsOptions;
   }
 
-  createFile(fileName, content) {
+  async createFile(fileName, content) {
+    const libFiles = import.meta.globEager('/node_modules/typescript/lib/lib.*.ts', { as: 'raw' });
+    
+    const fsMap = new Map<string, string>();
+    // await createDefaultMapFromCDN(compilerOpts, ts.version, false, ts, lzstring, async (url: string) => { 
+    //   return await getRequest(url.replace(`https://typescript.azureedge.net/cdn/${ts.version}/typescript/lib/`, `https://unpkg.com/typescript@${ts.version}/lib/`));
+    // });
+    const ENTRY_POINT = "index.ts";
+    fsMap.set(ENTRY_POINT, "const hello = 'hi'");
+    
+    await Promise.all(
+      Object.keys(libFiles).map(lib => {
+        return fsMap.set(lib.replace("/node_modules/typescript/lib/", "/"), libFiles[lib] as unknown as string);
+      })
+    );
+    
     fsMap.set(fileName, content);
 
     const system = createSystem(fsMap);
@@ -174,7 +165,7 @@ export class OtherTSWorker {
   }
 
   async getShareableURL(fileName, content, config = "{}") {
-    const source = this.createFile(fileName, content);
+    const source = await this.createFile(fileName, content);
     config = JSON.parse(config ? config : "{}") ?? {};
 
     // Basically only keep the config options that have changed from the default

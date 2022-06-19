@@ -1,34 +1,3 @@
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b2) => {
-  for (var prop in b2 || (b2 = {}))
-    if (__hasOwnProp.call(b2, prop))
-      __defNormalProp(a, prop, b2[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b2)) {
-      if (__propIsEnum.call(b2, prop))
-        __defNormalProp(a, prop, b2[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b2) => __defProps(a, __getOwnPropDescs(b2));
-var __objRest = (source, exclude) => {
-  var target = {};
-  for (var prop in source)
-    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
-      target[prop] = source[prop];
-  if (source != null && __getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(source)) {
-      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
-        target[prop] = source[prop];
-    }
-  return target;
-};
 import { a as browser } from "./esbuild.mjs";
 var bytes$2 = { exports: {} };
 /*!
@@ -1112,7 +1081,7 @@ function toName$1(name, entry) {
 function resolve(pkg, entry = ".", options = {}) {
   let { name, exports } = pkg;
   if (exports) {
-    let { browser: browser2, require: require2, unsafe, conditions = [] } = options;
+    let { browser: browser2, require, unsafe, conditions = [] } = options;
     let target = toName$1(name, entry);
     if (target[0] !== ".")
       target = "./" + target;
@@ -1120,7 +1089,7 @@ function resolve(pkg, entry = ".", options = {}) {
       return target === "." ? exports : bail$1(name, target);
     }
     let allows = /* @__PURE__ */ new Set(["default", ...conditions]);
-    unsafe || allows.add(require2 ? "require" : "import");
+    unsafe || allows.add(require ? "require" : "import");
     unsafe || allows.add(browser2 ? "browser" : "node");
     let key, tmp, isSingle = false;
     for (key in exports) {
@@ -1211,13 +1180,13 @@ function toName(name, entry) {
 function resolveImports(pkg, entry = ".", options = {}) {
   let { name, imports } = pkg;
   if (imports) {
-    let { browser: browser2, require: require2, unsafe, conditions = [] } = options;
+    let { browser: browser2, require, unsafe, conditions = [] } = options;
     let target = toName(name, entry);
     if (typeof imports === "string") {
       return target === "#" ? imports : bail(name, target);
     }
     let allows = /* @__PURE__ */ new Set(["default", ...conditions]);
-    unsafe || allows.add(require2 ? "require" : "import");
+    unsafe || allows.add(require ? "require" : "import");
     unsafe || allows.add(browser2 ? "browser" : "node");
     let key, tmp, isSingle = false;
     for (key in imports) {
@@ -1254,7 +1223,7 @@ const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events) => {
       let subpath = parsed.path;
       let pkg = args.pluginData?.pkg ?? {};
       if (argPath[0] == "#") {
-        let path2 = resolveImports(__spreadProps(__spreadValues({}, pkg), { exports: pkg.imports }), argPath, {
+        let path2 = resolveImports({ ...pkg, exports: pkg.imports }, argPath, {
           require: args.kind === "require-call" || args.kind === "require-resolve"
         });
         if (typeof path2 === "string") {
@@ -1457,9 +1426,10 @@ const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events) => {
     if (isAlias(argPath, aliases)) {
       let pkgDetails = parse(argPath);
       let aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, events)(__spreadProps(__spreadValues({}, args), {
+      return HTTP_RESOLVE(host, events)({
+        ...args,
         path: aliasPath
-      }));
+      });
     }
   };
 };
@@ -1917,17 +1887,17 @@ async function getESBUILD(platform = "node") {
     throw e;
   }
 }
-async function init(_a = {}) {
-  var _b = _a, { platform } = _b, opts = __objRest(_b, ["platform"]);
+async function init({ platform, ...opts } = {}) {
   try {
     if (!STATE.initialized) {
       EVENTS.emit("init.start");
       STATE.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
         const { default: ESBUILD_WASM } = await import("./esbuild-wasm.mjs");
-        await STATE.esbuild.initialize(__spreadValues({
-          wasmModule: new WebAssembly.Module(await ESBUILD_WASM())
-        }, opts));
+        await STATE.esbuild.initialize({
+          wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
+          ...opts
+        });
       }
       STATE.initialized = true;
       EVENTS.emit("init.complete");
@@ -1943,14 +1913,14 @@ async function build(opts = {}) {
     EVENTS.emit("init.loading");
   const CONFIG = deepAssign({}, DefaultConfig, opts);
   const { build: bundle } = await init(CONFIG.init);
-  const _a = CONFIG.esbuild ?? {}, { define = {}, loader = {} } = _a, esbuildOpts = __objRest(_a, ["define", "loader"]);
+  const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
   let outputs = [];
   let content = [];
   let result;
   try {
     try {
       const keys = "p.env.NODE_ENV".replace("p.", "process.");
-      result = await bundle(__spreadValues({
+      result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         metafile: Boolean(CONFIG.analysis),
         loader: {
@@ -1961,10 +1931,11 @@ async function build(opts = {}) {
           ".html": "text",
           ".scss": "css"
         },
-        define: __spreadValues({
+        define: {
           "__NODE__": `false`,
-          [keys]: `"production"`
-        }, define),
+          [keys]: `"production"`,
+          ...define
+        },
         write: false,
         outdir: "/",
         plugins: [
@@ -1973,8 +1944,9 @@ async function build(opts = {}) {
           HTTP(EVENTS, STATE, CONFIG),
           CDN(EVENTS, STATE, CONFIG),
           VIRTUAL_FS(EVENTS, STATE, CONFIG)
-        ]
-      }, esbuildOpts));
+        ],
+        ...esbuildOpts
+      });
     } catch (e) {
       if (e.errors) {
         const asciMsgs = [...await createNotice(e.errors, "error", false)];
