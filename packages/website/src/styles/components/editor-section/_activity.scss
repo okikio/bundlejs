@@ -19,11 +19,15 @@
   }
 
   .share-text {
-    @apply w-[6ch];
+    @apply min-w-[6ch];
   }
 
   .build-text {
-    @apply w-[7ch];
+    @apply min-w-[7ch];
+  }
+
+  .bundle-size-text {
+    @apply min-w-[12ch];
   }
 
   .bundle-results {

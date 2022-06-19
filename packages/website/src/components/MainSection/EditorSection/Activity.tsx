@@ -111,7 +111,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         </Button>
         <div class="bundle-results" title="Compressed Size">
           <Loading size="md" show={state.bundling} />
-          {state.bundleSize}
+          <span class="bundle-size-text">{state.bundleSize}</span>
         </div>
       </div>
     </div>
