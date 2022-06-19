@@ -81,7 +81,7 @@ dialog.search-container {
     }
 
     & .search-input { 
-      @apply p-3 sm:p-4;
+      @apply px-3 pt-3 sm:px-4 sm:pt-4;
     }
 
     & .search {
@@ -97,7 +97,7 @@ dialog.search-container {
 
 .search-input {
   @apply sticky top-0 z-20 pointer-events-auto;
-  @apply p-1;
+  @apply px-1 pt-1;
 }
 
 .search {
@@ -112,7 +112,7 @@ dialog.search-container {
   @apply px-1 py-1;
 
   input#input {
-    @apply w-full ml-2 p-2 bg-transparent align-middle focus:outline-none;
+    @apply w-full ml-2 px-2  bg-transparent align-middle focus:outline-none;
 
     &::placeholder {
       @apply text-gray-400;

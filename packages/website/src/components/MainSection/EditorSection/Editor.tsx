@@ -51,8 +51,6 @@ export function Editor(props?: ComponentProps<'div'>) {
       <EditorButtons />
 
       <Loading ref={loadingRef} data-show={state.monaco.loading} />
-      
-        {/* <Show when={state.monaco.loading}></Show> */}
     </div>
   )
 }

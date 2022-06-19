@@ -9,3 +9,7 @@ console.log(result);
 if (PLATFORM_AUTO == "deno") { 
   globalThis?.Deno?.exit?.();
 }
+
+
+// import { resolveVersion } from "./src/utils/npm-search";
+// console.log(await resolveVersion("@okikio/animate@>=1 <2"))

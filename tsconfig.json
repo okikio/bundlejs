@@ -9,6 +9,8 @@
     "resolveJsonModule": true,
     // Enable stricter transpilation for better output.
     "isolatedModules": true,
+    // Remove CJS module errors
+    "allowSyntheticDefaultImports": true,
     // Add support for Web Workers
     "lib": [
       "ES2021",

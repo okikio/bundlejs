@@ -1,19 +1,10 @@
 
-import type { ComponentProps } from "solid-js";
+import { ComponentProps, createSignal } from "solid-js";
 import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 
-// import { EventEmitter } from "@okikio/emitter";
-// import { timeline, animate } from "@okikio/animate";
-
-// export const ResultEvents = new EventEmitter();
-// export const [getState, setState] = createSignal([]);
-// export const [isInitial, setIsInitial] = createSignal(true);
-
-// export const [pending, start] = useTransition();
-// export const updateState = (state: any[]) => () => start(() => setState(state));
-
-
 import { state } from "../store";
+
+import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
 
 export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;
@@ -34,75 +25,79 @@ export function SearchResult(props?: SearchResultProps) {
   let _packageHref = `https://www.npmjs.com/${_package}`;
   let _authorHref = `https://www.npmjs.com/~${_author}`;
 
-  let btnTextEl: HTMLElement;
-  let btnEl: HTMLButtonElement;
+  let btnTextRef: HTMLElement;
+
+  let initialValue = "Add Module";
+  let [innerText, setInnerText] = createSignal(initialValue);
 
   // When user clicks the "Add Module button" give the user some feedback
-  let onClick = () => {
-    let text = btnTextEl.innerText;
-    let opts = {
-      target: btnTextEl,
+  function onClick() {
+    let opts: KeyframeAnimationOptions = {
       duration: 400,
-      fillMode: "forwards"
+      fill: "forwards",
+      easing: "ease"
     };
 
-    let inputValue = state.monaco.models.input.getValue();
-    let initialValue = state.monaco.initialValue.input;
+    (async () => {
+      await btnTextRef.animate({
+        opacity: [1, 0]
+      }, opts).finished;
 
-    // Ths initial values starting comment
-    let startingComment = initialValue.split("\n")[0];
+      setInnerText("Added!");
 
-    state.monaco.models.input.setValue(
-      // If the input model has change from it's initial value then 
-      // add the module under the rest of the code
-      // Otherwise, replace the input model value with the new export
-      (inputValue !== initialValue ? inputValue : startingComment)?.trim() +
-      `\nexport * from "${_package}";`
-    );
-    // timeline()
-    //     .add({
-    //         ...opts,
-    //         opacity: [1, 0],
-    //         onfinish() {
-    //             btnTextEl.innerText = "Added!";
-    //             ResultEvents.emit("add-module", `export * from "${_package}";`);
-    //         }
-    //     })
-    //     .add({
-    //         ...opts,
-    //         opacity: [0, 1],
-    //     })
-    //     .add({
-    //         ...opts,
-    //         opacity: [1, 0],
-    //         onfinish: () => { btnTextEl.innerText = text; }
-    //     })
-    //     .add({
-    //         ...opts,
-    //         opacity: [0, 1],
-    //         onfinish: () => { ResultEvents.emit("complete"); }
-    //     });
+      await btnTextRef.animate({
+        opacity: [0, 1]
+      }, opts).finished;
+
+      let inputValue = state.monaco.models.input.getValue();
+      let inputInitialValue = state.monaco.initialValue.input;
+
+      // Ths initial values starting comment
+      let startingComment = inputInitialValue.split("\n")[0];
+
+      state.monaco.models.input.setValue(
+        // If the input model has change from it's initial value then
+        // add the module under the rest of the code
+        // Otherwise, replace the input model value with the new export
+        (inputValue !== inputInitialValue ? inputValue : startingComment)?.trim() +
+        `\nexport * from "${_package}";`
+      );
+
+      await new Promise<void>(resolve => {
+        setTimeout(() => resolve(), 500);
+      });
+
+      await btnTextRef.animate({
+        opacity: [1, 0]
+      }, opts).finished;
+
+      setInnerText(initialValue);
+
+      await btnTextRef.animate({
+        opacity: [0, 1]
+      }, opts).finished;
+    })();
   };
 
   return (
     <div class="result">
       <div class="content">
         <h2 class="font-semibold text-lg">
-          <a href={_packageHref} target="_blank">{_name}</a>
+          <a href={_packageHref} target="_blank" rel="noopener">{_name}<IconArrowUpRight rehype-icon="arrow-up-right-24-regular" /></a>
         </h2>
         <div>
           <p>{_description}</p>
           <p class="updated-time">
             {_date && `Updated ${_date} `}
             {_author && (<>
-              by <a href={_authorHref} target="_blank" rel="noopener">@{_author}</a>.
+              by <a href={_authorHref} target="_blank" rel="noopener">@{_author}<IconArrowUpRight rehype-icon="arrow-up-right-24-regular" /></a>.
             </>)}
           </p>
         </div>
       </div>
       <div class="add">
-        <button ref={btnEl} class="btn" onClick={onClick}>
-          <span class="btn-text" ref={btnTextEl}>Add Module</span>
+        <button class="btn" onClick={onClick}>
+          <span class="btn-text" ref={btnTextRef}>{innerText()}</span>
         </button>
       </div>
     </div>

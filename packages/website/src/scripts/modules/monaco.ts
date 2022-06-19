@@ -5,7 +5,7 @@ import {
   Uri
 } from "monaco-editor";
 
-import { getPackage, getRequest, parseShareQuery, parseConfig } from "@bundlejs/core";
+import { parseShareQuery, parseConfig, schema, getResolvedPackage } from "@bundlejs/core";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
@@ -13,7 +13,6 @@ import GithubDark from "../utils/github-dark";
 import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import { mediaTheme, themeGet } from "../theme";
-import TS_WORKER_FACTORY_URL from "../workers/ts-worker-factory.ts?url";
 
 import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
 import JSON_SHARED_WORKER from "../workers/json.ts?sharedworker";
@@ -22,9 +21,7 @@ import TS_WORKER from "../workers/typescript.ts?worker";
 import JSON_WORKER from "../workers/json.ts?worker";
 import EDITOR_WORKER from "../workers/editor.ts?worker";
 
-// import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
-
-import { USE_SHAREDWORKER } from "../../env";
+import { PRODUCTION_MODE, USE_SHAREDWORKER } from "../../env";
 import { EasyDefaultConfig } from "../configs/options";
 import { toLocaleDateString } from "../utils/locale-date-string";
 
@@ -34,7 +31,7 @@ import { toLocaleDateString } from "../utils/locale-date-string";
 (globalThis as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
-      return USE_SHAREDWORKER ? new TS_SHARED_WORKER() : new TS_WORKER();
+      return USE_SHAREDWORKER && PRODUCTION_MODE ? new TS_SHARED_WORKER() : new TS_WORKER();
     } else if (label === "json") {
       return USE_SHAREDWORKER ? new JSON_SHARED_WORKER() : new JSON_WORKER();
     }
@@ -78,6 +75,10 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   const inputModel = Editor.createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
   const outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
   const configModel = Editor.createModel(initialConfig, 'json', Uri.parse('file://config.json'));
+
+  inputModel.updateOptions({ tabSize: 2 });
+  outputModel.updateOptions({ tabSize: 2 });
+  configModel.updateOptions({ tabSize: 2 });
 
   const editorOpts: Editor.IStandaloneEditorConstructionOptions = {
     model: null,
@@ -129,10 +130,6 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     let theme = themeGet(html);
     Editor.setTheme(theme == "system" ? mediaTheme() : theme);
   });
-
-  // languages.typescript.typescriptDefaults.setWorkerOptions({
-  //   customWorkerPath: TS_WORKER_FACTORY_URL // new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
-  // });
 
   languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
@@ -200,26 +197,27 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
         pkg = pkg.replace(/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/, "");
 
       return (async () => {
-        const info = await getPackage(pkg);
+        const info = await getResolvedPackage(pkg);
         if (!info) return;
 
         // result?.results   ->   api.npms.io
         // result?.objects   ->   registry.npmjs.com
-        const { name, description, version, date, publisher, links } = info ?? {};
-        const author = publisher?.username;
-        const _date = toLocaleDateString(date);
-        const _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
-        const _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
+        const { description, version, date, publisher, repository } = info ?? {};
+        console.log(info)
+        const author = info?.maintainers?.[0]?.name ?? publisher?.username;
+        const _date = date ? "on " + toLocaleDateString(date) : "";
+        const _author = author ? ` by [@${author}](https://www.npmjs.com/~${author})` : "";
+        const _repo_link = repository ? `[GitHub](${repository?.url.replace("git+", "")})  |  ` : "";
 
         return {
           contents: [].concat({
             value: [
-              `### [${name}](${links?.npm}) v${version}`,
+              `### [${name}](https://www.npmjs.com/package/${name}/v/${version}) v${version}`,
               `${description}`,
               ``,
-              `Published on ${_date} ${_author}`,
+              `${date || author ? "Published " : ""}${_date}${_author}`,
               ``,
-              `${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`
+              `${_repo_link}[Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}@${version}/)  | [Openbase](https://openbase.com/js/${name})`
             ].join("\n"),
           }),
         };
@@ -228,16 +226,16 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   });
 
   // Configure the JSON language support with schemas and schema associations
-  // languages.json.jsonDefaults.setDiagnosticsOptions({
-  //   validate: true,
-  //   schemas: [
-  //     {
-  //       uri: "https://unpkg.com/esbuild-wasm/esm/browser.d.ts", // id of the first schema
-  //       fileMatch: [configModel.uri.toString()], // associate with our model
-  //       schema: TYPE_SCHEMA
-  //     }
-  //   ]
-  // });
+  languages.json.jsonDefaults.setDiagnosticsOptions({
+    validate: true,
+    schemas: [
+      {
+        uri: "@bundlejs/core/schema.ts", // id of the first schema
+        fileMatch: [configModel.uri.toString()], // associate with our model
+        schema
+      }
+    ]
+  });
 
   return [editor, inputModel, outputModel, configModel];
 };

@@ -4,7 +4,7 @@ import Anchor from "./Anchor.astro";
 import Container from "./Container";
 import { ThemeSwitch } from "./ThemeSwitch";
 
-import Button from "./Button";
+import { ClearCacheButton } from "./ClearCacheButton";
 ---
 
 <footer>
@@ -14,10 +14,7 @@ import Button from "./Button";
 
       <div class="flex flex-nowrap gap-[inherit]">
         <ThemeSwitch client:visible />
-
-        <Button class="bg-primary/20" title="Clear Cache / Force Reload Site">
-          <Icon name="fluent:arrow-clockwise-24-filled" />
-        </Button>
+        <ClearCacheButton client:visible />
       </div>
     </div>
 
@@ -45,15 +42,15 @@ import Button from "./Button";
     :global([custom-theme-switch]) {
       @apply px-2 py-2 rounded-md;
     }
-  }
 
-  [custom-button] {
-    @apply px-3 py-2 gap-3;
-    @apply flex flex-row justify-center;
-    @apply bg-secondary/20 hover:bg-secondary/40;
-    
-    :global(svg) {
-      @apply w-6 h-6;
+    :global([custom-button]) {
+      @apply px-3 py-2 gap-3;
+      @apply flex flex-row justify-center;
+      @apply bg-secondary/20 hover:bg-secondary/40;
+      
+      :global(svg) {
+        @apply w-6 h-6;
+      }
     }
   }
 

@@ -25,3 +25,9 @@
     height: 100%;
   }
 }
+
+.monaco-hover-content {
+  h1, h2, h3 {
+    @apply py-0;
+  }
+}
