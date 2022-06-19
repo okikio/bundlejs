@@ -1982,24 +1982,26 @@ async function build(opts = {}) {
     let compressionMap = await (async () => {
       switch (type) {
         case "lz4":
-          const { compress: lz4_compress } = await Promise.resolve().then(function() {
+          const { compress: lz4_compress, getWASM: getLZ4 } = await Promise.resolve().then(function() {
             return mod$1;
           });
+          await getLZ4();
           return async (code) => {
             return await lz4_compress(code);
           };
         case "brotli":
-          const { compress: compress2 } = await Promise.resolve().then(function() {
+          const { compress: compress2, getWASM: getBrotli } = await Promise.resolve().then(function() {
             return mod$3;
           });
+          await getBrotli();
           return async (code) => {
             return await compress2(code, code.length, level);
           };
         default:
-          const { gzip: gzip2, getWASM: getWASM2 } = await Promise.resolve().then(function() {
+          const { gzip: gzip2, getWASM: getGZIP } = await Promise.resolve().then(function() {
             return mod$2;
           });
-          await getWASM2();
+          await getGZIP();
           return async (code) => {
             return await gzip2(code, level);
           };
@@ -2009,7 +2011,8 @@ async function build(opts = {}) {
     return {
       result,
       outputFiles: result.outputFiles,
-      initialSize: `${totalByteLength}`
+      initialSize: `${totalByteLength}`,
+      size: `${totalCompressedSize} (${type})`
     };
   } catch (e) {
   }
@@ -8092,6 +8095,7 @@ async function decompress(input) {
 }
 var mod$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
+  getWASM,
   compress,
   decompress
 }, Symbol.toStringTag, { value: "Module" }));

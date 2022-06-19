@@ -12,19 +12,17 @@ export function EditorSection(props?: ComponentProps<'div'>) {
   const [direction, setDirection] = createSignal<"x" | "y">("x");
   
   function onResize(e: MediaQueryListEvent | MediaQueryList) {
-    setDirection(e.matches ? 'x' : 'y');
+    setDirection(e?.matches ? 'x' : 'y');
   }
 
-  let mediaQuery = ("document" in globalThis) && globalThis?.matchMedia?.("(min-width: 640px)");
-  onResize(mediaQuery);
-  console.log(mediaQuery.matches ? 'x' : 'y')
-
   onMount(() => {
+    let mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
+    onResize(mediaQuery);
     mediaQuery?.addEventListener?.("change", onResize);
-  });
 
-  onCleanup(() => {
-    mediaQuery?.removeEventListener?.("change", onResize);
+    onCleanup(() => {
+      mediaQuery?.removeEventListener?.("change", onResize);
+    });
   });
 
   return (
@@ -34,7 +32,7 @@ export function EditorSection(props?: ComponentProps<'div'>) {
 
       <div class="core">
         <Editor />
-        <DragHandle direction={direction()} contrain={direction() == "x"} />
+        <DragHandle direction={direction()} constrain={direction() == "x"} />
         <Console />
       </div>
 
