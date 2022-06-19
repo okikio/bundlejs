@@ -77,9 +77,9 @@ export default defineConfig({
     //   }
     // }),
     Sitemap(),
-    PRODUCTION_MODE ? Compress({
-      js: false
-    }) : { name: "blank" },
+    // PRODUCTION_MODE ? Compress({
+    //   js: false
+    // }) : { name: "blank" },
   ],
   experimental: { integrations: true },
   vite: {
