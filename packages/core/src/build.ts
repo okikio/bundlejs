@@ -3,7 +3,7 @@ import type { PLATFORM } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm";
 
 // import ESBUILD_WASM from "./wasm";
-import { version } from "esbuild-wasm";
+import { version } from "esbuild-wasm/package.json";
 
 import * as _bytes from "bytes";
 // @ts-ignore

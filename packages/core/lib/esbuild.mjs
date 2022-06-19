@@ -2469,5 +2469,5 @@ var browser$1 = /* @__PURE__ */ _mergeNamespaces({
   __proto__: null,
   "default": browser
 }, [browser$2.exports]);
-export { browser$2 as a, browser$1 as b };
+export { browser$1 as b };
 //# sourceMappingURL=esbuild.mjs.map

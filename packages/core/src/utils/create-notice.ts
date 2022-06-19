@@ -1,5 +1,4 @@
 import type { PartialMessage } from "esbuild-wasm";
-import { formatMessages } from "esbuild-wasm";
 
 import { ansi } from "./ansi";
 
@@ -8,6 +7,7 @@ import { ansi } from "./ansi";
  * I didn't even know this was exported by esbuild, great job @egoist
 */
 export const createNotice = async (errors: PartialMessage[], kind: "error" | "warning" = "error", color = true) => {
+  const { formatMessages } = await import("esbuild-wasm");
   let notices = await formatMessages(errors, { color, kind });
   return notices.map((msg) => !color ? msg : ansi(msg.replace(/(\s+)(\d+)(\s+)\│/g, "\n$1$2$3│")));
 }
