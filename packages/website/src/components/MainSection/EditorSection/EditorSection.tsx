@@ -12,7 +12,6 @@ const [direction, setDirection] = createSignal<"x" | "y">("x");
 
 function onResize(e: MediaQueryListEvent | MediaQueryList) {
   e && setDirection(e.matches ? 'x' : 'y');
-  console.log(direction())
 }
 
 let mediaQuery = ("document" in globalThis) && globalThis?.matchMedia?.("(min-width: 640px)");
