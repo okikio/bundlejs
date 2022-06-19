@@ -98,7 +98,7 @@ export function EditorButtons() {
               if (!state.monaco.loading) {
                 (async () => {
                   const model = state.monaco.editor.getModel();
-                  if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())) {
+                  if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
                     try {
                       const worker = state.monaco.workers.other;
                       const thisWorker = await worker.getWorker();

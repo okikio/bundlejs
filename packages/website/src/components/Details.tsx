@@ -1,4 +1,4 @@
-import { type ComponentProps, type JSX, onCleanup, onMount } from "solid-js";
+import { type ComponentProps, type JSX, onCleanup, onMount, splitProps, mergeProps } from "solid-js";
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
 import { createDetailsEffect } from "../scripts/modules/details";
 
@@ -8,13 +8,12 @@ export function Details(props: ComponentProps<'details'> & {
   summaryClass?: string;
   contentClass?: string;
 }) {
-  let {
-    children,
-    summary,
-    summaryClass = "px-4 py-2 cursor-pointer select-none",
-    contentClass = "pl-4 pr-2 py-4",
-    ...attrs
-  } = props;
+  let [newProps, attrs] = splitProps(props, ["children", "summary", "summaryClass", "contentClass"]);
+
+  let mergedProps = mergeProps( {
+    summaryClass: "px-4 py-2 cursor-pointer select-none",
+    contentClass: "pl-4 pr-2 py-4",
+  }, newProps)
 
   let ref: HTMLDetailsElement;
   let summaryRef: HTMLElement;
@@ -32,11 +31,11 @@ export function Details(props: ComponentProps<'details'> & {
   return (
     <details ref={ref} {...attrs} custom-details>
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
-        <p class={summaryClass}>{summary}</p>
+        <p class={mergedProps.summaryClass}>{mergedProps.summary}</p>
         <IconChevronRightArrow astro-icon />
       </summary>
-      <div class={`content ${contentClass}`} ref={contentRef} custom-content>
-        {children}
+      <div class={`content ${mergedProps.contentClass}`} ref={contentRef} custom-content>
+        {mergedProps.children}
       </div>
     </details>
   );

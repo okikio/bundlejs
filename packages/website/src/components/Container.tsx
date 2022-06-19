@@ -1,4 +1,4 @@
-import type { ComponentProps } from "solid-js";
+import { ComponentProps, mergeProps, splitProps } from "solid-js";
 
 export interface Props extends ComponentProps<'div'> {
   max?: string;
@@ -6,16 +6,15 @@ export interface Props extends ComponentProps<'div'> {
 }
 
 export function Container(props?: Props) {
-  let {
-    max = "md",
-    class: className = "col",
-    children,
-    ...attrs
-  } = props;
+  let [newProps, attrs] = splitProps(props, ["max", "class", "children"]);
+  let mergedProps = mergeProps({
+    max: "md",
+    class: "col"
+  }, newProps)
 
   return (
-    <div class={`contain ${max} ${className}`} custom-container {...attrs}>
-      {children}
+    <div class={`contain ${mergedProps.max} ${mergedProps.class}`} custom-container {...attrs}>
+      {mergedProps.children}
     </div>
   );
 }

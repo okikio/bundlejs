@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, onMount, Show, type ComponentProps } from "solid-js";
+import { createEffect, createSignal, onCleanup, onMount, Show, type ComponentProps } from "solid-js";
 
 import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
@@ -23,19 +23,20 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   // Size of parent element
   let parentSize = 0;
 
-  let sizeProp = props?.direction == "x" ? "width" : "height";
-  let mouseDir = props?.direction == "x" ? "clientX" : "clientY";
-  let cursorProp = props?.direction == "x" ? "col-resize" : "row-resize";
-  console.log(props.direction)
+  let [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
+
+  let [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
+  let [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
+  let [cursorProp, setCursorProp] = createSignal(dirIsX() ? "col-resize" : "row-resize");
   
   function drag (e: MouseEvent) {
     // How far the mouse has been moved
-    const diff = e[mouseDir] - position;
+    const diff = e[mouseDir()] - position;
     const newSize = props?.contrain ? (size + diff) * 100 / parentSize : size + diff;
     const unit = props?.contrain ? "%" : "px";
 
-    targetEl.style[sizeProp] = `${newSize}${unit}`;
-    document.body.style.cursor = cursorProp;
+    targetEl.style[sizeProp()] = `${newSize}${unit}`;
+    document.body.style.cursor = cursorProp();
 
     targetEl.style.userSelect = 'none';
     targetEl.style.pointerEvents = 'none';
@@ -59,22 +60,25 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   onMount(() => {
     targetEl = (ref?.previousElementSibling ?? ref?.parentElement?.previousElementSibling) as HTMLElement;
     parentEl = targetEl?.parentElement as HTMLElement;
+  });
+
+  createEffect(() => { 
+    targetEl?.style?.removeProperty?.(sizeProp());
+    console.log(dirIsX())
+
+    setDirIsX(props?.direction == "x");
+
+    setSizeProp(dirIsX() ? "width" : "height");
+    setMouseDir(dirIsX() ? "clientX" : "clientY");
+    setCursorProp(dirIsX() ? "col-resize" : "row-resize");
 
     if (props?.contrain) {
       observer = new ResizeObserver(
         debounce(() => {
-          parentSize = parentEl.getBoundingClientRect()[sizeProp];
+          parentSize = parentEl.getBoundingClientRect()[sizeProp()];
         }, 50)
       );
     }
-
-    createEffect(() => { 
-      targetEl?.style?.removeProperty?.(sizeProp);
-  
-      sizeProp = props?.direction == "x" ? "width" : "height";
-      mouseDir = props?.direction == "x" ? "clientX" : "clientY";
-      cursorProp = props?.direction == "x" ? "col-resize" : "row-resize";
-    });
   });
 
   onCleanup(() => { 
@@ -91,9 +95,9 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   // that's triggered when user drags the resizer
   function pointerDown (e: MouseEvent) {
     // Get the current mouse position
-    position = e[mouseDir];
-    size = targetEl.getBoundingClientRect()[sizeProp];
-    parentSize = parentEl.getBoundingClientRect()[sizeProp];
+    position = e[mouseDir()];
+    size = targetEl.getBoundingClientRect()[sizeProp()];
+    parentSize = parentEl.getBoundingClientRect()[sizeProp()];
 
     // Attach the listeners to `document`
     document.addEventListener('pointermove', drag);
@@ -105,10 +109,9 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   }
   
   return (
-    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(props?.direction == "x" ? "Horizontal" : "Vertical") + " Drag Handle"}>
-      <Show when={props?.direction == "x"} fallback={<IconDragHandleY />}>
-        <IconDragHandleX />
-      </Show>
+    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(dirIsX() ? "Horizontal" : "Vertical") + " Drag Handle"}>
+      {!dirIsX() ? <IconDragHandleY /> :
+        <IconDragHandleX />}
     </button>
   );
 }
