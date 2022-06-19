@@ -1,4 +1,4 @@
-import { a as browser } from "./esbuild.mjs";
+const version = "0.14.46";
 var bytes$2 = { exports: {} };
 /*!
  * bytes
@@ -1081,7 +1081,7 @@ function toName$1(name, entry) {
 function resolve(pkg, entry = ".", options = {}) {
   let { name, exports } = pkg;
   if (exports) {
-    let { browser: browser2, require, unsafe, conditions = [] } = options;
+    let { browser, require, unsafe, conditions = [] } = options;
     let target = toName$1(name, entry);
     if (target[0] !== ".")
       target = "./" + target;
@@ -1090,7 +1090,7 @@ function resolve(pkg, entry = ".", options = {}) {
     }
     let allows = /* @__PURE__ */ new Set(["default", ...conditions]);
     unsafe || allows.add(require ? "require" : "import");
-    unsafe || allows.add(browser2 ? "browser" : "node");
+    unsafe || allows.add(browser ? "browser" : "node");
     let key, tmp, isSingle = false;
     for (key in exports) {
       isSingle = key[0] !== ".";
@@ -1117,8 +1117,8 @@ function resolve(pkg, entry = ".", options = {}) {
   }
 }
 function legacy(pkg, options = {}) {
-  let i = 0, value, browser2 = options.browser, fields = options.fields || ["module", "main"];
-  if (browser2 && !fields.includes("browser")) {
+  let i = 0, value, browser = options.browser, fields = options.fields || ["module", "main"];
+  if (browser && !fields.includes("browser")) {
     fields.unshift("browser");
   }
   for (; i < fields.length; i++) {
@@ -1126,10 +1126,10 @@ function legacy(pkg, options = {}) {
       if (typeof value == "string")
         ;
       else if (typeof value == "object" && fields[i] == "browser") {
-        if (typeof browser2 == "string") {
-          value = value[browser2 = toName$1(pkg.name, browser2)];
+        if (typeof browser == "string") {
+          value = value[browser = toName$1(pkg.name, browser)];
           if (value == null)
-            return browser2;
+            return browser;
         }
       } else {
         continue;
@@ -1180,14 +1180,14 @@ function toName(name, entry) {
 function resolveImports(pkg, entry = ".", options = {}) {
   let { name, imports } = pkg;
   if (imports) {
-    let { browser: browser2, require, unsafe, conditions = [] } = options;
+    let { browser, require, unsafe, conditions = [] } = options;
     let target = toName(name, entry);
     if (typeof imports === "string") {
       return target === "#" ? imports : bail(name, target);
     }
     let allows = /* @__PURE__ */ new Set(["default", ...conditions]);
     unsafe || allows.add(require ? "require" : "import");
-    unsafe || allows.add(browser2 ? "browser" : "node");
+    unsafe || allows.add(browser ? "browser" : "node");
     let key, tmp, isSingle = false;
     for (key in imports) {
       isSingle = key[0] !== "#";
@@ -1230,8 +1230,8 @@ const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events) => {
           subpath = path2.replace(/^\.?\/?/, "/");
           if (subpath && subpath[0] !== "/")
             subpath = `/${subpath}`;
-          let version2 = NPM_CDN ? "@" + pkg.version : "";
-          let { url: { href } } = getCDNUrl(`${pkg.name}${version2}${subpath}`);
+          let version22 = NPM_CDN ? "@" + pkg.version : "";
+          let { url: { href } } = getCDNUrl(`${pkg.name}${version22}${subpath}`);
           return {
             namespace: HTTP_NAMESPACE,
             path: href,
@@ -1267,8 +1267,8 @@ const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events) => {
 There is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`).emit("logger.warn", e);
         }
       }
-      let version = NPM_CDN ? "@" + parsed.version : "";
-      let { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
+      let version2 = NPM_CDN ? "@" + parsed.version : "";
+      let { url } = getCDNUrl(`${parsed.name}${version2}${subpath}`, origin);
       return {
         namespace: HTTP_NAMESPACE,
         path: url.toString(),
@@ -1860,7 +1860,10 @@ function render(ansi) {
   return buffer.done();
 }
 const createNotice = async (errors, kind = "error", color = true) => {
-  let notices = await browser.exports.formatMessages(errors, { color, kind });
+  const { formatMessages } = await import("./esbuild.mjs").then(function(n) {
+    return n.b;
+  });
+  let notices = await formatMessages(errors, { color, kind });
   return notices.map((msg) => !color ? msg : render(msg.replace(/(\s+)(\d+)(\s+)\│/g, "\n$1$2$3\u2502")));
 };
 const bytes = bytes_1;
@@ -1876,7 +1879,7 @@ async function getESBUILD(platform = "node") {
       case "deno":
         return await import(
           /* @vite-ignore */
-          `https://deno.land/x/esbuild@v${browser.exports.version}/mod.js`
+          `https://deno.land/x/esbuild@v${version}/mod.js`
         );
       default:
         return await import("./esbuild.mjs").then(function(n) {
@@ -2210,10 +2213,10 @@ const parseConfig = (shareURL) => {
 };
 const getRegistryURL = (input) => {
   const host = "https://registry.npmjs.com";
-  let { name, version, path: path2 } = parse(input);
+  let { name, version: version2, path: path2 } = parse(input);
   let searchURL = `${host}/-/v1/search?text=${encodeURIComponent(name)}&popularity=0.5&size=30`;
-  let packageURL = `${host}/${name}/${version}`;
-  return { searchURL, packageURL, version, name, path: path2 };
+  let packageURL = `${host}/${name}/${version2}`;
+  return { searchURL, packageURL, version: version2, name, path: path2 };
 };
 const getPackages = async (input) => {
   let { searchURL } = getRegistryURL(input);
