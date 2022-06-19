@@ -81,6 +81,7 @@ export default defineConfig({
   ],
   experimental: { integrations: true },
   vite: {
+    worker: { format: "es" },
     build: {
       assetsInlineLimit: 0,
     },
