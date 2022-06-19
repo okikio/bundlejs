@@ -106,8 +106,8 @@ export class OtherTSWorkerClient<T = {}> extends Disposable {
 		super();
 		this._worker = null;
 		this._workerFactory = new DefaultWorkerFactory(
-			// new OtherTSWorker()
-			new Worker(OtherTSWorkerURL, { type: "module" })
+			new OtherTSWorker()
+			// new Worker(OtherTSWorkerURL, { type: "module" })
 		);
 		this._getOrCreateWorker();
 	}
