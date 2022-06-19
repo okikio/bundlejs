@@ -39,16 +39,17 @@ export function Activity(props?: ComponentProps<'div'>) {
   async function share() {
     try {
       if (navigator.share) {
+        setInnerText("Shared!");
         await navigator.share({
           title: 'bundlejs',
           text: '',
           url: await getShareableURL(),
         });
       } else {
+        setInnerText("Copied!");
         await copyToClipboard(await getShareableURL());
       }
 
-      setInnerText("Shared!");
       setTimeout(() => {
         setInnerText(initialTextValue);
       }, 600);
@@ -66,9 +67,9 @@ export function Activity(props?: ComponentProps<'div'>) {
         </Button>
         <Button class="umami--click--bundle-share-button" ref={shareRef} onClick={() => !state.monaco.loading && share()}>
           <IconShare />
-          <span>{innerText()}</span>
+          <span class="share-text">{innerText()}</span>
         </Button>
-        <div class="bundle-results" title="Uncompressed -&gt; Compressed">
+        <div class="bundle-results" title="Compressed Size">
           {/* <Loading size="md" /> */}
           11.34KB (gzip)
         </div>

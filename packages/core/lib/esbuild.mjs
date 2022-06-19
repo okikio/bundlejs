@@ -14,6 +14,7 @@ function _mergeNamespaces(n, m) {
   });
   return Object.freeze(Object.defineProperty(n, Symbol.toStringTag, { value: "Module" }));
 }
+var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
 }
@@ -1822,20 +1823,20 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
             });
           };
           let onmessage2;
-          let globalThis = {};
+          let globalThis2 = {};
           for (let o = self; o; o = Object.getPrototypeOf(o))
             for (let k of Object.getOwnPropertyNames(o))
-              if (!(k in globalThis))
-                Object.defineProperty(globalThis, k, { get: () => self[k] });
+              if (!(k in globalThis2))
+                Object.defineProperty(globalThis2, k, { get: () => self[k] });
           (() => {
             const enosys = () => {
               const err = new Error("not implemented");
               err.code = "ENOSYS";
               return err;
             };
-            if (!globalThis.fs) {
+            if (!globalThis2.fs) {
               let outputBuf = "";
-              globalThis.fs = {
+              globalThis2.fs = {
                 constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 },
                 writeSync(fd, buf) {
                   outputBuf += decoder.decode(buf);
@@ -1925,8 +1926,8 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
                 }
               };
             }
-            if (!globalThis.process) {
-              globalThis.process = {
+            if (!globalThis2.process) {
+              globalThis2.process = {
                 getuid() {
                   return -1;
                 },
@@ -1955,21 +1956,21 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
                 }
               };
             }
-            if (!globalThis.crypto) {
+            if (!globalThis2.crypto) {
               throw new Error("globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)");
             }
-            if (!globalThis.performance) {
+            if (!globalThis2.performance) {
               throw new Error("globalThis.performance is not available, polyfill required (performance.now only)");
             }
-            if (!globalThis.TextEncoder) {
+            if (!globalThis2.TextEncoder) {
               throw new Error("globalThis.TextEncoder is not available, polyfill required");
             }
-            if (!globalThis.TextDecoder) {
+            if (!globalThis2.TextDecoder) {
               throw new Error("globalThis.TextDecoder is not available, polyfill required");
             }
             const encoder = new TextEncoder("utf-8");
             const decoder = new TextDecoder("utf-8");
-            globalThis.Go = class {
+            globalThis2.Go = class {
               constructor() {
                 this.argv = ["js"];
                 this.env = {};
@@ -2088,7 +2089,7 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
                       const fd = getInt64(sp + 8);
                       const p = getInt64(sp + 16);
                       const n = this.mem.getInt32(sp + 24, true);
-                      globalThis.fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
+                      globalThis2.fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
                     },
                     "runtime.resetMemoryDataView": (sp) => {
                       this.mem = new DataView(this._inst.exports.mem.buffer);
@@ -2273,7 +2274,7 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
                     null,
                     true,
                     false,
-                    globalThis,
+                    globalThis2,
                     this
                   ];
                   this._goRefCounts = new Array(this._values.length).fill(Infinity);
@@ -2282,7 +2283,7 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
                     [null, 2],
                     [true, 3],
                     [false, 4],
-                    [globalThis, 5],
+                    [globalThis2, 5],
                     [this, 6]
                   ]);
                   this._idPool = [];
@@ -2348,7 +2349,7 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
           })();
           onmessage2 = ({ data: wasm2 }) => {
             let decoder = new TextDecoder();
-            let fs = globalThis.fs;
+            let fs = globalThis2.fs;
             let stderr = "";
             fs.writeSync = (fd, buffer) => {
               if (fd === 1) {
@@ -2392,7 +2393,7 @@ ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
               }
               callback(null, count);
             };
-            let go = new globalThis.Go();
+            let go = new globalThis2.Go();
             go.argv = ["", `--service=${"0.14.46"}`];
             if (wasm2 instanceof WebAssembly.Module) {
               WebAssembly.instantiate(wasm2, go.importObject).then((instance) => go.run(instance));
@@ -2469,5 +2470,5 @@ var browser$1 = /* @__PURE__ */ _mergeNamespaces({
   __proto__: null,
   "default": browser
 }, [browser$2.exports]);
-export { browser$1 as b };
+export { browser$1 as b, commonjsGlobal as c };
 //# sourceMappingURL=esbuild.mjs.map

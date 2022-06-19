@@ -18,6 +18,10 @@
     @apply dark:hover:bg-primary/20;
   }
 
+  .share-text {
+    @apply w-[7ch];
+  }
+
   .bundle-results {
     @apply bg-gray-100 dark:bg-primary/30;
     @apply flex items-center justify-center;

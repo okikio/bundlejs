@@ -29,6 +29,9 @@
   ],
   "scripts": {
     "build:wasm": "esno ./scripts/build-wasm.ts",
+    "build:schema": "esno ./scripts/build-schema.ts",
+    "build:scripts": "pnpm build:wasm && pnpm build:schema",
+    "build:all": "ultra build:scripts && pnpm build",
     "build": "vite build",
     "dev": "vite",
     "test:run": "vitest run && pnpm deno",
@@ -36,7 +39,15 @@
     "repl": "esno repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "pre-release": "pnpm build:wasm && pnpm build && pnpm test:run && pnpm dts"
+    "verify": "pnpm test:run && pnpm dts",
+    "pre-release": "ultra build:all && ultra verify"
+  },
+  "ultra": {
+    "concurrent": [
+      "build:scripts",
+      "verify",
+      "test:run"
+    ]
   },
   "repository": {
     "type": "git",
@@ -86,6 +97,7 @@
     "webcola": "^3.4.0"
   },
   "devDependencies": {
+    "@storybook/semver": "^7.3.2",
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
     "@types/node": "^18.0.0",
@@ -93,8 +105,10 @@
     "@vitest/ui": "^0.15.1",
     "del-cli": "^4.0.1",
     "esno": "^0.16.3",
+    "pnpm": "^7.3.0",
     "typescript": "^4.7.4",
     "typescript-json-schema": "^0.53.1",
+    "ultra-runner": "^3.10.5",
     "vite": "^2.9.12",
     "vitest": "^0.15.1"
   }

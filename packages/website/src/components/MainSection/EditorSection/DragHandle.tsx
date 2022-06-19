@@ -110,7 +110,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   
   return (
     <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(dirIsX() ? "Horizontal" : "Vertical") + " Drag Handle"}>
-      <Show when={!dirIsX()} fallback={<IconDragHandleHeight />}>
+      <Show when={dirIsX()} fallback={<IconDragHandleHeight />}>
         <IconDragHandleWidth />
       </Show>
     </button>

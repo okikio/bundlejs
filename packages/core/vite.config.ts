@@ -16,7 +16,8 @@ export default defineConfig({
         {
           format: "es",
           manualChunks: {
-            "esbuild": [ "esbuild-wasm"],
+            "schema": ["/src/schema.ts"],
+            "esbuild": ["esbuild-wasm"],
             "esbuild-wasm": ["/src/wasm.ts"],
             "lz4": ["/src/deno/lz4/wasm.ts"],
             "gzip": ["/src/deno/denoflate/pkg/denoflate_bg.wasm.js"],

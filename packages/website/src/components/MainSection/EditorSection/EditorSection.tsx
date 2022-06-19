@@ -8,16 +8,17 @@ import Console from "./Console";
 import Editor from "./Editor";
 import Tabs from "./Tabs";
 
-const [direction, setDirection] = createSignal<"x" | "y">("x");
-
-function onResize(e: MediaQueryListEvent | MediaQueryList) {
-  setDirection(e.matches ? 'x' : 'y');
-}
-
-let mediaQuery = ("document" in globalThis) && globalThis?.matchMedia?.("(min-width: 640px)");
-onResize(mediaQuery);
-
 export function EditorSection(props?: ComponentProps<'div'>) {
+  const [direction, setDirection] = createSignal<"x" | "y">("x");
+  
+  function onResize(e: MediaQueryListEvent | MediaQueryList) {
+    setDirection(e.matches ? 'x' : 'y');
+  }
+
+  let mediaQuery = ("document" in globalThis) && globalThis?.matchMedia?.("(min-width: 640px)");
+  onResize(mediaQuery);
+  console.log(mediaQuery.matches ? 'x' : 'y')
+
   onMount(() => {
     mediaQuery?.addEventListener?.("change", onResize);
   });
