@@ -28,7 +28,7 @@ export function Analysis(props?: ComponentProps<'details'>) {
           <div class="analyzer-loader">
             <div class="text-center">
               <p class="loader-content">Nothing to analyze...</p>
-              <Loading hidden />
+              <Loading data-show={false} />
             </div>
           </div>
           <iframe id="analyzer" src="about:blank" sandbox="allow-scripts"></iframe>

@@ -56,7 +56,7 @@ export function SearchResult(props?: SearchResultProps) {
       // If the input model has change from it's initial value then 
       // add the module under the rest of the code
       // Otherwise, replace the input model value with the new export
-      (inputValue !== initialValue ? inputValue : startingComment) +
+      (inputValue !== initialValue ? inputValue : startingComment)?.trim() +
       `\nexport * from "${_package}";`
     );
     // timeline()
