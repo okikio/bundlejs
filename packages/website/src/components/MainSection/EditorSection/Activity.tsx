@@ -81,8 +81,13 @@ export function Activity(props?: ComponentProps<'div'>) {
         );
 
         console.log(result?.outputFiles)
-        state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
-        setState("bundleSize", result.size);
+        if (result?.outputFiles) {
+          state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
+        }
+        
+        if (result?.size) {
+          setState("bundleSize", result.size);
+        }
       } catch (e) {
         console.warn(e);
         setState("bundleSize", "ERROR!");
