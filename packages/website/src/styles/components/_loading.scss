@@ -6,8 +6,16 @@
 		@apply backdrop-blur-lg bg-white/50 dark:bg-black/50;
 	}
 
-	&[hidden]{ 
-		@apply hidden;
+	&[data-show=false] { 
+		@apply opacity-0 pointer-events-none;
+	}
+
+	&[data-show=true] { 
+		@apply opacity-100 pointer-events-auto;
+	}
+
+	@at-root .dom-loaded .loading-container {
+		@apply transition duration-300;
 	}
 }
 
@@ -15,6 +23,14 @@
   @apply block mx-auto rounded-full;
 	@apply border-gray-300/50 border-t-secondary dark:border-t-primary;
 	@apply animate-spin;
+
+	&[data-play=true] {
+		animation-play-state: running;
+	}
+
+	&[data-play=pause] {
+		animation-play-state: paused;
+	}
 
 	&[data-size=sm] {
 		@apply w-4 h-4 border-2;

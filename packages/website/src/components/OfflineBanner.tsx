@@ -16,13 +16,13 @@ if ("document" in globalThis) {
   });
 }
 
-export function Offline({ class: className }: ComponentProps<"div">) {
+export function Offline(props: ComponentProps<"div">) {
   return (
     // Show when Offline Icon when offline
     <Show when={!isOnline()}>
-      <div class={className} title="You are offline" aria-label="You are offline">
+      <div class={props.class} title="You are offline" aria-label="You are offline">
         <OfflineIcon />
-        <span>Offline</span>
+        <span class="lt-sm:hidden">Offline</span>
       </div>
     </Show>
   );
