@@ -81,7 +81,7 @@ export default defineConfig({
   ],
   experimental: { integrations: true },
   vite: {
-    worker: { format: "es" },
+    worker: { format: "es", rollupOptions: { output: [{ format: "es" }] } },
     build: {
       assetsInlineLimit: 0,
     },
