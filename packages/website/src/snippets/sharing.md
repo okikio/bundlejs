@@ -27,7 +27,6 @@ If you would like to bundle your code when the share URL is loaded, add `bundle`
 <Details
   class="inline-details bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700 rounded-md"
   summary="Auto-bundling shared URL's"
-  client:load
   >
 
 <!-- client:load -->
