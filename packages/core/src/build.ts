@@ -75,7 +75,7 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
 export async function build(opts: BundleConfigOptions = {}): Promise<any> {
   if (!STATE.initialized)
     EVENTS.emit("init.loading");
-  
+
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
   const { build: bundle } = await init(CONFIG.init);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
