@@ -121,9 +121,9 @@ export interface ICreateData {
   inlayHintsOptions?: InlayHintsOptions;
 }
 
-let initializedWASM = init({
-  platform: "browser"
-});
+// let initializedWASM = init({
+//   platform: "browser"
+// });
 
 export class OtherTSWorker {
   // --- model sync -----------------------
@@ -265,7 +265,7 @@ export class OtherTSWorker {
     config = JSON.parse(config ? config : "{}") ?? {};
     let changedConfig = deepAssign({}, DefaultConfig, config);
 
-    await initializedWASM;
+    // await initializedWASM;
     let result = await build();
     return result;
   }
