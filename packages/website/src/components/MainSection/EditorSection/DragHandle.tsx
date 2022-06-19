@@ -70,7 +70,6 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     setSizeProp(dirIsX() ? "width" : "height");
     setMouseDir(dirIsX() ? "clientX" : "clientY");
     setCursorProp(dirIsX() ? "col-resize" : "row-resize");
-    console.count(sizeProp())
 
     if (props?.contrain && !observer) {
       observer = new ResizeObserver(
