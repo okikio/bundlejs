@@ -1,7 +1,7 @@
 import { createEffect, createSignal, onCleanup, onMount, Show, type ComponentProps } from "solid-js";
 
-import IconDragHandleY from "~icons/fluent/re-order-dots-horizontal-24-filled";
-import IconDragHandleX from "~icons/fluent/re-order-dots-vertical-24-filled";
+import IconDragHandleHeight from "~icons/fluent/re-order-dots-horizontal-24-filled";
+import IconDragHandleWidth from "~icons/fluent/re-order-dots-vertical-24-filled";
 
 import { debounce } from "@bundlejs/core";
 
@@ -64,15 +64,15 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   createEffect(() => { 
     targetEl?.style?.removeProperty?.(sizeProp());
-    console.log(dirIsX())
 
     setDirIsX(props?.direction == "x");
 
     setSizeProp(dirIsX() ? "width" : "height");
     setMouseDir(dirIsX() ? "clientX" : "clientY");
     setCursorProp(dirIsX() ? "col-resize" : "row-resize");
+    console.count(sizeProp())
 
-    if (props?.contrain) {
+    if (props?.contrain && !observer) {
       observer = new ResizeObserver(
         debounce(() => {
           parentSize = parentEl.getBoundingClientRect()[sizeProp()];
@@ -88,6 +88,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     if (props?.contrain) {
       observer?.unobserve?.(parentEl);
       observer?.disconnect?.();
+      observer = null;
     }
   });
 
@@ -110,8 +111,9 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   
   return (
     <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(dirIsX() ? "Horizontal" : "Vertical") + " Drag Handle"}>
-      {!dirIsX() ? <IconDragHandleY /> :
-        <IconDragHandleX />}
+      <Show when={!dirIsX()} fallback={<IconDragHandleHeight />}>
+        <IconDragHandleWidth />
+      </Show>
     </button>
   );
 }
