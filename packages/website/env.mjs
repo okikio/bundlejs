@@ -1,4 +1,4 @@
-const env = import.meta?.env ?? globalThis?.process?.env;
+export const env = import.meta?.env ?? globalThis?.process?.env ?? {};
 
 export const ENABLE_ALL = "ENABLE_ALL" in env ? Boolean(env?.ENABLE_ALL) : false;
 export const ENABLE_SW = "ENABLE_SW" in env ? Boolean(env?.ENABLE_SW) : (ENABLE_ALL ?? true);
