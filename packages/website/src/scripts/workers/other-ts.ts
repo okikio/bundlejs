@@ -121,6 +121,10 @@ export interface ICreateData {
   inlayHintsOptions?: InlayHintsOptions;
 }
 
+let initializedWASM = init({
+  platform: "browser"
+});
+
 export class OtherTSWorker {
   // --- model sync -----------------------
   private _ctx: worker.IWorkerContext;
@@ -133,10 +137,6 @@ export class OtherTSWorker {
     this._compilerOptions = createData.compilerOptions;
     this._extraLibs = createData.extraLibs;
     this._inlayHintsOptions = createData.inlayHintsOptions;
-
-    init({
-      platform: "browser"
-    });
   }
 
   async createFile(fileName, content) {
@@ -265,6 +265,7 @@ export class OtherTSWorker {
     config = JSON.parse(config ? config : "{}") ?? {};
     let changedConfig = deepAssign({}, DefaultConfig, config);
 
+    await initializedWASM;
     let result = await build();
     return result;
   }
