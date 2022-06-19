@@ -22,6 +22,9 @@ export const initial = {
     },
     languages: null as typeof languages,
     loading: true
-  }
+  },
+    
+  bundleSize: "..." as string,
+  bundling: false,
 };
 export const [state, setState] = createStore(initial);

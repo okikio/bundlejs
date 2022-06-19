@@ -9,7 +9,7 @@
 
 let initialized = false;
 let initWASM: typeof import("./wasm");
-const getWASM = async () => {
+export const getWASM = async () => {
     if (initWASM) return initWASM;
 
     const wasm = await import("./wasm");

@@ -167,33 +167,36 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     // Choose a different compression function based on the compression type
     let compressionMap = await (async () => {
       switch (type) {
-        case "lz4":
-          const { compress: lz4_compress } = await import("./deno/lz4/mod");
+        case "lz4": 
+          const { compress: lz4_compress, getWASM: getLZ4 } = await import("./deno/lz4/mod");
+          await getLZ4();
           return async (code: Uint8Array) => {
             return await lz4_compress(code);
           };
         case "brotli":
-          const { compress } = await import("./deno/brotli/mod");
+          const { compress, getWASM: getBrotli } = await import("./deno/brotli/mod");
+          await getBrotli();
           return async (code: Uint8Array) => {
             return await compress(code, code.length, level);
-          }
+          };
         default:
-          const { gzip, getWASM } = await import("./deno/denoflate/mod");
-          await getWASM();
+          const { gzip, getWASM: getGZIP } = await import("./deno/denoflate/mod");
+          await getGZIP();
           return async (code: Uint8Array) => {
             return await gzip(code, level);
           };
       }
     })();
+
     let totalCompressedSize = bytes(
       (await Promise.all(content.map(compressionMap)))
         .reduce((acc, { length }) => acc + length, 0)
     );
 
-    // // Ensure a fresh filesystem on every run
+    // Ensure a fresh filesystem on every run
     // FileSystem.clear();
 
-    // // Reset assets
+    // Reset assets
     // STATE.assets = [];
 
     return {
@@ -201,7 +204,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
       result,
       outputFiles: result.outputFiles,
       initialSize: `${totalByteLength}`,
-      // size: `${totalCompressedSize} (${type})`
+      size: `${totalCompressedSize} (${type})`
     };
   } catch (e) { }
 }

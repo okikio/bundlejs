@@ -7,7 +7,7 @@ import { debounce } from "@bundlejs/core";
 
 export function DragHandle(props?: ComponentProps<'button'> & {
   direction?: 'x' | 'y';
-  contrain?: boolean;
+  constrain?: boolean;
 }) {
   let ref: HTMLButtonElement = null;
   let targetEl: HTMLElement = null;
@@ -32,8 +32,8 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   function drag (e: MouseEvent) {
     // How far the mouse has been moved
     const diff = e[mouseDir()] - position;
-    const newSize = props?.contrain ? (size + diff) * 100 / parentSize : size + diff;
-    const unit = props?.contrain ? "%" : "px";
+    const newSize = props?.constrain ? (size + diff) * 100 / parentSize : size + diff;
+    const unit = props?.constrain ? "%" : "px";
 
     targetEl.style[sizeProp()] = `${newSize}${unit}`;
     document.body.style.cursor = cursorProp();
@@ -52,7 +52,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     document.removeEventListener('pointermove', drag);
     document.removeEventListener('pointerup', stopDrag);
 
-    if (props?.contrain) {
+    if (props?.constrain) {
       observer?.unobserve?.(parentEl);
     }
   }
@@ -71,7 +71,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     setMouseDir(dirIsX() ? "clientX" : "clientY");
     setCursorProp(dirIsX() ? "col-resize" : "row-resize");
 
-    if (props?.contrain && !observer) {
+    if (props?.constrain && !observer) {
       observer = new ResizeObserver(
         debounce(() => {
           parentSize = parentEl.getBoundingClientRect()[sizeProp()];
@@ -84,7 +84,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     document.removeEventListener('pointermove', drag);
     document.removeEventListener('pointerup', stopDrag);
 
-    if (props?.contrain) {
+    if (props?.constrain) {
       observer?.unobserve?.(parentEl);
       observer?.disconnect?.();
       observer = null;
@@ -103,7 +103,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     document.addEventListener('pointermove', drag);
     document.addEventListener('pointerup', stopDrag);
 
-    if (props?.contrain) {
+    if (props?.constrain) {
       observer?.observe?.(parentEl);
     } 
   }

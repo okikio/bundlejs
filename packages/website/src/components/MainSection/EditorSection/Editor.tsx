@@ -50,7 +50,7 @@ export function Editor(props?: ComponentProps<'div'>) {
       <div ref={ref} id="editor" custom-code-editor></div>
       <EditorButtons />
 
-      <Loading ref={loadingRef} data-show={state.monaco.loading} />
+      <Loading ref={loadingRef} show={state.monaco.loading} />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 import { state } from "../store";
 
 import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
+import { createTextSwitch } from "../../../hooks/text-switch";
 
 export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;
@@ -26,9 +27,7 @@ export function SearchResult(props?: SearchResultProps) {
   let _authorHref = `https://www.npmjs.com/~${_author}`;
 
   let btnTextRef: HTMLElement;
-
-  let initialValue = "Add Module";
-  let [innerText, setInnerText] = createSignal(initialValue);
+  let btnText = createTextSwitch("Add Module");
 
   // When user clicks the "Add Module button" give the user some feedback
   function onClick() {
@@ -43,7 +42,7 @@ export function SearchResult(props?: SearchResultProps) {
         opacity: [1, 0]
       }, opts).finished;
 
-      setInnerText("Added!");
+      btnText.set("Added!");
 
       await btnTextRef.animate({
         opacity: [0, 1]
@@ -71,7 +70,7 @@ export function SearchResult(props?: SearchResultProps) {
         opacity: [1, 0]
       }, opts).finished;
 
-      setInnerText(initialValue);
+      btnText.reset();
 
       await btnTextRef.animate({
         opacity: [0, 1]
@@ -97,7 +96,7 @@ export function SearchResult(props?: SearchResultProps) {
       </div>
       <div class="add">
         <button class="btn" onClick={onClick}>
-          <span class="btn-text" ref={btnTextRef}>{innerText()}</span>
+          <span class="btn-text" ref={btnTextRef}>{btnText.get()}</span>
         </button>
       </div>
     </div>
