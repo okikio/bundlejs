@@ -1895,6 +1895,7 @@ async function getESBUILD(platform = "node") {
 async function init({ platform, ...opts } = {}) {
   try {
     if (!STATE$1.initialized) {
+      STATE$1.initialized = true;
       EVENTS.emit("init.start");
       STATE$1.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
@@ -1904,7 +1905,6 @@ async function init({ platform, ...opts } = {}) {
           ...opts
         });
       }
-      STATE$1.initialized = true;
       EVENTS.emit("init.complete");
     }
     return STATE$1.esbuild;

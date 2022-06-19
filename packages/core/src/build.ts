@@ -50,6 +50,7 @@ export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ES
 export async function init({ platform, ...opts }: BundleConfigOptions["init"] = {}) {
   try {
     if (!STATE.initialized) {
+      STATE.initialized = true;
       EVENTS.emit("init.start");
 
       STATE.esbuild = await getESBUILD(platform);
@@ -60,8 +61,7 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
           ...opts
         });
       }
-
-      STATE.initialized = true;
+      
       EVENTS.emit("init.complete");
     }
 

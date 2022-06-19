@@ -134,7 +134,9 @@ export class OtherTSWorker {
     this._extraLibs = createData.extraLibs;
     this._inlayHintsOptions = createData.inlayHintsOptions;
 
-    init();
+    init({
+      platform: "browser"
+    });
   }
 
   async createFile(fileName, content) {
