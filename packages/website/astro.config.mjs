@@ -77,10 +77,20 @@ export default defineConfig({
     //   }
     // }),
     Sitemap(),
-    PRODUCTION_MODE ? Compress() : { name: "blank" },
+    PRODUCTION_MODE ? Compress({
+      js: false
+    }) : { name: "blank" },
   ],
   experimental: { integrations: true },
   vite: {
+    worker: {
+      rollupOptions: {
+        output: {
+          format: "iife",
+          inlineDynamicImports: true
+        }
+      }
+    },
     build: {
       assetsInlineLimit: 0,
     },
