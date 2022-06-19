@@ -6,6 +6,7 @@ import { Disposable } from '../utils/monaco-workers/lifecycle';
 import * as types from '../utils/monaco-workers/types';
 
 import OtherTSWorker from '../workers/other-ts.ts?worker';
+import OtherTSWorkerURL from '../workers/other-ts.ts?url';
 
 function isPromiseLike<T>(obj: any): obj is PromiseLike<T> {
 	if (typeof obj.then === 'function') {
@@ -105,7 +106,8 @@ export class OtherTSWorkerClient<T = {}> extends Disposable {
 		super();
 		this._worker = null;
 		this._workerFactory = new DefaultWorkerFactory(
-			new OtherTSWorker()
+			// new OtherTSWorker()
+			new Worker(OtherTSWorkerURL, { type: "module" })
 		);
 		this._getOrCreateWorker();
 	}
