@@ -26,8 +26,7 @@ export function SearchResult(props?: SearchResultProps) {
   let _packageHref = `https://www.npmjs.com/${_package}`;
   let _authorHref = `https://www.npmjs.com/~${_author}`;
 
-  let btnTextRef: HTMLElement;
-  let btnText = createTextSwitch("Add Module");
+  let BtnText = createTextSwitch(["Add Module", "Added!"]);
 
   // When user clicks the "Add Module button" give the user some feedback
   function onClick() {
@@ -38,15 +37,7 @@ export function SearchResult(props?: SearchResultProps) {
     };
 
     (async () => {
-      await btnTextRef.animate({
-        opacity: [1, 0]
-      }, opts).finished;
-
-      btnText.set("Added!");
-
-      await btnTextRef.animate({
-        opacity: [0, 1]
-      }, opts).finished;
+      await BtnText.switch("next");
 
       let inputValue = state.monaco.models.input.getValue();
       let inputInitialValue = state.monaco.initialValue.input;
@@ -62,19 +53,7 @@ export function SearchResult(props?: SearchResultProps) {
         `\nexport * from "${_package}";`
       );
 
-      await new Promise<void>(resolve => {
-        setTimeout(() => resolve(), 500);
-      });
-
-      await btnTextRef.animate({
-        opacity: [1, 0]
-      }, opts).finished;
-
-      btnText.reset();
-
-      await btnTextRef.animate({
-        opacity: [0, 1]
-      }, opts).finished;
+      await BtnText.switch("initial", 500);
     })();
   };
 
@@ -96,7 +75,9 @@ export function SearchResult(props?: SearchResultProps) {
       </div>
       <div class="add">
         <button class="btn" onClick={onClick}>
-          <span class="btn-text" ref={btnTextRef}>{btnText.get()}</span>
+          <span class="btn-text">
+            <BtnText.render />
+          </span>
         </button>
       </div>
     </div>

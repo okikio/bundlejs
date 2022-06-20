@@ -10,8 +10,9 @@ import { createTextSwitch } from "../../../hooks/text-switch";
 
 export function Activity(props?: ComponentProps<'div'>) {
   let shareRef: HTMLButtonElement = null;
-  let shareText = createTextSwitch("Share");
-  let buildText = createTextSwitch("Build");
+  
+  let ShareText = createTextSwitch(["Share", "Shared!"]);
+  let BuildText = createTextSwitch(["Build", "Building!"]);
 
   // https://www.30secondsofcode.org/articles/s/copy-text-to-clipboard-with-javascript#asynchronous-clipboard-api
   async function copyToClipboard(str: string) {
@@ -43,19 +44,20 @@ export function Activity(props?: ComponentProps<'div'>) {
 
   async function share() {
     try {
+      ShareText.setNext(navigator.share ? "Shared!" : "Copied!");
+      await ShareText.switch("next");
+
       if (navigator.share) {
-        shareText.set("Shared!");
         await navigator.share({
           title: 'bundlejs',
           text: '',
           url: await getShareableURL(),
         });
       } else {
-        shareText.set("Copied!");
         await copyToClipboard(await getShareableURL());
       }
 
-      shareText.delayReset(600);
+      await ShareText.switch("initial", 600);
     } catch (error) {
       console.log('Error sharing', error);
     }
@@ -66,12 +68,13 @@ export function Activity(props?: ComponentProps<'div'>) {
       const inputModel = state.monaco.models.input;
       const configModel = state.monaco.models.config;
 
+      setState("bundling", true);
+      await BuildText.switch("next");
+
       try {
+
         const worker = state.monaco.workers.other;
         const thisWorker = await worker.getWorker();
-
-        setState("bundling", true);
-        buildText.set("Building!");
 
         // @ts-ignore
         let result = await thisWorker.build(
@@ -93,7 +96,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         setState("bundleSize", "ERROR!");
       }
 
-      buildText.delayReset(600);
+      await BuildText.switch("initial", 600);
       setState("bundling", false);
     }
   }
@@ -101,13 +104,14 @@ export function Activity(props?: ComponentProps<'div'>) {
   return (
     <div class="activity-section">
       <div class="activity-container">
+        <div class="flex-grow"></div>
         <Button class="umami--click--bundle-build-button" onClick={() => !state.monaco.loading && build()} disabled={state.bundling}>
           <IconLayer />
-          <span class="build-text">{buildText.get()}</span>
+          <BuildText.render class="build-text" />
         </Button>
         <Button class="umami--click--bundle-share-button" ref={shareRef} onClick={() => !state.monaco.loading && share()}>
           <IconShare />
-          <span class="share-text">{shareText.get()}</span>
+          <ShareText.render class="share-text" />
         </Button>
         <div class="bundle-results" title="Compressed Size">
           <Loading size="md" show={state.bundling} />

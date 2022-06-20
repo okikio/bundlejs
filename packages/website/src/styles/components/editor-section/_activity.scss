@@ -1,9 +1,10 @@
 .activity-section {
   grid-area: activity;
   @apply overflow-auto self-center;
+  min-width: 0;
 
   .activity-container {
-    @apply inline-flex xsm:flex justify-end gap-2;
+    @apply inline-flex xsm:flex flex-nowrap gap-2;
     @apply rounded-lg;
   }
 

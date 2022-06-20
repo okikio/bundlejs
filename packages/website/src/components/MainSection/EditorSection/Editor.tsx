@@ -7,7 +7,7 @@ import EditorButtons from "./EditorButtons";
 import { state, setState, initial } from "../store";
 import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
 
-const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+// const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
@@ -22,9 +22,9 @@ export function Editor(props?: ComponentProps<'div'>) {
         loading: false,
         editor,
         languages,
-        workers: {
-          other: otherTSWorker
-        },
+        // workers: {
+        //   // other: otherTSWorker
+        // },
         initialValue: {
           input: inputModelResetValue,
           output: outputModelResetValue,
