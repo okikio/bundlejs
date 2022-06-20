@@ -1,12 +1,17 @@
-import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on } from "solid-js";
+import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on, onCleanup } from "solid-js";
 import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
 
 import { getPackages } from "@bundlejs/core";
+import { rovingIndex } from '../../../hooks/roving-index';
+
 export function SearchResults(props?: ComponentProps<'dialog'> & {
   query?: Accessor<string>;
 }) {
+  let searchContainerEl: HTMLDivElement = null;
+
   let ref: HTMLDivElement = null;
   let heightRef: HTMLDivElement = null;
+
   const [data] = createResource(props?.query, async (source) => {
     if (ref) {
       let anim = heightRef.animate({
@@ -35,21 +40,41 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
   });
 
   onMount(() => {
-    if (data.loading) {
-      heightRef.animate({
-        opacity: "0"
-      }, {
-        duration: 300,
-        easing: 'ease-in-out',
-        fill: 'both'
-      });
-    }
+    let last = heightRef?.getBoundingClientRect();
+    heightRef.animate({
+      opacity: "1"
+    }, {
+      duration: 300,
+      easing: 'ease-in-out',
+      fill: 'both'
+    });
+
+    ref.animate({
+      height: `${last?.height}px`
+    }, {
+      duration: 350,
+      easing: 'ease',
+      fill: 'both'
+    });
+
+    searchContainerEl = document.querySelector(".search-container");
+  });
+
+  onCleanup(() => {
+    searchContainerEl = null;
   });
 
   createEffect(on(
     data,
     (value) => {
       if (!value?.loading) {
+        if (searchContainerEl) {
+          rovingIndex({
+            element: searchContainerEl,
+            target: 'button',
+          });
+        }
+
         let last = heightRef?.getBoundingClientRect();
         heightRef.animate({
           opacity: "1"

@@ -1,10 +1,10 @@
-import { onCleanup, onMount } from "solid-js";
+import { ComponentProps, onCleanup, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 
 import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
 
-export function SearchContainer() {
+export function SearchContainer(props?: ComponentProps<'div'>) {
   const [getQuery, setQuery] = createSignal("");
 
   let ref: HTMLDivElement & { open?: boolean } = null;
@@ -32,6 +32,7 @@ export function SearchContainer() {
     else if (ref?.open) {
       e?.stopPropagation?.();
       ref.open = false;
+      ref.style.pointerEvents = "none";
     }
   }
 
@@ -48,7 +49,7 @@ export function SearchContainer() {
   return (
     <div class="relative">
       <div class="search-offset"></div>
-      <dialog class="search-container" ref={ref}>
+      <dialog class="search-container" ref={ref} {...props}>
         <div class="search-input">
           <SearchInput query={setQuery} />
         </div>

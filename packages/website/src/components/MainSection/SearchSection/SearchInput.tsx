@@ -2,7 +2,7 @@ import Button from "../../Button";
 import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 
-import type { ComponentProps, Setter } from "solid-js";
+import { ComponentProps, onCleanup, onMount, Setter } from "solid-js";
 
 import { debounce } from "@bundlejs/core";
 export function SearchInput(props: ComponentProps<'div'> & {

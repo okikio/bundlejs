@@ -26,7 +26,7 @@ export function EditorSection(props?: ComponentProps<'div'>) {
   });
 
   return (
-    <div class="contain px-none lg editor-section">
+    <div class="contain px-none lg editor-section" {...props}>
       <Tabs />
       <Activity />
 
