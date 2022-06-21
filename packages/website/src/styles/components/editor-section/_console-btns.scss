@@ -1,6 +1,6 @@
 .console-btns {
   @apply flex flex-nowrap gap-1;
-  @apply overflow-auto;
+  @apply overflow-auto p-1;
 
   [custom-button] {
     @apply p-2;

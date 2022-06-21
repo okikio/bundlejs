@@ -167,6 +167,8 @@ importers:
       '@typescript/vfs': 1.3.5
       countapi-js: 1.0.2
       monaco-editor: 0.33.0
+      solid-js: 1.4.4
+      tippy.js: 6.3.7
       workbox-window: 6.5.3
     devDependencies:
       '@astrojs/partytown': 0.1.4
@@ -189,8 +191,6 @@ importers:
       rehype-external-links: 1.0.1
       rehype-slug: 5.0.1
       sass: 1.52.3
-      solid-js: 1.4.4
-      tippy.js: 6.3.7
       typescript: 4.7.4
       ultra-runner: 3.10.5
       unplugin-auto-import: 0.8.8_vite@2.9.12
@@ -1992,7 +1992,7 @@ packages:
 
   /@popperjs/core/2.11.5:
     resolution: {integrity: sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==}
-    dev: true
+    dev: false
 
   /@proload/core/0.3.2:
     resolution: {integrity: sha512-4ga4HpS0ieVYWVMS+F62W++6SNACBu0lkw8snw3tEdH6AeqZu8i8262n3I81jWAWXVcg3sMfhb+kBexrfGrTUQ==}
@@ -3067,7 +3067,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001357
-      electron-to-chromium: 1.4.162
+      electron-to-chromium: 1.4.163
       escalade: 3.1.1
       node-releases: 2.0.5
       picocolors: 1.0.0
@@ -4147,8 +4147,8 @@ packages:
       jake: 10.8.5
     dev: true
 
-  /electron-to-chromium/1.4.162:
-    resolution: {integrity: sha512-JrMk3tR2rnBojfAipp9nGh/vcWyBHeNsAVBqehtk4vq0o1bE4sVw19ICeidNx3u0i2yg4X8BvyUIM/yo2vO9aA==}
+  /electron-to-chromium/1.4.163:
+    resolution: {integrity: sha512-c9q94pUVqIdc8hyr7jZDB4bNEoNF3QJ7y35lnddMD+mXtiv5GsL1bT/RmfW/KEOmvlNg5Oy1qioiy4tA7e864Q==}
     dev: true
 
   /emmet/2.3.6:
@@ -8704,7 +8704,7 @@ packages:
     resolution: {integrity: sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==}
     dependencies:
       '@popperjs/core': 2.11.5
-    dev: true
+    dev: false
 
   /tmp/0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}

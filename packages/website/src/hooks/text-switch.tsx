@@ -17,6 +17,8 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
   let [nextValue, setNextValue] = createSignal(next);
 
   let refList = new Map<HTMLElement, null>();
+  let initialRef: HTMLElement = null;
+  let nextRef: HTMLElement = null;
 
   return {
     getInitial: initialValue,
@@ -56,7 +58,7 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
       return (
         <span custom-text-switch {...props}>
           <span class="text-switch-container" ref={ref}>
-            <span class="text-value initial">{initialValue()}</span>
+            <span class="text-value initial" ref={initialRef}>{initialValue()}</span>
             <span class="text-value next">{nextValue()}</span>
             <span class="text-value next-initial">{initialValue()}</span>
           </span>

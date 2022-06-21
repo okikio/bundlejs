@@ -1,9 +1,11 @@
-import { createEffect, createSignal, onCleanup, onMount, Show, type ComponentProps } from "solid-js";
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps, type ComponentProps } from "solid-js";
 
 import IconDragHandleHeight from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import IconDragHandleWidth from "~icons/fluent/re-order-dots-vertical-24-filled";
 
 import { debounce } from "@bundlejs/core";
+import ToolTip from "../../../hooks/tooltip";
+import Button from "../../Button";
 
 export function DragHandle(props?: ComponentProps<'button'> & {
   direction?: 'x' | 'y';
@@ -25,6 +27,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   let [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
 
+  let [tooltipComment, setTooltipComment] = createSignal(dirIsX() ? "Horizontal" : "Vertical");
   let [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
   let [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
   let [cursorProp, setCursorProp] = createSignal(dirIsX() ? "col-resize" : "row-resize");
@@ -70,6 +73,8 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     setSizeProp(dirIsX() ? "width" : "height");
     setMouseDir(dirIsX() ? "clientX" : "clientY");
     setCursorProp(dirIsX() ? "col-resize" : "row-resize");
+    
+    setTooltipComment(dirIsX() ? "Horizontal" : "Vertical");
 
     if (props?.constrain && !observer) {
       observer = new ResizeObserver(
@@ -81,6 +86,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   });
 
   onCleanup(() => { 
+    newProps.ref = ref = null;
     document.removeEventListener('pointermove', drag);
     document.removeEventListener('pointerup', stopDrag);
 
@@ -107,13 +113,36 @@ export function DragHandle(props?: ComponentProps<'button'> & {
       observer?.observe?.(parentEl);
     } 
   }
-  
+
+  let [newProps, attrs] = splitProps(props, ["ref"]);
+
+  function model(el: HTMLButtonElement) {
+      newProps.ref = (ref = el);
+      console.log(ref, newProps.ref)
+  }
   return (
-    <button {...props} class="drag-handle" custom-handle ref={ref} onPointerDown={pointerDown} aria-hidden="true" aria-label={(dirIsX() ? "Horizontal" : "Vertical") + " Drag Handle"}>
+    <ToolTip
+      as={Button}
+      content={<span>{tooltipComment()} Drag Handle</span>}
+      allowHTML={true}
+      tooltip={{
+        placement: dirIsX() ? "left" : "bottom",
+        followCursor: dirIsX() ? 'vertical' : 'horizontal'
+      }}
+    
+      {...attrs}
+
+      custom-handle 
+      class="drag-handle"
+      ref={(el: HTMLElement) => { 
+        ref = el as HTMLButtonElement;
+        newProps.ref = ref;
+      }}
+      onPointerDown={pointerDown}>
       <Show when={dirIsX()} fallback={<IconDragHandleHeight />}>
         <IconDragHandleWidth />
       </Show>
-    </button>
+    </ToolTip>
   );
 }
 
