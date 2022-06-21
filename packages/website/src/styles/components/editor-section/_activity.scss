@@ -15,6 +15,8 @@
   [custom-button] {
     @apply px-5 py-3 gap-3;
     @apply flex flex-row justify-center;
+    @apply bg-secondary/10;
+    @apply dark:bg-primary/10;
     @apply hover:bg-secondary/20;
     @apply dark:hover:bg-primary/20;
   }
