@@ -71,7 +71,7 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
         if (searchContainerEl) {
           rovingIndex({
             element: searchContainerEl,
-            target: 'button',
+            target: 'button.btn',
           });
         }
 

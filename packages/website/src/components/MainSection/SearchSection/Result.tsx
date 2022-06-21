@@ -30,12 +30,6 @@ export function SearchResult(props?: SearchResultProps) {
 
   // When user clicks the "Add Module button" give the user some feedback
   function onClick() {
-    let opts: KeyframeAnimationOptions = {
-      duration: 400,
-      fill: "forwards",
-      easing: "ease"
-    };
-
     (async () => {
       await BtnText.switch("next");
 
@@ -61,14 +55,20 @@ export function SearchResult(props?: SearchResultProps) {
     <div class="result">
       <div class="content">
         <h2 class="font-semibold text-lg">
-          <a href={_packageHref} target="_blank" rel="noopener">{_name}<IconArrowUpRight rehype-icon="arrow-up-right-24-regular" /></a>
+          <a href={_packageHref} target="_blank" rel="noopener">
+            {_name}
+            <IconArrowUpRight rehype-icon="arrow-up-right-24-regular" />
+          </a>
         </h2>
         <div>
           <p>{_description}</p>
           <p class="updated-time">
             {_date && `Updated ${_date} `}
             {_author && (<>
-              by <a href={_authorHref} target="_blank" rel="noopener">@{_author}<IconArrowUpRight rehype-icon="arrow-up-right-24-regular" /></a>.
+              by <a href={_authorHref} target="_blank" rel="noopener">
+                @{_author}
+                <IconArrowUpRight rehype-icon="arrow-up-right-24-regular" />
+              </a>.
             </>)}
           </p>
         </div>
