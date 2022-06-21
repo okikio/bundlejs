@@ -3,9 +3,9 @@ import { createEffect, createSignal, onCleanup, onMount, Show, splitProps, type 
 import IconDragHandleHeight from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import IconDragHandleWidth from "~icons/fluent/re-order-dots-vertical-24-filled";
 
-import { debounce } from "@bundlejs/core";
-import ToolTip from "../../../hooks/tooltip";
 import Button from "../../Button";
+
+import { debounce } from "@bundlejs/core";
 
 export function DragHandle(props?: ComponentProps<'button'> & {
   direction?: 'x' | 'y';
@@ -27,7 +27,6 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   let [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
 
-  let [tooltipComment, setTooltipComment] = createSignal(dirIsX() ? "Horizontal" : "Vertical");
   let [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
   let [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
   let [cursorProp, setCursorProp] = createSignal(dirIsX() ? "col-resize" : "row-resize");
@@ -73,8 +72,6 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     setSizeProp(dirIsX() ? "width" : "height");
     setMouseDir(dirIsX() ? "clientX" : "clientY");
     setCursorProp(dirIsX() ? "col-resize" : "row-resize");
-    
-    setTooltipComment(dirIsX() ? "Horizontal" : "Vertical");
 
     if (props?.constrain && !observer) {
       observer = new ResizeObserver(
@@ -116,21 +113,10 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   let [newProps, attrs] = splitProps(props, ["ref"]);
 
-  function model(el: HTMLButtonElement) {
-      newProps.ref = (ref = el);
-      console.log(ref, newProps.ref)
-  }
   return (
-    <ToolTip
-      as={Button}
-      content={<span>{tooltipComment()} Drag Handle</span>}
-      allowHTML={true}
-      tooltip={{
-        placement: dirIsX() ? "left" : "bottom",
-        followCursor: dirIsX() ? 'vertical' : 'horizontal'
-      }}
-    
+    <Button
       {...attrs}
+      title="Drag around to resz"
 
       custom-handle 
       class="drag-handle"
@@ -142,7 +128,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
       <Show when={dirIsX()} fallback={<IconDragHandleHeight />}>
         <IconDragHandleWidth />
       </Show>
-    </ToolTip>
+    </Button>
   );
 }
 
