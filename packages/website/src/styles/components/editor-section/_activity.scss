@@ -4,8 +4,8 @@
   min-width: 0;
 
   .activity-container {
-    @apply inline-flex xsm:flex flex-nowrap gap-2;
-    @apply rounded-lg;
+    @apply flex flex-nowrap gap-2;
+    @apply rounded-lg py-2;
   }
 
   svg {

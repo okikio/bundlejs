@@ -1,5 +1,5 @@
 
-import { createEffect, onCleanup, onMount } from "solid-js";
+import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
 
 import Button from "../../Button";
 
@@ -12,7 +12,9 @@ import IconDownload from "~icons/fluent/arrow-download-24-regular";
 import IconCodeWrap from "~icons/fluent/text-wrap-24-regular";
 
 import { state, setState } from "../store";
+
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+import { type Placement } from "tippy.js";
 
 export function EditorButtons() {
   let shellRef: HTMLDivElement = null;
@@ -74,112 +76,144 @@ export function EditorButtons() {
     document.body.removeChild(link);
   }
 
+  let media = ("document" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
+
+  let [placement, setPlacement] = createSignal<Placement>(media?.matches ? "bottom" : "top");
+  function mediaQueryRun(e?: MediaQueryListEvent) {
+    setPlacement(e?.matches ? "bottom" : "top");
+  }
+
+  onMount(() => {
+    mediaQueryRun(media as unknown as MediaQueryListEvent);
+    media?.addEventListener?.("change", mediaQueryRun);
+  }); 
+
+  onCleanup(() => { 
+    media?.removeEventListener?.("change", mediaQueryRun);
+  });
+
   return (
-    <div class="relative">
-      <SingletonToolTip target="[custom-button]">
-        <div class="editor-btn-container">
-          <div class="editor-btn-shell" ref={shellRef} switch-mode={state.editorBtnsOpen}>
-            <Button hide-btn
-              data-tippy-content="Show/Hide Editor Buttons"
-              class="umami--click--hide-editor-button"
-              onClick={() => setState("editorBtnsOpen", !state.editorBtnsOpen)}>
-              <IconMore />
-            </Button>
+    <div class="editor-btn-container">
+      <SingletonToolTip
+        target="[custom-button]"
+        ref={shellRef}
+        class="editor-btn-shell"
+        switch-mode={state.editorBtnsOpen}>
+        <div class="hide-btn-container">
+          <Button
+            data-tippy-content={"Show/Hide Editor Buttons"}
+            data-tippy-placement={placement()}
+            hide-btn
+            class="umami--click--hide-editor-button"
+            onClick={() => setState("editorBtnsOpen", !state.editorBtnsOpen)}>
+            <IconMore />
+          </Button>
+        </div>
 
-            <div class="editor-btns">
-              <Button clear-btn
-                data-tippy-content="Clear Code Editor"
-                class="umami--click--clear-editor-button"
-                onClick={() => !state.monaco.loading && state.monaco.editor?.setValue("")}>
-                <IconDelete />
-              </Button>
+        <div class="editor-btns">
+          <Button
+            data-tippy-content={"Clear Code Editor"}
+            clear-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--clear-editor-button"
+            onClick={() => !state.monaco.loading && state.monaco.editor?.setValue("")}>
+            <IconDelete />
+          </Button>
 
-              <Button format-btn
-                data-tippy-content="Format Code"
-                class="umami--click--format-editor-button"
-                onClick={() => {
-                  if (!state.monaco.loading) {
-                    (async () => {
-                      const model = state.monaco.editor.getModel();
-                      if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
-                        try {
-                          const worker = state.monaco.workers.other;
-                          const thisWorker = await worker.getWorker();
+          <Button
+            data-tippy-content={"Format Code"}
+            format-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--format-editor-button"
+            onClick={() => {
+              if (!state.monaco.loading) {
+                (async () => {
+                  const model = state.monaco.editor.getModel();
+                  if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
+                    try {
+                      const worker = state.monaco.workers.other;
+                      const thisWorker = await worker.getWorker();
 
-                          // @ts-ignore
-                          const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
-                          state.monaco.editor.setValue(formattedCode);
-                        } catch (e) {
-                          console.warn(e);
+                      // @ts-ignore
+                      const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
+                      state.monaco.editor.setValue(formattedCode);
+                    } catch (e) {
+                      console.warn(e);
 
-                          await state.monaco.editor.getAction("editor.action.formatDocument").run();
-                        }
-                      } else {
-                        await state.monaco.editor.getAction("editor.action.formatDocument").run();
-                      }
-                    })();
+                      await state.monaco.editor.getAction("editor.action.formatDocument").run();
+                    }
+                  } else {
+                    await state.monaco.editor.getAction("editor.action.formatDocument").run();
                   }
-                }}>
-                <IconFormat />
-              </Button>
+                })();
+              }
+            }}>
+            <IconFormat />
+          </Button>
 
-              <Button reset-btn
-                data-tippy-content="Reset Code Editor"
-                class="umami--click--reset-editor-button"
-                onClick={() => {
-                  if (!state.monaco.loading) {
-                    let modelType = getModelType();
+          <Button
+            data-tippy-content={"Reset Code Editor"}
+            reset-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--reset-editor-button"
+            onClick={() => {
+              if (!state.monaco.loading) {
+                let modelType = getModelType();
 
-                    resetEditor(modelType);
-                  }
-                }}>
-                <IconReset />
-              </Button>
+                resetEditor(modelType);
+              }
+            }}>
+            <IconReset />
+          </Button>
 
-              <Button copy-btn
-                data-tippy-content="Copy Code"
-                class="umami--click--copy-editor-button"
-                onClick={() => {
-                  if (!state.monaco.loading) {
-                    const range = state.monaco.editor.getModel().getFullModelRange();
-                    state.monaco.editor.setSelection(range);
-                    state.monaco.editor
-                      .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
-                      .run();
-                  }
-                }}>
-                <IconCopy />
-              </Button>
+          <Button
+            data-tippy-content="Copy Code"
+            copy-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--copy-editor-button"
+            onClick={() => {
+              if (!state.monaco.loading) {
+                const range = state.monaco.editor.getModel().getFullModelRange();
+                state.monaco.editor.setSelection(range);
+                state.monaco.editor
+                  .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
+                  .run();
+              }
+            }}>
+            <IconCopy />
+          </Button>
 
-              <Button download-btn
-                data-tippy-content="Download Code"
-                class="umami--click--download-editor-button"
-                onClick={() => {
-                  if (!state.monaco.loading) {
-                    const model = state.monaco.editor.getModel();
-                    const blob = new Blob([model.getValue()], {
-                      type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
-                    });
+          <Button
+            data-tippy-content="Download Code"
+            download-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--download-editor-button"
+            onClick={() => {
+              if (!state.monaco.loading) {
+                const model = state.monaco.editor.getModel();
+                const blob = new Blob([model.getValue()], {
+                  type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
+                });
 
-                    downloadBlob(blob, model?.uri?.authority ?? "download.ts");
-                  }
-                }}>
-                <IconDownload />
-              </Button>
+                downloadBlob(blob, model?.uri?.authority ?? "download.ts");
+              }
+            }}>
+            <IconDownload />
+          </Button>
 
-              <Button code-wrap-btn
-                data-tippy-content="Toggle Code Wrap"
-                class="umami--click--codewrap-editor-button"
-                onClick={() => {
-                  if (!state.monaco.loading) {
-                    const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
-                    state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
-                  }
-                }}>
-                <IconCodeWrap />
-              </Button>
-            </div>
-          </div>
+          <Button
+            data-tippy-content="Toggle Code Wrap"
+            code-wrap-btn
+            tabIndex={state.editorBtnsOpen ? 0 : -1}
+            class="umami--click--codewrap-editor-button"
+            onClick={() => {
+              if (!state.monaco.loading) {
+                const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
+                state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
+              }
+            }}>
+            <IconCodeWrap />
+          </Button>
         </div>
       </SingletonToolTip>
     </div>

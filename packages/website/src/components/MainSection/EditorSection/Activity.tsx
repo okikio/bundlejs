@@ -109,6 +109,7 @@ export function Activity(props?: ComponentProps<'div'>) {
     <div class="activity-section">
       <div class="activity-container">
         <div class="flex-grow"></div>
+        
         <ToolTip
           as={Button}
           ref={buildRef}
@@ -127,6 +128,7 @@ export function Activity(props?: ComponentProps<'div'>) {
           <IconLayer />
           <BuildText.render class="build-text lt-sm:hidden" />
         </ToolTip>
+
         <ToolTip
           as={Button}
           ref={shareRef}

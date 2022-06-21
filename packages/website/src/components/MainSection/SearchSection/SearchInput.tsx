@@ -3,8 +3,9 @@ import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 
 import { ComponentProps, onCleanup, onMount, Setter } from "solid-js";
-
 import { debounce } from "@bundlejs/core";
+
+import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 export function SearchInput(props: ComponentProps<'div'> & {
   query?: Setter<string>;
 }) { 
@@ -30,9 +31,9 @@ export function SearchInput(props: ComponentProps<'div'> & {
       {/* @ts-ignore */}
       <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." onKeyup={onKeyup} ref={ref} />
 
-      <Button id="clear" class="umami--click--search-clear-button" title="Clear search input" onClick={onClear}>
+      <ToolTip as={Button} content="Clear Search Input and Results" id="clear" class="umami--click--search-clear-button" onClick={onClear}>
         <IconClear astro-icon />
-      </Button>
+      </ToolTip>
     </div>
   );
 }

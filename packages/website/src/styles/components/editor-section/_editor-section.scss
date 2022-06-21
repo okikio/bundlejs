@@ -26,7 +26,7 @@
   .core {
     @apply relative;
     @apply flex flex-col sm:flex-row;
-    @apply w-full;
+    @apply w-full gap-1;
 
     grid-area: core; 
     min-width: 0;
