@@ -1,4 +1,4 @@
-import { ComponentProps, createSignal } from "solid-js";
+import { ComponentProps, createSignal, onMount } from "solid-js";
 import Button from "../../Button";
 import Loading from "../../Loading";
 
@@ -8,9 +8,12 @@ import IconShare from "~icons/fluent/share-24-regular";
 import { setState, state } from "../store";
 import { createTextSwitch } from "../../../hooks/text-switch";
 
+import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+
 export function Activity(props?: ComponentProps<'div'>) {
   let shareRef: HTMLButtonElement = null;
-  
+  let buildRef: HTMLButtonElement = null;
+
   let ShareText = createTextSwitch(["Share", "Shared!"]);
   let BuildText = createTextSwitch(["Build", "Building!"]);
 
@@ -43,23 +46,25 @@ export function Activity(props?: ComponentProps<'div'>) {
   }
 
   async function share() {
-    try {
-      ShareText.setNext(navigator.share ? "Shared!" : "Copied!");
-      await ShareText.switch("next");
+    if (!state.monaco.loading) {
+      try {
+        ShareText.setNext(navigator.share ? "Shared!" : "Copied!");
+        await ShareText.switch("next");
 
-      if (navigator.share) {
-        await navigator.share({
-          title: 'bundlejs',
-          text: '',
-          url: await getShareableURL(),
-        });
-      } else {
-        await copyToClipboard(await getShareableURL());
+        if (navigator.share) {
+          await navigator.share({
+            title: 'bundlejs',
+            text: '',
+            url: await getShareableURL(),
+          });
+        } else {
+          await copyToClipboard(await getShareableURL());
+        }
+
+        await ShareText.switch("initial", 600);
+      } catch (error) {
+        console.log('Error sharing', error);
       }
-
-      await ShareText.switch("initial", 600);
-    } catch (error) {
-      console.log('Error sharing', error);
     }
   }
 
@@ -72,7 +77,6 @@ export function Activity(props?: ComponentProps<'div'>) {
       await BuildText.switch("next");
 
       try {
-
         const worker = state.monaco.workers.other;
         const thisWorker = await worker.getWorker();
 
@@ -87,7 +91,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         if (result?.outputFiles) {
           state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
         }
-        
+
         if (result?.size) {
           setState("bundleSize", result.size);
         }
@@ -105,14 +109,43 @@ export function Activity(props?: ComponentProps<'div'>) {
     <div class="activity-section">
       <div class="activity-container">
         <div class="flex-grow"></div>
-        <Button class="umami--click--bundle-build-button" onClick={() => !state.monaco.loading && build()} disabled={state.bundling}>
+        <ToolTip
+          as={Button}
+          ref={buildRef}
+
+          mobile={"(max-width: 640px)"}
+
+          allowHTML={true}
+          content={
+            <div class="build-text">
+              <BuildText.render class="w-[7ch]" />
+            </div>
+          }
+
+          class="umami--click--bundle-build-button"
+          onClick={() => !state.monaco.loading && build()}>
           <IconLayer />
-          <BuildText.render class="build-text" />
-        </Button>
-        <Button class="umami--click--bundle-share-button" ref={shareRef} onClick={() => !state.monaco.loading && share()}>
+          <BuildText.render class="build-text lt-sm:hidden" />
+        </ToolTip>
+        <ToolTip
+          as={Button}
+          ref={shareRef}
+
+          mobile={"(max-width: 640px)"}
+
+          allowHTML={true}
+          content={
+            <div class="share-text">
+              <ShareText.render class="w-[6ch]" />
+            </div>
+          }
+
+          class="umami--click--bundle-share-button"
+          onClick={() => !state.monaco.loading && share()}>
           <IconShare />
-          <ShareText.render class="share-text" />
-        </Button>
+          <ShareText.render class="share-text lt-sm:hidden" />
+        </ToolTip>
+
         <div class="bundle-results" title="Compressed Size">
           <Loading size="md" show={state.bundling} />
           <span class="bundle-size-text">{state.bundleSize}</span>

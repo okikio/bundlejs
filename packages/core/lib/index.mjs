@@ -1,6 +1,6 @@
 import { c as commonjsGlobal } from "./esbuild.mjs";
 export { s as schema } from "./schema.mjs";
-const version$1 = "0.14.46";
+const version$1 = "0.14.47";
 var bytes$2 = { exports: {} };
 /*!
  * bytes
@@ -2416,10 +2416,10 @@ var store$2 = sharedStore;
 (shared$7.exports = function(key, value) {
   return store$2[key] || (store$2[key] = value !== void 0 ? value : {});
 })("versions", []).push({
-  version: "3.23.1",
+  version: "3.23.2",
   mode: "global",
   copyright: "\xA9 2014-2022 Denis Pushkarev (zloirock.ru)",
-  license: "https://github.com/zloirock/core-js/blob/v3.23.1/LICENSE",
+  license: "https://github.com/zloirock/core-js/blob/v3.23.2/LICENSE",
   source: "https://github.com/zloirock/core-js"
 });
 var requireObjectCoercible$5 = requireObjectCoercible$7;

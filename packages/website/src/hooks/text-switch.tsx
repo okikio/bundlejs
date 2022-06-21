@@ -1,4 +1,4 @@
-import { ComponentProps, createSignal, splitProps } from "solid-js";
+import { ComponentProps, createSignal, onCleanup, onMount, splitProps } from "solid-js";
 
 export type TextSwitchProps = [
   /**
@@ -16,7 +16,7 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
   let [initialValue, setInitialValue] = createSignal(initial);
   let [nextValue, setNextValue] = createSignal(next);
 
-  let ref: HTMLSpanElement = null;
+  let refList = new Map<HTMLElement, null>();
 
   return {
     getInitial: initialValue,
@@ -26,20 +26,33 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
     setNext: setNextValue,
 
     async switch(dir: "next" | "initial" = "next", delay = 100) {
-      await ref.animate({
-        transform: [
-          `translateY(${dir == "next" ? 0 : -100}%)`,
-          `translateY(${dir == "next" ? -100 : -200}%)`
-        ]
-      }, {
-        duration: 500,
-        easing: "ease",
-        fill: "both",
-        delay,
-      }).finished;
+      let arr = [];
+      refList.forEach((_, ref) =>
+        arr.push(ref.animate({
+          transform: [
+            `translateY(${dir == "next" ? 0 : -100}%)`,
+            `translateY(${dir == "next" ? -100 : -200}%)`
+          ]
+        }, {
+          duration: 500,
+          easing: "ease",
+          fill: "both",
+          delay,
+        }).finished)
+      );
+      await Promise.all(arr);
     },
 
     render(props?: ComponentProps<"span">) {
+      let ref: HTMLElement = null;
+      onMount(() => {
+        refList.set(ref, null);
+      });
+
+      onCleanup(() => {
+        refList.delete(ref);
+      });
+      
       return (
         <span custom-text-switch {...props}>
           <span class="text-switch-container" ref={ref}>
