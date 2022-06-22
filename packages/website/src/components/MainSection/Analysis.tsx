@@ -31,7 +31,7 @@ export function Analysis(props?: ComponentProps<'details'>) {
               <Loading show={false} />
             </div>
           </div>
-          <iframe id="analyzer" src="about:blank" sandbox="allow-scripts"></iframe>
+          <iframe title="Bundle Analysis" id="analyzer" src="about:blank" sandbox="allow-scripts"></iframe>
           <DragHandle direction="y" />
         </div>
       </Details>

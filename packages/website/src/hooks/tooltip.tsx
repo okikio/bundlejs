@@ -1,4 +1,4 @@
-import { ComponentProps, createEffect, createSignal, mergeProps, onCleanup, onMount, splitProps, type JSX } from "solid-js";
+import { ComponentProps, createEffect, mergeProps, onCleanup, onMount, splitProps, type JSX } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import tippy, { type Props, type Instance, type CreateSingletonProps, roundArrow, createSingleton, inlinePositioning } from 'tippy.js';
@@ -82,14 +82,13 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   );
 }
 
-
 export function SingletonToolTip(props?: ComponentProps<any> & { as?: keyof JSX.IntrinsicElements, target?: Iterable<Node> | ArrayLike<Node> | string, tooltip?: CreateSingletonProps<Props> }) {
   let instance: Instance<Props> = null;
   let ref: HTMLDivElement = null;
 
   let [newProps, attrs] = splitProps(props, ["children", "tooltip", "target", "as"]);
   let mergedProps = mergeProps({
-    target: "[custom-tooltip]",
+    target: "[custom-button]",
     as: "div"
   }, newProps);
 
