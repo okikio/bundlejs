@@ -78,7 +78,7 @@ export const followCursor: FollowCursor = {
       let isCursorOverReference = event.target ? reference.contains(event.target as Node) : true;
 
       const { followCursor } = instance.props;
-      const { clientX, clientY } = event;
+      const { clientX, clientY } = event ?? {};
 
       const rect = reference.getBoundingClientRect();
       const relativeX = clientX - rect.left;

@@ -9,8 +9,6 @@ import Sitemap from "@astrojs/sitemap";
 import SolidJS from "@astrojs/solid-js";
 import Tailwind from "@astrojs/tailwind";
 
-import Compress from "astro-compress";
-
 import { PRODUCTION_MODE } from "./env.mjs";
 import { outDir } from "./shared.config.cjs";
 
@@ -71,15 +69,13 @@ export default defineConfig({
         applyBaseStyles: false
       }
     }),
+    // PRODUCTION_MODE
     // Partytown({
     //   config: {
     //     // forward: ['dataLayer.push'],
     //   }
     // }),
     Sitemap(),
-    // PRODUCTION_MODE ? Compress({
-    //   js: false
-    // }) : { name: "blank" },
   ],
   experimental: { integrations: true },
   vite: {

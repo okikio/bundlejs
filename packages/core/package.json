@@ -102,7 +102,7 @@
     "@types/d3": "^7.4.0",
     "@types/node": "^18.0.0",
     "@types/webcola": "^3.2.0",
-    "@vitest/ui": "^0.15.1",
+    "@vitest/ui": "^0.15.2",
     "del-cli": "^4.0.1",
     "esno": "^0.16.3",
     "pnpm": "^7.3.0",
@@ -110,6 +110,6 @@
     "typescript-json-schema": "^0.53.1",
     "ultra-runner": "^3.10.5",
     "vite": "^2.9.12",
-    "vitest": "^0.15.1"
+    "vitest": "^0.15.2"
   }
 }

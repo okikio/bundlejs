@@ -28,13 +28,12 @@
   },
   "devDependencies": {
     "@astrojs/partytown": "^0.1.4",
-    "@astrojs/sitemap": "^0.1.2",
+    "@astrojs/sitemap": "^0.2.1",
     "@astrojs/solid-js": "^0.1.4",
     "@astrojs/tailwind": "^0.2.1",
     "@babel/core": "^7.18.5",
     "@iconify/json": "^2.1.64",
-    "astro": "1.0.0-beta.47",
-    "astro-compress": "^0.0.11",
+    "astro": "1.0.0-beta.50",
     "astro-icon": "^0.7.1",
     "astro-service-worker": "^0.1.2",
     "autoprefixer": "^10.4.7",
@@ -52,6 +51,6 @@
     "unplugin-auto-import": "^0.8.8",
     "unplugin-icons": "^0.14.5",
     "vite": "^2.9.12",
-    "vitest": "^0.15.1"
+    "vitest": "^0.15.2"
   }
 }

@@ -19,6 +19,14 @@ body {
   line-height: 1.5;
 }
 
+.giscus,
+.giscus-frame {
+  width: 100%;
+  border: none;
+  color-scheme: normal;
+  min-height: 150px;
+}
+
 textarea,
 form,
 input,
