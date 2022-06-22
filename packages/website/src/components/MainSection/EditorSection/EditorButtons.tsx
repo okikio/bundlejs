@@ -101,6 +101,7 @@ export function EditorButtons() {
         switch-mode={state.editorBtnsOpen}>
         <div class="hide-btn-container">
           <Button
+            aria-label={"Show/Hide Editor Buttons"}
             data-tippy-content={"Show/Hide Editor Buttons"}
             data-tippy-placement={placement()}
             hide-btn
@@ -112,6 +113,7 @@ export function EditorButtons() {
 
         <div class="editor-btns">
           <Button
+            aria-label={"Clear Code Editor"}
             data-tippy-content={"Clear Code Editor"}
             clear-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
@@ -121,6 +123,7 @@ export function EditorButtons() {
           </Button>
 
           <Button
+            aria-label={"Format Code"}
             data-tippy-content={"Format Code"}
             format-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
@@ -152,6 +155,7 @@ export function EditorButtons() {
           </Button>
 
           <Button
+            aria-label={"Reset Code Editor"}
             data-tippy-content={"Reset Code Editor"}
             reset-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
@@ -167,7 +171,8 @@ export function EditorButtons() {
           </Button>
 
           <Button
-            data-tippy-content="Copy Code"
+            aria-label={"Copy Code"}
+            data-tippy-content={"Copy Code"}
             copy-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
             class="umami--click--copy-editor-button"
@@ -184,7 +189,8 @@ export function EditorButtons() {
           </Button>
 
           <Button
-            data-tippy-content="Download Code"
+            aria-label={"Download Code"}
+            data-tippy-content={"Download Code"}
             download-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
             class="umami--click--download-editor-button"
@@ -202,7 +208,8 @@ export function EditorButtons() {
           </Button>
 
           <Button
-            data-tippy-content="Toggle Code Wrap"
+            aria-label={"Toggle Code Wrap"}
+            data-tippy-content={"Toggle Code Wrap"}
             code-wrap-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
             class="umami--click--codewrap-editor-button"

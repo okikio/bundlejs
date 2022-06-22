@@ -28,7 +28,7 @@ export function SnippetDetails(props: ComponentProps<'details'> & {
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
         <h3>
           {newProps.summary}
-          <a href={"#" + attrs.id} custom-slug-link>
+          <a href={"#" + attrs.id} custom-slug-link aria-hidden="true">
             <IconLink rehype-icon="link-24-regular" />
           </a>
         </h3>
