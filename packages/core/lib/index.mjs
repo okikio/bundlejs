@@ -1,6 +1,6 @@
 import { c as commonjsGlobal } from "./esbuild.mjs";
 export { s as schema } from "./schema.mjs";
-const version$1 = "0.14.47";
+const version$1 = "0.14.48";
 var bytes$2 = { exports: {} };
 /*!
  * bytes
@@ -1920,7 +1920,7 @@ async function build(opts = {}) {
   const { build: bundle } = await init(CONFIG.init);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
   let outputs = [];
-  let content = [];
+  let contents = [];
   let result;
   try {
     try {
@@ -1963,9 +1963,9 @@ async function build(opts = {}) {
         throw e;
     }
     outputs = await Promise.all([...STATE$1.assets].concat(result?.outputFiles));
-    content = await Promise.all(outputs?.map(({ path: path2, text, contents }) => {
+    contents = await Promise.all(outputs?.map(({ path: path2, text, contents: contents2 }) => {
       if (/\.map$/.test(path2))
-        return encode$1("");
+        return { path: path2, text: "", contents: encode$1("") };
       if (esbuildOpts?.logLevel == "verbose") {
         const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path2);
         if (ignoreFile) {
@@ -1974,48 +1974,58 @@ async function build(opts = {}) {
           EVENTS.emit("logger.log", "Output File: " + path2 + "\n" + text);
         }
       }
-      return contents;
+      return { path: path2, text, contents: contents2 };
     }));
-    let { compression = {} } = CONFIG;
-    let { type = "gzip", quality: level = 9 } = typeof compression == "string" ? { type: compression } : compression ?? {};
-    let totalByteLength = bytes(content.reduce((acc, { byteLength }) => acc + byteLength, 0));
-    let compressionMap = await (async () => {
-      switch (type) {
-        case "lz4":
-          const { compress: lz4_compress, getWASM: getLZ4 } = await Promise.resolve().then(function() {
-            return mod$1;
-          });
-          await getLZ4();
-          return async (code) => {
-            return await lz4_compress(code);
-          };
-        case "brotli":
-          const { compress: compress2, getWASM: getBrotli } = await Promise.resolve().then(function() {
-            return mod$3;
-          });
-          await getBrotli();
-          return async (code) => {
-            return await compress2(code, code.length, level);
-          };
-        default:
-          const { gzip: gzip2, getWASM: getGZIP } = await Promise.resolve().then(function() {
-            return mod$2;
-          });
-          await getGZIP();
-          return async (code) => {
-            return await gzip2(code, level);
-          };
-      }
-    })();
-    let totalCompressedSize = bytes((await Promise.all(content.map(compressionMap))).reduce((acc, { length }) => acc + length, 0));
     return {
-      result,
-      outputFiles: result.outputFiles,
-      initialSize: `${totalByteLength}`,
-      size: `${totalCompressedSize} (${type})`
+      content: contents,
+      ...result.outputFiles
     };
   } catch (e) {
   }
+}
+async function getSize(contents = [], opts = {}) {
+  const CONFIG = deepAssign({}, DefaultConfig, opts);
+  let { compression = {} } = CONFIG;
+  let { type = "gzip", quality: level = 9 } = typeof compression == "string" ? { type: compression } : compression ?? {};
+  let totalByteLength = bytes(contents.reduce((acc, { contents: contents2 }) => acc + contents2.byteLength, 0));
+  let compressionMap = await (async () => {
+    switch (type) {
+      case "lz4":
+        const { compress: lz4_compress, getWASM: getLZ4 } = await Promise.resolve().then(function() {
+          return mod$1;
+        });
+        await getLZ4();
+        return async (code) => {
+          return await lz4_compress(code);
+        };
+      case "brotli":
+        const { compress: compress2, getWASM: getBrotli } = await Promise.resolve().then(function() {
+          return mod$3;
+        });
+        await getBrotli();
+        return async (code) => {
+          return await compress2(code, code.length, level);
+        };
+      default:
+        const { gzip: gzip2, getWASM: getGZIP } = await Promise.resolve().then(function() {
+          return mod$2;
+        });
+        await getGZIP();
+        return async (code) => {
+          return await gzip2(code, level);
+        };
+    }
+  })();
+  let compressedContent = await Promise.all(contents.map(({ contents: contents2 }) => compressionMap(contents2)));
+  let totalCompressedSize = bytes(compressedContent.reduce((acc, { length }) => acc + length, 0));
+  return {
+    type,
+    content: compressedContent,
+    totalByteLength,
+    totalCompressedSize,
+    initialSize: `${totalByteLength}`,
+    size: `${totalCompressedSize} (${type})`
+  };
 }
 const debounce = (func, wait = 300, immediate) => {
   let timeout;
@@ -2176,6 +2186,16 @@ function A(r, s2, f) {
     g.push(o2), p[i++] = d + o2.charAt(0), h2--, d = o2, h2 == 0 && (h2 = Math.pow(2, w), w++);
   }
 }
+var lzString = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  compress: D,
+  compressToBase64: S,
+  compressToURL: j$1,
+  decompress: R,
+  decompressFromBase64: O,
+  decompressFromURL: k
+}, Symbol.toStringTag, { value: "Module" }));
+const { decompressFromURL } = lzString;
 const parseTreeshakeExports = (str) => (str ?? "").split(/\],/).map((str2) => str2.replace(/\[|\]/g, ""));
 const parseShareQuery = (shareURL) => {
   try {
@@ -2199,7 +2219,7 @@ const parseShareQuery = (shareURL) => {
     }
     let share = searchParams.get("share");
     if (share)
-      result += "\n" + k(share.trim());
+      result += "\n" + decompressFromURL(share.trim());
     let plaintext = searchParams.get("text");
     if (plaintext) {
       result += "\n" + JSON.parse(/^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\"));
@@ -2416,10 +2436,10 @@ var store$2 = sharedStore;
 (shared$7.exports = function(key, value) {
   return store$2[key] || (store$2[key] = value !== void 0 ? value : {});
 })("versions", []).push({
-  version: "3.23.2",
+  version: "3.23.3",
   mode: "global",
   copyright: "\xA9 2014-2022 Denis Pushkarev (zloirock.ru)",
-  license: "https://github.com/zloirock/core-js/blob/v3.23.2/LICENSE",
+  license: "https://github.com/zloirock/core-js/blob/v3.23.3/LICENSE",
   source: "https://github.com/zloirock/core-js"
 });
 var requireObjectCoercible$5 = requireObjectCoercible$7;
@@ -2727,7 +2747,10 @@ var makeBuiltIn$1 = makeBuiltIn$2.exports = function(value, name, options) {
   if (options && options.setter)
     name = "set " + name;
   if (!hasOwn$d(value, "name") || CONFIGURABLE_FUNCTION_NAME$1 && value.name !== name) {
-    defineProperty$b(value, "name", { value: name, configurable: true });
+    if (DESCRIPTORS$a)
+      defineProperty$b(value, "name", { value: name, configurable: true });
+    else
+      value.name = name;
   }
   if (CONFIGURABLE_LENGTH && options && hasOwn$d(options, "arity") && value.length !== options.arity) {
     defineProperty$b(value, "length", { value: options.arity });
@@ -2766,10 +2789,13 @@ var defineBuiltIn$d = function(O2, key, value, options) {
     else
       defineGlobalProperty$1(key, value);
   } else {
-    if (!options.unsafe)
-      delete O2[key];
-    else if (O2[key])
-      simple = true;
+    try {
+      if (!options.unsafe)
+        delete O2[key];
+      else if (O2[key])
+        simple = true;
+    } catch (error) {
+    }
     if (simple)
       O2[key] = value;
     else
@@ -8128,5 +8154,5 @@ var mod = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   decode,
   decodeString
 }, Symbol.toStringTag, { value: "Module" }));
-export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EVENTS, EVENTS_OPTS, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, INPUT_EVENTS, PLATFORM_AUTO, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEP, SEP_PATTERN, STATE$1 as STATE, VIRTUAL_FILESYSTEM_NAMESPACE, VIRTUAL_FS, render as ansi, bail, mod as base64, basename, mod$3 as brotli, build, D as compress, S as compressToBase64, j$1 as compressToURL, debounce, decode$1 as decode, R as decompress, O as decompressFromBase64, k as decompressFromURL, deepAssign, deepDiff, deepEqual, delimiter, mod$2 as denoflate, dirname, encode$1 as encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getESBUILD, getFile, getPackage, getPackageVersions, getPackages, getPureImportPath, getRegistryURL, getRequest, getResolvedPackage, getResolvedPath, globToRegExp, htmlEscape, inferLoader, init, isAbsolute, isAlias, isBareImport, isExternal, isGlob, isObject$f as isObject, isPrimitive, isValidKey, join, joinGlobs, loop, mod$1 as lz4, newRequest, normalize$1 as normalize, normalizeGlob, parse$7 as parse, parseConfig, parseShareQuery, parseTreeshakeExports, mod$4 as path, posix, relative, render, resolve$1 as resolve, resolveImports, resolveVersion, sep, setFile, toFileUrl, toName, toNamespacedPath, urlJoin };
+export { ALIAS, ALIAS_NAMESPACE, ALIAS_RESOLVE, AnsiBuffer, CACHE, CACHE_NAME, CDN, CDN_NAMESPACE, CDN_RESOLVE, DEFAULT_CDN_HOST, DefaultConfig, DeprecatedAPIs, EMPTY_EXPORT, ESCAPE_TO_COLOR, EVENTS, EVENTS_OPTS, EXTERNAL, EXTERNALS_NAMESPACE, EasyDefaultConfig, ExternalPackages, FileSystem, HTTP, HTTP_NAMESPACE, HTTP_RESOLVE, INPUT_EVENTS, PLATFORM_AUTO, PolyfillKeys, PolyfillMap, RESOLVE_EXTENSIONS, SEP, SEP_PATTERN, STATE$1 as STATE, VIRTUAL_FILESYSTEM_NAMESPACE, VIRTUAL_FS, render as ansi, bail, mod as base64, basename, mod$3 as brotli, build, D as compress, S as compressToBase64, j$1 as compressToURL, debounce, decode$1 as decode, R as decompress, O as decompressFromBase64, k as decompressFromURL, deepAssign, deepDiff, deepEqual, delimiter, mod$2 as denoflate, dirname, encode$1 as encode, extname, fetchAssets, fetchPkg, format, fromFileUrl, getCDNOrigin, getCDNStyle, getCDNUrl, getESBUILD, getFile, getPackage, getPackageVersions, getPackages, getPureImportPath, getRegistryURL, getRequest, getResolvedPackage, getResolvedPath, getSize, globToRegExp, htmlEscape, inferLoader, init, isAbsolute, isAlias, isBareImport, isExternal, isGlob, isObject$f as isObject, isPrimitive, isValidKey, join, joinGlobs, loop, mod$1 as lz4, newRequest, normalize$1 as normalize, normalizeGlob, parse$7 as parse, parseConfig, parseShareQuery, parseTreeshakeExports, mod$4 as path, posix, relative, render, resolve$1 as resolve, resolveImports, resolveVersion, sep, setFile, toFileUrl, toName, toNamespacedPath, urlJoin };
 //# sourceMappingURL=index.mjs.map

@@ -1,6 +1,8 @@
-import { decompressFromURL } from "@amoutonbrady/lz-string";
+import * as lzString from "@amoutonbrady/lz-string";
 import { EasyDefaultConfig } from "../configs/options";
 import { deepAssign } from "./deep-equal";
+
+const { decompressFromURL } = lzString;
 
 export * from "@amoutonbrady/lz-string";
 

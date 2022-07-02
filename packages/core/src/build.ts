@@ -61,7 +61,7 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
           ...opts
         });
       }
-      
+
       EVENTS.emit("init.complete");
     }
 
@@ -77,12 +77,13 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     EVENTS.emit("init.loading");
 
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
+
   const { build: bundle } = await init(CONFIG.init);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
-  let content: Uint8Array[] = [];
+  let contents: ESBUILD.OutputFile[] = [];
   let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental;
 
   try {
@@ -134,11 +135,12 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
       [...STATE.assets]
         .concat(result?.outputFiles as ESBUILD.OutputFile[])
     );
-    content = await Promise.all(
+
+    contents = await Promise.all(
       outputs
-        ?.map(({ path, text, contents }) => {
+        ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
           if (/\.map$/.test(path))
-            return encode("");
+            return { path, text: "", contents: encode("") };
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
           if (esbuildOpts?.logLevel == "verbose") {
@@ -150,47 +152,8 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
             }
           }
 
-          return contents;
+          return { path, text, contents };
         })
-    );
-
-    // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
-    let { compression = {} } = CONFIG;
-    let { type = "gzip", quality: level = 9 } =
-      (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
-
-    // @ts-ignore
-    let totalByteLength = bytes(
-      content.reduce((acc, { byteLength }) => acc + byteLength, 0)
-    );
-
-    // Choose a different compression function based on the compression type
-    let compressionMap = await (async () => {
-      switch (type) {
-        case "lz4": 
-          const { compress: lz4_compress, getWASM: getLZ4 } = await import("./deno/lz4/mod");
-          await getLZ4();
-          return async (code: Uint8Array) => {
-            return await lz4_compress(code);
-          };
-        case "brotli":
-          const { compress, getWASM: getBrotli } = await import("./deno/brotli/mod");
-          await getBrotli();
-          return async (code: Uint8Array) => {
-            return await compress(code, code.length, level);
-          };
-        default:
-          const { gzip, getWASM: getGZIP } = await import("./deno/denoflate/mod");
-          await getGZIP();
-          return async (code: Uint8Array) => {
-            return await gzip(code, level);
-          };
-      }
-    })();
-
-    let totalCompressedSize = bytes(
-      (await Promise.all(content.map(compressionMap)))
-        .reduce((acc, { length }) => acc + length, 0)
     );
 
     // Ensure a fresh filesystem on every run
@@ -200,13 +163,74 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     // STATE.assets = [];
 
     return {
-      // content: output,
-      result,
-      outputFiles: result.outputFiles,
-      initialSize: `${totalByteLength}`,
-      size: `${totalCompressedSize} (${type})`
+      // Remove unesscary croft, e.g. `.map` sourcemap files
+      content: contents,
+      ...result.outputFiles
     };
   } catch (e) { }
+}
+
+/**
+ * 
+ * @param contents 
+ * @param opts 
+ * @returns 
+ */
+export async function getSize(contents: ESBUILD.OutputFile[] = [], opts: BundleConfigOptions = {}) {
+  const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
+
+  // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
+  let { compression = {} } = CONFIG;
+  let { type = "gzip", quality: level = 9 } =
+    (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
+
+  // @ts-ignore
+  let totalByteLength = bytes(
+    contents.reduce((acc, { contents }) => acc + contents.byteLength, 0)
+  ) as string;
+
+  // Choose a different compression function based on the compression type
+  let compressionMap = await (async () => {
+    switch (type) {
+      case "lz4":
+        const { compress: lz4_compress, getWASM: getLZ4 } = await import("./deno/lz4/mod");
+        await getLZ4();
+        return async (code: Uint8Array) => {
+          return await lz4_compress(code);
+        };
+      case "brotli":
+        const { compress, getWASM: getBrotli } = await import("./deno/brotli/mod");
+        await getBrotli();
+        return async (code: Uint8Array) => {
+          return await compress(code, code.length, level);
+        };
+      default:
+        const { gzip, getWASM: getGZIP } = await import("./deno/denoflate/mod");
+        await getGZIP();
+        return async (code: Uint8Array) => {
+          return await gzip(code, level);
+        };
+    }
+  })();
+
+  let compressedContent = await Promise.all(
+    contents.map(({ contents }) => compressionMap(contents))
+  );
+  
+  let totalCompressedSize = bytes(
+    compressedContent.reduce((acc, { length }) => acc + length, 0)
+  );
+
+  return {
+    type,
+    content: compressedContent,
+
+    totalByteLength,
+    totalCompressedSize,
+
+    initialSize: `${totalByteLength}`,
+    size: `${totalCompressedSize} (${type})`
+  };
 }
 
 export { };
