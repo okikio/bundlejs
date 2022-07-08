@@ -189,8 +189,9 @@ const worker = (TypeScriptWorker, fileMap) => {
 
             if (changedConfig && changedEntries?.length) 
                 url.searchParams.set("config", JSON.stringify(changedConfig));
-        
-            return decodeURIComponent(url.toString());
+            
+            // Remove decodeURIComponent(), to allow for sharing on social media platforms
+            return url.toString();
         }
     };
 };
