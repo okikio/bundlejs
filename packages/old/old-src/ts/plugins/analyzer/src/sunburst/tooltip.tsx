@@ -5,7 +5,7 @@ import { useContext, useMemo } from "preact/hooks";
 
 import { format as formatBytes } from "bytes";
 
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 
 import { LABELS } from "../sizes";
 import { StaticContext } from "./index";

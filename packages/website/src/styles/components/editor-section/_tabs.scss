@@ -27,8 +27,8 @@
       @apply text-white;
       @apply dark:text-black;
 
-      @apply bg-secondary hover:bg-secondary/70;
-      @apply dark:bg-primary dark:hover:bg-primary/70;
+      @apply bg-secondary;
+      @apply dark:bg-primary;
     }
   }
 }

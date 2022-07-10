@@ -3,7 +3,7 @@ import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 import { h, FunctionalComponent } from "preact";
 import { useContext, useLayoutEffect, useRef } from "preact/hooks";
 import { format as formatBytes } from "bytes";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { PADDING, TOP_PADDING } from "./const";
 

@@ -1,8 +1,8 @@
 import { h, Fragment, FunctionalComponent } from "preact";
 import { useContext, useMemo, useState } from "preact/hooks";
 
-import { scaleSqrt } from "d3-scale";
-import { max } from "d3-array";
+import { scaleSqrt } from "d3";
+import { max } from "d3";
 import webcola from "webcola";
 
 import type { SizeKey } from "../../types/types";

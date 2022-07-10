@@ -1,10 +1,7 @@
 import type { BuildOptions, InitializeOptions, OutputFile } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 
-import type { TemplateType } from "../plugins/analyzer/types/template-types";
-import type { PLATFORM } from "./platform";
-
-import { PLATFORM_AUTO } from "./platform";
+import { PLATFORM_AUTO, type PLATFORM } from "./platform";
 
 import { FileSystem, getFile, setFile, getResolvedPath } from "../utils/filesystem";
 import { DEFAULT_CDN_HOST } from "../utils/util-cdn";
@@ -61,13 +58,7 @@ export type BundleConfigOptions = {
    * }
    * ```
   */
-  compression?: CompressionOptions | CompressionType
-
-  /**
-   * Generates interactive zoomable charts displaing the size of output files. 
-   * It's a great way to determine what causes the bundle size to be so large. 
-   */
-  analysis?: TemplateType | boolean
+  compression?: CompressionOptions | CompressionType,
 
   /**
    * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
@@ -130,7 +121,6 @@ export const EasyDefaultConfig: BundleConfigOptions = {
   entryPoints: ["/index.tsx"],
   "cdn": DEFAULT_CDN_HOST,
   "compression": "gzip",
-  "analysis": false,
   "esbuild": {
     "target": ["esnext"],
     "format": "esm",

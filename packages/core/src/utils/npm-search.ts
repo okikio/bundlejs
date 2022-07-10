@@ -1,6 +1,6 @@
 import { getRequest } from "./fetch-and-cache";
-import { parse as parsePackageName } from "parse-package-name";
-import semver from "@storybook/semver";
+import { parsePackageName } from "./parse-package-name";
+import { maxSatisfying } from "./semver";
 
 /**
  * Returns registry url for packages which have an input string
@@ -96,7 +96,7 @@ export const resolveVersion = async (input: string) => {
 
       return versions.includes(range)
         ? range
-        : semver.maxSatisfying(versions, range) as string;
+        : maxSatisfying(versions, range) as string;
     }
   } catch (e) {
     console.warn(e);

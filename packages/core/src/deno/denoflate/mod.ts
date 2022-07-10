@@ -15,8 +15,8 @@ import type { InitOutput } from "./pkg/denoflate";
 // import { wasm as WASM } from "./pkg/denoflate_bg.wasm.js";
 // import { source } from "./pkg/wasm.ts";
 
-export let wasm: InitOutput;
-export let initWASM: typeof import("./pkg/denoflate.js");
+let wasm: InitOutput;
+let initWASM: typeof import("./pkg/denoflate.js");
 export const getWASM = async (src?: Uint8Array) => {
   if (initWASM) return initWASM;
 

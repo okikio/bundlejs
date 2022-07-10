@@ -1,10 +1,7 @@
 import * as TJS from "typescript-json-schema";
-
 import * as fs from "node:fs/promises";
-import * as _bytes from "bytes";
 
-// @ts-ignore
-const bytes = _bytes.default;
+import { bytes } from "../src/utils/pretty-bytes";
 const encoder = new TextEncoder();
 
 export const generateSchema = async () => {

@@ -13,7 +13,8 @@ import { createDefaultMapFromCDN, createSystem, createVirtualCompilerHost, creat
 import * as ts from "typescript";
 
 import { createStreaming, Formatter } from "@dprint/formatter";
-import { build, setFile, deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
+import { setFile, deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
+// build, 
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -261,11 +262,11 @@ export class OtherTSWorker {
   }
 
   async build(fileName, content, config = "{}") { 
-    // setFile("/index.tsx", content);
-    // config = JSON.parse(config ? config : "{}") ?? {};
-    // let changedConfig = deepAssign({}, DefaultConfig, config);
+    setFile("/index.tsx", content);
+    config = JSON.parse(config ? config : "{}") ?? {};
+    let changedConfig = deepAssign({}, DefaultConfig, config);
 
-    // // await initializedWASM;
+    // await initializedWASM;
     // let result = await build();
     let result = {};
     return result;

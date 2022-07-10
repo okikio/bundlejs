@@ -2,12 +2,10 @@ import type { BundleConfigOptions, CompressionOptions } from "./configs/options"
 import type { PLATFORM } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm";
 
+export { type ESBUILD };
+
 // import ESBUILD_WASM from "./wasm";
 import { version } from "esbuild-wasm/package.json";
-
-import * as _bytes from "bytes";
-// @ts-ignore
-const bytes = _bytes.default;
 
 import { EXTERNAL } from "./plugins/external";
 import { HTTP } from "./plugins/http";
@@ -19,6 +17,7 @@ import { DefaultConfig } from "./configs/options";
 import { EVENTS } from "./configs/events";
 import { STATE } from "./configs/state";
 
+import { bytes } from "./utils/pretty-bytes";
 import { encode } from "./utils/encode-decode";
 import { deepAssign } from "./utils/deep-equal";
 
@@ -91,7 +90,6 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
       const keys = "p.env.NODE_ENV".replace("p.", "process.");
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
-        metafile: Boolean(CONFIG.analysis),
         loader: {
           '.png': 'file',
           '.jpeg': 'file',

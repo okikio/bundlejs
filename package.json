@@ -68,7 +68,7 @@
     "sass": "^1.53.0",
     "semantic-release": "^19.0.3",
     "tiny-glob": "^0.2.9",
-    "typedoc": "^0.23.5",
+    "typedoc": "^0.23.7",
     "typedoc-plugin-extras": "^2.2.3",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-mdn-links": "^2.0.0",

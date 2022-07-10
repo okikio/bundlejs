@@ -1,0 +1,102 @@
+{
+  "name": "@bundlejs/analysis",
+  "version": "0.0.0",
+  "access": "public",
+  "type": "module",
+  "description": "An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.",
+  "typedocMain": "src/index.ts",
+  "types": "@types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./lib/index.cjs",
+      "import": "./lib/index.mjs",
+      "default": "./lib/index.js"
+    },
+    "./lib/*": "./lib/*",
+    "./types/*": "./@types/*",
+    "./@types/*": "./@types/*",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "lib",
+    "src",
+    "@types"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test:run": "vitest run && pnpm deno",
+    "test": "vitest",
+    "repl": "esno repl.ts",
+    "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
+    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
+    "verify": "pnpm test:run && pnpm dts",
+    "pre-release": "ultra build && ultra verify"
+  },
+  "ultra": {
+    "concurrent": [
+      "verify",
+      "test:run"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikio/bundlejs.git",
+    "directory": "packages/analysis"
+  },
+  "keywords": [
+    "modern",
+    "bundlejs",
+    "bundle size checker",
+    "esbuild-wasm",
+    "gzip",
+    "brotli",
+    "deno",
+    "bundler",
+    "treeshake",
+    "bundlephobia",
+    "cdn",
+    "github",
+    "skypack",
+    "unpkg",
+    "compressed",
+    "jsx",
+    "minify",
+    "typescript",
+    "bundle analysis",
+    "package analyzer"
+  ],
+  "author": {
+    "name": "Okiki Ojo",
+    "email": "hey@okikio.dev",
+    "url": "https://okikio.dev"
+  },
+  "bugs": {
+    "url": "https://github.com/okikio/bundlejs/issues"
+  },
+  "homepage": "https://bundlejs.com",
+  "dependencies": {
+    "@bundlejs/core": "workspace:^0.0.0",
+    "bytes": "^3.1.2",
+    "d3": "^7.6.1",
+    "nanoid": "^4.0.0",
+    "solid-js": "^1.4.7",
+    "webcola": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/bytes": "^3.1.1",
+    "@types/d3": "^7.4.0",
+    "@types/node": "^18.0.3",
+    "@vitest/ui": "^0.18.0",
+    "babel-preset-solid": "^1.4.6",
+    "del-cli": "^4.0.1",
+    "esbuild-wasm": "^0.14.48",
+    "esno": "^0.16.3",
+    "pnpm": "^7.5.0",
+    "typescript": "^4.7.4",
+    "ultra-runner": "^3.10.5",
+    "vite": "^2.9.14",
+    "vite-plugin-solid": "^2.2.6",
+    "vitest": "^0.18.0"
+  }
+}

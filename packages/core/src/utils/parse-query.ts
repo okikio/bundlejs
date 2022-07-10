@@ -1,10 +1,8 @@
-import * as lzString from "@amoutonbrady/lz-string";
+import * as lzstring from "./lz-string";
 import { EasyDefaultConfig } from "../configs/options";
 import { deepAssign } from "./deep-equal";
 
-const { decompressFromURL } = lzString;
-
-export * from "@amoutonbrady/lz-string";
+const { decompressFromURL } = lzstring;
 
 /**
  * Treeshake exports/imports. It allows for specifing multiple exports per package, through this syntax
