@@ -251,7 +251,7 @@ const gzipSizeGetter = async (code) => {
   return data.length;
 };
 const brotliSizeGetter = async (code) => {
-  const { compress } = await import("./mod-385f2dc6.mjs");
+  const { compress } = await import("./mod-bd7250c2.mjs");
   const data = await compress(code, code.length, 11);
   return data.length;
 };

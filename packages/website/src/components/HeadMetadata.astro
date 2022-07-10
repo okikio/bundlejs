@@ -74,9 +74,9 @@ const {
 <link rel="pingback" href="https://webmention.io/webmention?forward=https://bundlejs.com/endpoint" />
 
 <!-- Theme set-->
-<!-- <script>
+<script>
   // @ts-ignore
-  import { runTheme } from "../scripts/theme.ts";
+  import { runTheme } from "../scripts/theme";
   const html = document.querySelector('html');
   runTheme(html);
 
@@ -84,9 +84,9 @@ const {
     html?.classList?.add?.("dom-loaded");
   }, 100);
 
-  import "../scripts/measure.ts";
-  import "../scripts/main.ts";
-</script> -->
+  import "../scripts/measure";
+  import "../scripts/main";
+</script>
 
 <script type="application/ld+json" set:html={JSON.stringify({ "@context" :"https://schema.org", "@graph" :[ { "@type"
   :"Organization", "@id" : Astro.site.origin.toString() + "/#organization" , "name" : "bundlejs" , "url" :

@@ -4,7 +4,6 @@ import AutoImport from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
 
-import Partytown from "@astrojs/partytown";
 import Sitemap from "@astrojs/sitemap";
 import SolidJS from "@astrojs/solid-js";
 import Tailwind from "@astrojs/tailwind";

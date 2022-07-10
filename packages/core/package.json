@@ -85,8 +85,8 @@
   "homepage": "https://bundlejs.com",
   "dependencies": {
     "@okikio/emitter": "^2.1.7",
-    "esbuild": "^0.14.48",
-    "esbuild-wasm": "^0.14.48",
+    "esbuild": "^0.14.49",
+    "esbuild-wasm": "^0.14.49",
     "rollup": "^2.76.0",
     "solid-js": "^1.4.7"
   },

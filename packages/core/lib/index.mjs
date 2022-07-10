@@ -1,5 +1,5 @@
-export { s as schema } from "./schema-3ff78f2a.mjs";
-const version = "0.14.48";
+export { s as schema } from "./schema-8ec31a1b.mjs";
+const version = "0.14.49";
 const encode$1 = (str) => new TextEncoder().encode(str);
 const decode$1 = (buf) => new TextDecoder().decode(buf);
 const DEFAULT_CDN_HOST = "https://unpkg.com";
@@ -1837,7 +1837,7 @@ function render(ansi) {
   return buffer.done();
 }
 const createNotice = async (errors, kind = "error", color = true) => {
-  const { formatMessages } = await import("./esbuild-99c6955a.mjs").then(function(n) {
+  const { formatMessages } = await import("./esbuild-488f6fba.mjs").then(function(n) {
     return n.b;
   });
   let notices = await formatMessages(errors, { color, kind });
@@ -1858,7 +1858,7 @@ async function getESBUILD(platform = "node") {
           `https://deno.land/x/esbuild@v${version}/mod.js`
         );
       default:
-        return await import("./esbuild-99c6955a.mjs").then(function(n) {
+        return await import("./esbuild-488f6fba.mjs").then(function(n) {
           return n.b;
         });
     }
@@ -1873,7 +1873,7 @@ async function init({ platform, ...opts2 } = {}) {
       EVENTS.emit("init.start");
       STATE.esbuild = await getESBUILD(platform);
       if (platform !== "node" && platform !== "deno") {
-        const { default: ESBUILD_WASM } = await import("./esbuild-wasm-40c34107.mjs");
+        const { default: ESBUILD_WASM } = await import("./esbuild-wasm-2aae627e.mjs");
         await STATE.esbuild.initialize({
           wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
           ...opts2
@@ -3147,7 +3147,7 @@ let initWASM$2;
 const getWASM$2 = async () => {
   if (initWASM$2)
     return initWASM$2;
-  const wasm2 = await import("./brotli-0b81ed59.mjs");
+  const wasm2 = await import("./brotli-fef5e0dc.mjs");
   const { default: init2, source } = wasm2;
   await init2(await source());
   return initWASM$2 = wasm2;
@@ -3211,7 +3211,7 @@ let initWASM;
 const getWASM = async () => {
   if (initWASM)
     return initWASM;
-  const wasm2 = await import("./lz4-fc76edff.mjs");
+  const wasm2 = await import("./lz4-27585704.mjs");
   const { default: init2, source } = wasm2;
   await init2(await source());
   return initWASM = wasm2;
