@@ -5,6 +5,10 @@
 			"path": "."
 		},
 		{
+			"name": "📦 @bundlejs/analysis",
+			"path": "packages/analysis"
+		},
+		{
 			"name": "📦 @bundlejs/core",
 			"path": "packages/core"
 		},

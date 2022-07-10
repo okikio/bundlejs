@@ -1,9 +1,9 @@
 import { ComponentProps, onCleanup, onMount } from "solid-js";
 
-import Container from "../Container";
-import SearchContainer from "./SearchSection/SearchContainer";
-import EditorSection from "./EditorSection/EditorSection";
-import Analysis from "./Analysis";
+// import Container from "../Container";
+// import SearchContainer from "./SearchSection/SearchContainer";
+// import EditorSection from "./EditorSection/EditorSection";
+// import Analysis from "./Analysis";
 
 export const KEYCODE = {
   LEFT: "ArrowLeft",
@@ -39,18 +39,24 @@ export function MainSection(props?: ComponentProps<'div'>) {
     tabBarEl = null;
   });
 
-  return (
-    <Container max="lg" ref={ref}>
-      <Container class="px-none">
-        <SearchContainer onKeyUp={onKeyUp} />
-      </Container>
 
-      <EditorSection ref={editorRef} />
-
-      <Container class="lt-md:px-none pb-4">
-        <Analysis />
-      </Container>
+  /* <Container max="lg" ref={ref}>
+    <Container class="px-none">
+      <SearchContainer onKeyUp={onKeyUp} />
     </Container>
+
+      <EditorSection ref={editorRef} /> 
+
+    <Container class="lt-md:px-none pb-4">
+      <Analysis />
+    </Container>
+  </Container> */
+
+  return (
+    <>
+      What 
+      {/* <Analysis /> */}
+    </>
   );
 }
 

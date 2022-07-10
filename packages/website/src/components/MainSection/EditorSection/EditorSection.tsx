@@ -1,12 +1,12 @@
 import { createSignal, onCleanup, onMount, type ComponentProps } from "solid-js";
 
-import DragHandle from "./DragHandle";
+// import DragHandle from "./DragHandle";
 
-import Activity from "./Activity";
-import Console from "./Console";
+// import Activity from "./Activity";
+// import Console from "./Console";
 
-import Editor from "./Editor";
-import Tabs from "./Tabs";
+// import Editor from "./Editor";
+// import Tabs from "./Tabs";
 
 export function EditorSection(props?: ComponentProps<'div'>) {
   const [direction, setDirection] = createSignal<"x" | "y">("x");
@@ -16,27 +16,27 @@ export function EditorSection(props?: ComponentProps<'div'>) {
   }
 
   onMount(() => {
-    let mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
-    onResize(mediaQuery);
-    mediaQuery?.addEventListener?.("change", onResize);
+    // let mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
+    // onResize(mediaQuery);
+    // mediaQuery?.addEventListener?.("change", onResize);
 
-    onCleanup(() => {
-      mediaQuery?.removeEventListener?.("change", onResize);
-    });
+    // onCleanup(() => {
+    //   mediaQuery?.removeEventListener?.("change", onResize);
+    // });
   });
 
   return (
     <div class="contain px-none lg editor-section" {...props}>
-      <Tabs />
-      <Activity />
+      {/* <Tabs />
+      <Activity /> */}
 
       <div class="core">
-        <Editor />
-        <DragHandle direction={direction()} constrain={direction() == "x"} />
-        <Console />
+        {/* <Editor /> */}
+        {/* <DragHandle direction={direction()} constrain={direction() == "x"} /> */}
+        {/* <Console /> */}
       </div>
 
-      <DragHandle drag-height direction="y" />
+      {/* <DragHandle drag-height direction="y" /> */}
     </div>
   )
 }

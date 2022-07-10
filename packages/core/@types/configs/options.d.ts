@@ -1,7 +1,6 @@
 import type { BuildOptions, InitializeOptions } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
-import type { TemplateType } from "../plugins/analyzer/types/template-types";
-import type { PLATFORM } from "./platform";
+import { type PLATFORM } from "./platform";
 import { FileSystem, getFile, setFile, getResolvedPath } from "../utils/filesystem";
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export declare type CompressionType = "gzip" | "brotli" | "lz4";
@@ -48,11 +47,6 @@ export declare type BundleConfigOptions = {
      * ```
     */
     compression?: CompressionOptions | CompressionType;
-    /**
-     * Generates interactive zoomable charts displaing the size of output files.
-     * It's a great way to determine what causes the bundle size to be so large.
-     */
-    analysis?: TemplateType | boolean;
     /**
      * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
      */

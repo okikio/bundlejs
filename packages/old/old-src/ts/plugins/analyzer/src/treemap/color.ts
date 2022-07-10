@@ -1,11 +1,11 @@
 import type { ModuleTree, ModuleTreeLeaf } from "../../types/types";
 
 import * as d3 from "d3";
-import { scaleSequential, scaleLinear } from "d3-scale";
-import { hsl, RGBColor } from "d3-color";
+import { scaleSequential, scaleLinear } from "d3";
+import { hsl, RGBColor } from "d3";
 
 import { COLOR_BASE, CssColor } from "../color";
-import { HierarchyNode } from "d3-hierarchy";
+import { HierarchyNode } from "d3";
 
 // https://www.w3.org/TR/WCAG20/#relativeluminancedef
 const rc = 0.2126;

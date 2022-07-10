@@ -16,7 +16,8 @@ export const defaultTippyOpts: Partial<Props> = {
 
   followCursor: 'horizontal',
   inlinePositioning: true,
-  plugins: [followCursor, inlinePositioning]
+  plugins: [followCursor, inlinePositioning],
+  delay: [500, 0]
 }
 
 export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: keyof JSX.IntrinsicElements, content?: Props["content"], allowHTML?: Props["allowHTML"], tooltip?: Partial<Props> }) {
@@ -95,7 +96,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { as?: keyof JSX.
   let tippyProps = mergeProps({
     ...defaultTippyOpts,
 
-    delay: [0, 200],
+    delay: [500, 0],
     overrides: ['placement'],
   } as Partial<Props>, mergedProps.tooltip ?? {});
 

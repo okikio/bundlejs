@@ -24,7 +24,7 @@ export function SnippetDetails(props: ComponentProps<'details'> & {
   onCleanup(() => _onCleanup());
 
   return (
-    <details ref={ref} {...attrs} custom-details>
+    <details custom-detail="snippet" ref={ref} {...attrs}>
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
         <h3>
           {newProps.summary}

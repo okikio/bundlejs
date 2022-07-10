@@ -1,9 +1,9 @@
 import type { ModuleLengths, ModuleTree, ModuleTreeLeaf, SizeKey, VisualizerData } from "../../types/types";
 
 import { h, createContext, render } from "preact";
-import { hierarchy, HierarchyNode, HierarchyRectangularNode, partition, PartitionLayout } from "d3-hierarchy";
-import { Arc, arc as d3arc } from "d3-shape";
-import { scaleLinear, scaleSqrt } from "d3-scale";
+import { hierarchy, HierarchyNode, HierarchyRectangularNode, partition, PartitionLayout } from "d3";
+import { Arc, arc as d3arc } from "d3";
+import { scaleLinear, scaleSqrt } from "d3";
 
 import { isModuleTree } from "../../utils/is-module-tree";
 

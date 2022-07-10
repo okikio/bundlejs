@@ -1,7 +1,7 @@
 import type { ModuleTree, ModuleTreeLeaf } from "../../types/types";
 
 import { h, FunctionalComponent } from "preact";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import color from "../color";
 
 type NodeEventHandler = (event: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;

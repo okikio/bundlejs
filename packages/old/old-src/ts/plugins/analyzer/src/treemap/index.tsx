@@ -7,7 +7,7 @@ import type {
 } from "../../types/types";
 
 import { h, createContext, render } from "preact";
-import { hierarchy, HierarchyNode, treemap, TreemapLayout, treemapResquarify } from "d3-hierarchy";
+import { hierarchy, HierarchyNode, treemap, TreemapLayout, treemapResquarify } from "d3";
 
 import { Main } from "./main";
 

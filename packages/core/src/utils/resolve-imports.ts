@@ -1,51 +1,7 @@
-/** The `resolve.exports` package but for imports */
-/**
- * @param {object} imports
- * @param {Set<string>} keys
+/** 
+ * Based on `resolve.exports` (https://npmjs.com/resolve.exports) by @lukeed (https://github.com/lukeed), but tweaked to work for imports
  */
-export function loop(imports: Record<any, any>, keys: Set<string>) {
-	if (typeof imports === 'string') {
-		return imports;
-	}
-
-	if (imports) {
-		let idx, tmp;
-		if (Array.isArray(imports)) {
-			for (idx = 0; idx < imports.length; idx++) {
-				if (tmp = loop(imports[idx], keys)) return tmp;
-			}
-		} else {
-			for (idx in imports) {
-				if (keys.has(idx)) {
-					return loop(imports[idx], keys);
-				}
-			}
-		}
-	}
-}
-
-/**
- * @param {string} name The package name
- * @param {string} entry The target entry, eg "."
- * @param {number} [condition] Unmatched condition?
- */
-export function bail(name: string, entry: string, condition?: number) {
-	throw new Error(
-		condition
-			? `No known conditions for "${entry}" entry in "${name}" package`
-			: `Missing "${entry}" import in "${name}" package`
-	);
-}
-
-/**
- * @param {string} name the package name
- * @param {string} entry the target path/import
- */
-export function toName(name: string, entry: string) {
-	return entry === name ? '.'
-		: entry[0] === '.' ? entry
-			: entry.replace(new RegExp('^' + name + '\/'), './');
-}
+import { toName, bail, loop } from "./resolve-exports";
 
 export interface ResolveImportOptions { 
 	browser?: boolean;

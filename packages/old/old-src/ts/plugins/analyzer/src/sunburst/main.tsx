@@ -2,7 +2,7 @@ import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 
 import { h, Fragment, FunctionalComponent } from "preact";
 import { useContext, useMemo, useState } from "preact/hooks";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 
 import { SideBar } from "../sidebar";
 import { useFilter } from "../use-filter";

@@ -2,14 +2,12 @@ import { encode } from "../src/deno/base64/mod";
 import { compress } from "../src/deno/lz4/mod";
 import { gzip, getWASM } from "../src/deno/denoflate/mod";
 
+import { bytes } from "../src/utils/pretty-bytes";
+
 // @ts-ignore
 import { wasm as WASM } from "../src/deno/denoflate/pkg/denoflate_bg.wasm.js";
 
 import * as fs from "node:fs/promises";
-import * as _bytes from "bytes";
-
-// @ts-ignore
-const bytes = _bytes.default;
 const encoder = new TextEncoder();
 
 export async function build(src = `./node_modules/esbuild-wasm/esbuild.wasm`, target = `src/wasm.ts`, mode: "gzip" | "lz4" = "gzip") {

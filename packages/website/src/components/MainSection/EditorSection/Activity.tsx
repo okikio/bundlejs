@@ -114,8 +114,6 @@ export function Activity(props?: ComponentProps<'div'>) {
           as={Button}
           ref={buildRef}
 
-          mobile={"(max-width: 640px)"}
-
           allowHTML={true}
           content={
             <div class="build-text">
@@ -132,8 +130,6 @@ export function Activity(props?: ComponentProps<'div'>) {
         <ToolTip
           as={Button}
           ref={shareRef}
-
-          mobile={"(max-width: 640px)"}
 
           allowHTML={true}
           content={

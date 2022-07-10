@@ -69,20 +69,15 @@ export default defineConfig({
         applyBaseStyles: false
       }
     }),
-    // PRODUCTION_MODE
-    // Partytown({
-    //   config: {
-    //     // forward: ['dataLayer.push'],
-    //   }
-    // }),
     Sitemap(),
   ],
   experimental: { integrations: true },
   vite: {
     worker: {
+      format: "es",
       rollupOptions: {
         output: {
-          format: "iife",
+          format: "es",
           inlineDynamicImports: true
         }
       }

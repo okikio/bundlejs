@@ -3,7 +3,7 @@ import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 import { h, Fragment, FunctionalComponent } from "preact";
 import { useState, useEffect, useMemo } from "preact/hooks";
 
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import { Tooltip } from "./tooltip";
 import { SunBurst } from "./sunburst";
 

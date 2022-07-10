@@ -2,8 +2,8 @@ import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
 
 import { h, FunctionalComponent } from "preact";
 import { useContext, useMemo } from "preact/hooks";
-import { group } from "d3-array";
-import { HierarchyNode, HierarchyRectangularNode } from "d3-hierarchy";
+import { group } from "d3";
+import { HierarchyNode, HierarchyRectangularNode } from "d3";
 
 import { Node } from "./node";
 import { StaticContext } from "./index";

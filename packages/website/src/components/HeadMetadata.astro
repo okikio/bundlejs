@@ -56,9 +56,10 @@ const {
 <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
 <link rel="shortcut icon" href="/favicon/favicon.ico">
 
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-<meta name="color-scheme" content="dark light">
+<!-- <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)"> -->
+
+<!-- <meta name="color-scheme" content="light dark"> -->
 
 <link rel="manifest" href="/manifest.json">
 <meta name="robots" content="index, follow">
@@ -73,7 +74,8 @@ const {
 <link rel="pingback" href="https://webmention.io/webmention?forward=https://bundlejs.com/endpoint" />
 
 <!-- Theme set-->
-<script>
+<!-- <script>
+  // @ts-ignore
   import { runTheme } from "../scripts/theme.ts";
   const html = document.querySelector('html');
   runTheme(html);
@@ -84,13 +86,13 @@ const {
 
   import "../scripts/measure.ts";
   import "../scripts/main.ts";
-</script>
+</script> -->
 
 <script type="application/ld+json" set:html={JSON.stringify({ "@context" :"https://schema.org", "@graph" :[ { "@type"
   :"Organization", "@id" : Astro.site.origin.toString() + "/#organization" , "name" : "bundlejs" , "url" :
   Astro.site.origin.toString(), "sameAs" : [ Astro.site.origin.toString(), "https://www.producthunt.com/posts/bundle-6"
   , "https://bundlejs.com" , "https://bundlesize.com" , "https://bundle.js.org" , "https://github.com/okikio/bundle"
-  , "https://okikio.github.io/bundle" , "https://opencollective.com/bundle" , "https://bestofjs.org/projects/bundle"
+  , "https://okikio.github.io/bundlejs" , "https://opencollective.com/bundle" , "https://bestofjs.org/projects/bundle"
   , "https://www.saashub.com/bundlejs-alternatives" , "https://alternativeto.net/software/bundle"
   , "https://www.opensourcealternative.to/project/Bundlejs" ], "description" :description, "logo" :{ "name"
   :"bundle", "@type" :"ImageObject", "@id" :Astro.site.origin.toString() +"/#logo", "url" :Astro.site.origin.toString()

@@ -3,8 +3,8 @@ import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
 import type { STATE } from '../configs/state';
 
-import { resolve, legacy } from "resolve.exports";
-import { parse as parsePackageName } from "parse-package-name";
+import { resolveExports, legacy } from "../utils/resolve-exports";
+import { parsePackageName as parsePackageName } from "../utils/parse-package-name";
 
 import { HTTP_NAMESPACE } from './http';
 
@@ -85,7 +85,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
 
           // Strongly cache package.json files
           pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-          let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+          let path = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
             require: args.kind === "require-call" || args.kind === "require-resolve",
           }) || legacy(pkg);
 

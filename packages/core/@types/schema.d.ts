@@ -61,10 +61,6 @@ declare const schema: {
                 properties?: undefined;
             })[];
         };
-        analysis: {
-            description: string;
-            enum: (string | boolean)[];
-        };
         ascii: {
             description: string;
             enum: string[];
@@ -339,6 +335,9 @@ declare const schema: {
                 };
                 sourcemap: {
                     enum: (string | boolean)[];
+                };
+                sourcemapBaseUrl: {
+                    type: string;
                 };
                 sourcemapExcludeSources: {
                     type: string;

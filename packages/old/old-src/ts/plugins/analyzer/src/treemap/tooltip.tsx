@@ -6,7 +6,7 @@ import { useState, useRef, useEffect, useMemo, useContext, type MutableRef } fro
 import { format as formatBytes } from "bytes";
 
 import { LABELS } from "../sizes";
-import { HierarchyRectangularNode } from "d3-hierarchy";
+import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { isModuleTree } from "../../utils/is-module-tree";
 

@@ -3,7 +3,7 @@ import type { BundleConfigOptions } from '../configs/options';
 import type { EVENTS } from '../configs/events';
 import type { STATE } from '../configs/state';
 
-import { parse as parsePackageName } from "parse-package-name";
+import { parsePackageName } from "../utils/parse-package-name";
 import { EXTERNALS_NAMESPACE } from './external';
 import { HTTP_RESOLVE } from './http';
 

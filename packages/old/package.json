@@ -49,6 +49,6 @@
     },
     "homepage": "https://bundlejs.com",
     "dependencies": {
-        "vite": "^2.9.12"
+        "vite": "^2.9.14"
     }
 }
