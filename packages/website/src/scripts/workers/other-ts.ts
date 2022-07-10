@@ -13,7 +13,8 @@ import { createDefaultMapFromCDN, createSystem, createVirtualCompilerHost, creat
 import * as ts from "typescript";
 
 import { createStreaming, Formatter } from "@dprint/formatter";
-import { setFile, deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
+import { setFile, deepAssign, deepDiff, lzstring, getRequest, DefaultConfig } from "@bundlejs/core";
+const { compressToURL } = lzstring;
 // build, 
 
 let formatter: Formatter;

@@ -1,4 +1,4 @@
-import { build, getSize, setFile, PLATFORM_AUTO } from "@bundlejs/core";
+import { build, getSize, setFile, PLATFORM_AUTO } from "../core/lib/index.mjs";
 
 // @ts-ignore
 // import type { build as buildType } from "./src/index";

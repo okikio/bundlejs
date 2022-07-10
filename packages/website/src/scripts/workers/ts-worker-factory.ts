@@ -9,7 +9,8 @@
 import { createStreaming, Formatter } from "@dprint/formatter";
 import type * as ts from "typescript";
 
-import { deepAssign, deepDiff, compressToURL, getRequest, DefaultConfig } from "@bundlejs/core";
+import { deepAssign, deepDiff, lzstring, getRequest, DefaultConfig } from "@bundlejs/core";
+const { compressToURL } = lzstring;
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
