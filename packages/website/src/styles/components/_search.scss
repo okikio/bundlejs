@@ -3,6 +3,15 @@
   @apply py-8;
 }
 
+.search-backdrop {
+  @apply fixed top-0 left-0 w-[100vw] h-[100vh] bg-black opacity-50;
+  @apply z-10;
+
+  @supports (backdrop-filter: blur(10px)) {
+    backdrop-filter: blur(10px);
+  }
+}
+
 dialog.search-container {
   @apply bg-transparent;
   @apply absolute top-2 w-full;

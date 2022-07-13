@@ -50,6 +50,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     <div class="relative">
       <div class="search-offset"></div>
       <dialog class="search-container" ref={ref} {...props}>
+        {/* <div class="search-backdrop"></div> */}
         <div class="search-input">
           <SearchInput query={setQuery} />
         </div>
