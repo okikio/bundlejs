@@ -3,7 +3,6 @@
 {
 	"name": "Node.js",
 	"image": "node:lts",
-	
 	// "build": {
 	// 	"dockerfile": "Dockerfile",
 	// 	// Update 'VARIANT' to pick a Node version: 18, 16, 14.
@@ -11,19 +10,17 @@
 	// 	// Use -bullseye variants on local arm64/Apple Silicon.
 	// 	"args": { "VARIANT": "18" }
 	// },
-
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
-			"settings": { 
+			"settings": {
 				// Enables the project as a Deno project
 				"deno.enable": true,
 				// Enables Deno linting for the project
 				"deno.lint": true
 			},
-			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"denoland.vscode-deno",
@@ -42,13 +39,23 @@
 			]
 		}
 	},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
+	"remoteEnv": {
+		"NODE_ENV": "${containerEnv:NODE_ENV}development",
+		"NPM_CONFIG_PREFIX": "${containerEnv:NPM_CONFIG_PREFIX}~/.npm-global",
+		"PATH": "${containerEnv:PATH}:~/.npm-global/bin"
+	},
+	"forwardPorts": [
+		3000
+	],
+	"portsAttributes": {
+		"3000": {
+			"label": "Vite devServer port"
+		}
+	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pnpm install",
-
+	// "postCreateCommand": "pnpm install",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node"
 }
