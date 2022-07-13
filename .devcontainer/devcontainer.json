@@ -3,6 +3,7 @@
 {
 	"name": "Node.js",
 	"image": "node:lts",
+	
 	// "build": {
 	// 	"dockerfile": "Dockerfile",
 	// 	// Update 'VARIANT' to pick a Node version: 18, 16, 14.
