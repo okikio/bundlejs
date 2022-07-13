@@ -84,7 +84,7 @@ export default defineConfig({
     build: {
       assetsInlineLimit: 0,
     },
-    ssr: { external: ["svgo"] },
+    ssr: { external: ["svgo", "github-slugger"] },
     plugins: [
       AutoImport({
         resolvers: [
