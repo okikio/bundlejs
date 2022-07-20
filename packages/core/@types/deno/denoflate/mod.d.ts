@@ -1,0 +1,10 @@
+import type { InitOutput } from "./pkg/denoflate";
+declare let wasm: InitOutput;
+export declare const getWASM: (src?: Uint8Array) => Promise<typeof import("./pkg/denoflate")>;
+export declare function deflate(input: Uint8Array, compression?: number): Promise<Uint8Array>;
+export declare function inflate(input: Uint8Array): Promise<Uint8Array>;
+export declare function gzip(input: Uint8Array, compression?: number): Promise<Uint8Array>;
+export declare function gunzip(input: Uint8Array): Promise<Uint8Array>;
+export declare function zlib(input: Uint8Array, compression?: number): Promise<Uint8Array>;
+export declare function unzlib(input: Uint8Array): Promise<Uint8Array>;
+export default wasm;
