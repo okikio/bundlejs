@@ -2,14 +2,13 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.236.0/containers/javascript-node
 {
 	"name": "Node.js",
-	"image": "node:lts",
-	// "build": {
-	// 	"dockerfile": "Dockerfile",
-	// 	// Update 'VARIANT' to pick a Node version: 18, 16, 14.
-	// 	// Append -bullseye or -buster to pin to an OS version.
-	// 	// Use -bullseye variants on local arm64/Apple Silicon.
-	// 	"args": { "VARIANT": "18" }
-	// },
+	"build": {
+		"dockerfile": "Dockerfile",
+		// Update 'VARIANT' to pick a Node version: 18, 16, 14.
+		// Append -bullseye or -buster to pin to an OS version.
+		// Use -bullseye variants on local arm64/Apple Silicon.
+		"args": { "VARIANT": "18" }
+	},
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -55,7 +54,7 @@
 		}
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pnpm install",
+	"postCreateCommand": "pnpm install",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node"
 }
