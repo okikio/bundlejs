@@ -42,7 +42,7 @@ export default defineConfig({
         {
           format: "umd",
           entryFileNames: "[name].js",
-          manualChunks: () => 'index.js'
+          inlineDynamicImports: true
         }
       ],
       external: ["esbuild"]
