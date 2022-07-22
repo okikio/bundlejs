@@ -13,7 +13,7 @@ import { createDefaultMapFromCDN, createSystem, createVirtualCompilerHost, creat
 import * as ts from "typescript";
 
 import { createStreaming, Formatter } from "@dprint/formatter";
-import { setFile, deepAssign, deepDiff, lzstring, getRequest, DefaultConfig } from "@bundlejs/core/src/index";
+import { setFile, deepAssign, deepDiff, lzstring, getRequest, DefaultConfig, build } from "@bundlejs/core";
 const { compressToURL } = lzstring;
 // build, 
 
@@ -268,8 +268,8 @@ export class OtherTSWorker {
     let changedConfig = deepAssign({}, DefaultConfig, config);
 
     // await initializedWASM;
-    // let result = await build();
-    let result = {};
+    let result = await build();
+    // let result = {};
     return result;
   }
 };
