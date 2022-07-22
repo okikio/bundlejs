@@ -74,17 +74,16 @@ export default defineConfig({
   vite: {
     worker: {
       format: "es",
-      rollupOptions: {
-        output: {
-          format: "es",
-          inlineDynamicImports: true
-        }
-      }
+      // rollupOptions: {
+      //   output: {
+      //     // inlineDynamicImports: true
+      //   }
+      // }
     },
     build: {
       assetsInlineLimit: 0,
     },
-    ssr: { external: ["svgo", "github-slugger"] },
+    ssr: { external: ["svgo", "github-slugger", "./preload-helper"] },
     plugins: [
       AutoImport({
         resolvers: [
