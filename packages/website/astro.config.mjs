@@ -47,7 +47,7 @@ export default defineConfig({
           "custom-slug-link": "",
         },
         content: [createSVG("link-24-regular")],
-        test: [ "h2", "h3", "h4", "h5", "h6", "details", "summary", "astro-root", ],
+        test: ["h2", "h3", "h4", "h5", "h6", "details", "summary", "astro-root",],
       }],
       ["rehype-external-links", {
         target: "_blank",
@@ -74,11 +74,15 @@ export default defineConfig({
   vite: {
     worker: {
       format: "es",
-      // rollupOptions: {
-      //   output: {
-      //     // inlineDynamicImports: true
-      //   }
-      // }
+      rollupOptions: {
+        output: [{
+          format: "es",
+          entryFileNames: "[name].mjs",
+          inlineDynamicImports: true
+        }]
+        // inlineDynamicImports: true
+
+      }
     },
     build: {
       assetsInlineLimit: 0,
