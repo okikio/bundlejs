@@ -497,8 +497,8 @@ task("sitemap", async () => {
 
 // Delete destFolder for added performance
 task("clean", async () => {
-    const { default: del } = await import("del");
-    return del(destFolder);
+    const { deleteAsync } = await import("del");
+    return deleteAsync(destFolder);
 });
 
 // BrowserSync
