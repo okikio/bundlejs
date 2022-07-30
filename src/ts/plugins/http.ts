@@ -179,21 +179,23 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                 let argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
                 let content: Uint8Array, url: string;
 
-                try { 
-                    // Fetch the path without the `.ts` extension
-                    ({ content, url } = await fetchPkg(argPath(), logger));
-                } catch(err) {
-                    // If the ^ above fetch doesn't work, try again with a `.ts` extension
-                    // Some typescript files don't have file extensions but you can't fetch a file without their file extension
-                    try {
-                        ({ content, url } = await fetchPkg(argPath(".ts"), logger));
+                // Imports have various extentions, fetch each extention to confirm what the user meant
+                const exts = ext.length > 0 ? [''] : ['', ".ts", ".tsx", ".js", ".mjs", ".cjs"];
+                const extLength = exts.length;
+                let err: Error;
+                for (let i = 0; i < extLength; i++) {
+                    const extPath = exts[i];
+                    try { 
+                        ({ content, url } = await fetchPkg(argPath(extPath), logger));
+                        break;
                     } catch (e) {
-                        // If the ^ above fetch doesn't work, try again with a `.tsx` extension
-                        // Some typescript files use `.tsx`
-                        try {
-                            ({ content, url } = await fetchPkg(argPath(".tsx"), logger));
-                        } catch (e) {
-                            // logger(e.toString(), "error");
+                        if (i == 0)
+                            err = e as Error;
+
+                        // If after checking all the different file extensions none of them are valid
+                        // Throw the first fetch error encountered, as that is generally the most accurate error
+                        if (i >= extLength - 1) {
+                            logger(e.toString(), "error");
                             throw err;
                         }
                     }
