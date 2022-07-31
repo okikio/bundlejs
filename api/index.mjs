@@ -13,6 +13,10 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
   numeric: "auto",
 });
 
+init({
+  platform: PLATFORM_AUTO
+});
+
 export default async function handler(request, response) {
   try {
     const url = new URL(request.url, `http://${request.headers.host}`);
@@ -25,6 +29,9 @@ export default async function handler(request, response) {
       entryPoints: ["/index.tsx"],
       esbuild: {
         treeShaking: true
+      },
+      init: {
+        platform: PLATFORM_AUTO
       }
     }, DefaultConfig, initialConfig);
     console.log(initialValue)
@@ -53,6 +60,7 @@ export default async function handler(request, response) {
       time: timeFormatter.format((end - start) / 1000, "seconds")
     });
   } catch (e) {
+    console.error(e)
     return response.status(400).json({ error: e.toString() });
   }
 }
