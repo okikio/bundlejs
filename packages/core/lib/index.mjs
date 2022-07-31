@@ -1,8 +1,8 @@
 import { s as sr } from "./schema-ce6ce54b.mjs";
-const Yt = "0.14.51", Le = (e) => new TextEncoder().encode(e), ve = (e) => new TextDecoder().decode(e), B = "https://unpkg.com", rt = (e) => /^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(e) || /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(e) ? "npm" : /^(jsdelivr\.gh|github)\:?/.test(e) || /^https?:\/\/(cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com)/.test(e) ? "github" : /^(deno)\:?/.test(e) || /^https?:\/\/(deno\.land\/x)/.test(e) ? "deno" : "other", Zt = (e, t = B) => (/^skypack\:/.test(e) ? t = "https://cdn.skypack.dev" : /^(esm\.sh|esm)\:/.test(e) ? t = "https://cdn.esm.sh" : /^unpkg\:/.test(e) ? t = "https://unpkg.com" : /^(jsdelivr|esm\.run)\:/.test(e) ? t = "https://cdn.jsdelivr.net/npm" : /^(jsdelivr\.gh)\:/.test(e) ? t = "https://cdn.jsdelivr.net/gh" : /^(deno)\:/.test(e) ? t = "https://deno.land/x" : /^(github)\:/.test(e) && (t = "https://raw.githubusercontent.com"), /\/$/.test(t) ? t : `${t}/`), Vt = (e) => e.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "").replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "").replace(/^\//, ""), T = (e, t = B) => {
+const Yt = "0.14.51", nt = (e) => new TextEncoder().encode(e), Se = (e) => new TextDecoder().decode(e), B = "https://unpkg.com", rt = (e) => /^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(e) || /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(e) ? "npm" : /^(jsdelivr\.gh|github)\:?/.test(e) || /^https?:\/\/(cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com)/.test(e) ? "github" : /^(deno)\:?/.test(e) || /^https?:\/\/(deno\.land\/x)/.test(e) ? "deno" : "other", Zt = (e, t = B) => (/^skypack\:/.test(e) ? t = "https://cdn.skypack.dev" : /^(esm\.sh|esm)\:/.test(e) ? t = "https://cdn.esm.sh" : /^unpkg\:/.test(e) ? t = "https://unpkg.com" : /^(jsdelivr|esm\.run)\:/.test(e) ? t = "https://cdn.jsdelivr.net/npm" : /^(jsdelivr\.gh)\:/.test(e) ? t = "https://cdn.jsdelivr.net/gh" : /^(deno)\:/.test(e) ? t = "https://deno.land/x" : /^(github)\:/.test(e) && (t = "https://raw.githubusercontent.com"), /\/$/.test(t) ? t : `${t}/`), Vt = (e) => e.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "").replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "").replace(/^\//, ""), T = (e, t = B) => {
   let s = Zt(e, t), n = Vt(e), r = new URL(n, s);
   return { import: e, path: n, origin: s, cdn: t, url: r };
-}, W = "external-globals", Jt = Le("export default {}"), Kt = {
+}, W = "external-globals", Jt = nt("export default {}"), Kt = {
   console: "console-browserify",
   constants: "constants-browserify",
   crypto: "crypto-browserify",
@@ -70,14 +70,14 @@ const Yt = "0.14.51", Le = (e) => new TextEncoder().encode(e), ve = (e) => new T
       }));
     }
   };
-}, it = /* @__PURE__ */ new Map(), rs = "EXTERNAL_FETCHES", Ye = async (e, t, s) => {
+}, it = /* @__PURE__ */ new Map(), rs = "EXTERNAL_FETCHES", He = async (e, t, s) => {
   let n = await fetch(t, s), r = n.clone();
   return "caches" in globalThis ? e.put(t, r) : it.set(t, r), n;
 };
 let de;
 const is = async () => de || (de = await caches.open(rs)), le = async (e, t = !1, s) => {
   let n = new Request(e.toString()), r, i, l;
-  return "caches" in globalThis ? (i = await is(), l = await i.match(n)) : l = it.get(n), r = l, l ? t || Ye(i, n, s) : r = await Ye(i, n, s), r.clone();
+  return "caches" in globalThis ? (i = await is(), l = await i.match(n)) : l = it.get(n), r = l, l ? t || He(i, n, s) : r = await He(i, n, s), r.clone();
 }, Y = 46, E = 47, lt = "/", ot = /\/+/;
 function N(e) {
   if (typeof e != "string")
@@ -321,7 +321,7 @@ function Es(e) {
     e.replace(/%/g, "%25").replace(/\\/g, "%5C")
   ), t;
 }
-const Ce = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const Le = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   sep: as,
   delimiter: cs,
@@ -338,7 +338,7 @@ const Ce = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   parse: $s,
   fromFileUrl: ws,
   toFileUrl: Es
-}, Symbol.toStringTag, { value: "Module" })), ys = Ce, { join: As, normalize: Ze } = ys, ge = [
+}, Symbol.toStringTag, { value: "Module" })), ys = Le, { join: As, normalize: Ye } = ys, ge = [
   "!",
   "$",
   "(",
@@ -354,7 +354,7 @@ const Ce = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   "{",
   "|"
 ], Rs = ["-", "\\", "]"];
-function Ss(e, {
+function vs(e, {
   extended: t = !0,
   globstar: s = !0,
   os: n = "linux",
@@ -470,7 +470,7 @@ function Ss(e, {
   }
   return g = `^${g}$`, new RegExp(g, r ? "i" : "");
 }
-function vs(e) {
+function Ss(e) {
   const t = { "{": "}", "(": ")", "[": "]" }, s = /\\(.)|(^!|\*|\?|[\].+)]\?|\[[^\\\]]+\]|\{[^\\}]+\}|\(\?[:!=][^\\)]+\)|\([^|]+\|[^\\)]+\))/;
   if (e === "")
     return !1;
@@ -492,12 +492,12 @@ function pt(e, { globstar: t = !1 } = {}) {
   if (e.match(/\0/g))
     throw new Error(`Glob contains invalid characters: "${e}"`);
   if (!t)
-    return Ze(e);
+    return Ye(e);
   const s = ot.source, n = new RegExp(
     `(?<=(${s}|^)\\*\\*${s})\\.\\.(?=${s}|$)`,
     "g"
   );
-  return Ze(e.replace(n, "\0")).replace(/\0/g, "..");
+  return Ye(e.replace(n, "\0")).replace(/\0/g, "..");
 }
 function bs(e, { extended: t = !0, globstar: s = !1 } = {}) {
   if (!s || e.length == 0)
@@ -511,11 +511,11 @@ function bs(e, { extended: t = !0, globstar: s = !1 } = {}) {
   }
   return n ? pt(n, { extended: t, globstar: s }) : ".";
 }
-const Ts = Ce, ks = Ce, {
+const Ts = Le, ks = Le, {
   basename: _s,
   delimiter: Os,
-  dirname: De,
-  extname: je,
+  dirname: Ce,
+  extname: De,
   format: Ns,
   fromFileUrl: xs,
   isAbsolute: dt,
@@ -523,7 +523,7 @@ const Ts = Ce, ks = Ce, {
   normalize: Ps,
   parse: Is,
   relative: Ls,
-  resolve: Me,
+  resolve: je,
   sep: Cs,
   toFileUrl: Ds,
   toNamespacedPath: js
@@ -538,15 +538,15 @@ const Ts = Ce, ks = Ce, {
   isBareImport: oe,
   SEP: lt,
   SEP_PATTERN: ot,
-  globToRegExp: Ss,
-  isGlob: vs,
+  globToRegExp: vs,
+  isGlob: Ss,
   normalizeGlob: pt,
   joinGlobs: bs,
   posix: ks,
   basename: _s,
   delimiter: Os,
-  dirname: De,
-  extname: je,
+  dirname: Ce,
+  extname: De,
   format: Ns,
   fromFileUrl: xs,
   isAbsolute: dt,
@@ -554,12 +554,12 @@ const Ts = Ce, ks = Ce, {
   normalize: Ps,
   parse: Is,
   relative: Ls,
-  resolve: Me,
+  resolve: je,
   sep: Cs,
   toFileUrl: Ds,
   toNamespacedPath: js
 }, Symbol.toStringTag, { value: "Module" })), Ms = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"], mt = (e) => {
-  const t = je(e);
+  const t = De(e);
   return Ms.includes(t) ? (/\.js(x)?$/.test(t) ? t.replace(/^\.js/, ".ts") : t).slice(1) : t === ".mjs" || t === ".cjs" || t === ".mts" || t === ".cts" ? "ts" : t == ".scss" ? "css" : t == ".png" || t == ".jpeg" || t == ".ttf" ? "dataurl" : t == ".svg" || t == ".html" || t == ".txt" ? "text" : t == ".wasm" ? "file" : t.length ? "text" : "ts";
 };
 function O(e, t) {
@@ -582,13 +582,13 @@ function b(e, t, s) {
     s ? `No known conditions for "${t}" entry in "${e}" package` : `Missing "${t}" export in "${e}" package`
   );
 }
-function ze(e, t) {
+function Me(e, t) {
   return t === e ? "." : t[0] === "." ? t : t.replace(new RegExp("^" + e + "/"), "./");
 }
 function zs(e, t = ".", s = {}) {
   let { name: n, exports: r } = e;
   if (r) {
-    let { browser: i, require: l, unsafe: o, conditions: a = [] } = s, c = ze(n, t);
+    let { browser: i, require: l, unsafe: o, conditions: a = [] } = s, c = Me(n, t);
     if (c[0] !== "." && (c = "./" + c), typeof r == "string")
       return c === "." ? r : b(n, c);
     let h = /* @__PURE__ */ new Set(["default", ...a]);
@@ -617,7 +617,7 @@ function Us(e, t = {}) {
     if (n = e[i[s]]) {
       if (typeof n != "string")
         if (typeof n == "object" && i[s] == "browser") {
-          if (typeof r == "string" && (n = n[r = ze(e.name, r)], n == null))
+          if (typeof r == "string" && (n = n[r = Me(e.name, r)], n == null))
             return r;
         } else
           continue;
@@ -638,7 +638,7 @@ function ae(e) {
 function Gs(e, t = ".", s = {}) {
   let { name: n, imports: r } = e;
   if (r) {
-    let { browser: i, require: l, unsafe: o, conditions: a = [] } = s, c = ze(n, t);
+    let { browser: i, require: l, unsafe: o, conditions: a = [] } = s, c = Me(n, t);
     if (typeof r == "string")
       return c === "#" ? r : b(n, c);
     let h = /* @__PURE__ */ new Set(["default", ...a]);
@@ -661,7 +661,7 @@ function Gs(e, t = ".", s = {}) {
     return b(n, c);
   }
 }
-const Ve = "cdn-url", Te = (e = B, t) => async (s) => {
+const Ze = "cdn-url", Te = (e = B, t) => async (s) => {
   if (oe(s.path)) {
     let { path: n, origin: r } = T(s.path, e), i = rt(r) == "npm", l = ae(n), o = l.path, a = s.pluginData?.pkg ?? {};
     if (n[0] == "#") {
@@ -711,9 +711,9 @@ There is a chance the CDN you're using doesn't support looking through the packa
 }, Ws = (e, t, s) => {
   let { origin: n } = /:/.test(s?.cdn) ? T(s?.cdn) : T(s?.cdn + ":");
   return s.filesystem, {
-    name: Ve,
+    name: Ze,
     setup(r) {
-      r.onResolve({ filter: /.*/ }, Te(n, e)), r.onResolve({ filter: /.*/, namespace: Ve }, Te(n, e));
+      r.onResolve({ filter: /.*/ }, Te(n, e)), r.onResolve({ filter: /.*/, namespace: Ze }, Te(n, e));
     }
   };
 }, x = "http-url", $t = async (e, t) => {
@@ -730,13 +730,13 @@ There is a chance the CDN you're using doesn't support looking through the packa
 ${s.toString()}`);
   }
 }, Xs = async (e, t, s, n, r) => {
-  const i = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g, l = new URL("./", e).toString(), o = r.filesystem, a = ve(t), h = Array.from(a.matchAll(i)).map(async ([, u]) => {
+  const i = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g, l = new URL("./", e).toString(), o = r.filesystem, a = Se(t), h = Array.from(a.matchAll(i)).map(async ([, u]) => {
     let { content: g, url: $ } = await $t(re(l, u), n);
     return o.set(s + ":" + $, t), {
       path: u,
       contents: g,
       get text() {
-        return ve(g);
+        return Se(g);
       }
     };
   });
@@ -774,7 +774,7 @@ ${s.toString()}`);
         path: o.path,
         namespace: x
       })), l.onResolve({ filter: /.*/, namespace: x }, wt(n, e)), l.onLoad({ filter: /.*/, namespace: x }, async (o) => {
-        let a = je(o.path), c = (f = "") => a.length > 0 ? o.path : o.path + f, h, u;
+        let a = De(o.path), c = (f = "") => a.length > 0 ? o.path : o.path + f, h, u;
         const g = a.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"], $ = g.length;
         let p;
         for (let f = 0; f < $; f++) {
@@ -801,7 +801,7 @@ ${s.toString()}`);
       });
     }
   };
-}, Je = "alias-globals", Et = (e, t = {}) => {
+}, Ve = "alias-globals", Et = (e, t = {}) => {
   if (!oe(e))
     return !1;
   let s = Object.keys(t), n = e.replace(/^node\:/, ""), r = ae(n);
@@ -818,13 +818,13 @@ ${s.toString()}`);
 }, Hs = (e, t, s) => {
   let { origin: n } = /:/.test(s?.cdn) ? T(s?.cdn) : T(s?.cdn + ":"), r = s.alias ?? {};
   return {
-    name: Je,
+    name: Ve,
     setup(i) {
       i.onResolve({ filter: /^node\:.*/ }, (l) => Et(l.path, r) ? me(r, n, e)(l) : {
         path: l.path,
         namespace: W,
         external: !0
-      }), i.onResolve({ filter: /.*/ }, me(r, n, e)), i.onResolve({ filter: /.*/, namespace: Je }, me(r, n, e));
+      }), i.onResolve({ filter: /.*/ }, me(r, n, e)), i.onResolve({ filter: /.*/, namespace: Ve }, me(r, n, e));
     }
   };
 }, $e = "virtual-filesystem", Ys = (e, t, s) => {
@@ -850,20 +850,20 @@ ${s.toString()}`);
   };
 }, Zs = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser", F = /* @__PURE__ */ new Map(), yt = async (e, t) => {
   let s = e;
-  if (t && e.startsWith(".") && (s = Me(De(t), e)), F.has(s))
+  if (t && e.startsWith(".") && (s = je(Ce(t), e)), F.has(s))
     return s;
   throw `File "${s}" does not exist`;
 }, Vs = async (e, t = "buffer", s) => {
   let n = await yt(e, s);
   if (F.has(n)) {
     let r = F.get(n);
-    return t == "string" ? ve(r) : r;
+    return t == "string" ? Se(r) : r;
   }
 }, Js = async (e, t, s) => {
   let n = e;
-  s && e.startsWith(".") && (n = Me(De(s), e));
+  s && e.startsWith(".") && (n = je(Ce(s), e));
   try {
-    F.set(n, t instanceof Uint8Array ? t : Le(t));
+    F.set(n, t instanceof Uint8Array ? t : nt(t));
   } catch {
     throw `Error occurred while writing to "${n}"`;
   }
@@ -926,7 +926,7 @@ const V = (e, ...t) => {
     treeShaking: !0,
     platform: "browser"
   }
-}, St = V({}, Rt, {
+}, vt = V({}, Rt, {
   esbuild: {
     color: !0,
     globalName: "BundledCode",
@@ -946,7 +946,7 @@ const V = (e, ...t) => {
     platform: Zs
   }
 });
-var vt = class {
+var St = class {
   constructor(e) {
     this.map = new Map(e);
   }
@@ -1004,12 +1004,12 @@ var vt = class {
   e.forEach((n) => {
     n[t](...s);
   });
-}, Ke = ({ callback: e = () => {
-}, scope: t = null, name: s = "event" }) => ({ callback: e, scope: t, name: s }), K = class extends vt {
+}, Je = ({ callback: e = () => {
+}, scope: t = null, name: s = "event" }) => ({ callback: e, scope: t, name: s }), K = class extends St {
   constructor(e = "event") {
     super(), this.name = e;
   }
-}, sn = class extends vt {
+}, sn = class extends St {
   constructor() {
     super();
   }
@@ -1019,7 +1019,7 @@ var vt = class {
   }
   newListener(e, t, s) {
     let n = this.getEvent(e);
-    return n.add(Ke({ name: e, callback: t, scope: s })), n;
+    return n.add(Je({ name: e, callback: t, scope: s })), n;
   }
   on(e, t, s) {
     if (typeof e > "u" || e == null)
@@ -1033,7 +1033,7 @@ var vt = class {
   removeListener(e, t, s) {
     let n = this.get(e);
     if (n instanceof K && t) {
-      let r = Ke({ name: e, callback: t, scope: s });
+      let r = Je({ name: e, callback: t, scope: s });
       n.forEach((i, l) => {
         if (i.callback === r.callback && i.scope === r.scope)
           return n.remove(l);
@@ -1084,8 +1084,8 @@ const nn = {
   "logger.error": console.error,
   "logger.warn": console.warn,
   "logger.info": console.info
-}, v = new sn();
-v.on(nn);
+}, S = new sn();
+S.on(nn);
 const k = {
   initialized: !1,
   assets: [],
@@ -1130,11 +1130,11 @@ const k = {
   "Eibit",
   "Zibit",
   "Yibit"
-], Qe = (e, t, s) => {
+], Ke = (e, t, s) => {
   let n = e;
   return typeof t == "string" || Array.isArray(t) ? n = e.toLocaleString(t, s) : (t === !0 || s !== void 0) && (n = e.toLocaleString(void 0, s)), n;
 };
-function et(e, t) {
+function Qe(e, t) {
   if (!Number.isFinite(e))
     throw new TypeError(`Expected a finite number, got ${typeof e}: ${e}`);
   t = {
@@ -1149,15 +1149,15 @@ function et(e, t) {
   n && (e = -e);
   let i;
   if (t.minimumFractionDigits !== void 0 && (i = { minimumFractionDigits: t.minimumFractionDigits }), t.maximumFractionDigits !== void 0 && (i = { maximumFractionDigits: t.maximumFractionDigits, ...i }), e < 1) {
-    const c = Qe(e, t.locale, i);
+    const c = Ke(e, t.locale, i);
     return r + c + " " + s[0];
   }
   const l = Math.min(Math.floor(t.binary ? Math.log(e) / Math.log(1024) : Math.log10(e) / 3), s.length - 1);
   e /= (t.binary ? 1024 : 1e3) ** l, i || (e = e.toPrecision(3));
-  const o = Qe(Number(e), t.locale, i), a = s[l];
+  const o = Ke(Number(e), t.locale, i), a = s[l];
   return r + o + " " + a;
 }
-const tt = {
+const et = {
   37: "dim",
   31: "red",
   32: "green",
@@ -1219,11 +1219,11 @@ function un(e) {
   const s = new fn();
   for (let n of e.matchAll(/\x1B\[([\d;]+)m/g)) {
     const r = n[1];
-    s.text(e.slice(t, n.index)), t = n.index + n[0].length, r === "0" ? s.reset() : r === "1" ? s.bold() : r === "4" ? s.underline() : tt[r] && s.color(tt[r]);
+    s.text(e.slice(t, n.index)), t = n.index + n[0].length, r === "0" ? s.reset() : r === "1" ? s.bold() : r === "4" ? s.underline() : et[r] && s.color(et[r]);
   }
   return t < e.length && s.text(e.slice(t)), s.done();
 }
-const st = async (e, t = "error", s = !0) => {
+const tt = async (e, t = "error", s = !0) => {
   const { formatMessages: n } = await import("./esbuild-62f66476.mjs").then((i) => i.b);
   return (await n(e, { color: s, kind: t })).map((i) => s ? un(i.replace(/(\s+)(\d+)(\s+)\│/g, `
 $1$2$3\u2502`)) : i);
@@ -1251,23 +1251,23 @@ async function hn(e = "node") {
 async function bt({ platform: e, ...t } = {}) {
   try {
     if (!k.initialized) {
-      if (k.initialized = !0, v.emit("init.start"), k.esbuild = await hn(e), e !== "node" && e !== "deno") {
-        const { default: s } = await import("./esbuild-wasm-17b38393.mjs");
+      if (k.initialized = !0, S.emit("init.start"), k.esbuild = await hn(e), e !== "node" && e !== "deno") {
+        const { default: s } = await import("./esbuild-wasm-52ab7d86.mjs");
         await k.esbuild.initialize({
           wasmModule: new WebAssembly.Module(await s()),
           ...t
         });
       }
-      v.emit("init.complete");
+      S.emit("init.complete");
     }
     return k.esbuild;
   } catch (s) {
-    v.emit("init.error", s), console.error(s);
+    S.emit("init.error", s), console.error(s);
   }
 }
 async function pn(e = {}) {
-  k.initialized || v.emit("init.loading");
-  const t = V({}, St, e), { build: s } = await bt(t.init), { define: n = {}, loader: r = {}, ...i } = t.esbuild ?? {};
+  k.initialized || S.emit("init.loading");
+  const t = V({}, vt, e), { build: s } = await bt(t.init), { define: n = {}, loader: r = {}, ...i } = t.esbuild ?? {};
   let l = [], o = [], a;
   try {
     try {
@@ -1290,38 +1290,39 @@ async function pn(e = {}) {
         write: !1,
         outdir: "/",
         plugins: [
-          Hs(v, k, t),
-          ns(v, k, t),
-          qs(v, k, t),
-          Ws(v, k, t),
-          Ys(v, k, t)
+          Hs(S, k, t),
+          ns(S, k, t),
+          qs(S, k, t),
+          Ws(S, k, t),
+          Ys(S, k, t)
         ],
         ...i
       });
     } catch (c) {
       if (c.errors) {
-        const h = [...await st(c.errors, "error", !1)], u = [...await st(c.errors, "error")];
-        v.emit("logger.error", h, u);
+        const h = [...await tt(c.errors, "error", !1)], u = [...await tt(c.errors, "error")];
+        S.emit("logger.error", h, u);
         const g = (u.length > 1 ? `${u.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return v.emit("logger.error", g);
+        return S.emit("logger.error", g);
       } else
         throw c;
     }
     return l = await Promise.all(
       [...k.assets].concat(a?.outputFiles)
     ), o = await Promise.all(
-      l?.map(({ path: c, text: h, contents: u }) => /\.map$/.test(c) ? { path: c, text: "", contents: Le("") } : (i?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(c) ? v.emit("logger.log", "Output File: " + c) : v.emit("logger.log", "Output File: " + c + `
-` + h)), { path: c, text: h, contents: u }))
+      l?.map(({ path: c, text: h, contents: u }) => /\.map$/.test(c) ? null : (i?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(c) ? S.emit("logger.log", "Output File: " + c) : S.emit("logger.log", "Output File: " + c + `
+` + h)), { path: c, text: h, contents: u }))?.filter((c) => ![void 0, null].includes(c))
     ), {
-      content: o,
-      ...a.outputFiles
+      contents: o,
+      outputs: l,
+      ...a
     };
   } catch {
   }
 }
 async function qn(e = [], t = {}) {
-  const s = V({}, St, t);
-  let { compression: n = {} } = s, { type: r = "gzip", quality: i = 9 } = typeof n == "string" ? { type: n } : n ?? {}, l = et(
+  const s = V({}, vt, t);
+  let { compression: n = {} } = s, { type: r = "gzip", quality: i = 9 } = typeof n == "string" ? { type: n } : n ?? {}, l = Qe(
     e.reduce((h, { contents: u }) => h + u.byteLength, 0)
   ), o = await (async () => {
     switch (r) {
@@ -1337,7 +1338,7 @@ async function qn(e = [], t = {}) {
     }
   })(), a = await Promise.all(
     e.map(({ contents: h }) => o(h))
-  ), c = et(
+  ), c = Qe(
     a.reduce((h, { length: u }) => h + u, 0)
   );
   return {
@@ -1357,8 +1358,8 @@ const Hn = (e, t = 300, s) => {
     }, o = s && !n;
     clearTimeout(n), n = setTimeout(l, t), o && e.apply(i, r);
   };
-}, Ue = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", Fe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$", X = {};
-function Be(e, t) {
+}, ze = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", Ue = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$", X = {};
+function Fe(e, t) {
   if (!X[e]) {
     X[e] = {};
     for (let s = 0; s < e.length; s++)
@@ -1369,7 +1370,7 @@ function Be(e, t) {
 function dn(e) {
   if (e == null)
     return "";
-  const t = ce(e, 6, (s) => Ue.charAt(s));
+  const t = ce(e, 6, (s) => ze.charAt(s));
   switch (t.length % 4) {
     default:
     case 0:
@@ -1383,13 +1384,13 @@ function dn(e) {
   }
 }
 function gn(e) {
-  return e == null ? "" : e == "" ? null : fe(e.length, 32, (t) => Be(Ue, e.charAt(t)));
+  return e == null ? "" : e == "" ? null : fe(e.length, 32, (t) => Fe(ze, e.charAt(t)));
 }
 function mn(e) {
-  return e == null ? "" : ce(e, 6, (t) => Fe.charAt(t));
+  return e == null ? "" : ce(e, 6, (t) => Ue.charAt(t));
 }
 function $n(e) {
-  return e == null ? "" : e == "" ? null : (e = e.replaceAll(" ", "+"), fe(e.length, 32, (t) => Be(Fe, e.charAt(t))));
+  return e == null ? "" : e == "" ? null : (e = e.replaceAll(" ", "+"), fe(e.length, 32, (t) => Fe(Ue, e.charAt(t))));
 }
 function wn(e) {
   return ce(e, 16, String.fromCharCode);
@@ -1503,10 +1504,10 @@ function fe(e, t, s) {
 }
 const yn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  keyStrBase64: Ue,
-  keyStrUriSafe: Fe,
+  keyStrBase64: ze,
+  keyStrUriSafe: Ue,
   baseReverseDic: X,
-  getBaseValue: Be,
+  getBaseValue: Fe,
   compressToBase64: dn,
   decompressFromBase64: gn,
   compressToURL: mn,
@@ -1551,18 +1552,18 @@ const yn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     return V({}, Rt, JSON.parse(s || "{}"));
   } catch {
   }
-}, Sn = "2.0.0", ke = 256, q = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
+}, vn = "2.0.0", ke = 256, q = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
 let Tt = 0;
-const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), z = "0|[1-9]\\d*", U = "[0-9]+", Ge = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", _e = `(?:${z}|${Ge})`, Oe = `(?:${U}|${Ge})`, Ne = "[0-9A-Za-z-]+", kt = `(${z})\\.(${z})\\.(${z})`, _t = `(${U})\\.(${U})\\.(${U})`, J = `(?:\\+(${Ne}(?:\\.${Ne})*))`, We = `(?:-(${_e}(?:\\.${_e})*))`, Xe = `(?:-?(${Oe}(?:\\.${Oe})*))`, we = `v?${kt}${We}?${J}?`, Q = `[v=\\s]*${_t}${Xe}?${J}?`, se = `${z}|x|X|\\*`, ne = `${U}|x|X|\\*`, j = "((?:<|>)?=?)", I = `[v=\\s]*(${se})(?:\\.(${se})(?:\\.(${se})(?:${We})?${J}?)?)?`, M = `[v=\\s]*(${ne})(?:\\.(${ne})(?:\\.(${ne})(?:${Xe})?${J}?)?)?`, nt = `(^|[^\\d])(\\d{1,${te}})(?:\\.(\\d{1,${te}}))?(?:\\.(\\d{1,${te}}))?(?:$|[^\\d])`, Ee = "(?:~>?)", ye = "(?:\\^)", y = {
+const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), z = "0|[1-9]\\d*", U = "[0-9]+", Be = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", _e = `(?:${z}|${Be})`, Oe = `(?:${U}|${Be})`, Ne = "[0-9A-Za-z-]+", kt = `(${z})\\.(${z})\\.(${z})`, _t = `(${U})\\.(${U})\\.(${U})`, J = `(?:\\+(${Ne}(?:\\.${Ne})*))`, Ge = `(?:-(${_e}(?:\\.${_e})*))`, We = `(?:-?(${Oe}(?:\\.${Oe})*))`, we = `v?${kt}${Ge}?${J}?`, Q = `[v=\\s]*${_t}${We}?${J}?`, se = `${z}|x|X|\\*`, ne = `${U}|x|X|\\*`, j = "((?:<|>)?=?)", I = `[v=\\s]*(${se})(?:\\.(${se})(?:\\.(${se})(?:${Ge})?${J}?)?)?`, M = `[v=\\s]*(${ne})(?:\\.(${ne})(?:\\.(${ne})(?:${We})?${J}?)?)?`, st = `(^|[^\\d])(\\d{1,${te}})(?:\\.(\\d{1,${te}}))?(?:\\.(\\d{1,${te}}))?(?:$|[^\\d])`, Ee = "(?:~>?)", ye = "(?:\\^)", y = {
   NUMERICIDENTIFIER: w(z),
   NUMERICIDENTIFIERLOOSE: w(U),
-  NONNUMERICIDENTIFIER: w(Ge),
+  NONNUMERICIDENTIFIER: w(Be),
   MAINVERSION: w(kt),
   MAINVERSIONLOOSE: w(_t),
   PRERELEASEIDENTIFIER: w(_e),
   PRERELEASEIDENTIFIERLOOSE: w(Oe),
-  PRERELEASE: w(We),
-  PRERELEASELOOSE: w(Xe),
+  PRERELEASE: w(Ge),
+  PRERELEASELOOSE: w(We),
   BUILDIDENTIFIER: w(Ne),
   BUILD: w(J),
   FULLPLAIN: w(we),
@@ -1576,8 +1577,8 @@ const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : v
   XRANGEPLAINLOOSE: w(M),
   XRANGE: w(`^${j}\\s*${I}$`),
   XRANGELOOSE: w(`^${j}\\s*${M}$`),
-  COERCE: w(nt),
-  COERCERTL: w(nt, !0),
+  COERCE: w(st),
+  COERCERTL: w(st, !0),
   LONETILDE: w("(?:~>?)"),
   TILDETRIM: w(`(\\s*)${Ee}\\s+`, !0),
   TILDE: w(`^${Ee}${I}$`),
@@ -1594,7 +1595,7 @@ const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : v
   STAR: w("(<|>)?=?\\s*\\*"),
   GTE0: w("^\\s*>=\\s*0\\.0\\.0\\s*$"),
   GTE0PRE: w("^\\s*>=\\s*0\\.0\\.0-0\\s*$")
-}, vn = ["includePrerelease", "loose", "rtl"], ue = (e) => e ? typeof e != "object" ? { loose: !0 } : vn.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, xe = /^[0-9]+$/, H = (e, t) => {
+}, Sn = ["includePrerelease", "loose", "rtl"], ue = (e) => e ? typeof e != "object" ? { loose: !0 } : Sn.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, xe = /^[0-9]+$/, H = (e, t) => {
   const s = xe.test(e), n = xe.test(t);
   let r = e, i = t;
   return s && n && (r = +e, i = +t), r === i ? 0 : s && !n ? -1 : n && !s ? 1 : r < i ? -1 : 1;
@@ -1689,26 +1690,26 @@ class he {
     return this.value;
   }
 }
-const G = /* @__PURE__ */ new Map(), ee = /* @__PURE__ */ new Map(), bn = 1e3, Ot = "$1^", Nt = "$1~", xt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", It = (e, t) => (e = Dt(e, t), e = Lt(e, t), e = Mt(e, t), e = Ut(e), e), S = (e) => !e || e.toLowerCase() === "x" || e === "*", Lt = (e, t) => e.trim().split(/\s+/).map((s) => Ct(s, t)).join(" "), Ct = (e, t) => {
+const G = /* @__PURE__ */ new Map(), ee = /* @__PURE__ */ new Map(), bn = 1e3, Ot = "$1^", Nt = "$1~", xt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", It = (e, t) => (e = Dt(e, t), e = Lt(e, t), e = Mt(e, t), e = Ut(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", Lt = (e, t) => e.trim().split(/\s+/).map((s) => Ct(s, t)).join(" "), Ct = (e, t) => {
   const s = t.loose ? y.TILDELOOSE.regex : y.TILDE.regex;
   return e.replace(s, (n, r, i, l, o) => {
     let a;
-    return S(r) ? a = "" : S(i) ? a = `>=${r}.0.0 <${+r + 1}.0.0-0` : S(l) ? a = `>=${r}.${i}.0 <${r}.${+i + 1}.0-0` : o ? a = `>=${r}.${i}.${l}-${o} <${r}.${+i + 1}.0-0` : a = `>=${r}.${i}.${l} <${r}.${+i + 1}.0-0`, a;
+    return v(r) ? a = "" : v(i) ? a = `>=${r}.0.0 <${+r + 1}.0.0-0` : v(l) ? a = `>=${r}.${i}.0 <${r}.${+i + 1}.0-0` : o ? a = `>=${r}.${i}.${l}-${o} <${r}.${+i + 1}.0-0` : a = `>=${r}.${i}.${l} <${r}.${+i + 1}.0-0`, a;
   });
 }, Dt = (e, t) => e.trim().split(/\s+/).map((s) => jt(s, t)).join(" "), jt = (e, t) => {
   const s = t.loose ? y.CARETLOOSE.regex : y.CARET.regex, n = t.includePrerelease ? "-0" : "";
   return e.replace(s, (r, i, l, o, a) => {
     let c;
-    return S(i) ? c = "" : S(l) ? c = `>=${i}.0.0${n} <${+i + 1}.0.0-0` : S(o) ? i === "0" ? c = `>=${i}.${l}.0${n} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.0${n} <${+i + 1}.0.0-0` : a ? i === "0" ? l === "0" ? c = `>=${i}.${l}.${o}-${a} <${i}.${l}.${+o + 1}-0` : c = `>=${i}.${l}.${o}-${a} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.${o}-${a} <${+i + 1}.0.0-0` : i === "0" ? l === "0" ? c = `>=${i}.${l}.${o}${n} <${i}.${l}.${+o + 1}-0` : c = `>=${i}.${l}.${o}${n} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.${o} <${+i + 1}.0.0-0`, c;
+    return v(i) ? c = "" : v(l) ? c = `>=${i}.0.0${n} <${+i + 1}.0.0-0` : v(o) ? i === "0" ? c = `>=${i}.${l}.0${n} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.0${n} <${+i + 1}.0.0-0` : a ? i === "0" ? l === "0" ? c = `>=${i}.${l}.${o}-${a} <${i}.${l}.${+o + 1}-0` : c = `>=${i}.${l}.${o}-${a} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.${o}-${a} <${+i + 1}.0.0-0` : i === "0" ? l === "0" ? c = `>=${i}.${l}.${o}${n} <${i}.${l}.${+o + 1}-0` : c = `>=${i}.${l}.${o}${n} <${i}.${+l + 1}.0-0` : c = `>=${i}.${l}.${o} <${+i + 1}.0.0-0`, c;
   });
 }, Mt = (e, t) => e.split(/\s+/).map((s) => zt(s, t)).join(" "), zt = (e, t) => {
   e = e.trim();
   const s = t.loose ? y.XRANGELOOSE.regex : y.XRANGE.regex;
   return e.replace(s, (n, r, i, l, o, a) => {
-    const c = S(i), h = c || S(l), u = h || S(o), g = u;
+    const c = v(i), h = c || v(l), u = h || v(o), g = u;
     return r === "=" && g && (r = ""), a = t.includePrerelease ? "-0" : "", c ? r === ">" || r === "<" ? n = "<0.0.0-0" : n = "*" : r && g ? (h && (l = 0), o = 0, r === ">" ? (r = ">=", h ? (i = +i + 1, l = 0, o = 0) : (l = +l + 1, o = 0)) : r === "<=" && (r = "<", h ? i = +i + 1 : l = +l + 1), r === "<" && (a = "-0"), n = `${r + i}.${l}.${o}${a}`) : h ? n = `>=${i}.0.0${a} <${+i + 1}.0.0-0` : u && (n = `>=${i}.${l}.0${a} <${i}.${+l + 1}.0-0`), n;
   });
-}, Ut = (e, t) => e.trim().replace(y.STAR.regex, ""), Ft = (e, t) => e.trim().replace(y[t.includePrerelease ? "GTE0PRE" : "GTE0"].regex, ""), Bt = (e) => (t, s, n, r, i, l, o, a, c, h, u, g, $) => (S(n) ? s = "" : S(r) ? s = `>=${n}.0.0${e ? "-0" : ""}` : S(i) ? s = `>=${n}.${r}.0${e ? "-0" : ""}` : l ? s = `>=${s}` : s = `>=${s}${e ? "-0" : ""}`, S(c) ? a = "" : S(h) ? a = `<${+c + 1}.0.0-0` : S(u) ? a = `<${c}.${+h + 1}.0-0` : g ? a = `<=${c}.${h}.${u}-${g}` : e ? a = `<${c}.${h}.${+u + 1}-0` : a = `<=${a}`, `${s} ${a}`.trim()), Gt = (e, t, s) => {
+}, Ut = (e, t) => e.trim().replace(y.STAR.regex, ""), Ft = (e, t) => e.trim().replace(y[t.includePrerelease ? "GTE0PRE" : "GTE0"].regex, ""), Bt = (e) => (t, s, n, r, i, l, o, a, c, h, u, g, $) => (v(n) ? s = "" : v(r) ? s = `>=${n}.0.0${e ? "-0" : ""}` : v(i) ? s = `>=${n}.${r}.0${e ? "-0" : ""}` : l ? s = `>=${s}` : s = `>=${s}${e ? "-0" : ""}`, v(c) ? a = "" : v(h) ? a = `<${+c + 1}.0.0-0` : v(u) ? a = `<${c}.${+h + 1}.0-0` : g ? a = `<=${c}.${h}.${u}-${g}` : e ? a = `<${c}.${h}.${+u + 1}-0` : a = `<=${a}`, `${s} ${a}`.trim()), Gt = (e, t, s) => {
   for (let n = 0; n < e.length; n++)
     if (!e[n].test(t))
       return !1;
@@ -1801,7 +1802,7 @@ function Ie(e, t, s) {
 }
 const Vn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  SEMVER_SPEC_VERSION: Sn,
+  SEMVER_SPEC_VERSION: vn,
   MAX_LENGTH: ke,
   MAX_SAFE_INTEGER: q,
   MAX_SAFE_COMPONENT_LENGTH: te,
@@ -1822,7 +1823,7 @@ const Vn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   isNullSet: Pe,
   isAny: Pt,
   parseComparator: It,
-  isX: S,
+  isX: v,
   replaceTildes: Lt,
   replaceTilde: Ct,
   replaceCarets: Dt,
@@ -1881,23 +1882,23 @@ const Vn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   }
 };
 let Ae;
-const qe = async () => {
+const Xe = async () => {
   if (Ae)
     return Ae;
-  const e = await import("./brotli-3f2c262c.mjs"), { default: t, source: s } = e;
+  const e = await import("./brotli-d55aae48.mjs"), { default: t, source: s } = e;
   return await t(await s()), Ae = e;
 };
 async function _n(e, t = 4096, s = 6, n = 22) {
-  const { compress: r } = await qe();
+  const { compress: r } = await Xe();
   return r(e, t, s, n);
 }
 async function On(e, t = 4096) {
-  const { decompress: s } = await qe();
+  const { decompress: s } = await Xe();
   return s(e, t);
 }
 const Nn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  getWASM: qe,
+  getWASM: Xe,
   compress: _n,
   decompress: On
 }, Symbol.toStringTag, { value: "Module" }));
@@ -1937,24 +1938,24 @@ const jn = Xt, Mn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   unzlib: Dn,
   default: jn
 }, Symbol.toStringTag, { value: "Module" }));
-let Se;
-const He = async () => {
-  if (Se)
-    return Se;
+let ve;
+const qe = async () => {
+  if (ve)
+    return ve;
   const e = await import("./lz4-54bbf0d3.mjs"), { default: t, source: s } = e;
-  return await t(await s()), Se = e;
+  return await t(await s()), ve = e;
 };
 async function zn(e) {
-  const { lz4_compress: t } = await He();
+  const { lz4_compress: t } = await qe();
   return t(e);
 }
 async function Un(e) {
-  const { lz4_decompress: t } = await He();
+  const { lz4_decompress: t } = await qe();
   return t(e);
 }
 const Fn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  getWASM: He,
+  getWASM: qe,
   compress: zn,
   decompress: Un
 }, Symbol.toStringTag, { value: "Module" }));
@@ -1986,7 +1987,7 @@ const Qn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
 }, Symbol.toStringTag, { value: "Module" }));
 export {
   Hs as ALIAS,
-  Je as ALIAS_NAMESPACE,
+  Ve as ALIAS_NAMESPACE,
   me as ALIAS_RESOLVE,
   fn as AnsiBuffer,
   an as BIBIT_UNITS,
@@ -1996,14 +1997,14 @@ export {
   it as CACHE,
   rs as CACHE_NAME,
   Ws as CDN,
-  Ve as CDN_NAMESPACE,
+  Ze as CDN_NAMESPACE,
   Te as CDN_RESOLVE,
   B as DEFAULT_CDN_HOST,
-  St as DefaultConfig,
+  vt as DefaultConfig,
   es as DeprecatedAPIs,
   Jt as EMPTY_EXPORT,
-  tt as ESCAPE_TO_COLOR,
-  v as EVENTS,
+  et as ESCAPE_TO_COLOR,
+  S as EVENTS,
   nn as EVENTS_OPTS,
   ns as EXTERNAL,
   W as EXTERNALS_NAMESPACE,
@@ -2029,17 +2030,17 @@ export {
   Qn as base64,
   Nn as brotli,
   pn as build,
-  et as bytes,
+  Qe as bytes,
   Hn as debounce,
-  ve as decode,
+  Se as decode,
   V as deepAssign,
   en as deepDiff,
   At as deepEqual,
   Mn as denoflate,
-  Le as encode,
+  nt as encode,
   Xs as fetchAssets,
   $t as fetchPkg,
-  et as formatBytes,
+  Qe as formatBytes,
   Zt as getCDNOrigin,
   rt as getCDNStyle,
   T as getCDNUrl,
@@ -2066,14 +2067,14 @@ export {
   O as loop,
   Fn as lz4,
   yn as lzstring,
-  Ye as newRequest,
+  He as newRequest,
   is as openCache,
   Zn as parseConfig,
   ae as parsePackageName,
   Yn as parseShareQuery,
   Rn as parseTreeshakeExports,
   Wn as path,
-  et as prettyBytes,
+  Qe as prettyBytes,
   un as render,
   zs as resolveExports,
   Gs as resolveImports,
@@ -2081,7 +2082,7 @@ export {
   sr as schema,
   Vn as semver,
   Js as setFile,
-  Qe as toLocaleString,
-  ze as toName
+  Ke as toLocaleString,
+  Me as toName
 };
 //# sourceMappingURL=index.mjs.map
