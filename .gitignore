@@ -115,6 +115,7 @@ coverage/
 # Theia
 .theia/
 docs/
+dist
 
 # Yarn
 .yarn/*

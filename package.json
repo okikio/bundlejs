@@ -1,5 +1,5 @@
 {
-    "name": "bundle",
+    "name": "bundlejs",
     "version": "0.0.5",
     "private": true,
     "license": "MIT",
@@ -11,6 +11,7 @@
         "commit": "git cz",
         "build": "gulp build",
         "watch": "gulp --watch",
+        "dev": "gulp --watch",
         "test": "pnpm build",
         "pre-release": "pnpm test",
         "semantic-release": "semantic-release",
@@ -71,7 +72,6 @@
         "d3-shape": "^3.1.0",
         "esbuild-wasm": "^0.14.51",
         "monaco-editor": "^0.33.0",
-        "nanoid": "^4.0.0",
         "parse-package-name": "^1.0.0",
         "preact": "^10.10.0",
         "resolve.exports": "^1.1.0",

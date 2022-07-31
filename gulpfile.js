@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 
 // Origin folders (source and destination folders)
 const srcFolder = `src`;
-const destFolder = `docs`;
+const destFolder = `dist`;
 
 // Source file folders
 const tsFolder = `${srcFolder}/ts`;

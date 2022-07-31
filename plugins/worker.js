@@ -47,7 +47,7 @@ export const WEB_WORKER = () => {
 
                     // This one depends on your file structure
                     const outFileWithRelativePath = join(
-                        "docs",
+                        "dist",
                         "js",
                         outFileName
                     );
@@ -83,7 +83,7 @@ export const WEB_WORKER = () => {
                                 platform: "browser",
 
                                 entryPoints: [workerWithFullPath],
-                                outdir: "docs/js",
+                                outdir: "dist/js",
 
                                 assetNames: "[name]",
                                 entryNames: "[name].worker",
