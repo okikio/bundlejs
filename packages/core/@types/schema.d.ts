@@ -732,6 +732,14 @@ declare const schema: {
                     description: string;
                     type: string;
                 };
+                jsxImportSource: {
+                    description: string;
+                    type: string;
+                };
+                jsxDev: {
+                    description: string;
+                    type: string;
+                };
                 define: {
                     description: string;
                     type: string;

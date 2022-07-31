@@ -1,6 +1,6 @@
 import type { BuildOptions, InitializeOptions } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
-import { type PLATFORM } from "./platform";
+import type { PLATFORM } from "./platform";
 import { FileSystem, getFile, setFile, getResolvedPath } from "../utils/filesystem";
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export declare type CompressionType = "gzip" | "brotli" | "lz4";

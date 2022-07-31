@@ -1,4 +1,4 @@
-import type { CompressionType, BundleConfigOptions } from './configs/options';
+import type { BundleConfigOptions } from "./configs/options";
 import type { PLATFORM } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm";
 export { type ESBUILD };
@@ -16,7 +16,7 @@ export declare function build(opts?: BundleConfigOptions): Promise<any>;
  * @returns
  */
 export declare function getSize(contents?: ESBUILD.OutputFile[], opts?: BundleConfigOptions): Promise<{
-    type: CompressionType;
+    type: import("./configs/options").CompressionType;
     content: Uint8Array[];
     totalByteLength: string;
     totalCompressedSize: string;
