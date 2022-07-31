@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  test: { },
+  test: {},
   build: {
     target: ["chrome99"],
     sourcemap: true,
@@ -47,5 +47,5 @@ export default defineConfig({
       ],
       external: ["esbuild"]
     }
-  }
+  },
 })
