@@ -1,7 +1,8 @@
 import type { BuildOptions, InitializeOptions, OutputFile } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 
-import { PLATFORM_AUTO, type PLATFORM } from "./platform";
+import type { PLATFORM } from "./platform";
+import { PLATFORM_AUTO } from "./platform";
 
 import { FileSystem, getFile, setFile, getResolvedPath } from "../utils/filesystem";
 import { DEFAULT_CDN_HOST } from "../utils/util-cdn";
