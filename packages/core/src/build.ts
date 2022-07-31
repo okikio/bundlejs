@@ -2,7 +2,7 @@ import type { BundleConfigOptions, CompressionOptions } from "./configs/options"
 import type { PLATFORM } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm";
 
-export { type ESBUILD };
+export type { ESBUILD };
 
 // import ESBUILD_WASM from "./wasm";
 import { version } from "esbuild-wasm/package.json";

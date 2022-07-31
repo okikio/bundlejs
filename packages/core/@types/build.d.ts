@@ -1,7 +1,7 @@
 import type { BundleConfigOptions } from "./configs/options";
 import type { PLATFORM } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm";
-export { type ESBUILD };
+export type { ESBUILD };
 export declare const INPUT_EVENTS: {
     build: typeof build;
     init: typeof init;
