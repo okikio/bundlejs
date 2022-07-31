@@ -138,7 +138,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
       outputs
         ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
           if (/\.map$/.test(path))
-            return { path, text: "", contents: encode("") };
+            return null;
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
           if (esbuildOpts?.logLevel == "verbose") {
@@ -152,6 +152,9 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
 
           return { path, text, contents };
         })
+
+        // Remove null output files
+        ?.filter(x => ![undefined, null].includes(x))
     );
 
     // Ensure a fresh filesystem on every run
@@ -161,9 +164,17 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     // STATE.assets = [];
 
     return {
-      // Remove unesscary croft, e.g. `.map` sourcemap files
-      content: contents,
-      ...result.outputFiles
+      /** 
+       * The output and asset files without unnecessary croft, e.g. `.map` sourcemap files 
+       */
+      contents,
+
+      /**
+       * The output and asset files with `.map` sourcemap files 
+       */
+      outputs,
+
+      ...result
     };
   } catch (e) { }
 }
@@ -214,7 +225,7 @@ export async function getSize(contents: ESBUILD.OutputFile[] = [], opts: BundleC
   let compressedContent = await Promise.all(
     contents.map(({ contents }) => compressionMap(contents))
   );
-  
+
   let totalCompressedSize = bytes(
     compressedContent.reduce((acc, { length }) => acc + length, 0)
   );

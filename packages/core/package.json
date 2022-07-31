@@ -39,7 +39,7 @@
     "repl": "esno repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "verify": "pnpm test:run && pnpm dts",
+    "verify": "pnpm dts && pnpm test:run",
     "pre-release": "ultra build:all && ultra verify"
   },
   "ultra": {
@@ -93,9 +93,10 @@
   "devDependencies": {
     "@types/node": "^18.6.3",
     "@vitest/ui": "^0.19.1",
+    "cross-fetch": "^3.1.5",
     "del-cli": "^5.0.0",
     "esno": "^0.16.3",
-    "pnpm": "^7.7.1",
+    "pnpm": "^7.8.0",
     "typescript": "^4.7.4",
     "typescript-json-schema": "^0.54.0",
     "ultra-runner": "^3.10.5",
