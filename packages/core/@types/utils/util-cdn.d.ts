@@ -10,7 +10,7 @@ export declare const DEFAULT_CDN_HOST = "https://unpkg.com";
  * - `deno` - deno supports `deno` style imports, as in they don't support adding versions to their URLs like this `https://deno.land/x/brotli/mod.ts`
  * - `other` - CDNs that haven't been added to the list
  */
-export declare const getCDNStyle: (urlStr: string) => "other" | "deno" | "npm" | "github";
+export declare const getCDNStyle: (urlStr: string) => "deno" | "github" | "npm" | "other";
 /**
  * Based on the URL scheme of the import, this method will return an actual CDN host origin to use,
  * e.g.

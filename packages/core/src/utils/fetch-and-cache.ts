@@ -12,6 +12,12 @@ export const newRequest = async (cache: Cache, request: Request, fetchOpts?: Req
   return networkResponse;
 };
 
+export let OPEN_CACHE: Cache;
+export const openCache = async () => {
+  if (OPEN_CACHE) return OPEN_CACHE;
+  return (OPEN_CACHE = await caches.open(CACHE_NAME))
+}
+
 export const getRequest = async (url: RequestInfo | URL, permanent: boolean = false, fetchOpts?: RequestInit) => {
   let request = new Request(url.toString());
   let response: Response;
@@ -22,7 +28,7 @@ export const getRequest = async (url: RequestInfo | URL, permanent: boolean = fa
   // In specific situations the browser will sometimes disable access to cache storage, 
   // so, I create my own in memory cache
   if ("caches" in globalThis) {
-    cache = await caches.open(CACHE_NAME);
+    cache = await openCache();
     cacheResponse = await cache.match(request);
   } else {
     cacheResponse = CACHE.get(request);

@@ -480,10 +480,6 @@ declare const schema: {
                     description: string;
                     type: string;
                 };
-                platform: {
-                    $ref: string;
-                    description: string;
-                };
                 external: {
                     description: string;
                     type: string;
@@ -667,6 +663,10 @@ declare const schema: {
                     $ref: string;
                     description: string;
                 };
+                platform: {
+                    $ref: string;
+                    description: string;
+                };
                 mangleProps: {
                     $ref: string;
                     description: string;
@@ -768,10 +768,6 @@ declare const schema: {
                 };
             };
         };
-        Platform: {
-            enum: string[];
-            type: string;
-        };
         StdinOptions: {
             type: string;
             properties: {
@@ -817,6 +813,10 @@ declare const schema: {
             type: string;
         };
         "Record<string,boolean>": {
+            type: string;
+        };
+        Platform: {
+            enum: string[];
             type: string;
         };
         RegExp: {
