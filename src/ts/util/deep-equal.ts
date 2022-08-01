@@ -37,7 +37,7 @@ export const deepEqual = (obj1: any, obj2: any) => {
 /** Compares 2 objects and only keep the keys that are different in both objects */
 export const deepDiff = (obj1: any, obj2: any) => {
     let keys = Object.keys(obj2);
-    let result = {};
+    let result: Record<any, any> = {};
     let i = 0;
     for (; i < keys.length; i++) {
         let key = keys[i];

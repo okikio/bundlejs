@@ -116,6 +116,7 @@
         "hastscript": "^7.0.2",
         "husky": "^8.0.1",
         "jstransformer-markdown-it": "^3.0.0",
+        "nanoid": "^4.0.0",
         "postcss": "^8.4.14",
         "postcss-font-grabber": "^3.1.0",
         "postcss-replace": "^2.0.0",
@@ -128,13 +129,13 @@
         "rehype-highlight": "^5.0.2",
         "rehype-slug": "^5.0.1",
         "rollup": "^2.77.2",
+        "rollup-plugin-dts": "^4.2.2",
         "sass": "^1.54.0",
         "semantic-release": "^19.0.3",
         "standard-version": "^9.5.0",
         "tailwindcss": "^3.1.7",
         "tiny-glob": "^0.2.9",
         "tsm": "^2.2.2",
-        "typescript-json-schema": "^0.54.0",
         "vercel": "^27.3.3",
         "workbox-build": "^6.5.4"
     }

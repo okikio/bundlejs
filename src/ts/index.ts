@@ -1,6 +1,6 @@
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
-import type { BundleConfigOptions } from "./configs/bundle-options";
+import { BundleConfigOptions, EasyDefaultConfig } from "./configs/bundle-options";
 
 import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
 
@@ -27,11 +27,14 @@ import { decode, encode } from "./util/encode-decode";
 
 import { parseInput } from "./util/parse-query";
 
+import SANDBOX_WORKER_URL from "worker:./workers/sandbox.ts";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
 import WebWorker, { WorkerConfig } from "./util/WebWorker";
 
 // import * as Monaco from "./modules/monaco";
 import { getRequest } from "./util/fetch-and-cache";
+import { deepAssign } from "./util/deep-equal";
+import serialize from "./util/serialize-javascript";
 
 export let oldShareURL = new URL(String(document.location));
 export const BundleEvents = new EventEmitter();
@@ -54,6 +57,19 @@ let isInitial = true;
 const BundleWorkerConfig = WorkerConfig(ESBUILD_WORKER_URL, "esbuild-worker");
 export const BundleWorker = USE_SHAREDWORKER ? new WebWorker(...BundleWorkerConfig) : new Worker(...BundleWorkerConfig) as WebWorker;
 BundleWorker?.start?.(); // Only SharedWorkers support the start method, so optionally call the method if it is supported
+
+export const channel = new MessageChannel();
+export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
+export const SANDBOX_WORKER = USE_SHAREDWORKER ? new WebWorker(...SandboxWorkerConfig) : new Worker(...SandboxWorkerConfig) as WebWorker;
+
+try {
+    channel.port1.start();
+    channel.port2.start();
+    SANDBOX_WORKER.postMessage({ port: channel.port1 }, [channel.port1]);
+    BundleWorker.postMessage({ port: channel.port2 }, [channel.port2]);
+} catch (err) {
+    console.log(err);
+}
 
 export const postMessage = (obj: { event: string, details: any }) => {
     let messageStr = JSON.stringify(obj);
@@ -83,7 +99,6 @@ window.addEventListener("pagehide", function (event) {
 });
 
 let fileSizeEl: HTMLElement[];
-
 let consoleLog = (type: TypeLog["type"], log = "") => {
     // Ignore empty log messages
     if (log && log?.length > 0) {
@@ -244,6 +259,22 @@ export const pushState = (url: string | URL, historyManager: HistoryManager) => 
     }
 }
 
+export const getConfig = async (config: string) => {
+    return new Promise(resolve => {
+        SANDBOX_WORKER.postMessage({ type: "config", data: config });
+        SANDBOX_WORKER.onmessage = ({ data: $data }: MessageEvent<{ type: string, data: any }>) => {
+            const { type, data } = $data;
+            if (type === "config") {
+                resolve(
+                    typeof data === "object" &&
+                        !Array.isArray(data) &&
+                        !Number.isNaN(data) ? (data ?? {}) : {}
+                );
+            }
+        }
+    });
+}
+
 // Load all heavy main content
 export const build = async (app: App) => {
     const historyManager = app.get("HistoryManager") as HistoryManager;
@@ -273,29 +304,37 @@ export const build = async (app: App) => {
             start = Date.now();
             postMessage({ event: "build", details: { config, value } });
 
-            let configObj = (JSON.parse(config) ?? {}) as BundleConfigOptions;
+            (async () => {
+                let configObj: BundleConfigOptions = {};
+                try {
+                    configObj = await getConfig(config);
+                } catch (e) {
+                    console.warn(e);
+                }
 
-            if (configObj?.analysis) {
-                let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
-                let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
-                let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
-                content?.classList?.add("hidden");
-                
-                iframeLoader?.classList?.remove("hidden");
-                loadingEl?.classList?.remove("hidden");
+                console.log(configObj)
+                if (configObj?.analysis) {
+                    let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
+                    let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
+                    let iframe = document.querySelector("#analyzer") as HTMLIFrameElement;
+                    content?.classList?.add("hidden");
 
-                let IframeFadeInLoadingScreen = animate({
-                    target: iframeLoader,
-                    opacity: [0, 1],
-                    easing: "ease-out",
-                    duration: 50,
-                    autoplay: false
-                });
-                IframeFadeInLoadingScreen.play();
-                IframeFadeInLoadingScreen.then(() => {
-                    setIframeHTML(iframe, ``);
-                });
-            }
+                    iframeLoader?.classList?.remove("hidden");
+                    loadingEl?.classList?.remove("hidden");
+
+                    let IframeFadeInLoadingScreen = animate({
+                        target: iframeLoader,
+                        opacity: [0, 1],
+                        easing: "ease-out",
+                        duration: 50,
+                        autoplay: false
+                    });
+                    IframeFadeInLoadingScreen.play();
+                    IframeFadeInLoadingScreen.then(() => {
+                        setIframeHTML(iframe, ``);
+                    });
+                }
+            })();
 
         },
         result(details) {
@@ -340,8 +379,15 @@ export const build = async (app: App) => {
             const worker = await languages.typescript.getTypeScriptWorker();
             const thisWorker = await worker(model.uri);
 
+            const config: Record<any, any> = await getConfig(configModel.getValue()) ?? {};
+
             // @ts-ignore
-            return await thisWorker.getShareableURL(model.uri.toString(), configModel.getValue());
+            return await thisWorker.getShareableURL(
+                model.uri.toString(),
+
+                // Potentially allow other non-default exports if export isn't defined 
+                "default" in config && config?.default ? config?.default : config
+            );
         } catch (e) {
             console.warn(e)
         }
@@ -413,7 +459,7 @@ export const build = async (app: App) => {
 
                 clearBtn.addEventListener("click", () => {
                     editor.setValue("");
-                }); 
+                });
                 
                 function downloadBlob(blob: Blob, name = 'file.txt') {
                     // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
@@ -456,7 +502,7 @@ export const build = async (app: App) => {
                 prettierBtn.addEventListener("click", () => {
                     editor.getAction("editor.action.formatDocument").run();
                     const model = editor.getModel();
-                    if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())){
+                    if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())) {
                         try {
                             (async () => {
                                 const worker = await languages.typescript.getTypeScriptWorker();
@@ -543,7 +589,18 @@ export const build = async (app: App) => {
         };
 
         // Build the Code Editor
-        [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL);
+        let newConfig = {};
+        try {
+            const searchParams = oldShareURL.searchParams;
+            const config = searchParams.get("config") ?? "{}";
+            newConfig = await getConfig(`export default ${config}`);
+        } catch (e) { }
+
+        const oldConfigFromURL = serialize(
+            deepAssign({}, EasyDefaultConfig, newConfig),
+            { unsafe: true, ignoreFunction: true, space: 2 }
+        );
+        [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL, oldConfigFromURL);
 
         FadeLoadingScreen.play(); // Fade away the loading screen
         await FadeLoadingScreen;

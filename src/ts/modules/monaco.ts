@@ -29,7 +29,7 @@ import TYPESCRIPT_WORKER_URL from "worker:../workers/typescript.ts";
 import JSON_WORKER_URL from "worker:../workers/json.ts";
 import EDITOR_WORKER_URL from "worker:../workers/editor.ts";
 
-import TYPE_SCHEMA from "schema:./node_modules/esbuild-wasm/esm/browser.d.ts";
+import CONFIG_DTS from "dts:./src/ts/configs/bundle-options.ts";
 
 import { getRequest } from "../util/fetch-and-cache.js";
 import { USE_SHAREDWORKER } from "../../../env";
@@ -64,15 +64,22 @@ export const inputModelResetValue = [
     '// Click Build for the bundled, minified and compressed package size',
     'export * from "@okikio/animate";'
 ].join("\n");
-export const configModelResetValue = JSON.stringify(EasyDefaultConfig, null, "\t"); // Indented with tab
+export const configModelResetValue = [
+    '// Config',
+    `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
+    `export default ${JSON.stringify(EasyDefaultConfig, null, "\t")} as BundleConfigOptions`
+].join("\n"); // Indented with tab
 
 export { languages, Editor, Uri };
-export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
+export const build = (oldShareURL: URL, oldConfigFromURL: string): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
         parseSearchQuery(oldShareURL) || inputModelResetValue;
 
-    const initialConfig =
-        JSON.stringify(parseConfig(oldShareURL), null, "\t") || configModelResetValue;
+    const initialConfig = [
+        '// Config',
+        `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
+        `export default ${oldConfigFromURL} as BundleConfigOptions`
+    ].join("\n") || configModelResetValue;
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     inputEl.textContent = "";
@@ -90,7 +97,11 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
 
     let inputModel = Editor.createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
     let outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.js"));
-    let configModel = Editor.createModel(initialConfig, 'json', Uri.parse('file://config.json'));
+    let configModel = Editor.createModel(initialConfig, 'typescript', Uri.parse('file://config.tsx'));
+
+    inputModel.updateOptions({ tabSize: 2 });
+    outputModel.updateOptions({ tabSize: 2 });
+    configModel.updateOptions({ tabSize: 2 });
 
     let editorOpts: Editor.IStandaloneEditorConstructionOptions = {
         model: null,
@@ -191,6 +202,10 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
         `file://node_modules/@types/http/https.d.ts`
     );
+    languages.typescript.typescriptDefaults.addExtraLib(
+        `declare module '@bundlejs/core/config' {\n\t${CONFIG_DTS}\n}`,
+        `file://node_modules/@types/config/config.d.ts`
+    );
 
     const IMPORTS_REXPORTS_REQUIRE_REGEX =
         /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
@@ -253,16 +268,16 @@ ${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://u
     });
 
     // Configure the JSON language support with schemas and schema associations
-    languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        schemas: [
-            {
-                uri: "https://unpkg.com/esbuild-wasm/esm/browser.d.ts", // id of the first schema
-                fileMatch: [configModel.uri.toString()], // associate with our model
-                schema: TYPE_SCHEMA 
-            }
-        ]
-    });
+    // languages.json.jsonDefaults.setDiagnosticsOptions({
+    //     validate: true,
+    //     schemas: [
+    //         {
+    //             uri: "https://unpkg.com/esbuild-wasm/esm/browser.d.ts", // id of the first schema
+    //             fileMatch: [configModel.uri.toString()], // associate with our model
+    //             schema: TYPE_SCHEMA
+    //         }
+    //     ]
+    // });
     
     return [editor, inputModel, outputModel, configModel];
 };

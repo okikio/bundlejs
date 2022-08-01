@@ -8,7 +8,7 @@ declare module '*.wasm' {
     export default value;
 }
 
-declare module 'schema:*' {
+declare module 'dts:*' {
     let value: Record<any, any>;
     export default value;
 }

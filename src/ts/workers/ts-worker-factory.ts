@@ -8,6 +8,7 @@
 
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
+import serialize from "../util/serialize-javascript";
 import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
@@ -18,7 +19,7 @@ let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
     // TypeScript & JavaScript config goes here
     "lineWidth": 80,
-    "indentWidth": 4,
+    "indentWidth": 2,
     "useTabs": false,
     "semiColons": "prefer",
     "quoteStyle": "alwaysDouble",
@@ -100,10 +101,9 @@ const worker = (TypeScriptWorker, fileMap) => {
             return await Promise.resolve(formatter.formatText(fileName, source.getFullText()));
         }
 
-        async getShareableURL(fileName, config = "{}") {
+        async getShareableURL(fileName, config = {}) {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
-            config = JSON.parse(config ? config : "{}") ?? {};
 
             // Basically only keep the config options that have changed from the default
             let changedConfig = deepDiff(DefaultConfig, deepAssign({}, DefaultConfig, config));
@@ -187,8 +187,10 @@ const worker = (TypeScriptWorker, fileMap) => {
                     url.searchParams.set("share", compressToURL(remainingCode));
             }
 
-            if (changedConfig && changedEntries?.length) 
-                url.searchParams.set("config", JSON.stringify(changedConfig));
+            if (changedConfig && changedEntries?.length) {
+                console.log(serialize(changedConfig))
+                url.searchParams.set("config", serialize(changedConfig, { unsafe: true, ignoreFunction: true }));
+            }
             
             // Remove decodeURIComponent(), to allow for sharing on social media platforms
             return url.toString();
