@@ -312,7 +312,6 @@ export const build = async (app: App) => {
                     console.warn(e);
                 }
 
-                console.log(configObj)
                 if (configObj?.analysis) {
                     let content = iframeLoader?.querySelector(".loader-content") as HTMLDivElement;
                     let loadingEl = iframeLoader?.querySelector(".loading") as HTMLDivElement;
