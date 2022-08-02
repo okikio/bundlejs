@@ -36,7 +36,7 @@ const initPromise = (async () => {
     if (!_initialized) {
       await getWASM();
       await initialize({
-        worker: true,
+        worker: false,
         wasmURL: `./esbuild.wasm`
       });
 
