@@ -616,8 +616,14 @@ details.accordian {
   @apply bg-transparent;
 }
 
+.giscus {
+  @apply p-2 sm:p-4 rounded-md;
+  @apply bg-[#15202b];
+}
+
 .giscus-frame {
-  color-scheme: none;
+  // color-scheme: none;
+  @apply rounded-md;
 }
 
 .analyzer-loader {
