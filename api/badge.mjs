@@ -14,12 +14,9 @@ export const inputModelResetValue = [
   'export * from "@okikio/animate";'
 ].join("\n");
 
-init({
-  platform: PLATFORM_AUTO
-});
-
 export default async function handler(request, response) {
   try {
+    
     const url = new URL(request.url, `http://${request.headers.host}`);
     const initialValue = parseShareQuery(url) || inputModelResetValue;
     const initialConfig = parseConfig(url) || {};
@@ -33,7 +30,7 @@ export default async function handler(request, response) {
         treeShaking: true
       },
       init: {
-        platform: "browser" // PLATFORM_AUTO
+        platform: PLATFORM_AUTO
       }
     }, DefaultConfig, initialConfig);
 

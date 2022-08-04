@@ -19,12 +19,10 @@ const timeFormatter = new Intl.RelativeTimeFormat("en", {
   numeric: "auto",
 });
 
-init({
-  platform: PLATFORM_AUTO
-});
-
 export default async function handler(request, response) {
   try {
+    const start = performance.now();
+
     const url = new URL(request.url, `http://${request.headers.host}`);
     const initialValue = parseShareQuery(url) || inputModelResetValue;
     const initialConfig = parseConfig(url) || {};
@@ -41,8 +39,6 @@ export default async function handler(request, response) {
       }
     }, DefaultConfig, initialConfig);
     console.log(initialValue)
-
-    const start = performance.now();
 
     const result = await build(config);
     const size = await getSize(result.contents);
