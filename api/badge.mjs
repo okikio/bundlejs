@@ -14,11 +14,6 @@ export const inputModelResetValue = [
   'export * from "@okikio/animate";'
 ].join("\n");
 
-const timeFormatter = new Intl.RelativeTimeFormat("en", {
-  style: "narrow",
-  numeric: "auto",
-});
-
 init({
   platform: PLATFORM_AUTO
 });
@@ -37,36 +32,19 @@ export default async function handler(request, response) {
         treeShaking: true
       },
       init: {
-        platform: PLATFORM_AUTO
+        platform: "browser" // PLATFORM_AUTO
       }
     }, DefaultConfig, initialConfig);
-    console.log(initialValue)
-
-    const start = performance.now();
-
     const result = await build(config);
+    console.log(result)
     const size = await getSize(result.contents);
 
-    const end = performance.now();
-
+    const imgShield = await fetch(`https://img.shields.io/badge/${encodeURIComponent(size.size)}-bundlejs-blue`).then(res => res.text());
     response.setHeader('Cache-Control', 'max-age=30, s-maxage=86400, stale-while-revalidate');
-    return response.status(200).json({
-      query: request.query,
-      config,
-      input: initialValue,
-      size: {
-        type: size.type,
-
-        totalByteLength: size.totalByteLength,
-        totalCompressedSize: size.totalCompressedSize,
-
-        initialSize: size.initialSize,
-        size: size.size
-      },
-      time: timeFormatter.format((end - start) / 1000, "seconds")
-    });
+    response.setHeader('Content-Type', 'image/svg+xml');
+    return response.send(imgShield);
   } catch (e) {
-    console.error(e)
+    console.error(e);
     return response.status(400).json({ error: e.toString() });
   }
 }
