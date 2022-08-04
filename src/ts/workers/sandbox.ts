@@ -17,14 +17,20 @@ const initPromise = (async () => {
   }
 })();
 
-let $port: MessagePort;
-
 const configs = new Map<string, string>();
-export const onmessage = (port: MessagePort) => {
-  return async function ({ data }: MessageEvent<string>) {
+
+/**
+ * Contains the entire esbuild worker script
+ * 
+ * @param port The Shared Worker port to post messages on
+ */
+export const start = async (port: MessagePort) => {
+  let $port: MessagePort;
+
+  const onmessage = (_port: MessagePort) => {
+    return async function ({ data }: MessageEvent<string>) {
       try {
-        if (!_initialized)
-          await initPromise;
+        await initPromise;
 
         const config = configs.has(data) ? configs.get(data) : (
           await transform(data, {
@@ -39,24 +45,37 @@ export const onmessage = (port: MessagePort) => {
 
         const result = await Function('"use strict";' + config + 'return (std_global)')();
         // const result = (0, eval)(config + ' std_global');
-        port.postMessage(result.default ?? result);
+        _port.postMessage(result.default ?? result);
       } catch (e) {
         console.warn(e);
-        port.postMessage({});
+        _port.postMessage({});
       }
+    }
   }
+
+  const msg = onmessage(port as unknown as MessagePort);
+  console.log({ self })
+  port.onmessage = ({ data }) => {
+    console.log({ data })
+    if (data?.port) {
+      const { port: $$port } = data;
+      $port = $$port;
+      $port.start();
+      $port.onmessage = onmessage($port);
+    } else {
+      msg({ data } as MessageEvent<string>);
+    }
+  };
 }
 
-const msg = onmessage(self as unknown as MessagePort);
-self.onmessage = ({ data }) => {
-  if (data?.port) {
-    const { port } = data;
-    $port = port;
-    $port.start();
-    $port.onmessage = onmessage($port);
-  } else {
-    msg({ data } as MessageEvent<string>);
-  }
-};
+// @ts-ignore
+(self as SharedWorkerGlobalScope).onconnect = (e) => {
+  let [port] = e.ports;
+  start(port);
+}
+
+// If the script is running in a normal webworker then don't worry about the Shared Worker message ports 
+if (!("SharedWorkerGlobalScope" in self))
+  start(self as typeof self & MessagePort);
 
 export { };

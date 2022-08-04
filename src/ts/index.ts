@@ -63,9 +63,10 @@ export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as W
 export const SANDBOX_WORKER = USE_SHAREDWORKER ? new WebWorker(...SandboxWorkerConfig) : new Worker(...SandboxWorkerConfig) as WebWorker;
 
 try {
+  SANDBOX_WORKER?.start?.();
   channel.port1.start();
   channel.port2.start();
-  SANDBOX_WORKER.postMessage({ port: channel.port1 }, [channel.port1]);
+  SANDBOX_WORKER.port.postMessage({ port: channel.port1 }, [channel.port1]);
   BundleWorker.postMessage({ port: channel.port2 }, [channel.port2]);
 } catch (err) {
   console.log(err);

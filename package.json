@@ -1,6 +1,6 @@
 {
     "name": "bundlejs",
-    "version": "0.0.5",
+    "version": "0.0.8",
     "private": true,
     "license": "MIT",
     "type": "module",
@@ -11,6 +11,7 @@
         "commit": "git cz",
         "build": "gulp build",
         "watch": "gulp --watch",
+        "preview": "gulp watch",
         "test": "pnpm build",
         "pre-release": "pnpm test",
         "semantic-release": "semantic-release",

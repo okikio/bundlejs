@@ -229,8 +229,6 @@ export const start = async (port: MessagePort) => {
         } else throw e;
       }
 
-      console.log(result);
-
       // Create an array of assets and actual output files, this will later be used to calculate total file size
       content = await Promise.all(
         [...assets]
