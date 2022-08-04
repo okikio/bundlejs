@@ -127,8 +127,8 @@ export const start = async (port: MessagePort) => {
 
   const getConfig = async (config: string) => {
     return new Promise(resolve => {
-      $port.postMessage({ type: "config", data: config });
-      configChannel.port1.onmessage = async function ({ data }: MessageEvent<string>) {
+      $port.postMessage(config);
+      $port.onmessage = async function ({ data }: MessageEvent<string>) {
         resolve(
           typeof data === "object" &&
             !Array.isArray(data) &&
@@ -140,7 +140,8 @@ export const start = async (port: MessagePort) => {
 
   BuildEvents.on("build", async (details) => {
     let { config: _config, value: input } = details;
-    let config = deepAssign({}, DefaultConfig, await getConfig(_config ? _config : "{}")) as BundleConfigOptions;
+    let newConfig = await getConfig(_config ? _config : "export default {}");
+    let config = deepAssign({}, DefaultConfig, newConfig) as BundleConfigOptions;
 
     // Exclude certain esbuild config properties
     let { define = {}, loader = {}, ...esbuildOpts } = (config.esbuild ?? {}) as BundleConfigOptions['esbuild'];
@@ -151,6 +152,8 @@ export const start = async (port: MessagePort) => {
       logger([`esbuild worker not initialized\nYou need to wait for a little bit before trying to bundle files`], "warning");
       return;
     }
+
+    await initPromise;
 
     const assets: OutputFile[] = [];
     let output = "";
@@ -225,6 +228,8 @@ export const start = async (port: MessagePort) => {
           return logger(message, "error");
         } else throw e;
       }
+
+      console.log(result);
 
       // Create an array of assets and actual output files, this will later be used to calculate total file size
       content = await Promise.all(
@@ -400,30 +405,9 @@ export const start = async (port: MessagePort) => {
       const { port: _port } = data as { port?: MessagePort };
       $port = _port;
       $port.start();
-      $port.onmessage = async function ({ data: $data }: MessageEvent<{ type: string, data: any }>) {
-        const { type, data } = $data;
-        if (type === "transform") {
-          try {
-            await initPromise;
-
-            const { code: config } = (
-              await transform(data, {
-                loader: 'ts',
-                format: 'iife',
-                globalName: 'std_global',
-                treeShaking: true
-              })
-            );
-
-            $port.postMessage({ type: "transform", data: config });
-          } catch (e) {
-            console.warn(e)
-            $port.postMessage({ type: "transform", data: "var std_global = {}" });
-          }
-        } else if (type === "config") {
-          configChannel.port2.postMessage(data);
-        }
-      };
+      // $port.onmessage = async function ({ data }: MessageEvent<string>) {
+      //   $port.postMessage(data);
+      // };
     } else {
       let { event, details } = JSON.parse(decode(data as BufferSource));
       BuildEvents.emit(event, details);

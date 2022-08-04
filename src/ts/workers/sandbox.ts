@@ -1,49 +1,61 @@
 /// <reference lib="webworker" />
-// import { initialize, transform } from "esbuild-wasm";
-// export let _initialized = false;
+import { initialize, transform } from "esbuild-wasm";
+export let _initialized = false;
 
-export const configChannel = new MessageChannel();
-configChannel.port1.start();
+const initPromise = (async () => {
+  try {
+    if (!_initialized) {
+      await initialize({
+        worker: false,
+        wasmURL: `./esbuild.wasm`
+      });
+
+      _initialized = true;
+    }
+  } catch (error) {
+    console.warn("Sandbox", error)
+  }
+})();
 
 let $port: MessagePort;
 
+const configs = new Map<string, string>();
 export const onmessage = (port: MessagePort) => {
-  const getTransform = async (input: string) => {
-    return new Promise(resolve => {
-      $port.postMessage({ type: "transform", data: input });
-      configChannel.port1.onmessage = function ({ data }: MessageEvent<string>) {
-        resolve(data);
-      };
-    });
-  }
-
-  return async function ({ data: $data }: MessageEvent<{ type: string, data: any }>) {
-    const { type, data } = $data;
-    if (type === "config") {
+  return async function ({ data }: MessageEvent<string>) {
       try {
-        const config = await getTransform(data);
+        if (!_initialized)
+          await initPromise;
+
+        const config = configs.has(data) ? configs.get(data) : (
+          await transform(data, {
+            loader: 'ts',
+            format: 'iife',
+            globalName: 'std_global',
+            treeShaking: true
+          })
+        ).code;
+
+        configs.set(data, config);
+
         const result = await Function('"use strict";' + config + 'return (std_global)')();
-        port.postMessage({ type: "config", data: result.default ?? result });
+        // const result = (0, eval)(config + ' std_global');
+        port.postMessage(result.default ?? result);
       } catch (e) {
-        console.warn(e)
-        port.postMessage({ type: "config", data: {} });
+        console.warn(e);
+        port.postMessage({});
       }
-    } else if (type === "transform") {
-      configChannel.port2.postMessage(data);
-    }
   }
 }
 
 const msg = onmessage(self as unknown as MessagePort);
 self.onmessage = ({ data }) => {
-  // "use strict";
   if (data?.port) {
     const { port } = data;
     $port = port;
     $port.start();
-    $port.addEventListener("message", onmessage($port));
+    $port.onmessage = onmessage($port);
   } else {
-    msg({ data } as MessageEvent<{ type: string, data: any }>);
+    msg({ data } as MessageEvent<string>);
   }
 };
 
