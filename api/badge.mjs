@@ -23,6 +23,7 @@ export default async function handler(request, response) {
     const url = new URL(request.url, `http://${request.headers.host}`);
     const initialValue = parseShareQuery(url) || inputModelResetValue;
     const initialConfig = parseConfig(url) || {};
+    const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
 
     setFile("/index.tsx", initialValue);
 
@@ -35,12 +36,12 @@ export default async function handler(request, response) {
         platform: "browser" // PLATFORM_AUTO
       }
     }, DefaultConfig, initialConfig);
+
     const result = await build(config);
-    console.log(result)
     const size = await getSize(result.contents);
 
-    const imgShield = await fetch(`https://img.shields.io/badge/${encodeURIComponent(size.size)}-bundlejs-blue`).then(res => res.text());
-    response.setHeader('Cache-Control', 'max-age=30, s-maxage=86400, stale-while-revalidate');
+    const imgShield = await fetch(`https://img.shields.io/badge/${encodeURIComponent(size.size)}-bundlejs-blue?link=${urlQuery}&link=${urlQuery}`).then(res => res.text());
+    response.setHeader('Cache-Control', 'max-age=120, s-maxage=86400, stale-while-revalidate');
     response.setHeader('Content-Type', 'image/svg+xml');
     return response.send(imgShield);
   } catch (e) {
