@@ -54,9 +54,7 @@ export const start = async (port: MessagePort) => {
   }
 
   const msg = onmessage(port as unknown as MessagePort);
-  console.log({ self })
   port.onmessage = ({ data }) => {
-    console.log({ data })
     if (data?.port) {
       const { port: $$port } = data;
       $port = $$port;

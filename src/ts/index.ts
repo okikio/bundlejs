@@ -66,7 +66,7 @@ try {
   SANDBOX_WORKER?.start?.();
   channel.port1.start();
   channel.port2.start();
-  SANDBOX_WORKER.port.postMessage({ port: channel.port1 }, [channel.port1]);
+  SANDBOX_WORKER.postMessage({ port: channel.port1 }, [channel.port1]);
   BundleWorker.postMessage({ port: channel.port2 }, [channel.port2]);
 } catch (err) {
   console.log(err);
@@ -285,7 +285,15 @@ export const build = async (app: App) => {
 
   let setIframeHTML = (iframe: HTMLIFrameElement, newHTML: string) => {
     iframe?.contentWindow?.document?.open();
-    iframe?.contentWindow?.document?.write(newHTML);
+
+    if (newHTML) {
+      if (iframe?.contentWindow?.document?.documentElement)
+        iframe.contentWindow.document.documentElement.innerHTML = newHTML;
+      // else
+      //   iframe?.contentWindow?.document?.write?.(newHTML);
+
+    }
+
     iframe?.contentWindow?.document?.close();
   };
 
