@@ -289,8 +289,8 @@ export const build = async (app: App) => {
     if (newHTML) {
       if (iframe?.contentWindow?.document?.documentElement)
         iframe.contentWindow.document.documentElement.innerHTML = newHTML;
-      // else
-      //   iframe?.contentWindow?.document?.write?.(newHTML);
+      else
+        iframe?.contentWindow?.document?.write?.(newHTML);
 
     }
 
