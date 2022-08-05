@@ -16,7 +16,7 @@ export const inputModelResetValue = [
 
 export default async function handler(request, response) {
   try {
-    
+
     const url = new URL(request.url, `http://${request.headers.host}`);
     const initialValue = parseShareQuery(url) || inputModelResetValue;
     const initialConfig = parseConfig(url) || {};
@@ -38,7 +38,7 @@ export default async function handler(request, response) {
     const size = await getSize(result.contents);
 
     const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(size.size)}-blue?link=${urlQuery}&link=${urlQuery}`).then(res => res.text());
-    response.setHeader('Cache-Control', 'max-age=120, s-maxage=86400, stale-while-revalidate');
+    response.setHeader('Cache-Control', 'max-age=10, s-maxage=8640, stale-while-revalidate');
     response.setHeader('Content-Type', 'image/svg+xml;charset=utf-8');
     return response.send(imgShield);
   } catch (e) {

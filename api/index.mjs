@@ -45,7 +45,7 @@ export default async function handler(request, response) {
 
     const end = performance.now();
 
-    response.setHeader('Cache-Control', 'max-age=30, s-maxage=86400, stale-while-revalidate');
+    response.setHeader('Cache-Control', 'max-age=10, s-maxage=8640, stale-while-revalidate');
     return response.status(200).json({
       query: request.query,
       config,
