@@ -7,6 +7,7 @@ import Icons from "unplugin-icons/vite";
 import Sitemap from "@astrojs/sitemap";
 import SolidJS from "@astrojs/solid-js";
 import Tailwind from "@astrojs/tailwind";
+import MDX from "@astrojs/mdx";
 
 import { PRODUCTION_MODE } from "./env.mjs";
 import { outDir } from "./shared.config.cjs";
@@ -28,80 +29,83 @@ function createSVG(icon, iconlist = fluentIcons) {
     height: IconData.height,
     viewBox: `0 0 ${IconData.width} ${IconData.height}`,
     class: "icon",
-    "rehype-icon": icon,
+    "rehype-icon": icon
   }, [IconData.body]);
 }
 
 // https://astro.build/config
 export default defineConfig({
   outDir,
-  build: { format: "file" },
+  build: {
+    format: "file"
+  },
   site: "https://bundlejs.com",
   markdown: {
-    rehypePlugins: [
-      "rehype-slug",
-      ["rehype-autolink-headings", {
-        behavior: "append",
-        properties: {
-          ariaHidden: true, tabIndex: -1,
-          "custom-slug-link": "",
-        },
-        content: [createSVG("link-24-regular")],
-        test: ["h2", "h3", "h4", "h5", "h6", "details", "summary", "astro-root",],
-      }],
-      ["rehype-external-links", {
-        target: "_blank",
-        rel: ["noopener"],
-        content: [createSVG("arrow-up-right-24-regular")],
-      }],
-    ],
+    // rehypePlugins: [
+    //   ["rehype-slug"],
+    //   ["rehype-autolink-headings", {
+    //     behavior: "append",
+    //     properties: {
+    //       ariaHidden: true,
+    //       tabIndex: -1,
+    //       "custom-slug-link": ""
+    //     },
+    //     content: [createSVG("link-24-regular")],
+    //     test: ["h2", "h3", "h4", "h5", "h6", "details", "summary", "astro-root"]
+    //   }],
+    //   ["rehype-external-links", {
+    //     target: "_blank",
+    //     rel: ["noopener"],
+    //     content: [createSVG("arrow-up-right-24-regular")]
+    //   }]
+    // ],
     shikiConfig: {
       theme: "github-dark",
       langs: [],
-      wrap: false,
-    },
+      wrap: false
+    }
   },
   integrations: [
     SolidJS(),
-    Tailwind({
-      config: {
-        applyBaseStyles: false
-      }
-    }),
+    Tailwind({ config: { applyBaseStyles: false } }),
     Sitemap(),
+    MDX()
   ],
-  experimental: { integrations: true },
+  experimental: {
+    integrations: true
+  },
   vite: {
     worker: {
       format: "es",
-      rollupOptions: {
-        output: [{
-          format: "es",
-          entryFileNames: "[name].mjs",
-          inlineDynamicImports: true
-        }]
-        // inlineDynamicImports: true
-
-      }
+      // rollupOptions: {
+      //   output: [{
+      //     format: "es",
+      //     entryFileNames: "[name].mjs",
+      //     inlineDynamicImports: true
+      //   }],
+      //   inlineDynamicImports: true
+      // }
     },
     build: {
-      assetsInlineLimit: 0,
+      assetsInlineLimit: 0
     },
-    ssr: { external: ["svgo", "github-slugger", "./preload-helper"] },
+    ssr: {
+      external: ["svgo"]
+    },
     plugins: [
       AutoImport({
         resolvers: [
           IconsResolver({
             prefix: "Icon",
-            extension: "tsx",
-          }),
-        ],
+            extension: "tsx"
+          })
+        ]
       }),
       Icons({
         autoInstall: true,
         compiler: "solid",
-        defaultClass: "icon",
+        defaultClass: "icon"
       })
-    ],
-  },
+    ]
+  }
 });

@@ -3,7 +3,7 @@
 import Snippet from './Snippet.astro';
 
 // @ts-ignore
-let snippets = await Astro.glob('../../snippets/*.md');
+// let snippets = await Astro.glob('../../snippets/*.mdx');
 
 let sortFn = (a, b) => {
   let aPriority = a.frontmatter.priority as number;
@@ -18,7 +18,7 @@ let sortFn = (a, b) => {
 ---
 
 <div class="snippets">
-  {
+  <!-- {
     snippets
       .sort(sortFn)
       .map(async ({ Content, frontmatter }) => {
@@ -28,7 +28,7 @@ let sortFn = (a, b) => {
           </Snippet>
         );
       })
-  }
+  } -->
 </div>
 
 <style lang="scss">
