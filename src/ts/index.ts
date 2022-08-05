@@ -160,7 +160,7 @@ BundleEvents.on({
     if (monacoLoadedFirst)
       BundleEvents.emit("ready");
   },
-  ready() {
+  async ready() {
     console.log("Ready");
 
     // If the URL contains share details make sure to use those details
@@ -177,7 +177,9 @@ BundleEvents.on({
       if (query || share || plaintext || config) {
         if (bundle != null) {
           // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
-          BundleEvents.emit("bundle", config);
+
+          let initialConfig = `export default ${config}`;
+          BundleEvents.emit("bundle", initialConfig);
         }
 
         isInitial = false;
