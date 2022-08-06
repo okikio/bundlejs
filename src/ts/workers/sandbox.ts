@@ -43,9 +43,10 @@ export const start = async (port: MessagePort) => {
 
         configs.set(data, config);
 
-        const result = await Function('"use strict";' + config + 'return (std_global)')();
+        console.log({ config })
+        const result = await Function('"use strict";return (async function () { "use strict";' + config + 'return (await std_global?.default); })()')();
         // const result = (0, eval)(config + ' std_global');
-        _port.postMessage(result.default ?? result);
+        _port.postMessage(result);
       } catch (e) {
         console.warn(e);
         _port.postMessage({});

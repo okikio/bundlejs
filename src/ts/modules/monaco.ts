@@ -65,21 +65,15 @@ export const inputModelResetValue = [
     'export * from "@okikio/animate";'
 ].join("\n");
 export const configModelResetValue = [
-    '// Config',
+    '// Configure Bundle',
     `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
-    `export default ${JSON.stringify(EasyDefaultConfig, null, "\t")} as BundleConfigOptions`
+    `export default (async function() {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")} as BundleConfigOptions;\n})()`
 ].join("\n"); // Indented with tab
 
 export { languages, Editor, Uri };
-export const build = (oldShareURL: URL, oldConfigFromURL: string): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
+export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
         parseSearchQuery(oldShareURL) || inputModelResetValue;
-
-    const initialConfig = [
-        '// Config',
-        `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
-        `export default ${oldConfigFromURL} as BundleConfigOptions`
-    ].join("\n") || configModelResetValue;
 
     let inputEl = document.querySelector(".app#input #editor") as HTMLElement;
     inputEl.textContent = "";
@@ -97,7 +91,7 @@ export const build = (oldShareURL: URL, oldConfigFromURL: string): [Editor.IStan
 
     let inputModel = Editor.createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
     let outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.js"));
-    let configModel = Editor.createModel(initialConfig, 'typescript', Uri.parse('file://config.tsx'));
+    let configModel = Editor.createModel(configModelResetValue, 'typescript', Uri.parse('file://config.tsx'));
 
     inputModel.updateOptions({ tabSize: 2 });
     outputModel.updateOptions({ tabSize: 2 });

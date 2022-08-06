@@ -392,11 +392,20 @@ export const build = async (app: App) => {
         model.uri.toString(),
 
         // Potentially allow other non-default exports if export isn't defined 
-        "default" in config && config?.default ? config?.default : config
+        config
       );
     } catch (e) {
       console.warn(e)
     }
+  };
+
+  const formatDocument = async (model: typeof inputModel) => {
+    const worker = await languages.typescript.getTypeScriptWorker();
+    const thisWorker = await worker(model.uri);
+
+    // @ts-ignore
+    const formattedCode = await thisWorker.format(model.uri.toString());
+    model.setValue(formattedCode);
   };
 
   const getModelType = () => {
@@ -510,14 +519,7 @@ export const build = async (app: App) => {
           const model = editor.getModel();
           if (/^(js|javascript|ts|typescript)/.test(model.getLanguageId())) {
             try {
-              (async () => {
-                const worker = await languages.typescript.getTypeScriptWorker();
-                const thisWorker = await worker(model.uri);
-
-                // @ts-ignore
-                const formattedCode = await thisWorker.format(model.uri.toString());
-                editor.setValue(formattedCode);
-              })();
+              formatDocument(model);
             } catch (e) {
               console.warn(e)
             }
@@ -595,18 +597,29 @@ export const build = async (app: App) => {
     };
 
     // Build the Code Editor
-    let newConfig = {};
-    try {
-      const searchParams = oldShareURL.searchParams;
-      const config = searchParams.get("config") ?? "{}";
-      newConfig = await getConfig(`export default ${config}`);
-    } catch (e) { }
+    [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL);
 
-    const oldConfigFromURL = serialize(
-      deepAssign({}, EasyDefaultConfig, newConfig),
-      { unsafe: true, ignoreFunction: true, space: 2 }
-    );
-    [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL, oldConfigFromURL);
+    (async () => {
+      let newConfig = {};
+      try {
+        const searchParams = oldShareURL.searchParams;
+        const config = searchParams.get("config") ?? "{}";
+        newConfig = await getConfig(`export default ${config}`);
+      } catch (e) { }
+
+      const oldConfigFromURL = serialize(
+        deepAssign({}, EasyDefaultConfig, newConfig),
+        { unsafe: true, ignoreFunction: true, space: 2 }
+      );
+
+      configModel.setValue([
+        '// Configure Bundle',
+        `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
+        `export default (async function() {\n return ${oldConfigFromURL} as BundleConfigOptions;\n})()`
+      ].join("\n"));
+
+      await formatDocument(configModel);
+    })();
 
     FadeLoadingScreen.play(); // Fade away the loading screen
     await FadeLoadingScreen;
