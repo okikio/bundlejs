@@ -1106,6 +1106,7 @@ ${s.toString()}`);
               .map((u) => {
                 if (u.status == "fulfilled") return u.value;
               });
+            console.timeLog("esbuild.build", c());
             return (
               (t.assets = i.concat(d)),
               {
@@ -1669,6 +1670,7 @@ async function us(e = {}) {
     o = [],
     a;
   try {
+    console.time("esbuild.build");
     try {
       const c = "p.env.NODE_ENV".replace("p.", "process.");
       a = await s({
@@ -1693,6 +1695,7 @@ async function us(e = {}) {
         ],
         ...i,
       });
+      console.timeLog("esbuild.build", "build");
     } catch (c) {
       if (c.errors) {
         const h = [...(await gt(c.errors, "error", !1))],
@@ -1704,6 +1707,7 @@ async function us(e = {}) {
         return v.emit("logger.error", g);
       } else throw c;
     }
+    console.timeEnd("esbuild.build");
     return (
       (l = await Promise.all([..._.assets].concat(a?.outputFiles))),
       (o = await Promise.all(

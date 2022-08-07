@@ -118,7 +118,7 @@
         "husky": "^8.0.1",
         "jstransformer-markdown-it": "^3.0.0",
         "nanoid": "^4.0.0",
-        "postcss": "^8.4.14",
+        "postcss": "^8.4.16",
         "postcss-font-grabber": "^3.1.0",
         "postcss-replace": "^2.0.0",
         "postcss-scss": "^4.0.4",
