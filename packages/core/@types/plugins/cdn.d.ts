@@ -1,7 +1,7 @@
-import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 /** CDN Plugin Namespace */
 export declare const CDN_NAMESPACE = "cdn-url";
 /**
@@ -10,11 +10,11 @@ export declare const CDN_NAMESPACE = "cdn-url";
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export declare const CDN_RESOLVE: (cdn: string, events: typeof EVENTS) => (args: OnResolveArgs) => Promise<OnResolveResult>;
+export declare const CDN_RESOLVE: (cdn: string, events: typeof EVENTS) => (args: ESBUILD.OnResolveArgs) => Promise<ESBUILD.OnResolveResult>;
 /**
  * Esbuild CDN plugin
  *
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export declare const CDN: (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions) => Plugin;
+export declare function CDN(events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin;

@@ -1,8 +1,8 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 
 import { getRequest } from '../utils/fetch-and-cache';
 import { decode } from '../utils/encode-decode';
@@ -49,7 +49,7 @@ export const fetchPkg = async (url: string, events: typeof EVENTS) => {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, config: BundleConfigOptions) => {
+export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, config: BuildConfig) => {
   const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
   const parentURL = new URL("./", path).toString();
   const FileSystem = config.filesystem;
@@ -80,7 +80,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
  * @param logger Console log
  */
 export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
-  return async (args: OnResolveArgs): Promise<OnResolveResult> => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     let argPath = args.path.replace(/\/$/, "/index");
 
@@ -147,11 +147,13 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const FileSystem = config.filesystem;
-  const assets = state.assets ?? [];
+
+  const [get, set] = state;
+  const assets = get()['assets'] ?? [];
   return {
     name: HTTP_NAMESPACE,
     setup(build) {
@@ -224,7 +226,7 @@ export const HTTP = (events: typeof EVENTS, state: typeof STATE, config: BundleC
                 return result.value;
             });
 
-        state.assets = assets.concat(_assetResults);
+        set({ assets: assets.concat(_assetResults) })
         return {
           contents: content,
           loader: inferLoader(url),

@@ -57,7 +57,9 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   const oldShareURL = new URL(globalThis.location.toString());
 
   const initialValue = parseShareQuery(oldShareURL) || inputModelResetValue;
-  const initialConfig = JSON.stringify(parseConfig(oldShareURL), null, "\t") || configModelResetValue;
+  const initialConfig =
+    // JSON.stringify(parseConfig(oldShareURL), null, "\t") ||
+    configModelResetValue;
 
   inputEl.textContent = "";
 

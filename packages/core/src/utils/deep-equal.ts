@@ -73,7 +73,7 @@ export const deepDiff = (obj1: any, obj2: any) => {
  * Copyright (c) 2017-present, Jon Schlinkert.
  * Released under the MIT License.
  */
-export const deepAssign = (target, ...args) => {
+export function deepAssign(target, ...args) {
   let i = 0;
   if (isPrimitive(target)) target = args[i++];
   if (!target) target = {};

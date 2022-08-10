@@ -1,7 +1,7 @@
-import type { Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 /** External Plugin Namespace */
 export declare const EXTERNALS_NAMESPACE = "external-globals";
 /** An empty export as a Uint8Array */
@@ -66,4 +66,4 @@ export declare const isExternal: (id: string, external?: string[]) => string;
  *
  * @param external List of packages to marks as external
  */
-export declare const EXTERNAL: (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions) => Plugin;
+export declare function EXTERNAL(events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin;

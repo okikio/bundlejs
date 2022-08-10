@@ -1,6 +1,4 @@
 import * as lzstring from "./lz-string";
-import { EasyDefaultConfig } from "../configs/options";
-import { deepAssign } from "./deep-equal";
 
 const { decompressFromURL } = lzstring;
 
@@ -99,17 +97,5 @@ export const parseShareQuery = (shareURL: URL) => {
     }
 
     return result.trim();
-  } catch (e) { }
-};
-
-/**
-* Converts URL's into config. 
-* - `config` represents the JSON config
-*/
-export const parseConfig = (shareURL: URL) => {
-  try {
-    const searchParams = shareURL.searchParams;
-    const config = searchParams.get("config") ?? "{}";
-    return deepAssign({}, EasyDefaultConfig, JSON.parse(config ? config : "{}"));
   } catch (e) { }
 };

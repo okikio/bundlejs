@@ -86,17 +86,17 @@
   "devDependencies": {
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
-    "@types/node": "^18.6.4",
-    "@vitest/ui": "^0.20.3",
+    "@types/node": "^18.6.5",
+    "@vitest/ui": "^0.21.1",
     "babel-preset-solid": "^1.4.8",
     "del-cli": "^5.0.0",
-    "esbuild-wasm": "^0.14.53",
+    "esbuild-wasm": "^0.15.0",
     "esno": "^0.16.3",
-    "pnpm": "^7.8.0",
+    "pnpm": "^7.9.0",
     "typescript": "^4.7.4",
     "ultra-runner": "^3.10.5",
-    "vite": "^3.0.4",
+    "vite": "^3.0.5",
     "vite-plugin-solid": "^2.3.0",
-    "vitest": "^0.20.3"
+    "vitest": "^0.21.1"
   }
 }
