@@ -1,7 +1,7 @@
-import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 
 import { resolveExports, legacy } from "../utils/resolve-exports";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name";
@@ -25,7 +25,7 @@ export const CDN_NAMESPACE = 'cdn-url';
  * @param logger Console log
  */
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
-  return async (args: OnResolveArgs): Promise<OnResolveResult> => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
       let { path: argPath, origin } = getCDNUrl(args.path, cdn);
@@ -123,7 +123,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export function CDN (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   let { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const FileSystem = config.filesystem; 

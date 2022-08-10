@@ -1,7 +1,7 @@
-import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 
 import { parsePackageName } from "../utils/parse-package-name";
 import { EXTERNALS_NAMESPACE } from './external';
@@ -39,7 +39,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param logger Console log
  */
 export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
-  return async (args: OnResolveArgs): Promise<OnResolveResult> => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     let path = args.path.replace(/^node\:/, "");
     let { path: argPath } = getCDNUrl(path);
 
@@ -61,7 +61,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typ
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export const ALIAS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   // Convert CDN values to URL origins
   let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   let aliases = config.alias ?? {};

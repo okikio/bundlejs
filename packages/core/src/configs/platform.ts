@@ -1,7 +1,7 @@
 /**
  * `@bundlejs/core`'s supported platforms
  */
-export type PLATFORM = "node" | "deno" | "browser";
+export type Platform = "node" | "deno" | "browser" | "wasm" | "deno-wasm";
 
 /**
  * Automatically chooses the esbuild version to run based off platform heuristics, 
@@ -11,4 +11,4 @@ export type PLATFORM = "node" | "deno" | "browser";
  * - Otherwise the environment is the browser
  * 
  */
-export const PLATFORM_AUTO: PLATFORM = ("Deno" in globalThis) ? "deno" : ("process" in globalThis) ? "node" : "browser";
+export const PLATFORM_AUTO: Platform = ("Deno" in globalThis) ? "deno" : ("process" in globalThis) ? "node" : "browser";

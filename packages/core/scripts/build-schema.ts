@@ -23,7 +23,7 @@ export const generateSchema = async () => {
     ],
   }
 
-  const program = TJS.getProgramFromFiles(["src/configs/options.ts"], compilerOpts, "./");
+  const program = TJS.getProgramFromFiles(["src/index.ts"], compilerOpts, "./");
   const generator = TJS.buildGenerator(program, {});
 
   // We can either get the schema for one file and one type...

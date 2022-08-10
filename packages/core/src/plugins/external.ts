@@ -1,7 +1,7 @@
-import type { Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
 import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { ESBUILD } from "../types";
 
 import { encode } from "../utils/encode-decode";
 import { getCDNUrl } from '../utils/util-cdn';
@@ -81,7 +81,7 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export const EXTERNAL = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export function EXTERNAL (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   const { external = [] } = config?.esbuild ?? {}; 
   return {
     name: EXTERNALS_NAMESPACE,

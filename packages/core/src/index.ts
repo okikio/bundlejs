@@ -1,6 +1,10 @@
+export * from "./init";
+export * from "./types";
+export * from "./transform";
 export * from "./build";
+export * from "./compress";
 
-export * from "./configs/options";
+export * from "./configs/config";
 export * from "./configs/events";
 export * from "./configs/state";
 export * from "./configs/platform";

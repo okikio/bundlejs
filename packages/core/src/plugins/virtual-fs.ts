@@ -1,12 +1,12 @@
 // Based on https://github.com/okikio/bundle/blob/main/src/ts/plugins/virtual-fs.ts
-import type { Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
-import type { EVENTS } from "../configs/events";
-import type { STATE } from '../configs/state';
+import type { BuildConfig, LocalState } from '../build';
+import type { StateArray } from '../configs/state';
+import type { EVENTS } from '../configs/events';
+import type { ESBUILD } from "../types";
 
 import { inferLoader } from "../utils/loader";
 export const VIRTUAL_FILESYSTEM_NAMESPACE = 'virtual-filesystem';
-export const VIRTUAL_FS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export const VIRTUAL_FS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   const FileSystem = config.filesystem;
 
   return {

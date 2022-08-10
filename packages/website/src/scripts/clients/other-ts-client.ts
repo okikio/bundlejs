@@ -8,6 +8,20 @@ import * as types from '../utils/monaco-workers/types';
 import OtherTSWorker from '../workers/other-ts.ts?worker';
 import OtherTSWorkerURL from '../workers/other-ts.ts?url';
 
+export const channel = new MessageChannel();
+// export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
+// export const SANDBOX_WORKER = USE_SHAREDWORKER ? new WebWorker(...SandboxWorkerConfig) : new Worker(...SandboxWorkerConfig) as WebWorker;
+
+// try {
+//   SANDBOX_WORKER?.start?.();
+//   channel.port1.start();
+//   channel.port2.start();
+//   SANDBOX_WORKER.postMessage({ port: channel.port1 }, [channel.port1]);
+//   BundleWorker.postMessage({ port: channel.port2 }, [channel.port2]);
+// } catch (err) {
+//   console.log(err);
+// }
+
 function isPromiseLike<T>(obj: any): obj is PromiseLike<T> {
 	if (typeof obj.then === 'function') {
 		return true;

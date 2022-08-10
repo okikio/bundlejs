@@ -10,4 +10,4 @@ export declare const deepDiff: (obj1: any, obj2: any) => {};
  * Copyright (c) 2017-present, Jon Schlinkert.
  * Released under the MIT License.
  */
-export declare const deepAssign: (target: any, ...args: any[]) => any;
+export declare function deepAssign(target: any, ...args: any[]): any;

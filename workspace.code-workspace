@@ -21,5 +21,9 @@
 			"path": "packages/website"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"marquee.widgets.npm-stats.packageNames": [
+			"root"
+		]
+	}
 }

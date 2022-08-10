@@ -14,7 +14,8 @@ import * as ts from "typescript";
 
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { 
-  setFile, deepAssign, deepDiff, lzstring, getRequest, DefaultConfig, 
+  setFile, deepAssign, deepDiff, lzstring, getRequest,
+  // DefaultConfig, 
   // build 
 } from "@bundlejs/core";
 const { compressToURL } = lzstring;
@@ -178,7 +179,8 @@ export class OtherTSWorker {
     config = JSON.parse(config ? config : "{}") ?? {};
 
     // Basically only keep the config options that have changed from the default
-    let changedConfig = deepDiff(DefaultConfig, deepAssign({}, DefaultConfig, config));
+    // DefaultConfig
+    let changedConfig = deepDiff({}, deepAssign({}, {}, config));
     let changedEntries = Object.keys(changedConfig);
 
     // Collect the first few import and export statements

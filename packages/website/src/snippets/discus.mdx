@@ -6,11 +6,21 @@ setup: |
   import Giscus from "../components/Giscus.tsx";
 ---
 
-<script src="https://discus.bundlejs.com/client.js" data-repo="okikio/bundlejs"
-data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM=" data-category="General"
-data-category-id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw" data-mapping="pathname" data-reactions-enabled="1"
-data-emit-metadata="0" data-input-position="bottom" data-theme="dark" data-lang="en" data-loading="lazy"
-crossorigin="anonymous" defer fetchpriority="low" 
+<script 
+  src="https://giscus.bundlejs.com/client.js"
+  data-repo="okikio/bundlejs"
+  data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM="
+  data-mapping="number"
+  data-term="20"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="https://giscus.bundlejs.com/themes/custom_example.css"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  defer
+  fetchpriority="low" 
 ></script>
 
 <!-- <Giscus 

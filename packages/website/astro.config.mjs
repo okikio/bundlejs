@@ -77,14 +77,6 @@ export default defineConfig({
   vite: {
     worker: {
       format: "es",
-      // rollupOptions: {
-      //   output: [{
-      //     format: "es",
-      //     entryFileNames: "[name].mjs",
-      //     inlineDynamicImports: true
-      //   }],
-      //   inlineDynamicImports: true
-      // }
     },
     build: {
       assetsInlineLimit: 0

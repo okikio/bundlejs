@@ -34,8 +34,3 @@ export declare const parseTreeshakeExports: (str: string) => string[];
 * - `share` represents all other code that isn't export/import
 */
 export declare const parseShareQuery: (shareURL: URL) => string;
-/**
-* Converts URL's into config.
-* - `config` represents the JSON config
-*/
-export declare const parseConfig: (shareURL: URL) => any;

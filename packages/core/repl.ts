@@ -1,9 +1,4 @@
-import 'cross-fetch/dist/node-polyfill.js';
-import { build, getSize, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
-// import { build, getSize, setFile, PLATFORM_AUTO } from "./src/index";
-
-// @ts-ignore
-// import type { build as buildType } from "./src/index";
+import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
 
 console.log("\n");
 setFile("/index.tsx", `\
@@ -23,7 +18,7 @@ let result = await bundle({
   }
 
 });
-console.log(await getSize(result.contents));
+console.log(await compress(result.contents));
 
 if (PLATFORM_AUTO == "deno") {
   globalThis?.Deno?.exit?.();

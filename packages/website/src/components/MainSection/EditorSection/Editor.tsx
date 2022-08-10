@@ -15,26 +15,26 @@ export function Editor(props?: ComponentProps<'div'>) {
 
   onMount(() => {
     (async () => {
-      const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
-      const [editor, input, output, config] = build(ref);
+      // const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
+      // const [editor, input, output, config] = build(ref);
 
       setState("monaco", {
         loading: false,
-        editor,
-        languages,
+        // editor,
+        // languages,
         workers: {
           other: otherTSWorker as any
         },
-        initialValue: {
-          input: inputModelResetValue,
-          output: outputModelResetValue,
-          config: configModelResetValue,
-        },
-        models: {
-          input,
-          output,
-          config
-        }
+        // initialValue: {
+        //   input: inputModelResetValue,
+        //   output: outputModelResetValue,
+        //   config: configModelResetValue,
+        // },
+        // models: {
+        //   input,
+        //   output,
+        //   config
+        // }
       });
     })()
   });
