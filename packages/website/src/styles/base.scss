@@ -182,6 +182,7 @@ a code {
 
 pre {
   @apply rounded-lg cursor-auto p-5;
+  @apply overflow-auto;
 
   code {
     @apply p-0;
@@ -251,6 +252,8 @@ details {
   }
 
   &.inline-details {
+    @apply bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700;
+
     & > summary {
       @apply pl-[2ch] py-0;
 
@@ -288,5 +291,5 @@ details {
 }
 
 .accordian:not(:last-child) {
-  @apply border-b border-b-quaternary rounded-none;
+  @apply border-b border-b-gray-300 dark:border-b-quaternary rounded-none;
 }
