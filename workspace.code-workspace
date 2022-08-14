@@ -13,10 +13,6 @@
 			"path": "packages/core"
 		},
 		{
-			"name": "📦 old-bundle",
-			"path": "packages/old"
-		},
-		{
 			"name": "🚀 @bundlejs/website",
 			"path": "packages/website"
 		}

@@ -87,7 +87,7 @@
     "@okikio/emitter": "^2.1.7",
     "esbuild": "^0.15.2",
     "esbuild-wasm": "^0.15.2",
-    "rollup": "^2.77.3",
+    "rollup": "^2.78.0",
     "solid-js": "^1.4.8"
   },
   "devDependencies": {
