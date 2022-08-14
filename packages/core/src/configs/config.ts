@@ -21,8 +21,8 @@ export function createConfig<T extends "transform" | "build" | "compress", O ext
   if (type == "transform") {
     return deepAssign({}, TRANSFORM_CONFIG, opts) as TransformConfig;
   } else if (type == "compress") {
-    return deepAssign({}, BUILD_CONFIG, opts) as BuildConfig;
-  } else {
     return deepAssign({}, COMPRESS_CONFIG, typeof opts == "string" ? { type: opts } : opts) as CompressionOptions;
+  } else {
+    return deepAssign({}, BUILD_CONFIG, opts) as BuildConfig;
   }
 }

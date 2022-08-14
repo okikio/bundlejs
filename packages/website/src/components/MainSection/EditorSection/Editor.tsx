@@ -7,7 +7,7 @@ import EditorButtons from "./EditorButtons";
 import { state, setState, initial } from "../store";
 import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
 
-export const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+// export const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
@@ -15,26 +15,26 @@ export function Editor(props?: ComponentProps<'div'>) {
 
   onMount(() => {
     (async () => {
-      // const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
-      // const [editor, input, output, config] = build(ref);
+      const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
+      const [editor, input, output, config] = build(ref);
 
       setState("monaco", {
         loading: false,
-        // editor,
-        // languages,
-        workers: {
-          other: otherTSWorker as any
-        },
-        // initialValue: {
-        //   input: inputModelResetValue,
-        //   output: outputModelResetValue,
-        //   config: configModelResetValue,
+        editor,
+        languages,
+        // workers: {
+          // other: otherTSWorker as any
         // },
-        // models: {
-        //   input,
-        //   output,
-        //   config
-        // }
+        initialValue: {
+          input: inputModelResetValue,
+          output: outputModelResetValue,
+          config: configModelResetValue,
+        },
+        models: {
+          input,
+          output,
+          config
+        }
       });
     })()
   });

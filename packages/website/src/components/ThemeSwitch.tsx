@@ -18,6 +18,7 @@ export function ThemeSwitch() {
 	onMount(() => {
 		html = html ?? document.querySelector('html');
 		ref.value = themeGet(html);
+		themeSet(ref.value, html);
 	});
 
 	return (

@@ -27,17 +27,20 @@
     "workbox-window": "^6.5.4"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^0.8.1",
+    "@astrojs/mdx": "^0.9.0",
     "@astrojs/sitemap": "^1.0.0",
     "@astrojs/solid-js": "^1.0.0",
     "@astrojs/tailwind": "^1.0.0",
     "@astropub/flow": "^0.2.2",
     "@babel/core": "^7.18.10",
-    "@iconify/json": "^2.1.88",
-    "astro": "1.0.1",
+    "@iconify/json": "^2.1.92",
+    "prettier": "^2.7.1",
+    "prettier-plugin-astro": "^0.5.0",
+    "astro": "1.0.5",
     "astro-icon": "^0.7.3",
     "astro-service-worker": "^0.1.2",
     "autoprefixer": "^10.4.8",
+    "clsx": "^1.2.1",
     "esno": "^0.16.3",
     "hastscript": "^7.0.2",
     "pnpm": "^7.9.0",
@@ -51,7 +54,7 @@
     "ultra-runner": "^3.10.5",
     "unplugin-auto-import": "^0.11.1",
     "unplugin-icons": "^0.14.8",
-    "vite": "^3.0.5",
+    "vite": "^3.0.7",
     "vitest": "^0.21.1"
   }
 }

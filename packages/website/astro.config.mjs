@@ -41,6 +41,20 @@ export default defineConfig({
   },
   site: "https://bundlejs.com",
   markdown: {
+    shikiConfig: {
+      theme: "github-dark",
+      langs: [],
+      wrap: false
+    }
+  },
+  integrations: [
+    SolidJS(),
+    Tailwind({ 
+      config: { applyBaseStyles: false } 
+    }),
+    Sitemap(),
+    MDX({
+
     // rehypePlugins: [
     //   ["rehype-slug"],
     //   ["rehype-autolink-headings", {
@@ -59,40 +73,24 @@ export default defineConfig({
     //     content: [createSVG("arrow-up-right-24-regular")]
     //   }]
     // ],
-    shikiConfig: {
-      theme: "github-dark",
-      langs: [],
-      wrap: false
-    }
-  },
-  integrations: [
-    SolidJS(),
-    Tailwind({ config: { applyBaseStyles: false } }),
-    Sitemap(),
-    MDX()
+    })
   ],
-  experimental: {
-    integrations: true
-  },
   vite: {
     worker: {
       format: "es",
-    },
-    build: {
-      assetsInlineLimit: 0
     },
     ssr: {
       external: ["svgo"]
     },
     plugins: [
-      AutoImport({
-        resolvers: [
-          IconsResolver({
-            prefix: "Icon",
-            extension: "tsx"
-          })
-        ]
-      }),
+      // AutoImport({
+      //   resolvers: [
+      //     IconsResolver({
+      //       prefix: "Icon",
+      //       extension: "tsx"
+      //     })
+      //   ]
+      // }),
       Icons({
         autoInstall: true,
         compiler: "solid",

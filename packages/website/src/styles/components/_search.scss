@@ -4,11 +4,18 @@
 }
 
 .search-backdrop {
-  @apply fixed top-0 left-0 w-[100vw] h-[100vh] bg-black opacity-50;
-  @apply z-10;
+  @apply transition-colors duration-100;
+  @apply fixed top-0 left-0 w-[100vw] h-[100vh];
+  @apply bg-black bg-opacity-0;
+  @apply pointer-events-none;
+  @apply z-[5];
 
   @supports (backdrop-filter: blur(10px)) {
-    backdrop-filter: blur(10px);
+    &[data-open=true] {
+      @apply bg-opacity-50;
+      @apply pointer-events-auto;
+      backdrop-filter: blur(10px);
+    }
   }
 }
 

@@ -1,5 +1,4 @@
-import { s as on } from "./schema-97bfa779.mjs";
-const Ke = "0.15.0", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
+const Ke = "0.15.2", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
 var at = class {
   constructor(e) {
     this.map = new Map(e);
@@ -174,7 +173,7 @@ async function ts(e = le) {
           `https://deno.land/x/esbuild@v${Ke}/wasm.js`
         );
       default:
-        return await import("./esbuild-7ca9c6d5.mjs").then((t) => t.b);
+        return await import("./esbuild-a70385e0.mjs").then((t) => t.b);
     }
   } catch (t) {
     throw t;
@@ -189,7 +188,7 @@ async function ft(e = le, t = {}) {
         if ("wasmModule" in t)
           await s.initialize(t);
         else {
-          const { default: r } = await import("./esbuild-wasm-72860a9d.mjs");
+          const { default: r } = await import("./esbuild-wasm-5ee6d8f5.mjs");
           await s.initialize({
             wasmModule: new WebAssembly.Module(await r()),
             ...t
@@ -1143,7 +1142,7 @@ function or(e) {
   return t < e.length && s.text(e.slice(t)), s.done();
 }
 const ie = async (e, t = "error", s = !0) => {
-  const { formatMessages: r } = await import("./esbuild-7ca9c6d5.mjs").then((i) => i.b);
+  const { formatMessages: r } = await import("./esbuild-a70385e0.mjs").then((i) => i.b);
   return (await r(e, { color: s, kind: t })).map((i) => s ? or(i.replace(/(\s+)(\d+)(\s+)\│/g, `
 $1$2$3\u2502`)) : i);
 }, lr = {
@@ -1176,7 +1175,7 @@ $1$2$3\u2502`)) : i);
 };
 async function Yr(e = {}) {
   Y("initialized") || S.emit("init.loading");
-  const t = Ge("build", e), s = es({ assets: [], GLOBAL: [Y, _e] }), [r] = s, { platform: n, ...i } = t.init, { build: o } = await ft(n, i), { define: c = {}, loader: a = {}, ...l } = t.esbuild ?? {};
+  const t = Ge("build", e), s = es({ assets: [], GLOBAL: [Y, _e] }), [r] = s, { platform: n, ...i } = t.init ?? {}, { build: o } = await ft(n, i), { define: c = {}, loader: a = {}, ...l } = t.esbuild ?? {};
   let f = [], u = [], g;
   try {
     try {
@@ -1381,7 +1380,7 @@ function ee(e, ...t) {
   return e;
 }
 function Ge(e, t) {
-  return e == "transform" ? ee({}, mr, t) : e == "compress" ? ee({}, lr, t) : ee({}, hr, typeof t == "string" ? { type: t } : t);
+  return e == "transform" ? ee({}, mr, t) : e == "compress" ? ee({}, hr, typeof t == "string" ? { type: t } : t) : ee({}, lr, t);
 }
 const mr = {
   esbuild: {
@@ -1952,7 +1951,7 @@ let be;
 const Ze = async () => {
   if (be)
     return be;
-  const e = await import("./brotli-38860abc.mjs"), { default: t, source: s } = e;
+  const e = await import("./brotli-114352a8.mjs"), { default: t, source: s } = e;
   return await t(await s()), be = e;
 };
 async function xr(e, t = 4096, s = 6, r = 22) {
@@ -2147,7 +2146,6 @@ export {
   Vs as resolveExports,
   Js as resolveImports,
   Nr as resolveVersion,
-  on as schema,
   Qr as semver,
   rr as setFile,
   _e as setState,

@@ -5,7 +5,8 @@ import {
   Uri
 } from "monaco-editor";
 
-import { parseShareQuery, parseConfig, schema, getResolvedPackage } from "@bundlejs/core";
+// parseConfig, schema, 
+import { parseShareQuery, getResolvedPackage } from "@bundlejs/core";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
@@ -228,16 +229,16 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   });
 
   // Configure the JSON language support with schemas and schema associations
-  languages.json.jsonDefaults.setDiagnosticsOptions({
-    validate: true,
-    schemas: [
-      {
-        uri: "@bundlejs/core/schema.ts", // id of the first schema
-        fileMatch: [configModel.uri.toString()], // associate with our model
-        schema
-      }
-    ]
-  });
+  // languages.json.jsonDefaults.setDiagnosticsOptions({
+  //   validate: true,
+  //   schemas: [
+  //     {
+  //       uri: "@bundlejs/core/schema.ts", // id of the first schema
+  //       fileMatch: [configModel.uri.toString()], // associate with our model
+  //       schema
+  //     }
+  //   ]
+  // });
 
   return [editor, inputModel, outputModel, configModel];
 };
