@@ -49,7 +49,12 @@ function sendMessage<T>(message: T) {
   try {
     const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
     if (!iframe) return;
-    iframe?.contentWindow?.postMessage?.({ giscus: message }, "https://giscus.bundlejs.com");
+
+    const iframeOrigin = "https://giscus.bundlejs.com";
+    if (iframe?.contentWindow?.location) {
+      console.log(iframe?.contentWindow)
+      iframe?.contentWindow?.postMessage?.({ giscus: message }, iframeOrigin);
+    }
   } catch (e) {
     console.warn(e);
   }
