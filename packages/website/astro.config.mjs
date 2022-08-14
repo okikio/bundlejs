@@ -12,27 +12,6 @@ import MDX from "@astrojs/mdx";
 import { PRODUCTION_MODE } from "./env.mjs";
 import { outDir } from "./shared.config.cjs";
 
-import { lookupCollection } from "@iconify/json";
-import { s as svg } from "hastscript";
-
-const { icons: fluentIcons } = await lookupCollection("fluent");
-
-/**
- * @param {string} icon
- * @param {typeof fluentIcons} iconlist
- * @returns SVG Element
- */
-function createSVG(icon, iconlist = fluentIcons) {
-  let IconData = iconlist[icon];
-  return svg("svg", {
-    width: IconData.width,
-    height: IconData.height,
-    viewBox: `0 0 ${IconData.width} ${IconData.height}`,
-    class: "icon",
-    "rehype-icon": icon
-  }, [IconData.body]);
-}
-
 // https://astro.build/config
 export default defineConfig({
   outDir,
@@ -49,31 +28,11 @@ export default defineConfig({
   },
   integrations: [
     SolidJS(),
-    Tailwind({ 
-      config: { applyBaseStyles: false } 
+    Tailwind({
+      config: { applyBaseStyles: false }
     }),
     Sitemap(),
-    MDX({
-
-    // rehypePlugins: [
-    //   ["rehype-slug"],
-    //   ["rehype-autolink-headings", {
-    //     behavior: "append",
-    //     properties: {
-    //       ariaHidden: true,
-    //       tabIndex: -1,
-    //       "custom-slug-link": ""
-    //     },
-    //     content: [createSVG("link-24-regular")],
-    //     test: ["h2", "h3", "h4", "h5", "h6", "details", "summary", "astro-root"]
-    //   }],
-    //   ["rehype-external-links", {
-    //     target: "_blank",
-    //     rel: ["noopener"],
-    //     content: [createSVG("arrow-up-right-24-regular")]
-    //   }]
-    // ],
-    })
+    MDX()
   ],
   vite: {
     worker: {

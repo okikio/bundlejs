@@ -46,9 +46,13 @@ export let themeGet = (html: HTMLHtmlElement) => {
  * @returns 
  */
 function sendMessage<T>(message: T) {
-  const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-  if (!iframe) return;
-  iframe?.contentWindow?.postMessage?.({ giscus: message }, "https://giscus.bundlejs.com");
+  try {
+    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    if (!iframe) return;
+    iframe?.contentWindow?.postMessage?.({ giscus: message }, "https://giscus.bundlejs.com");
+  } catch (e) {
+    console.warn(e);
+  }
 }
 
 // Set theme in localStorage, as well as in the html tag
