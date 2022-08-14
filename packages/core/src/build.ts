@@ -144,7 +144,7 @@ export async function build(opts: BuildConfig = {}) {
   const STATE = createState<LocalState>({ assets: [], GLOBAL: [getState, setState] });
   const [get] = STATE;
 
-  const { platform, ...initOpts } = CONFIG.init;
+  const { platform, ...initOpts } = CONFIG.init ?? {};
   const { build: bundle } = await init(platform, initOpts);
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
@@ -239,6 +239,6 @@ export async function build(opts: BuildConfig = {}) {
       outputs,
 
       ...result
-    };
+    } as const;
   } catch (e) { }
 }

@@ -2,11 +2,9 @@
 title: Discus
 id: discus
 priority: 6
-setup: |
-  import Giscus from "../components/Giscus.tsx";
 ---
 
-<script 
+<script   
   src="https://giscus.bundlejs.com/client.js"
   data-repo="okikio/bundlejs"
   data-repo-id="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM="
@@ -15,25 +13,10 @@ setup: |
   data-reactions-enabled="1"
   data-emit-metadata="0"
   data-input-position="bottom"
-  data-theme="https://giscus.bundlejs.com/themes/custom_example.css"
+  data-theme="preferred_color_scheme"
   data-lang="en"
   data-loading="lazy"
   crossorigin="anonymous"
   defer
   fetchpriority="low" 
 ></script>
-
-<!-- <Giscus 
-  repo="okikio/bundlejs"
-  repoId="MDEwOlJlcG9zaXRvcnkzNjE4NjgyNTM="
-  category="General"
-  categoryId="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyODg3MDcw" 
-  mapping="pathname" 
-  reactionsEnabled="1"
-  emitMetadata="0" 
-  inputPosition="bottom" 
-  theme="dark" 
-  lang="en" 
-  loading="lazy"
-  client:only
-/> -->

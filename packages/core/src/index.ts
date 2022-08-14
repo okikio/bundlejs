@@ -43,4 +43,4 @@ export * as base64 from "./deno/base64/mod";
 // Already exported by `./utils/path/mod`
 // export * as path from "./deno/path/mod";
 
-export { default as schema } from "./schema";
+// export { default as schema } from "./schema";

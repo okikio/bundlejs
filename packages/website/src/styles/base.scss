@@ -30,8 +30,8 @@ body {
 .dark {
   .giscus,
   .giscus-frame {
-    @apply bg-transparent;
-    color-scheme: dark;
+    color-scheme: none;
+    @apply rounded-md;
   }
 }
 
@@ -285,4 +285,8 @@ details {
       @apply list-disc list-inside;
     }
   }
+}
+
+.accordian:not(:last-child) {
+  @apply border-b border-b-quaternary rounded-none;
 }

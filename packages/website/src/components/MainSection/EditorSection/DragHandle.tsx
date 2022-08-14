@@ -124,7 +124,8 @@ export function DragHandle(props?: ComponentProps<'button'> & {
         ref = el as HTMLButtonElement;
         newProps.ref = ref;
       }}
-      onPointerDown={pointerDown}>
+      onPointerDown={pointerDown}
+    >
       <Show when={dirIsX()} fallback={<IconDragHandleHeight />}>
         <IconDragHandleWidth />
       </Show>

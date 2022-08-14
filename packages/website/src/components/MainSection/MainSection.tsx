@@ -45,7 +45,7 @@ export function MainSection(props?: ComponentProps<'div'>) {
         <SearchContainer onKeyUp={onKeyUp} />
       </Container>
   
-        <EditorSection ref={editorRef} /> 
+      <EditorSection ref={editorRef} /> 
   
       <Container class="lt-md:px-none pb-4">
         <Analysis />

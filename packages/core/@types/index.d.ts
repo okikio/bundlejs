@@ -33,4 +33,3 @@ export * as brotli from "./deno/brotli/mod";
 export * as denoflate from "./deno/denoflate/mod";
 export * as lz4 from "./deno/lz4/mod";
 export * as base64 from "./deno/base64/mod";
-export { default as schema } from "./schema";

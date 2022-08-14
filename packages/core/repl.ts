@@ -1,4 +1,5 @@
-import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
+// import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
+import { build, compress, setFile, PLATFORM_AUTO } from "./src/index";
 
 console.log("\n");
 setFile("/index.tsx", `\
@@ -14,9 +15,9 @@ let result = await bundle({
   entryPoints: ["/index.tsx", "/new.tsx"],
   esbuild: {
     treeShaking: true,
-    splitting: true
+    splitting: true,
+    format: "esm"
   }
-
 });
 console.log(await compress(result.contents));
 

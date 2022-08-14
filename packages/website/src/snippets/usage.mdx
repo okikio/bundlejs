@@ -3,6 +3,7 @@ title: Usage
 id: usage
 priority: 0
 ---
+
 When bundling packages that also export CSS and other external files, [bundlejs](https://bundlejs.com) now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
 
 Treeshaking is available, but not all CDNs support access to each packages package.json so there might be slight package version conflicts. The only verified CDN with access to the package.json is [unpkg.com](https://unpkg.com).

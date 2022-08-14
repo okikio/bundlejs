@@ -16,7 +16,7 @@ import { createStreaming, Formatter } from "@dprint/formatter";
 import { 
   setFile, deepAssign, deepDiff, lzstring, getRequest,
   // DefaultConfig, 
-  // build 
+  build 
 } from "@bundlejs/core";
 const { compressToURL } = lzstring;
 // build, 
@@ -270,11 +270,11 @@ export class OtherTSWorker {
   async build(fileName, content, config = "{}") { 
     setFile("/index.tsx", content);
     config = JSON.parse(config ? config : "{}") ?? {};
-    let changedConfig = deepAssign({}, DefaultConfig, config);
+    // let changedConfig = deepAssign({}, DefaultConfig, config);
 
     // await initializedWASM;
-    // let result = await build();
-    let result = {};
+    let result = await build();
+    // let result = {};
     return result;
   }
 };

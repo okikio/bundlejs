@@ -6,6 +6,7 @@ import SearchResults from "./SearchResults";
 
 export function SearchContainer(props?: ComponentProps<'div'>) {
   const [getQuery, setQuery] = createSignal("");
+  const [open, setOpen] = createSignal(false);
 
   let ref: HTMLDivElement & { open?: boolean } = null;
   function onClick(e?: MouseEvent) {
@@ -15,6 +16,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
       e?.stopPropagation?.();
 
       ref.open = false;
+      setOpen(ref.open);
       ref.style.pointerEvents = "none";
     }
   }
@@ -25,6 +27,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     if (ref.contains(target)) {
       if (!ref?.open) {
         ref.open = true;
+      setOpen(ref.open);
         ref.style.pointerEvents = "auto";
       }
     }
@@ -32,6 +35,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     else if (ref?.open) {
       e?.stopPropagation?.();
       ref.open = false;
+      setOpen(ref.open);
       ref.style.pointerEvents = "none";
     }
   }
@@ -48,9 +52,9 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
 
   return (
     <div class="relative">
+      <div class="search-backdrop" data-open={open()}></div>
       <div class="search-offset"></div>
       <dialog class="search-container" ref={ref} {...props}>
-        {/* <div class="search-backdrop"></div> */}
         <div class="search-input">
           <SearchInput query={setQuery} />
         </div>
