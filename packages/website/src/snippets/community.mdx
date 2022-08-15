@@ -8,6 +8,27 @@ import Anchor from "../components/Anchor.astro";
 
 > Tweet at me on <Anchor href="https://twitter.com/@okikio_dev">@okikio\_dev</Anchor> with what you love and what you think needs improvement in `bundlejs` to get added to the list users.
 
-* <Anchor href="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128">![Sheetjs' Logo](https://opencollective.com/bundle/organization/0/website) @sheetjs</Anchor> 
-* <Anchor href="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128">![Dani Guardiola's Logo](https://opencollective.com/bundle/individual/0/website) @daniguardio\_la</Anchor> 
-* And more, etc...
+{/* ![Sheetjs' Logo](https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128) */}
+
+export const list = [
+  ["sheetjs", "https://opencollective.com/bundle/organization/0"],
+  ["daniguardio_la", "https://opencollective.com/bundle/individual/0"],
+];
+
+<ul>
+  {list.map(([index, item]) => (
+    <li>
+      <Anchor href={`${item}/website`} class="inline-flex items-center">
+        <div class="inline-flex items-center gap-2">
+          <img 
+            src={`${item}/avatar.svg?avatarHeight=128`} 
+            alt={`${index} logo`} 
+            width="64" height="64" 
+          /> 
+          @{index}
+        </div>
+      </Anchor>
+    </li>
+  ))}
+  <li>And more, etc...</li>
+</ul>

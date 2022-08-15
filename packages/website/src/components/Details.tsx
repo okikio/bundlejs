@@ -1,4 +1,5 @@
-import { type ComponentProps, type JSX, onCleanup, onMount, splitProps, mergeProps } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
+import { onCleanup, onMount, splitProps, mergeProps } from "solid-js";
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
 import { createDetailsEffect } from "../scripts/modules/details";
 

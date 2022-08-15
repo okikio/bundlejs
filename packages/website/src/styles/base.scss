@@ -128,13 +128,6 @@ a {
   &:hover {
     @apply text-primary dark:text-blue-200;
   }
-
-  [rehype-icon] {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    opacity: 0.6;
-  }
 }
 
 .blockquote-container {
