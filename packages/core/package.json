@@ -18,6 +18,7 @@
     "./src/*": "./src/*",
     "./deno/*": "./src/deno/*",
     "./plugins/*": "./src/plugins/*",
+    "./util": "./src/util.ts",
     "./utils/*": "./src/utils/*",
     "./configs/*": "./src/configs/*",
     "./package.json": "./package.json"

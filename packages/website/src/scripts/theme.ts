@@ -52,7 +52,6 @@ function sendMessage<T>(message: T) {
 
     const iframeOrigin = "https://giscus.bundlejs.com";
     if (iframe?.contentWindow?.location) {
-      console.log(iframe?.contentWindow)
       iframe?.contentWindow?.postMessage?.({ giscus: message }, iframeOrigin);
     }
   } catch (e) {

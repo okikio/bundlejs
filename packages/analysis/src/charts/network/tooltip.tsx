@@ -1,6 +1,6 @@
 import { SizeKey } from "../../types/types";
 import { Component, useContext, createMemo, createSignal } from "solid-js";
-import { bytes } from "@bundlejs/core/src/utils/pretty-bytes";
+import { bytes } from "@bundlejs/core/src/util";
 import { StaticContext, NetworkNode } from "./index";
 import { LABELS } from "../sizes";
 import onMountWithCleaning from "../../utils/onMountWithCleaning";

@@ -1,11 +1,12 @@
-import { createEffect, createSignal, onCleanup, onMount, Show, splitProps, type ComponentProps } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from "solid-js";
 
 import IconDragHandleHeight from "~icons/fluent/re-order-dots-horizontal-24-filled";
 import IconDragHandleWidth from "~icons/fluent/re-order-dots-vertical-24-filled";
 
 import Button from "../../Button";
 
-import { debounce } from "@bundlejs/core";
+import { debounce } from "@bundlejs/core/src/util";
 
 export function DragHandle(props?: ComponentProps<'button'> & {
   direction?: 'x' | 'y';
@@ -126,8 +127,8 @@ export function DragHandle(props?: ComponentProps<'button'> & {
       }}
       onPointerDown={pointerDown}
     >
-      <Show when={dirIsX()} fallback={<IconDragHandleHeight />}>
-        <IconDragHandleWidth />
+      <Show when={dirIsX()} fallback={<IconDragHandleHeight astro-icon />}>
+        <IconDragHandleWidth astro-icon />
       </Show>
     </Button>
   );

@@ -1,4 +1,6 @@
-import { type ComponentProps, type JSX, onCleanup, onMount, splitProps } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
+
+import { onCleanup, onMount, splitProps } from "solid-js";
 import { createDetailsEffect } from "../scripts/modules/details";
 
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
@@ -26,7 +28,7 @@ export function SnippetDetails(props: ComponentProps<'details'> & {
   return (
     <details custom-detail="snippet" ref={ref} {...attrs}>
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
-        <h3>
+        <h3 class="inline-flex items-center">
           {newProps.summary}
           <a href={"#" + attrs.id} custom-slug-link aria-hidden="true">
             <IconLink rehype-icon="link-24-regular" />

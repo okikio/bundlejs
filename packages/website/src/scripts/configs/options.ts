@@ -2,7 +2,7 @@ import type { BuildOptions } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 // import type { TemplateType } from "@bundlejs/core";
 
-import { deepAssign } from "@bundlejs/core";
+import { deepAssign } from "@bundlejs/core/src/util";
 // , DEFAULT_CDN_HOST
 
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */

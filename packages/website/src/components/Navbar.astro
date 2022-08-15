@@ -1,12 +1,15 @@
 ---
-import Icon from "astro-icon";
+import clsx from "clsx";
+import IconLogo from "~icons/local/logo";
+import IconTwitter from "~icons/mdi/twitter";
+import IconGitHub from "~icons/mdi/github";
 
 import Anchor from "./Anchor.astro";
 import OfflineBanner from "./OfflineBanner";
 
-let activeNav = (regex: RegExp) => {
-  return regex.test(Astro.request.url) ? " active" : "";
-};
+function activeNav(regex: RegExp) {
+  return regex.test(Astro.request.url);
+}
 ---
 
 <nav>
@@ -19,10 +22,12 @@ let activeNav = (regex: RegExp) => {
   </div>
   <div class="container items">
     <div class="btn">
-      <Anchor href="/" class="logo"
+      <Anchor 
+        href="/" class="logo"
         aria-label="bundlejs's logo, it's used on all social media site to identify and represent bundlejs"
-        title="Logo">
-        <Icon name="logo" />
+        title="Logo"
+      >
+        <IconLogo astro-icon />
         <span aria-hidden="true">bundlejs</span>
       </Anchor>
     </div>
@@ -30,8 +35,8 @@ let activeNav = (regex: RegExp) => {
     <div class="flex-grow"></div>
     <div class="menu">
       <div class="menu-items">
-        <Anchor href="/about" class={"item" + activeNav(/\/about/)}>About</Anchor>
-        <Anchor href="/faq" class={"item" + activeNav(/\/faq/)}>FAQ</Anchor>
+        <Anchor href="/about" class={clsx("item", { active: activeNav(/\/about/) })}>About</Anchor>
+        <Anchor href="/faq" class={clsx("item", { active: activeNav(/\/faq/) })}>FAQ</Anchor>
 
         <div class="seperator"></div>
         <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs" class="item">Docs</Anchor>
@@ -39,7 +44,7 @@ let activeNav = (regex: RegExp) => {
         <div class="btn xsm:hidden">
           <Anchor href="https://twitter.com/jsbundle" class="icon-btn item"
             aria-label="Link to the bundlejs's Twitter profile" title="Twitter" external={false}>
-            <Icon name="mdi:twitter" />
+            <IconTwitter astro-icon />
           </Anchor>
         </div>
       </div>
@@ -48,14 +53,14 @@ let activeNav = (regex: RegExp) => {
     <div class="btn lt-xsm:hidden">
       <Anchor href="https://twitter.com/jsbundle" class="icon-btn item"
         aria-label="Link to the bundlejs's Twitter profile" title="Twitter" external={false}>
-        <Icon name="mdi:twitter" />
+        <IconTwitter astro-icon />
       </Anchor>
     </div>
 
     <div class="btn">
       <Anchor href="https://github.com/okikio/bundlejs" class="icon-btn item"
         aria-label="Link to the bundlejs's Github repo" title="Github" external={false}>
-        <Icon name="mdi:github" />
+        <IconGitHub astro-icon />
       </Anchor>
     </div>
 
@@ -107,6 +112,7 @@ let activeNav = (regex: RegExp) => {
 
     button,
     a {
+      @apply scale-100 hover:scale-110 active:scale-90;
       @apply text-secondary;
     }
 
@@ -182,7 +188,8 @@ let activeNav = (regex: RegExp) => {
     @apply gap-1 sm:gap-2 items-center w-full;
 
     .menu {
-      @apply flex flex-row overflow-auto;
+      @apply overflow-auto sm:overflow-hidden;
+      @apply flex flex-row;
       @apply gap-1 sm:gap-2 items-center;
       @apply lt-sm:absolute lt-sm:top-16 lt-sm:left-0 lt-sm:w-full;
       @apply lt-sm:h-16;
@@ -207,7 +214,7 @@ let activeNav = (regex: RegExp) => {
     .item,
     .toggle {
       font-family: Manrope, "Manrope-fallback", Helvetica, Arial, sans-serif;
-      @apply capitalize text-sm tracking-wide font-500;
+      @apply capitalize text-sm tracking-wide font-400;
       @apply px-4 py-3 sm:px-4 sm:py-2 border border-transparent rounded-lg;
       @apply no-underline;
       @apply text-base;
