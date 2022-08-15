@@ -1,5 +1,6 @@
 ---
-import Icon from "astro-icon";
+import clsx from "clsx";
+import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
 let { href, class: className = "", external, ...rest } = Astro.props;
 
 external = external ?? /^(http|mailto)/.test(href);
@@ -8,18 +9,17 @@ let attrs = external ? { target: "_blank", rel: "noopener" } : {};
 
 <a
   {href}
-  class={(external ? "whitespace-nowrap " : "") + className}
+  class={clsx({ "whitespace-nowrap": external }, className)}
   {...Object.assign(attrs, rest)}
   custom-anchor
 >
   <slot />
-  {external && <Icon name="fluent:arrow-up-right-24-regular" />}
+  {external && <IconArrowUpRight astro-icon />}
 </a>
 
 <style lang="scss">
   a {
-    :where(:global([rehype-icon])),
-    svg {
+    :global(:where(svg[astro-icon])) {
       display: inline-block;
       width: 1em;
       height: 1em;

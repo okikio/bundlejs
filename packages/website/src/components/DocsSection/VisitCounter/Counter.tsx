@@ -18,8 +18,8 @@ let [count, setCount] = createSignal("00000");
   }
 })();
 
-export function HitCounter() {
+export function Counter() {
   return (<span class="inline-block" id="visit-counter">👋 <span>{count()}</span> visits</span>);
 }
 
-export default HitCounter;
+export default Counter;
