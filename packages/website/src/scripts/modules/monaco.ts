@@ -1,12 +1,12 @@
+import type { Environment } from "monaco-editor";
 import {
-  type Environment,
   editor as Editor,
   languages,
   Uri
 } from "monaco-editor";
 
 // parseConfig, schema, 
-import { parseShareQuery, getResolvedPackage } from "@bundlejs/core";
+import { parseShareQuery, getResolvedPackage } from "@bundlejs/core/src/util";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
@@ -32,9 +32,11 @@ import { toLocaleDateString } from "../utils/locale-date-string";
 (globalThis as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
-      return USE_SHAREDWORKER && PRODUCTION_MODE ? new TS_SHARED_WORKER() : new TS_WORKER();
+      // USE_SHAREDWORKER && PRODUCTION_MODE ? new TS_SHARED_WORKER() : new TS_WORKER()
+      return new TS_WORKER();
     } else if (label === "json") {
-      return USE_SHAREDWORKER ? new JSON_SHARED_WORKER() : new JSON_WORKER();
+      // USE_SHAREDWORKER && PRODUCTION_MODE ? new JSON_SHARED_WORKER() : new JSON_WORKER()
+      return new JSON_WORKER();
     }
 
     return (() => {

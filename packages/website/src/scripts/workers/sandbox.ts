@@ -5,10 +5,7 @@ export let _initialized = false;
 const initPromise = (async () => {
   try {
     if (!_initialized) {
-      await init({
-        worker: false,
-        wasmURL: `./esbuild.wasm`
-      });
+      await init();
 
       _initialized = true;
     }

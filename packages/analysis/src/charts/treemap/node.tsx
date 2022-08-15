@@ -1,5 +1,5 @@
 import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundlejs/core/src/utils/pretty-bytes";
+import { bytes } from "@bundlejs/core/src/util";
 import { HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { PADDING, TOP_PADDING } from "./const";

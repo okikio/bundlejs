@@ -1,7 +1,7 @@
 import { Workbox } from "workbox-window";
 
 import { ENABLE_SW } from "../env";
-import { CACHE_NAME, CACHE } from "@bundlejs/core";
+import { CACHE_NAME, CACHE } from "@bundlejs/core/src/util";
 
 export default () => {
   // Check that service workers are supported

@@ -14,13 +14,18 @@ let attrs = external ? { target: "_blank", rel: "noopener" } : {};
   custom-anchor
 >
   <slot />
-  {external && <IconArrowUpRight astro-icon />}
+  {external && <IconArrowUpRight astro-icon external-icon />}
 </a>
 
 <style lang="scss">
   a {
     :global(svg[astro-icon]) {
       display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    :global(svg[external-icon]) {
       width: 1em;
       height: 1em;
       opacity: 0.6;

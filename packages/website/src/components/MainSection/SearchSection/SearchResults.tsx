@@ -1,7 +1,10 @@
-import { type ComponentProps, type Accessor, For, createResource, onMount, createEffect, on, onCleanup } from "solid-js";
-import { SearchResult, ErrorResult, type SearchResultProps } from "./Result";
+import type { ComponentProps, Accessor } from "solid-js";
+import type { SearchResultProps } from "./Result";
 
-import { getPackages } from "@bundlejs/core";
+import { For, createResource, onMount, createEffect, on, onCleanup } from "solid-js";
+import { SearchResult, ErrorResult } from "./Result";
+
+import { getPackages } from "@bundlejs/core/src/util";
 import { rovingIndex } from '../../../hooks/roving-index';
 
 export function SearchResults(props?: ComponentProps<'dialog'> & {

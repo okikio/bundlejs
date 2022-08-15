@@ -9,25 +9,7 @@ export * from "./configs/events";
 export * from "./configs/state";
 export * from "./configs/platform";
 
-export * from "./utils/ansi";
-export * from "./utils/debounce";
-export * from "./utils/deep-equal";
-export * from "./utils/encode-decode";
-export * from "./utils/fetch-and-cache";
-export * from "./utils/filesystem";
-export * from "./utils/loader";
-export * from "./utils/parse-query";
-export * from "./utils/npm-search";
-export * from "./utils/util-cdn";
-
-export * as path from "./utils/path";
-export * from "./utils/resolve-imports";
-export * from "./utils/resolve-exports";
-export * from "./utils/pretty-bytes";
-export * from "./utils/parse-package-name";
-export * as lzstring from "./utils/lz-string";
-export * as semver from "./utils/semver";
-// export * from "./utils/treeshake";
+export * from "./util";
 
 export * from "./plugins/alias";
 export * from "./plugins/cdn";

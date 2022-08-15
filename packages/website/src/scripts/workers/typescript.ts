@@ -10,22 +10,22 @@ import { initialize } from "./worker-init";
 import { create } from 'monaco-editor/esm/vs/language/typescript/ts.worker.js';
 
 export const connect = (port) => {
-    let initialized = false;
-    port.onmessage = (e) => {
-        initialize(function (ctx, createData) {
-            return create(ctx, createData);
-        }, port, initialized);
-    };
+  let initialized = false;
+  port.onmessage = (e) => {
+    initialize(function (ctx, createData) {
+      return create(ctx, createData);
+    }, port, initialized);
+  };
 }
 
 // @ts-ignore
 self.onconnect = (e) => {
-    let [port] = e.ports;
-    connect(port)
+  let [port] = e.ports;
+  connect(port)
 }
 
 if (!("SharedWorkerGlobalScope" in self)) {
-    connect(self);
+  connect(self);
 }
 
 export { };

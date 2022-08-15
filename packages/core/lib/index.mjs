@@ -1,4 +1,4 @@
-const Ke = "0.15.2", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
+const Ke = "0.15.3", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
 var at = class {
   constructor(e) {
     this.map = new Map(e);
@@ -173,7 +173,7 @@ async function ts(e = le) {
           `https://deno.land/x/esbuild@v${Ke}/wasm.js`
         );
       default:
-        return await import("./esbuild-a70385e0.mjs").then((t) => t.b);
+        return await import("./esbuild-63a14ca4.mjs").then((t) => t.b);
     }
   } catch (t) {
     throw t;
@@ -188,7 +188,7 @@ async function ft(e = le, t = {}) {
         if ("wasmModule" in t)
           await s.initialize(t);
         else {
-          const { default: r } = await import("./esbuild-wasm-5ee6d8f5.mjs");
+          const { default: r } = await import("./esbuild-wasm-4dc6f691.mjs");
           await s.initialize({
             wasmModule: new WebAssembly.Module(await r()),
             ...t
@@ -1142,7 +1142,7 @@ function or(e) {
   return t < e.length && s.text(e.slice(t)), s.done();
 }
 const ie = async (e, t = "error", s = !0) => {
-  const { formatMessages: r } = await import("./esbuild-a70385e0.mjs").then((i) => i.b);
+  const { formatMessages: r } = await import("./esbuild-63a14ca4.mjs").then((i) => i.b);
   return (await r(e, { color: s, kind: t })).map((i) => s ? or(i.replace(/(\s+)(\d+)(\s+)\│/g, `
 $1$2$3\u2502`)) : i);
 }, lr = {
@@ -1588,37 +1588,7 @@ const br = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   decompress: Rr,
   _compress: ue,
   _decompress: he
-}, Symbol.toStringTag, { value: "Module" })), { decompressFromURL: Sr } = br, vr = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), Kr = (e) => {
-  try {
-    const t = e.searchParams;
-    let s = "", r = t.get("query") || t.get("q"), n = t.get("treeshake");
-    if (r) {
-      let c = r.trim().split(","), a = vr((n ?? "").trim());
-      s += `// Click Build for the Bundled, Minified & Compressed package size
-` + c.map((l, f) => {
-        let u = a[f] && a[f].trim() !== "*" ? a[f].trim().split(",").join(", ") : "*", [
-          ,
-          ,
-          g = "export",
-          m
-        ] = /^(\((.*)\))?(.*)/.exec(l);
-        return `${g} ${u} from ${JSON.stringify(
-          m
-        )};`;
-      }).join(`
-`);
-    }
-    let i = t.get("share");
-    i && (s += `
-` + Sr(i.trim()));
-    let o = t.get("text");
-    return o && (s += `
-` + JSON.parse(
-      /^["']/.test(o) && /["']$/.test(o) ? o : JSON.stringify("" + o).replace(/\\\\/g, "\\")
-    )), s.trim();
-  } catch {
-  }
-}, _r = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
+}, Symbol.toStringTag, { value: "Module" })), Sr = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
 let Tt = 0;
 const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), M = "0|[1-9]\\d*", z = "[0-9]+", He = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", xe = `(?:${M}|${He})`, Ce = `(?:${z}|${He})`, Ie = "[0-9A-Za-z-]+", Nt = `(${M})\\.(${M})\\.(${M})`, xt = `(${z})\\.(${z})\\.(${z})`, Z = `(?:\\+(${Ie}(?:\\.${Ie})*))`, Ye = `(?:-(${xe}(?:\\.${xe})*))`, Ve = `(?:-?(${Ce}(?:\\.${Ce})*))`, ye = `v?${Nt}${Ye}?${Z}?`, K = `[v=\\s]*${xt}${Ve}?${Z}?`, se = `${M}|x|X|\\*`, re = `${z}|x|X|\\*`, D = "((?:<|>)?=?)", C = `[v=\\s]*(${se})(?:\\.(${se})(?:\\.(${se})(?:${Ye})?${Z}?)?)?`, j = `[v=\\s]*(${re})(?:\\.(${re})(?:\\.(${re})(?:${Ve})?${Z}?)?)?`, lt = `(^|[^\\d])(\\d{1,${te}})(?:\\.(\\d{1,${te}}))?(?:\\.(\\d{1,${te}}))?(?:$|[^\\d])`, Ae = "(?:~>?)", Re = "(?:\\^)", A = {
   NUMERICIDENTIFIER: w(M),
@@ -1661,7 +1631,7 @@ const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : v
   STAR: w("(<|>)?=?\\s*\\*"),
   GTE0: w("^\\s*>=\\s*0\\.0\\.0\\s*$"),
   GTE0PRE: w("^\\s*>=\\s*0\\.0\\.0-0\\s*$")
-}, Or = ["includePrerelease", "loose", "rtl"], pe = (e) => e ? typeof e != "object" ? { loose: !0 } : Or.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, Le = /^[0-9]+$/, q = (e, t) => {
+}, vr = ["includePrerelease", "loose", "rtl"], pe = (e) => e ? typeof e != "object" ? { loose: !0 } : vr.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, Le = /^[0-9]+$/, q = (e, t) => {
   const s = Le.test(e), r = Le.test(t);
   let n = e, i = t;
   return s && r && (n = +e, i = +t), n === i ? 0 : s && !r ? -1 : r && !s ? 1 : n < i ? -1 : 1;
@@ -1756,7 +1726,7 @@ class de {
     return this.value;
   }
 }
-const B = /* @__PURE__ */ new Map(), Q = /* @__PURE__ */ new Map(), kr = 1e3, Ct = "$1^", It = "$1~", Lt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = zt(e, t), e = jt(e, t), e = Ut(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
+const B = /* @__PURE__ */ new Map(), Q = /* @__PURE__ */ new Map(), _r = 1e3, Ct = "$1^", It = "$1~", Lt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = zt(e, t), e = jt(e, t), e = Ut(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
   const s = t.loose ? A.TILDELOOSE.regex : A.TILDE.regex;
   return e.replace(s, (r, n, i, o, c) => {
     let a;
@@ -1834,7 +1804,7 @@ class V {
     c.size > 1 && c.has("") && c.delete("");
     const l = [...c.values()];
     let f = l;
-    if (B.set(r, f), Q.set(r, Date.now()), B.size >= kr) {
+    if (B.set(r, f), Q.set(r, Date.now()), B.size >= _r) {
       let g = [...Q.entries()].sort((m, h) => m[1] - h[1])[0][0];
       B.delete(g), Q.delete(g);
     }
@@ -1866,9 +1836,9 @@ function De(e, t, s) {
     i.test(o) && (!r || n.compare(o) === -1) && (r = o, n = new k(r, s));
   }), r;
 }
-const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const Kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  SEMVER_SPEC_VERSION: _r,
+  SEMVER_SPEC_VERSION: Sr,
   MAX_LENGTH: Ne,
   MAX_SAFE_INTEGER: X,
   MAX_SAFE_COMPONENT_LENGTH: te,
@@ -1907,7 +1877,7 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   const t = "https://registry.npmjs.com";
   let { name: s, version: r, path: n } = ce(e), i = `${t}/-/v1/search?text=${encodeURIComponent(s)}&popularity=0.5&size=30`, o = `${t}/${s}/${r}`, c = `${t}/${s}`;
   return { searchURL: i, packageURL: c, packageVersionURL: o, version: r, name: s, path: n };
-}, en = async (e) => {
+}, Qr = async (e) => {
   let { searchURL: t } = ge(e), s;
   try {
     s = await (await fe(t, !1)).json();
@@ -1922,16 +1892,16 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   } catch (s) {
     throw console.warn(s), s;
   }
-}, Tr = async (e) => {
+}, Or = async (e) => {
   try {
     let t = await Ht(e), s = Object.keys(t.versions), r = t["dist-tags"];
     return { versions: s, tags: r };
   } catch (t) {
     throw console.warn(t), t;
   }
-}, Nr = async (e) => {
+}, kr = async (e) => {
   try {
-    let { version: t } = ge(e), s = await Tr(e);
+    let { version: t } = ge(e), s = await Or(e);
     if (s) {
       const { versions: r, tags: n } = s;
       return t in n && (t = n[t]), r.includes(t) ? t : De(r, t);
@@ -1939,19 +1909,49 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   } catch (t) {
     throw console.warn(t), t;
   }
-}, tn = async (e) => {
+}, en = async (e) => {
   try {
-    let { name: t } = ge(e), s = await Nr(e);
+    let { name: t } = ge(e), s = await kr(e);
     return await Ht(`${t}@${s}`);
   } catch (t) {
     throw console.warn(t), t;
+  }
+}, { decompressFromURL: Tr } = br, Nr = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), tn = (e) => {
+  try {
+    const t = e.searchParams;
+    let s = "", r = t.get("query") || t.get("q"), n = t.get("treeshake");
+    if (r) {
+      let c = r.trim().split(","), a = Nr((n ?? "").trim());
+      s += `// Click Build for the Bundled, Minified & Compressed package size
+` + c.map((l, f) => {
+        let u = a[f] && a[f].trim() !== "*" ? a[f].trim().split(",").join(", ") : "*", [
+          ,
+          ,
+          g = "export",
+          m
+        ] = /^(\((.*)\))?(.*)/.exec(l);
+        return `${g} ${u} from ${JSON.stringify(
+          m
+        )};`;
+      }).join(`
+`);
+    }
+    let i = t.get("share");
+    i && (s += `
+` + Tr(i.trim()));
+    let o = t.get("text");
+    return o && (s += `
+` + JSON.parse(
+      /^["']/.test(o) && /["']$/.test(o) ? o : JSON.stringify("" + o).replace(/\\\\/g, "\\")
+    )), s.trim();
+  } catch {
   }
 };
 let be;
 const Ze = async () => {
   if (be)
     return be;
-  const e = await import("./brotli-114352a8.mjs"), { default: t, source: s } = e;
+  const e = await import("./brotli-c321f34c.mjs"), { default: t, source: s } = e;
   return await t(await s()), be = e;
 };
 async function xr(e, t = 4096, s = 6, r = 22) {
@@ -2098,6 +2098,7 @@ export {
   ot as bytes,
   Vr as compress,
   Ge as createConfig,
+  ie as createNotice,
   es as createState,
   Jr as debounce,
   ke as decode,
@@ -2115,12 +2116,12 @@ export {
   ts as getEsbuild,
   sr as getFile,
   Ht as getPackage,
-  Tr as getPackageVersions,
-  en as getPackages,
+  Or as getPackageVersions,
+  Qr as getPackages,
   js as getPureImportPath,
   ge as getRegistryURL,
   fe as getRequest,
-  tn as getResolvedPackage,
+  en as getResolvedPackage,
   Ot as getResolvedPath,
   Y as getState,
   nr as htmlEscape,
@@ -2138,15 +2139,15 @@ export {
   tt as newRequest,
   Ys as openCache,
   ce as parsePackageName,
-  Kr as parseShareQuery,
-  vr as parseTreeshakeExports,
+  tn as parseShareQuery,
+  Nr as parseTreeshakeExports,
   Hr as path,
   ot as prettyBytes,
   or as render,
   Vs as resolveExports,
   Js as resolveImports,
-  Nr as resolveVersion,
-  Qr as semver,
+  kr as resolveVersion,
+  Kr as semver,
   rr as setFile,
   _e as setState,
   it as toLocaleString,

@@ -1,7 +1,7 @@
 import { onCleanup, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 
-import { CACHE } from "@bundlejs/core";
+import { CACHE } from "@bundlejs/core/src/util";
 
 import IconArrowClockwise from "~icons/fluent/arrow-clockwise-24-filled";
 import Button from "./Button";
