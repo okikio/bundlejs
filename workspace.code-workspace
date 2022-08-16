@@ -16,10 +16,5 @@
 			"name": "🚀 @bundlejs/website",
 			"path": "packages/website"
 		}
-	],
-	"settings": {
-		"marquee.widgets.npm-stats.packageNames": [
-			"root"
-		]
-	}
+	]
 }
