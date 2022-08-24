@@ -1,4 +1,6 @@
-import { ComponentProps, mergeProps, ParentProps, splitProps } from "solid-js";
+import type { ComponentProps, ParentProps } from "solid-js";
+
+import { mergeProps, splitProps } from "solid-js";
 
 export function Button(props: ParentProps<ComponentProps<'button'>>) {
   let [newProps, attrs] = splitProps(props, ["type", "children"]);

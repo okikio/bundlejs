@@ -4,7 +4,7 @@ id: usage
 priority: 0
 ---
 
-import Anchor from "../components/Anchor.astro";
+import Anchor from "../components/Anchor";
 
 When bundling packages that also export CSS and other external files, <Anchor href="https://bundlejs.com">bundlejs</Anchor> now checks the gzip/brotli size of these external files, even though it won't output any code. Keep this in mind this isn't a bug, however, if it causes confusion I am willing to change this behaviour.
 

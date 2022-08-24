@@ -7,7 +7,7 @@ export interface LoadingProps extends ComponentProps<"div"> {
 }
 
 export function Loading(props?: LoadingProps) {
-  let [newProps, attrs] = splitProps(props, ["size", "show"]);
+  let [newProps, attrs] = splitProps(props, ["size", "show", "children"]);
   let mergedProps = mergeProps({
     size: "md",
     'show': true
@@ -23,6 +23,7 @@ export function Loading(props?: LoadingProps) {
   });
   return (
     <div class="loading-container relative" custom-loading data-show={mergedProps.show} {...attrs}>
+      {mergedProps.children}
       <div class="loading" data-play={playState()} data-size={mergedProps.size}></div>
     </div>
   );
