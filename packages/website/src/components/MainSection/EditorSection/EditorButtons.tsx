@@ -1,5 +1,8 @@
+import type { Placement } from "tippy.js";
 
 import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
+
+import toast from '../../SolidToast/index';
 
 import Button from "../../Button";
 
@@ -14,7 +17,6 @@ import IconCodeWrap from "~icons/fluent/text-wrap-24-regular";
 import { state, setState } from "../store";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
-import { type Placement } from "tippy.js";
 
 export function EditorButtons() {
   let shellRef: HTMLDivElement = null;
@@ -118,7 +120,12 @@ export function EditorButtons() {
             clear-btn
             tabIndex={state.editorBtnsOpen ? 0 : -1}
             class="umami--click--clear-editor-button"
-            onClick={() => !state.monaco.loading && state.monaco.editor?.setValue("")}>
+            onClick={() => { 
+              if (!state.monaco.loading) { 
+                state.monaco.editor?.setValue("");
+                toast("Cleared Editor");
+              }
+            }}>
             <IconDelete />
           </Button>
 
@@ -140,8 +147,10 @@ export function EditorButtons() {
                       // @ts-ignore
                       const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
                       state.monaco.editor.setValue(formattedCode);
+                      toast.success(`Formatted ${getModelType()} code editor`);
                     } catch (e) {
                       console.warn(e);
+                      toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
 
                       await state.monaco.editor.getAction("editor.action.formatDocument").run();
                     }
@@ -165,6 +174,7 @@ export function EditorButtons() {
                 let modelType = getModelType();
 
                 resetEditor(modelType);
+                toast.success(`Reset ${modelType}`);
               }
             }}>
             <IconReset />
@@ -183,6 +193,7 @@ export function EditorButtons() {
                 state.monaco.editor
                   .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
                   .run();
+                toast.success(`Copy ${getModelType()}`);
               }
             }}>
             <IconCopy />
@@ -202,6 +213,7 @@ export function EditorButtons() {
                 });
 
                 downloadBlob(blob, model?.uri?.authority ?? "download.ts");
+                toast.success(`Download ${getModelType()}`);
               }
             }}>
             <IconDownload />
@@ -217,6 +229,7 @@ export function EditorButtons() {
               if (!state.monaco.loading) {
                 const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
                 state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
+                toast.success(`${ wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
               }
             }}>
             <IconCodeWrap />

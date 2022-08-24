@@ -1,23 +1,16 @@
 import { runTheme } from "../scripts/theme";
-// import themeUrl from "../scripts/giscus-theme?url";
-// import { onMount } from "solid-js";
-
 
 function handleMessage(event: MessageEvent) {
   if (event.origin !== 'https://giscus.bundlejs.com') return;
   if (!(typeof event.data === 'object' && event.data.giscus)) return;
 
-  const giscusData = event.data.giscus;
   // Do whatever you want with it, e.g. `console.log(giscusData)`.
   // You'll need to make sure that `giscusData` contains the message you're
   // expecting, e.g. by using `if ('discussion' in giscusData)`.
+  const html = document.querySelector('html');
+  if (html) runTheme(html);
 
-  if (giscusData.resizeHeight > 100) {
-    const html = document.querySelector('html');
-    if (html) runTheme(html);
-
-    globalThis?.removeEventListener?.('message', handleMessage);
-  }
+  globalThis?.removeEventListener?.('message', handleMessage);
 }
 
 export function Giscus() {

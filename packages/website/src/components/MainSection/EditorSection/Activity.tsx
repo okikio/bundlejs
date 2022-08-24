@@ -1,4 +1,9 @@
-import { ComponentProps, createSignal, onMount } from "solid-js";
+import type { ComponentProps } from "solid-js";
+
+import { createSignal, onMount } from "solid-js";
+
+import toast from '../../SolidToast/index';
+
 import Button from "../../Button";
 import Loading from "../../Loading";
 
@@ -49,6 +54,7 @@ export function Activity(props?: ComponentProps<'div'>) {
     if (!state.monaco.loading) {
       try {
         ShareText.setNext(navigator.share ? "Shared!" : "Copied!");
+        toast.success(navigator.share ? "Shared!" : "Copied!");
         await ShareText.switch("next");
 
         if (navigator.share) {
@@ -75,6 +81,7 @@ export function Activity(props?: ComponentProps<'div'>) {
 
       setState("bundling", true);
       await BuildText.switch("next");
+      const toastId = toast.loading("Building!");
 
       try {
         const worker = state.monaco.workers.other;
@@ -93,14 +100,16 @@ export function Activity(props?: ComponentProps<'div'>) {
         }
 
         if (result?.size) {
+          toast.success(`Build Result ${result.size}`, { id: toastId });
           setState("bundleSize", result.size);
         }
       } catch (e) {
         console.warn(e);
         setState("bundleSize", "ERROR!");
+        toast.error(`Build Error`, { id: toastId });
       }
 
-      await BuildText.switch("initial", 600);
+      BuildText.switch("initial", 50);
       setState("bundling", false);
     }
   }
@@ -114,10 +123,11 @@ export function Activity(props?: ComponentProps<'div'>) {
           as={Button}
           ref={buildRef}
 
+          mobile="(min-width: 700px)"
           allowHTML={true}
           content={
             <div class="build-text">
-              <BuildText.render class="w-[7ch]" />
+              Build
             </div>
           }
 
@@ -131,10 +141,11 @@ export function Activity(props?: ComponentProps<'div'>) {
           as={Button}
           ref={shareRef}
 
+          mobile="(min-width: 700px)"
           allowHTML={true}
           content={
             <div class="share-text">
-              <ShareText.render class="w-[6ch]" />
+              Share
             </div>
           }
 
