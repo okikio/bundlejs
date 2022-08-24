@@ -1,13 +1,18 @@
 import type { ComponentProps, JSX } from "solid-js";
+import type { ClassValue } from "clsx";
+
 import { onCleanup, onMount, splitProps, mergeProps } from "solid-js";
+import { createDetailsEffect } from "../hooks/details";
+
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
-import { createDetailsEffect } from "../scripts/modules/details";
+
+import clsx from "clsx";
 
 export function Details(props: ComponentProps<'details'> & {
   children?: JSX.Element;
-  summary?: string;
-  summaryClass?: string;
-  contentClass?: string;
+  summary?: JSX.Element | string;
+  summaryClass?: ClassValue;
+  contentClass?: ClassValue;
 }) {
   let [newProps, attrs] = splitProps(props, ["children", "summary", "summaryClass", "contentClass"]);
 
@@ -30,12 +35,12 @@ export function Details(props: ComponentProps<'details'> & {
   onCleanup(() => _onCleanup());
 
   return (
-    <details ref={ref} {...attrs} custom-details>
+    <details custom-details ref={ref} {...attrs}>
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
-        <p class={mergedProps.summaryClass}>{mergedProps.summary}</p>
+        {typeof mergedProps.summary == "string" ? (<p class={clsx(mergedProps.summaryClass)}>{mergedProps.summary}</p>) : mergedProps.summary}
         <IconChevronRightArrow astro-icon />
       </summary>
-      <div class={`content ${mergedProps.contentClass}`} ref={contentRef} custom-content>
+      <div class={clsx("content", mergedProps.contentClass)} ref={contentRef} custom-content>
         {mergedProps.children}
       </div>
     </details>

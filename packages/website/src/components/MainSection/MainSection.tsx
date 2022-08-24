@@ -1,4 +1,4 @@
-import { ComponentProps, onCleanup, onMount } from "solid-js";
+import { ComponentProps, JSX, onCleanup, onMount } from "solid-js";
 
 import Container from "../Container";
 import SearchContainer from "./SearchSection/SearchContainer";
@@ -13,7 +13,7 @@ export const KEYCODE = {
   ESC: "Escape"
 }
 
-export function MainSection(props?: ComponentProps<'div'>) {
+export function MainSection(props?: ComponentProps<'div'> & { analysisDocs?: JSX.Element }) {
   let ref: HTMLDivElement = null;
   let editorRef: HTMLDivElement = null;
 
@@ -48,7 +48,7 @@ export function MainSection(props?: ComponentProps<'div'>) {
       <EditorSection ref={editorRef} /> 
   
       <Container class="lt-md:px-none pb-4">
-        <Analysis />
+        <Analysis docs={props.analysisDocs} />
       </Container>
     </Container> 
   );
