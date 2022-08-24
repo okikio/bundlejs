@@ -7,7 +7,7 @@ export * from "./configs/config";
 export * from "./configs/events";
 export * from "./configs/state";
 export * from "./configs/platform";
-export * from "./utils";
+export * from "./util";
 export * from "./plugins/alias";
 export * from "./plugins/cdn";
 export * from "./plugins/external";
