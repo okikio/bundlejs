@@ -48,11 +48,7 @@ export let themeGet = (html: HTMLHtmlElement) => {
 function sendMessage<T>(message: T) {
   try {
     const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-    if (!iframe) return;
-
-    const iframeOrigin = "https://giscus.bundlejs.com";
-    console.log(iframe?.contentWindow)
-    
+    if (!iframe) return;  
     iframe.contentWindow?.postMessage?.({ giscus: message }, "*");
   } catch (e) {
     console.warn(e);

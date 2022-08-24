@@ -1,7 +1,11 @@
-import { ComponentProps, createEffect, mergeProps, onCleanup, onMount, splitProps, type JSX } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
+
+import { createEffect, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
-import tippy, { type Props, type Instance, type CreateSingletonProps, roundArrow, createSingleton, inlinePositioning } from 'tippy.js';
+import type { Props, Instance, CreateSingletonProps } from 'tippy.js';
+
+import tippy, { roundArrow, createSingleton, inlinePositioning } from 'tippy.js';
 import 'tippy.js/dist/tippy.css'; // optional for styling
 import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/animations/scale-subtle.css';
@@ -74,7 +78,7 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   });
 
   return (
-    <Dynamic component={mergedProps.as} title={title} custom-tooltip {...attrs} ref={(el: HTMLElement) => {
+    <Dynamic component={mergedProps.as} custom-tooltip {...attrs} ref={(el: HTMLElement) => {
       ref = el;
       typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
     }}>

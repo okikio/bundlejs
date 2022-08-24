@@ -1,5 +1,5 @@
-import { ComponentProps, onCleanup } from "solid-js";
-import { onMount, createSignal, Show } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import { onMount, createSignal, Show, onCleanup } from "solid-js";
 
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
