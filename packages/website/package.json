@@ -46,6 +46,7 @@
     "prettier-plugin-astro": "^0.5.3",
     "rollup": "^2.78.1",
     "sass": "^1.54.5",
+    "solid-toast": "^0.3.4",
     "ultra-runner": "^3.10.5",
     "unplugin-icons": "^0.14.8",
     "vite": "^3.0.9",
