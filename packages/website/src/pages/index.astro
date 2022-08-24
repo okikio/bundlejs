@@ -22,7 +22,9 @@ import { default as Content } from "../snippets/analysis.md";
   </Container>
 
   <MainSection client:load>
-    <Content slot="analysisDocs" />
+    <Fragment slot="analysisDocs">
+      <Content />
+    </Fragment>
   </MainSection>
 
   <Container>
