@@ -8,7 +8,6 @@ function handleMessage(event: MessageEvent) {
   if (!(typeof event.data === 'object' && event.data.giscus)) return;
 
   const giscusData = event.data.giscus;
-  console.log(giscusData)
   // Do whatever you want with it, e.g. `console.log(giscusData)`.
   // You'll need to make sure that `giscusData` contains the message you're
   // expecting, e.g. by using `if ('discussion' in giscusData)`.
