@@ -13,7 +13,7 @@ export function SnippetDetails(props: ComponentProps<'details'> & {
   const summary = (
     <h3 slot="summary" class="inline-flex items-center">
       {newProps.summary}
-      <a href={"#" + attrs.id} custom-slug-link aria-hidden="true">
+      <a href={"#" + attrs.id} custom-slug-link aria-hidden="true" tabIndex={-1}>
         <IconLink rehype-icon="link-24-regular" />
       </a>
     </h3>

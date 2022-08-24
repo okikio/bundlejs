@@ -26,13 +26,10 @@ dialog.search-container {
   @apply absolute top-2 w-full;
   @apply p-0;
 
-  &:not([open]) {
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-    scrollbar-width: none; /* Firefox */
+  scrollbar-gutter: stable;
 
-    &::-webkit-scrollbar {
-      width: 0; /* Remove scrollbar space */
-    }
+  &:not([open]) {
+    overflow: hidden;
   }
 
   height: fit-content;
@@ -181,6 +178,10 @@ dialog.search-container {
 .result {
   @apply grid gap-6 sm:grid-cols-12;
   @apply px-3 py-5;
+
+  a {
+    // @apply flex items-center;
+  }
 
   &.error {
     @apply flex items-center justify-center;

@@ -66,6 +66,7 @@ h2 {
 h3 {
   @apply text-2xl;
 }
+
 b,
 strong {
   @apply dark:font-500 dark:underline;
@@ -124,6 +125,18 @@ a {
   cursor: pointer;
 
   @apply break-words lt-md:break-all;
+
+  :where(svg[astro-icon]) {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  :where(svg[external-icon]) {
+    width: 1em;
+    height: 1em;
+    opacity: 0.6;
+  }
 
   &:hover {
     @apply text-primary dark:text-blue-200;

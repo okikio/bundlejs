@@ -12,6 +12,20 @@
       @apply rounded-2xl;
     }
   }
+
+  .analysis-loader {
+    @apply absolute top-0 left-0 w-full h-full;
+    @apply flex items-center justify-center;
+
+    .loader-content {
+      z-index: 50;
+    }
+  }
+
+  .analysis-iframe {
+    @apply absolute top-0 left-0 w-full h-full;
+    color-scheme: none;
+  }
 }
 
 .dom-loaded .analysis-section [custom-details] {

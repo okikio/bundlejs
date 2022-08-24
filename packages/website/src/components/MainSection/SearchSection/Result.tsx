@@ -1,11 +1,16 @@
 
-import { ComponentProps, createSignal } from "solid-js";
+import type { ComponentProps } from "solid-js";
+
+import { createSignal } from "solid-js";
 import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 
 import { state } from "../store";
 
-import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
+import toast from "../../SolidToast/index";
 import { createTextSwitch } from "../../../hooks/text-switch";
+
+import Anchor from "../../../components/Anchor";
+import Button from "../../../components/Button";
 
 export interface SearchResultProps extends ComponentProps<'div'> {
   name?: string;
@@ -33,6 +38,8 @@ export function SearchResult(props?: SearchResultProps) {
     (async () => {
       await BtnText.switch("next");
 
+      toast.success(`Added ${_package}`)
+
       let inputValue = state.monaco.models.input.getValue();
       let inputInitialValue = state.monaco.initialValue.input;
 
@@ -55,30 +62,24 @@ export function SearchResult(props?: SearchResultProps) {
     <div class="result">
       <div class="content">
         <h2 class="font-semibold text-lg">
-          <a href={_packageHref} target="_blank" rel="noopener">
-            {_name}
-            <IconArrowUpRight rehype-icon="arrow-up-right-24-regular" />
-          </a>
+          <Anchor href={_packageHref}>{_name}</Anchor>
         </h2>
         <div>
           <p>{_description}</p>
           <p class="updated-time">
             {_date && `Updated ${_date} `}
             {_author && (<>
-              by <a href={_authorHref} target="_blank" rel="noopener">
-                @{_author}
-                <IconArrowUpRight rehype-icon="arrow-up-right-24-regular" />
-              </a>.
+              by <Anchor href={_authorHref}>@{_author}</Anchor>.
             </>)}
           </p>
         </div>
       </div>
       <div class="add">
-        <button class="btn" onClick={onClick}>
+        <Button type="button" class="btn" onClick={onClick}>
           <span class="btn-text">
             <BtnText.render />
           </span>
-        </button>
+        </Button>
       </div>
     </div>
   );
