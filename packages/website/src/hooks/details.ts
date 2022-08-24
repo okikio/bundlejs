@@ -25,6 +25,8 @@ export function createDetailsEffect() {
     anchorRef = _summaryRef?.querySelector?.('a');
 
     createEffect(() => {
+      if (!ref) return;
+
       // @ts-ignore
       ref.dataset.isClosing = isClosing();
 
@@ -52,7 +54,8 @@ export function createDetailsEffect() {
       (
         anchorRef == (e?.target as HTMLElement) ||
         anchorRef?.contains?.((e?.target as HTMLElement))
-      )
+      ) || 
+      !ref
     ) return;
 
     e && e?.preventDefault?.();
@@ -61,14 +64,16 @@ export function createDetailsEffect() {
     ref.style.overflow = "hidden";
 
     // Check if the element is being closed or is already closed
-    if (isClosing() || !ref.open) animate("open"); 
+    if (isClosing() || !ref?.open) animate("open"); 
 
     // Check if the element is being openned or is already open
-    else if (isExpanding() || ref.open) animate("shrink");
+    else if (isExpanding() || ref?.open) animate("shrink");
+    
   }
 
   function animate(mode: "open" | "shrink") {
     const isOpen = mode == "open";
+    if (!ref) return;
     if (isOpen) {
       // Apply a fixed height on the element
       ref.style.height = `${ref.offsetHeight}px`;

@@ -10,8 +10,7 @@ export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Elemen
         class="inline-details umami--toggle--analysis-accordian"
         summary="Bundle Analysis"
       >
-
-        <p> {props.docs} </p>
+        <p>{props.docs}</p>
         <br />
         <div class="relative w-full">
           <div class="analyzer-loader">
