@@ -28,7 +28,7 @@ export function Details(props: ComponentProps<'details'> & {
   let {
     onClick: _onClick,
     onCleanup: _onCleanup,
-    onMount: _onMount
+    onMount: _onMount,
   } = createDetailsEffect();
 
   onMount(() => _onMount(ref, summaryRef, contentRef));
