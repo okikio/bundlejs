@@ -6,8 +6,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from "../components/Container";
 import MainSection from '../components/MainSection/MainSection';
 
-import { default as Docs } from "../components/DocsSection/Docs.mdx";
 import IntroHeader from "../components/IntroHeader.astro";
+
+import { default as Docs } from "../components/DocsSection/Docs.mdx";
+import { default as Content } from "../snippets/analysis.md";
 ---
 
 <BaseLayout>
@@ -20,20 +22,7 @@ import IntroHeader from "../components/IntroHeader.astro";
   </Container>
 
   <MainSection client:load>
-    <Fragment slot="analysisDocs">
-
-      Enable the <code>analysis</code> config to view the size of output files with interactive zoomable charts.
-
-      <Code 
-        code={[
-          `{`,
-            `\t"analysis": "treemap" | "network" | "sunburst" | true | false,`,
-            `\t"esbuild": { ... }`,
-          `}`
-        ].join('\n')} 
-        lang="ts" 
-      />
-    </Fragment>
+    <Content slot="analysisDocs" />
   </MainSection>
 
   <Container>
