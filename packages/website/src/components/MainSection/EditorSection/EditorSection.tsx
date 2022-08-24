@@ -1,4 +1,6 @@
-import { createSignal, onCleanup, onMount, type ComponentProps } from "solid-js";
+import type { ComponentProps } from "solid-js";
+
+import { createSignal, onCleanup, onMount } from "solid-js";
 
 import DragHandle from "./DragHandle";
 

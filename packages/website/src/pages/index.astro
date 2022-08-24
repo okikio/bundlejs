@@ -1,4 +1,6 @@
 ---
+import { Code } from 'astro/components';
+
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 import Container from "../components/Container";
@@ -17,7 +19,22 @@ import IntroHeader from "../components/IntroHeader.astro";
     />
   </Container>
 
-  <MainSection client:load />
+  <MainSection client:load>
+    <Fragment slot="analysisDocs">
+
+      Enable the <code>analysis</code> config to view the size of output files with interactive zoomable charts.
+
+      <Code 
+        code={[
+          `{`,
+            `\t"analysis": "treemap" | "network" | "sunburst" | true | false,`,
+            `\t"esbuild": { ... }`,
+          `}`
+        ].join('\n')} 
+        lang="ts" 
+      />
+    </Fragment>
+  </MainSection>
 
   <Container>
     <Docs />

@@ -1,14 +1,15 @@
-import type { ComponentProps } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
 import Details from "../Details";
 import Loading from "../Loading";
 import DragHandle from "./EditorSection/DragHandle";
 
-export function Analysis(props?: ComponentProps<'details'>) {
+export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Element }) {
   return (
     <div class="analysis-section">
       <Details
         class="inline-details umami--toggle--analysis-accordian"
-        summary="Bundle Analysis">
+        summary="Bundle Analysis"
+      >
 
         <p>
           {/* <Markdown>
@@ -22,6 +23,7 @@ export function Analysis(props?: ComponentProps<'details'>) {
           ```
 
         </Markdown> */}
+          {props.docs}
         </p>
         <br />
         <div class="relative w-full">

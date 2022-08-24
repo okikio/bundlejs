@@ -1,6 +1,5 @@
 ---
-// Component Imports
-import Snippet from './Snippet.astro';
+import SnippetDetails from "./SnippetDetails";
 
 const snippets = await Astro.glob('../../snippets/*.mdx');
 
@@ -22,9 +21,16 @@ function sortFn (a, b) {
       .sort(sortFn)
       .map(async ({ default: Content, frontmatter }) => {
         return (
-          <Snippet content={frontmatter}>
-            <Content />
-          </Snippet>
+          <div class="accordian">
+            <SnippetDetails 
+              id={frontmatter.id} 
+              summary={frontmatter.title}
+              class={`umami--toggle--${frontmatter["id"]}-docs-accordian`} 
+              client:visible
+            >
+              <Content />
+            </SnippetDetails>
+          </div>
         );
       })
   }
