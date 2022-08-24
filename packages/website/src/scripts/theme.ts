@@ -51,6 +51,7 @@ function sendMessage<T>(message: T) {
     if (!iframe) return;
 
     const iframeOrigin = "https://giscus.bundlejs.com";
+    console.log(iframe?.contentWindow?.location)
     if (iframe?.contentWindow?.location) {
       iframe?.contentWindow?.postMessage?.({ giscus: message }, iframeOrigin);
     }

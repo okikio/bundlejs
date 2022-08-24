@@ -11,20 +11,7 @@ export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Elemen
         summary="Bundle Analysis"
       >
 
-        <p>
-          {/* <Markdown>
-          Enable the `analysis` config to view the size of output files with interactive zoomable charts.
-
-          ```ts
-          {
-            "analysis": "treemap" | "network" | "sunburst" | true | false,
-            "esbuild": { ... }
-          }
-          ```
-
-        </Markdown> */}
-          {props.docs}
-        </p>
+        <p> {props.docs} </p>
         <br />
         <div class="relative w-full">
           <div class="analyzer-loader">
