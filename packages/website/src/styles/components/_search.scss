@@ -4,17 +4,19 @@
 }
 
 .search-backdrop {
-  @apply transition-colors duration-100;
+  @apply transition-opacity duration-200;
   @apply fixed top-0 left-0 w-[100vw] h-[100vh];
-  @apply bg-black bg-opacity-0;
+  @apply bg-slate-200/50 dark:bg-black/50;
+  @apply opacity-0;
   @apply pointer-events-none;
   @apply z-[5];
 
   @supports (backdrop-filter: blur(10px)) {
+    backdrop-filter: blur(10px);
+
     &[data-open=true] {
-      @apply bg-opacity-50;
+      @apply opacity-100;
       @apply pointer-events-auto;
-      backdrop-filter: blur(10px);
     }
   }
 }
@@ -58,6 +60,11 @@ dialog.search-container {
   @at-root .dom-loaded dialog.search-container {
     &,
     &:before {
+      @apply transition-all duration-[200ms];
+    }
+
+    &[open],
+    &[open]:before {
       @apply transition-all duration-[400ms];
     }
 
