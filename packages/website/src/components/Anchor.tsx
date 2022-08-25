@@ -17,7 +17,7 @@ export function Anchor(props?: ComponentProps<'a'> & { class?: ClassValue, exter
     <a
       custom-anchor
       href={mergedProps.href}
-      class={clsx({ "whitespace-nowrap": mergedProps.external }, mergedProps.class)}
+      class={clsx({ "sm:whitespace-nowrap": mergedProps.external }, mergedProps.class)}
       {...Object.assign(mergedProps.external ? { target: "_blank", rel: "noopener" } : {}, attrs)}
     >
       {mergedProps.children}

@@ -8,18 +8,17 @@ export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Elemen
     <div class="analysis-section">
       <Details
         class="inline-details umami--toggle--analysis-accordian"
-        summary="Bundle Analysis"
-        contentClass=""
+        summary="Analysis"
+        contentClass="pr-5"
       >
         {props.docs}
         <div class="relative w-full">
-          <div class="relative w-full">
+          <div class="relative w-full min-h-[150px]">
             <div class="analysis-loader">
               <div class="text-center">
-                <Loading show={true}>
-                <p class="loader-content">Nothing to analyze...</p>
+                <Loading show={false}></Loading>
 
-                </Loading>
+                <p class="loader-content">Nothing to analyze...</p>
               </div>
             </div>
             <iframe class="analysis-iframe" title="Bundle Analysis" id="analyzer" src="about:blank" sandbox="allow-scripts"></iframe>

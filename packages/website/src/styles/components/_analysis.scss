@@ -18,7 +18,8 @@
     @apply flex items-center justify-center;
 
     .loader-content {
-      z-index: 50;
+      @apply absolute top-0 left-0 w-full h-full;
+      @apply flex items-center justify-center;
     }
   }
 

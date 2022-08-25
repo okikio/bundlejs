@@ -4,13 +4,15 @@ export interface LoadingProps extends ComponentProps<"div"> {
   size?: "sm" | "md" | "lg";
   'show'?: boolean;
   'play'?: boolean;
+  'background'?: boolean;
 }
 
 export function Loading(props?: LoadingProps) {
-  let [newProps, attrs] = splitProps(props, ["size", "show", "children"]);
+  let [newProps, attrs] = splitProps(props, ["size", "show", "children", "background"]);
   let mergedProps = mergeProps({
     size: "md",
-    'show': true
+    'show': true,
+    'background': true
   }, newProps);
 
   let timeout: string | number | NodeJS.Timeout;
@@ -22,7 +24,7 @@ export function Loading(props?: LoadingProps) {
     }, 300);
   });
   return (
-    <div class="loading-container relative" custom-loading data-show={mergedProps.show} {...attrs}>
+    <div class="loading-container relative" custom-loading data-bg={mergedProps.background} data-show={mergedProps.show} {...attrs}>
       {mergedProps.children}
       <div class="loading" data-play={playState()} data-size={mergedProps.size}></div>
     </div>

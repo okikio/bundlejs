@@ -1531,7 +1531,7 @@ packages:
       babel-plugin-polyfill-corejs2: 0.3.2_@babel+core@7.18.13
       babel-plugin-polyfill-corejs3: 0.5.3_@babel+core@7.18.13
       babel-plugin-polyfill-regenerator: 0.4.0_@babel+core@7.18.13
-      core-js-compat: 3.24.1
+      core-js-compat: 3.25.0
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -3094,7 +3094,7 @@ packages:
     dependencies:
       '@babel/core': 7.18.13
       '@babel/helper-define-polyfill-provider': 0.3.2_@babel+core@7.18.13
-      core-js-compat: 3.24.1
+      core-js-compat: 3.25.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -3208,7 +3208,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001382
-      electron-to-chromium: 1.4.228
+      electron-to-chromium: 1.4.229
       node-releases: 2.0.6
       update-browserslist-db: 1.0.5_browserslist@4.21.3
     dev: true
@@ -3597,8 +3597,8 @@ packages:
       safe-buffer: 5.1.2
     dev: true
 
-  /core-js-compat/3.24.1:
-    resolution: {integrity: sha512-XhdNAGeRnTpp8xbD+sR/HFDK9CbeeeqXT6TuofXh3urqEevzkWmLRgrVoykodsw8okqo2pu1BOmuCKrHx63zdw==}
+  /core-js-compat/3.25.0:
+    resolution: {integrity: sha512-extKQM0g8/3GjFx9US12FAgx8KJawB7RCQ5y8ipYLbmfzEzmFRWdDjIlxDx82g7ygcNG85qMVUSRyABouELdow==}
     dependencies:
       browserslist: 4.21.3
       semver: 7.0.0
@@ -4189,8 +4189,8 @@ packages:
       jake: 10.8.5
     dev: true
 
-  /electron-to-chromium/1.4.228:
-    resolution: {integrity: sha512-XfDHCvou7CsDMlFwb0WZ1tWmW48e7Sn7VBRyPfZsZZila9esRsJl1trO+OqDNV97GggFSt0ISbWslKXfQkG//g==}
+  /electron-to-chromium/1.4.229:
+    resolution: {integrity: sha512-kdye32s/padLGpiLzhrMraBBs/M5hDspB8PCdCP6L11AJ6dw3Gg3xdvT4b4pqWaW5tc5oAwCfKCS+PAsZM3ipw==}
     dev: true
 
   /emmet/2.3.6:

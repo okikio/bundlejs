@@ -1,10 +1,7 @@
 .loading-container {
 	@apply absolute inset-0;
 	@apply flex flex-col items-center justify-center z-10;
-
-	@supports (backdrop-filter: blur(8px)) {
-		@apply backdrop-blur-lg bg-white/50 dark:bg-black/50;
-	}
+	@apply gap-1;
 
 	&[data-show=false] { 
 		@apply opacity-0 pointer-events-none;
@@ -14,6 +11,15 @@
 		@apply opacity-100 pointer-events-auto;
 	}
 
+	&[data-bg=true] { 
+		@apply bg-white/70 dark:bg-black/70;
+
+		@supports (backdrop-filter: blur(8px)) {
+			@apply bg-white/0 dark:bg-black/0;
+			@apply backdrop-blur-lg;
+		}
+	}
+
 	@at-root .dom-loaded .loading-container {
 		@apply transition duration-300;
 	}
@@ -21,7 +27,7 @@
 
 .loading {
   @apply block mx-auto rounded-full;
-	@apply border-gray-300/50 border-t-secondary dark:border-t-primary;
+	@apply border-gray-300 dark:border-gray-700 border-t-secondary dark:border-t-white;
 	@apply animate-spin;
 
 	&[data-play=true] {
@@ -37,7 +43,7 @@
 	}
 
 	&[data-size=md] {
-		@apply w-8 h-8 border-4;
+		@apply w-6 h-6 border-[3px];
 	}
 
 	&[data-size=lg] {

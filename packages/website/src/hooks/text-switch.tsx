@@ -17,8 +17,11 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
   let [nextValue, setNextValue] = createSignal(next);
 
   let refList = new Map<HTMLElement, null>();
+  let refElList = new Map<HTMLElement, null>();
+
   let initialRef: HTMLElement = null;
   let nextRef: HTMLElement = null;
+  let nextInitialRef: HTMLElement = null;
 
   return {
     getInitial: initialValue,
@@ -29,19 +32,22 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
 
     async switch(dir: "next" | "initial" = "next", delay = 100) {
       let arr = [];
-      refList.forEach((_, ref) =>
-        arr.push(ref.animate({
-          transform: [
-            `translateY(${dir == "next" ? 0 : -100}%)`,
-            `translateY(${dir == "next" ? -100 : -200}%)`
-          ]
-        }, {
-          duration: 500,
-          easing: "ease",
-          fill: "both",
-          delay,
-        }).finished)
-      );
+      
+      refList.forEach((_, ref) => {
+        arr.push(
+          ref.animate({
+            transform: [
+              `translateY(${dir == "next" ? 0 : -100}%)`,
+              `translateY(${dir == "next" ? -100 : -200}%)`
+            ]
+          }, {
+            duration: 500,
+            easing: "ease",
+            fill: "both",
+            delay,
+          }).finished
+        );
+      });
       await Promise.all(arr);
     },
 
@@ -49,6 +55,10 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
       let ref: HTMLElement = null;
       onMount(() => {
         refList.set(ref, null);
+
+        refElList.set(initialRef, null);
+        refElList.set(nextRef, null);
+        refElList.set(nextInitialRef, null);
       });
 
       onCleanup(() => {
@@ -59,8 +69,8 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
         <span custom-text-switch {...props}>
           <span class="text-switch-container" ref={ref}>
             <span class="text-value initial" ref={initialRef}>{initialValue()}</span>
-            <span class="text-value next">{nextValue()}</span>
-            <span class="text-value next-initial">{initialValue()}</span>
+            <span class="text-value next" ref={nextRef}>{nextValue()}</span>
+            <span class="text-value next-initial" ref={nextInitialRef}>{initialValue()}</span>
           </span>
         </span>
       );
