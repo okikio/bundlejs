@@ -36,9 +36,8 @@ export function SearchResult(props?: SearchResultProps) {
   // When user clicks the "Add Module button" give the user some feedback
   function onClick() {
     (async () => {
-      await BtnText.switch("next");
-
       toast.success(`Added ${_package}`)
+      await BtnText.switch("next");
 
       let inputValue = state.monaco.models.input.getValue();
       let inputInitialValue = state.monaco.initialValue.input;

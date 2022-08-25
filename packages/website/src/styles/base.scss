@@ -103,15 +103,17 @@ strong {
 
 button,
 a,
-details {
+summary {
   @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-90;
   @apply ring-offset-2 ring-offset-black;
-  @apply rounded-md focus:outline-none;
+  @apply rounded-md;
+  @apply focus:outline-none;
 }
 
 button,
 a {
   @apply text-secondary dark:text-primary;
+  @apply rounded-md;
 }
 
 button {
@@ -259,6 +261,7 @@ details {
 
   &.inline-details {
     @apply bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700;
+    @apply hover:bg-blue-100 dark:hover:bg-gray-900;
 
     & > summary {
       @apply pl-[2ch] py-0;
@@ -280,6 +283,10 @@ details {
       [astro-icon] {
         @apply right-[0.25ch];
       }
+    }
+    
+    & > summary:hover {
+      @apply text-secondary dark:text-primary;
     }
 
     & > .content {

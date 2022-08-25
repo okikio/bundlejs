@@ -28,7 +28,7 @@ export function SearchResults(props?: ComponentProps<'dialog'> & {
     }
 
     try {
-        if (source == "") return [];
+      if (source == "") return [];
       let { packages } = await getPackages(source);
 
       // @ts-ignore

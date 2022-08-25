@@ -53,8 +53,7 @@ export function Activity(props?: ComponentProps<'div'>) {
   async function share() {
     if (!state.monaco.loading) {
       try {
-        ShareText.setNext(navigator.share ? "Shared!" : "Copied!");
-        toast.success(navigator.share ? "Shared!" : "Copied!");
+        ShareText.setNext(navigator.share ? "Sharing!" : "Copying!");
         await ShareText.switch("next");
 
         if (navigator.share) {
@@ -66,11 +65,14 @@ export function Activity(props?: ComponentProps<'div'>) {
         } else {
           await copyToClipboard(await getShareableURL());
         }
-
-        await ShareText.switch("initial", 600);
+        
+        toast.success(navigator.share ? "Shared!" : "Copied!");
       } catch (error) {
+        toast.error("Error Sharing!");
         console.log('Error sharing', error);
       }
+
+      await ShareText.switch("initial", 600);
     }
   }
 
@@ -80,8 +82,9 @@ export function Activity(props?: ComponentProps<'div'>) {
       const configModel = state.monaco.models.config;
 
       setState("bundling", true);
-      await BuildText.switch("next");
+      
       const toastId = toast.loading("Building!");
+      await BuildText.switch("next");
 
       try {
         const worker = state.monaco.workers.other;
@@ -156,7 +159,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         </ToolTip>
 
         <div class="bundle-results" title="Compressed Size">
-          <Loading size="md" show={state.bundling} />
+          <Loading size="md" show={state.bundling} background={false} />
           <span class="bundle-size-text">{state.bundleSize}</span>
         </div>
       </div>
