@@ -22,6 +22,13 @@ export function Activity(props?: ComponentProps<'div'>) {
   let ShareText = createTextSwitch(["Share", "Shared!"]);
   let BuildText = createTextSwitch(["Build", "Building!"]);
 
+  onMount(() => {
+    // toast("Hey, that's cool", { duration: Infinity });
+    // toast.loading("Hey, that's cool", { duration: Infinity });
+    // toast.error("Hey, that's cool", { duration: Infinity });
+    // toast.success("Hey, that's cool", { duration: Infinity });
+  });
+
   // https://www.30secondsofcode.org/articles/s/copy-text-to-clipboard-with-javascript#asynchronous-clipboard-api
   async function copyToClipboard(str: string) {
     if (navigator && navigator.clipboard && navigator.clipboard.writeText) {

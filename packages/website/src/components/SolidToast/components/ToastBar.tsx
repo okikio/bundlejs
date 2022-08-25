@@ -1,7 +1,14 @@
 import { createEffect, Match, Switch } from 'solid-js';
-import { resolveValue, ToastBarProps } from '../types';
+import { ActionType, resolveValue, ToastBarProps } from '../types';
 import { getToastYDirection as d, iconContainer, messageContainer, toastBarBase } from '../util';
 import { Error, Loader, Success } from '.';
+
+import { Button } from "../../Button";
+import { dispatch } from '../core';
+
+import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+
+import IconCancel from "~icons/fluent/dismiss-24-regular";
 
 export const ToastBar = (props: ToastBarProps) => {
   let el: HTMLDivElement | undefined;
@@ -45,18 +52,19 @@ export const ToastBar = (props: ToastBarProps) => {
         // animation: animation(),
         ...props.toast.style,
       }}
+      data-type={props.toast.type}
     >
       <Switch>
         <Match when={props.toast.icon}>
-          <div style={iconContainer}>{props.toast.icon}</div>
+          <div style={iconContainer} class="icon-container">{props.toast.icon}</div>
         </Match>
         <Match when={props.toast.type === 'loading'}>
-          <div style={iconContainer}>
+          <div style={iconContainer} class="icon-container">
             <Loader {...props.toast.iconTheme} />
           </div>
         </Match>
         <Match when={props.toast.type === 'success'}>
-          <div style={iconContainer}>
+          <div style={iconContainer} class="icon-container">
             <Success {...props.toast.iconTheme} />
           </div>
         </Match>
@@ -70,6 +78,27 @@ export const ToastBar = (props: ToastBarProps) => {
       <div style={messageContainer} {...props.toast.ariaProps}>
         {resolveValue(props.toast.message, props.toast)}
       </div>
+
+      <ToolTip
+        as={Button}
+
+        class="cancel-button"
+        content={"Dismiss"}
+
+        tooltip={{
+          followCursor: false,
+          delay: [1000, 200],
+        }}
+
+        onClick={() => (
+          dispatch({
+            type: ActionType.DISMISS_TOAST,
+            toastId: props.toast.id,
+          })
+        )}
+      >
+          <IconCancel astro-icon rehype-icon />
+      </ToolTip>
     </div>
   );
 };
