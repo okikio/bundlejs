@@ -3,6 +3,7 @@ import { IconProps } from '../types';
 export const Loader = (props: IconProps) => (
   <svg style={{ overflow: 'visible' }} viewBox="0 0 32 32" width="1.25rem" height="1.25rem">
     <path
+      class="loading-circle"
       fill="none"
       stroke={props.primary || '#E5E7EB'}
       stroke-width="4"

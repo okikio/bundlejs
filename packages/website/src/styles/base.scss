@@ -199,6 +199,8 @@ pre {
 }
 
 details {
+  @apply transition-colors duration-700;
+
   & > summary {
     @apply relative cursor-pointer;
     @apply py-5;

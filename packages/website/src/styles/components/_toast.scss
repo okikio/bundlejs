@@ -1,0 +1,60 @@
+.toast {
+  @apply transition-colors duration-300;
+  transition-property: background-color, border-color, text-decoration-color, fill, stroke;
+
+  @apply bg-blue-100/90 dark:bg-elevated/70;
+  @apply backdrop-blur-lg rounded-full;
+  @apply w-[300px];
+
+  @apply pl-4 pr-2 py-2;
+  @apply border-2 border-dashed border-secondary dark:border-slate-700;
+
+  max-width: min(350px, 100%);
+
+  .cancel-button {
+    @apply rounded-full;
+    @apply bg-secondary/20 p-2;
+  }
+
+  &[data-type=error] {
+    @apply bg-red-100/90 dark:bg-red-700/30;
+    @apply border-red-300 dark:border-red-700;
+
+    .icon-container svg path {
+      @apply stroke-red-200 dark:stroke-red-900;
+    }
+
+    .cancel-button {
+      @apply text-red-800 dark:text-red-200;
+      @apply bg-red-300/90 dark:bg-red-200/30;
+    }
+  }
+
+  &[data-type=success] {
+    @apply bg-green-200/90 dark:bg-green-700/30;
+    @apply border-green-400 dark:border-green-700;
+
+    .icon-container svg path {
+      @apply stroke-green-200 dark:stroke-green-900;
+    }
+
+    .cancel-button {
+      @apply text-green-800 dark:text-green-200;
+      @apply bg-green-400/70 dark:bg-green-200/30;
+    }
+  }
+
+  &[data-type=loading] {
+    @apply bg-gray-100/90 dark:bg-blue-700/30;
+    @apply border-gray-400 dark:border-blue-700;
+
+    .loading-circle {
+      @apply stroke-slate-300;
+    }
+
+    .cancel-button {
+      @apply text-gray-800 dark:text-blue-200;
+      @apply bg-gray-300/90 dark:bg-blue-200/30;
+    }
+  }
+}
