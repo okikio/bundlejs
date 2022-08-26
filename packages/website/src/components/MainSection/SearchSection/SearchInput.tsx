@@ -31,7 +31,7 @@ export function SearchInput(props: ComponentProps<'div'> & {
       {/* @ts-ignore */}
       <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." onKeyup={onKeyup} ref={ref} />
 
-      <ToolTip as={Button} content="Clear Search Input and Results" id="clear" ariaLabel="Clear search input and results" class="umami--click--search-clear-button" onClick={onClear}>
+      <ToolTip as={Button} content="Clear Search Input and Results" id="clear" aria-label="Clear search input and results" class="umami--click--search-clear-button" onClick={onClear}>
         <IconClear astro-icon />
       </ToolTip>
     </div>
