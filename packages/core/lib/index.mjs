@@ -1,3 +1,4 @@
+import { source as on } from "./esbuild-wasm-8f1dd564.mjs";
 const Ke = "0.15.5", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
 var at = class {
   constructor(e) {
@@ -137,8 +138,8 @@ const Qt = {
   "logger.error": console.error,
   "logger.warn": console.warn,
   "logger.info": console.info
-}, S = new Kt();
-S.on(Qt);
+}, b = new Kt();
+b.on(Qt);
 const ct = {
   initialized: !1,
   assets: [],
@@ -182,23 +183,23 @@ async function ts(e = le) {
 async function ft(e = le, t = {}) {
   try {
     if (!Y("initialized")) {
-      _e("initialized", !0), S.emit("init.start");
+      _e("initialized", !0), b.emit("init.start");
       const s = await ts(e);
       if (_e("esbuild", s), e !== "node" && e !== "deno")
         if ("wasmModule" in t)
           await s.initialize(t);
         else {
-          const { default: r } = await import("./esbuild-wasm-89d7a516.mjs");
+          const { default: r } = await import("./esbuild-wasm-8f1dd564.mjs");
           await s.initialize({
             wasmModule: new WebAssembly.Module(await r()),
             ...t
           });
         }
-      S.emit("init.complete");
+      b.emit("init.complete");
     }
     return Y("esbuild");
   } catch (s) {
-    S.emit("init.error", s), console.error(s);
+    b.emit("init.error", s), console.error(s);
   }
 }
 const H = 46, y = 47, ut = "/", ht = /\/+/;
@@ -507,11 +508,11 @@ function Es(e, {
       if (e[$] == "[")
         if (p) {
           if (e[$ + 1] == ":") {
-            let E = $ + 1, b = "";
+            let E = $ + 1, S = "";
             for (; e[E + 1] != null && e[E + 1] != ":"; )
-              b += e[E + 1], E++;
+              S += e[E + 1], E++;
             if (e[E + 1] == ":" && e[E + 2] == "]") {
-              $ = E + 2, b == "alnum" ? h += "\\dA-Za-z" : b == "alpha" ? h += "A-Za-z" : b == "ascii" ? h += "\0-\x7F" : b == "blank" ? h += "	 " : b == "cntrl" ? h += "\0-\x7F" : b == "digit" ? h += "\\d" : b == "graph" ? h += "!-~" : b == "lower" ? h += "a-z" : b == "print" ? h += " -~" : b == "punct" ? h += `!"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_\u2018{|}~` : b == "space" ? h += "\\s\v" : b == "upper" ? h += "A-Z" : b == "word" ? h += "\\w" : b == "xdigit" && (h += "\\dA-Fa-f");
+              $ = E + 2, S == "alnum" ? h += "\\dA-Za-z" : S == "alpha" ? h += "A-Za-z" : S == "ascii" ? h += "\0-\x7F" : S == "blank" ? h += "	 " : S == "cntrl" ? h += "\0-\x7F" : S == "digit" ? h += "\\d" : S == "graph" ? h += "!-~" : S == "lower" ? h += "a-z" : S == "print" ? h += " -~" : S == "punct" ? h += `!"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_\u2018{|}~` : S == "space" ? h += "\\s\v" : S == "upper" ? h += "A-Z" : S == "word" ? h += "\\w" : S == "xdigit" && (h += "\\dA-Fa-f");
               continue;
             }
           }
@@ -570,11 +571,11 @@ function Es(e, {
           $++, d.push("*"), h += "(?:";
         else {
           const E = e[$ - 1];
-          let b = 1;
+          let S = 1;
           for (; e[$ + 1] == "*"; )
-            $++, b++;
+            $++, S++;
           const Zt = e[$ + 1];
-          s && b == 2 && [...c, void 0].includes(E) && [...c, void 0].includes(Zt) ? (h += a, R = !0) : h += l;
+          s && S == 2 && [...c, void 0].includes(E) && [...c, void 0].includes(Zt) ? (h += a, R = !0) : h += l;
         }
         continue;
       }
@@ -634,11 +635,11 @@ function As(e, { extended: t = !0, globstar: s = !1 } = {}) {
   }
   return r ? wt(r, { extended: t, globstar: s }) : ".";
 }
-const Rs = je, bs = je, {
-  basename: Ss,
+const Rs = je, Ss = je, {
+  basename: bs,
   delimiter: vs,
   dirname: Me,
-  extname: ze,
+  extname: Ue,
   format: _s,
   fromFileUrl: Os,
   isAbsolute: Et,
@@ -646,7 +647,7 @@ const Rs = je, bs = je, {
   normalize: ks,
   parse: Ts,
   relative: Ns,
-  resolve: Fe,
+  resolve: ze,
   sep: xs,
   toFileUrl: Cs,
   toNamespacedPath: Is
@@ -665,11 +666,11 @@ const Rs = je, bs = je, {
   isGlob: ys,
   normalizeGlob: wt,
   joinGlobs: As,
-  posix: bs,
-  basename: Ss,
+  posix: Ss,
+  basename: bs,
   delimiter: vs,
   dirname: Me,
-  extname: ze,
+  extname: Ue,
   format: _s,
   fromFileUrl: Os,
   isAbsolute: Et,
@@ -677,12 +678,12 @@ const Rs = je, bs = je, {
   normalize: ks,
   parse: Ts,
   relative: Ns,
-  resolve: Fe,
+  resolve: ze,
   sep: xs,
   toFileUrl: Cs,
   toNamespacedPath: Is
 }, Symbol.toStringTag, { value: "Module" })), Ls = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"], At = (e) => {
-  const t = ze(e);
+  const t = Ue(e);
   return Ls.includes(t) ? (/\.js(x)?$/.test(t) ? t.replace(/^\.js/, ".ts") : t).slice(1) : t === ".mjs" || t === ".cjs" || t === ".mts" || t === ".cts" ? "ts" : t == ".scss" ? "css" : t == ".png" || t == ".jpeg" || t == ".ttf" ? "dataurl" : t == ".svg" || t == ".html" || t == ".txt" ? "text" : t == ".wasm" ? "file" : t.length ? "text" : "ts";
 }, $e = "virtual-filesystem", Ps = (e, t, s) => {
   const r = s.filesystem;
@@ -705,10 +706,10 @@ const Rs = je, bs = je, {
       });
     }
   };
-}, Ue = (e) => new TextEncoder().encode(e), ke = (e) => new TextDecoder().decode(e), U = "https://unpkg.com", Rt = (e) => /^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(e) || /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(e) ? "npm" : /^(jsdelivr\.gh|github)\:?/.test(e) || /^https?:\/\/(cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com)/.test(e) ? "github" : /^(deno)\:?/.test(e) || /^https?:\/\/(deno\.land\/x)/.test(e) ? "deno" : "other", Ds = (e, t = U) => (/^skypack\:/.test(e) ? t = "https://cdn.skypack.dev" : /^(esm\.sh|esm)\:/.test(e) ? t = "https://cdn.esm.sh" : /^unpkg\:/.test(e) ? t = "https://unpkg.com" : /^(jsdelivr|esm\.run)\:/.test(e) ? t = "https://cdn.jsdelivr.net/npm" : /^(jsdelivr\.gh)\:/.test(e) ? t = "https://cdn.jsdelivr.net/gh" : /^(deno)\:/.test(e) ? t = "https://deno.land/x" : /^(github)\:/.test(e) && (t = "https://raw.githubusercontent.com"), /\/$/.test(t) ? t : `${t}/`), js = (e) => e.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "").replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "").replace(/^\//, ""), O = (e, t = U) => {
+}, Fe = (e) => new TextEncoder().encode(e), ke = (e) => new TextDecoder().decode(e), F = "https://unpkg.com", Rt = (e) => /^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(e) || /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(e) ? "npm" : /^(jsdelivr\.gh|github)\:?/.test(e) || /^https?:\/\/(cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com)/.test(e) ? "github" : /^(deno)\:?/.test(e) || /^https?:\/\/(deno\.land\/x)/.test(e) ? "deno" : "other", Ds = (e, t = F) => (/^skypack\:/.test(e) ? t = "https://cdn.skypack.dev" : /^(esm\.sh|esm)\:/.test(e) ? t = "https://cdn.esm.sh" : /^unpkg\:/.test(e) ? t = "https://unpkg.com" : /^(jsdelivr|esm\.run)\:/.test(e) ? t = "https://cdn.jsdelivr.net/npm" : /^(jsdelivr\.gh)\:/.test(e) ? t = "https://cdn.jsdelivr.net/gh" : /^(deno)\:/.test(e) ? t = "https://deno.land/x" : /^(github)\:/.test(e) && (t = "https://raw.githubusercontent.com"), /\/$/.test(t) ? t : `${t}/`), js = (e) => e.replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "").replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "").replace(/^\//, ""), O = (e, t = F) => {
   let s = Ds(e, t), r = js(e), n = new URL(r, s);
   return { import: e, path: r, origin: s, cdn: t, url: n };
-}, G = "external-globals", Ms = Ue("export default {}"), zs = {
+}, G = "external-globals", Ms = Fe("export default {}"), Us = {
   console: "console-browserify",
   constants: "constants-browserify",
   crypto: "crypto-browserify",
@@ -753,7 +754,7 @@ const Rs = je, bs = je, {
   "node-inspect": "node-inspect",
   _linklist: "_linklist",
   _stream_wrap: "_stream_wrap"
-}, Fs = Object.keys(zs), Us = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"], Bs = ["chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...Us, ...Fs], Gs = (e, t = []) => [...Bs, ...t].find((s) => !!(s === e || e.startsWith(`${s}/`)));
+}, zs = Object.keys(Us), Fs = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"], Bs = ["chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...Fs, ...zs], Gs = (e, t = []) => [...Bs, ...t].find((s) => !!(s === e || e.startsWith(`${s}/`)));
 function Ws(e, t, s) {
   const { external: r = [] } = s?.esbuild ?? {};
   return {
@@ -789,14 +790,14 @@ function ce(e) {
     path: t[3] || ""
   };
 }
-const bt = /* @__PURE__ */ new Map(), Hs = "EXTERNAL_FETCHES", tt = async (e, t, s) => {
+const St = /* @__PURE__ */ new Map(), Hs = "EXTERNAL_FETCHES", tt = async (e, t, s) => {
   let r = await fetch(t, s), n = r.clone();
-  return "caches" in globalThis ? e.put(t, n) : bt.set(t, n), r;
+  return "caches" in globalThis ? e.put(t, n) : St.set(t, n), r;
 };
 let we;
 const Ys = async () => we || (we = await caches.open(Hs)), fe = async (e, t = !1, s) => {
   let r = new Request(e.toString()), n, i, o;
-  return "caches" in globalThis ? (i = await Ys(), o = await i.match(r)) : o = bt.get(r), n = o, o ? t || tt(i, r, s) : n = await tt(i, r, s), n.clone();
+  return "caches" in globalThis ? (i = await Ys(), o = await i.match(r)) : o = St.get(r), n = o, o ? t || tt(i, r, s) : n = await tt(i, r, s), n.clone();
 };
 function T(e, t) {
   if (typeof e == "string")
@@ -886,7 +887,7 @@ function Js(e, t = ".", s = {}) {
     return _(r, l);
   }
 }
-const st = "cdn-url", Te = (e = U, t) => async (s) => {
+const st = "cdn-url", Te = (e = F, t) => async (s) => {
   if (ae(s.path)) {
     let { path: r, origin: n } = O(s.path, e), i = Rt(n) == "npm", o = ce(r), c = o.path, a = s.pluginData?.pkg ?? {};
     if (r[0] == "#") {
@@ -943,7 +944,7 @@ function Ks(e, t, s) {
     }
   };
 }
-const x = "http-url", St = async (e, t) => {
+const x = "http-url", bt = async (e, t) => {
   try {
     let s = await fe(e);
     if (!s.ok)
@@ -958,7 +959,7 @@ ${s.toString()}`);
   }
 }, Qs = async (e, t, s, r, n) => {
   const i = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g, o = new URL("./", e).toString(), c = n.filesystem, a = ke(t), f = Array.from(a.matchAll(i)).map(async ([, u]) => {
-    let { content: g, url: m } = await St(ne(o, u), r);
+    let { content: g, url: m } = await bt(ne(o, u), r);
     return c.set(s + ":" + m, t), {
       path: u,
       contents: g,
@@ -968,7 +969,7 @@ ${s.toString()}`);
     };
   });
   return await Promise.allSettled(f);
-}, vt = (e = U, t) => async (s) => {
+}, vt = (e = F, t) => async (s) => {
   let r = s.path.replace(/\/$/, "/index");
   if (!r.startsWith(".")) {
     if (/^https?:\/\//.test(r))
@@ -1002,13 +1003,13 @@ function er(e, t, s) {
         path: l.path,
         namespace: x
       })), a.onResolve({ filter: /.*/, namespace: x }, vt(r, e)), a.onLoad({ filter: /.*/, namespace: x }, async (l) => {
-        let f = ze(l.path), u = (R = "") => f.length > 0 ? l.path : l.path + R, g, m;
+        let f = Ue(l.path), u = (R = "") => f.length > 0 ? l.path : l.path + R, g, m;
         const h = f.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"], d = h.length;
         let p;
         for (let R = 0; R < d; R++) {
           const $ = h[R];
           try {
-            ({ content: g, url: m } = await St(u($), e));
+            ({ content: g, url: m } = await bt(u($), e));
             break;
           } catch (E) {
             if (R == 0 && (p = E), R >= d - 1)
@@ -1035,7 +1036,7 @@ const rt = "alias-globals", _t = (e, t = {}) => {
     return !1;
   let s = Object.keys(t), r = e.replace(/^node\:/, ""), n = ce(r);
   return s.find((i) => n.name === i);
-}, Ee = (e = {}, t = U, s) => async (r) => {
+}, Ee = (e = {}, t = F, s) => async (r) => {
   let n = r.path.replace(/^node\:/, ""), { path: i } = O(n);
   if (_t(i, e)) {
     let o = ce(i), c = e[o.name];
@@ -1056,22 +1057,22 @@ const rt = "alias-globals", _t = (e, t = {}) => {
       }), i.onResolve({ filter: /.*/ }, Ee(n, r, e)), i.onResolve({ filter: /.*/, namespace: rt }, Ee(n, r, e));
     }
   };
-}, F = /* @__PURE__ */ new Map(), Ot = async (e, t) => {
+}, z = /* @__PURE__ */ new Map(), Ot = async (e, t) => {
   let s = e;
-  if (t && e.startsWith(".") && (s = Fe(Me(t), e)), F.has(s))
+  if (t && e.startsWith(".") && (s = ze(Me(t), e)), z.has(s))
     return s;
   throw `File "${s}" does not exist`;
 }, sr = async (e, t = "buffer", s) => {
   let r = await Ot(e, s);
-  if (F.has(r)) {
-    let n = F.get(r);
+  if (z.has(r)) {
+    let n = z.get(r);
     return t == "string" ? ke(n) : n;
   }
 }, rr = async (e, t, s) => {
   let r = e;
-  s && e.startsWith(".") && (r = Fe(Me(s), e));
+  s && e.startsWith(".") && (r = ze(Me(s), e));
   try {
-    F.set(r, t instanceof Uint8Array ? t : Ue(t));
+    z.set(r, t instanceof Uint8Array ? t : Fe(t));
   } catch {
     throw `Error occurred while writing to "${r}"`;
   }
@@ -1147,7 +1148,7 @@ const ie = async (e, t = "error", s = !0) => {
 $1$2$3\u2502`)) : i);
 }, lr = {
   entryPoints: ["/index.tsx"],
-  cdn: U,
+  cdn: F,
   esbuild: {
     color: !0,
     globalName: "BundledCode",
@@ -1163,18 +1164,18 @@ $1$2$3\u2502`)) : i);
   },
   ascii: "ascii",
   filesystem: {
-    files: F,
+    files: z,
     get: sr,
     set: rr,
     resolve: Ot,
-    clear: () => F.clear()
+    clear: () => z.clear()
   },
   init: {
     platform: le
   }
 };
 async function Yr(e = {}) {
-  Y("initialized") || S.emit("init.loading");
+  Y("initialized") || b.emit("init.loading");
   const t = Ge("build", e), s = es({ assets: [], GLOBAL: [Y, _e] }), [r] = s, { platform: n, ...i } = t.init ?? {}, { build: o } = await ft(n, i), { define: c = {}, loader: a = {}, ...l } = t.esbuild ?? {};
   let f = [], u = [], g;
   try {
@@ -1198,27 +1199,28 @@ async function Yr(e = {}) {
         write: !1,
         outdir: "/",
         plugins: [
-          tr(S, s, t),
-          Ws(S, s, t),
-          er(S, s, t),
-          Ks(S, s, t),
-          Ps(S, s, t)
+          tr(b, s, t),
+          Ws(b, s, t),
+          er(b, s, t),
+          Ks(b, s, t),
+          Ps(b, s, t)
         ],
         ...l
       });
     } catch (m) {
       if (m.errors) {
         const h = [...await ie(m.errors, "error", !1)], d = [...await ie(m.errors, "error")];
-        S.emit("logger.error", h, d);
+        b.emit("logger.error", h, d);
         const p = (d.length > 1 ? `${d.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return S.emit("logger.error", p);
+        b.emit("logger.error", p);
+        return;
       } else
         throw m;
     }
     return f = await Promise.all(
       [...r().assets].concat(g?.outputFiles)
     ), u = await Promise.all(
-      f?.map(({ path: m, text: h, contents: d }) => /\.map$/.test(m) ? null : (l?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(m) ? S.emit("logger.log", "Output File: " + m) : S.emit("logger.log", "Output File: " + m + `
+      f?.map(({ path: m, text: h, contents: d }) => /\.map$/.test(m) ? null : (l?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(m) ? b.emit("logger.log", "Output File: " + m) : b.emit("logger.log", "Output File: " + m + `
 ` + h)), { path: m, text: h, contents: d }))?.filter((m) => ![void 0, null].includes(m))
     ), {
       contents: u,
@@ -1300,7 +1302,7 @@ const hr = {
   quality: 9
 };
 async function Vr(e = [], t = {}) {
-  const { type: s, quality: r } = Ge("compress", t), n = e.map((l) => l instanceof Uint8Array ? l : Ue(l)), i = ot(
+  const { type: s, quality: r } = Ge("compress", t), n = e.map((l) => l instanceof Uint8Array ? l : Fe(l)), i = ot(
     n.reduce((l, f) => l + f.byteLength, 0)
   ), o = await (async () => {
     switch (s) {
@@ -1313,7 +1315,7 @@ async function Vr(e = [], t = {}) {
         return await f(), async (u) => await l(u, u.length, r);
       }
       default: {
-        const { gzip: l, getWASM: f } = await Promise.resolve().then(() => Ur);
+        const { gzip: l, getWASM: f } = await Promise.resolve().then(() => Fr);
         return await f(), async (u) => await l(u, r);
       }
     }
@@ -1395,7 +1397,7 @@ const mr = {
   }
 };
 async function Zr(e, t = {}) {
-  Y("initialized") || S.emit("init.loading");
+  Y("initialized") || b.emit("init.loading");
   const s = Ge("transform", t), { platform: r, ...n } = s.init, { transform: i } = await ft(r, n), { define: o = {}, loader: c = {}, ...a } = s.esbuild ?? {};
   let l;
   try {
@@ -1412,9 +1414,9 @@ async function Zr(e, t = {}) {
     } catch (f) {
       if (f.errors) {
         const u = [...await ie(f.errors, "error", !1)], g = [...await ie(f.errors, "error")];
-        S.emit("logger.error", u, g);
+        b.emit("logger.error", u, g);
         const m = (g.length > 1 ? `${g.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return S.emit("logger.error", m);
+        return b.emit("logger.error", m);
       } else
         throw f;
     }
@@ -1574,7 +1576,7 @@ function he(e, t, s) {
     a.push(c), r[i++] = f + c.charAt(0), n--, f = c, n == 0 && (n = Math.pow(2, o), o++);
   }
 }
-const br = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const Sr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   keyStrBase64: We,
   keyStrUriSafe: Xe,
@@ -1588,11 +1590,11 @@ const br = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   decompress: Rr,
   _compress: ue,
   _decompress: he
-}, Symbol.toStringTag, { value: "Module" })), Sr = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
+}, Symbol.toStringTag, { value: "Module" })), br = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, te = 16;
 let Tt = 0;
-const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), M = "0|[1-9]\\d*", z = "[0-9]+", He = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", xe = `(?:${M}|${He})`, Ce = `(?:${z}|${He})`, Ie = "[0-9A-Za-z-]+", Nt = `(${M})\\.(${M})\\.(${M})`, xt = `(${z})\\.(${z})\\.(${z})`, Z = `(?:\\+(${Ie}(?:\\.${Ie})*))`, Ye = `(?:-(${xe}(?:\\.${xe})*))`, Ve = `(?:-?(${Ce}(?:\\.${Ce})*))`, ye = `v?${Nt}${Ye}?${Z}?`, K = `[v=\\s]*${xt}${Ve}?${Z}?`, se = `${M}|x|X|\\*`, re = `${z}|x|X|\\*`, D = "((?:<|>)?=?)", C = `[v=\\s]*(${se})(?:\\.(${se})(?:\\.(${se})(?:${Ye})?${Z}?)?)?`, j = `[v=\\s]*(${re})(?:\\.(${re})(?:\\.(${re})(?:${Ve})?${Z}?)?)?`, lt = `(^|[^\\d])(\\d{1,${te}})(?:\\.(\\d{1,${te}}))?(?:\\.(\\d{1,${te}}))?(?:$|[^\\d])`, Ae = "(?:~>?)", Re = "(?:\\^)", A = {
+const w = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), M = "0|[1-9]\\d*", U = "[0-9]+", He = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", xe = `(?:${M}|${He})`, Ce = `(?:${U}|${He})`, Ie = "[0-9A-Za-z-]+", Nt = `(${M})\\.(${M})\\.(${M})`, xt = `(${U})\\.(${U})\\.(${U})`, Z = `(?:\\+(${Ie}(?:\\.${Ie})*))`, Ye = `(?:-(${xe}(?:\\.${xe})*))`, Ve = `(?:-?(${Ce}(?:\\.${Ce})*))`, ye = `v?${Nt}${Ye}?${Z}?`, K = `[v=\\s]*${xt}${Ve}?${Z}?`, se = `${M}|x|X|\\*`, re = `${U}|x|X|\\*`, D = "((?:<|>)?=?)", C = `[v=\\s]*(${se})(?:\\.(${se})(?:\\.(${se})(?:${Ye})?${Z}?)?)?`, j = `[v=\\s]*(${re})(?:\\.(${re})(?:\\.(${re})(?:${Ve})?${Z}?)?)?`, lt = `(^|[^\\d])(\\d{1,${te}})(?:\\.(\\d{1,${te}}))?(?:\\.(\\d{1,${te}}))?(?:$|[^\\d])`, Ae = "(?:~>?)", Re = "(?:\\^)", A = {
   NUMERICIDENTIFIER: w(M),
-  NUMERICIDENTIFIERLOOSE: w(z),
+  NUMERICIDENTIFIERLOOSE: w(U),
   NONNUMERICIDENTIFIER: w(He),
   MAINVERSION: w(Nt),
   MAINVERSIONLOOSE: w(xt),
@@ -1726,19 +1728,19 @@ class de {
     return this.value;
   }
 }
-const B = /* @__PURE__ */ new Map(), Q = /* @__PURE__ */ new Map(), _r = 1e3, Ct = "$1^", It = "$1~", Lt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = zt(e, t), e = jt(e, t), e = Ut(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
+const B = /* @__PURE__ */ new Map(), Q = /* @__PURE__ */ new Map(), _r = 1e3, Ct = "$1^", It = "$1~", Lt = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = Ut(e, t), e = jt(e, t), e = Ft(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
   const s = t.loose ? A.TILDELOOSE.regex : A.TILDE.regex;
   return e.replace(s, (r, n, i, o, c) => {
     let a;
     return v(n) ? a = "" : v(i) ? a = `>=${n}.0.0 <${+n + 1}.0.0-0` : v(o) ? a = `>=${n}.${i}.0 <${n}.${+i + 1}.0-0` : c ? a = `>=${n}.${i}.${o}-${c} <${n}.${+i + 1}.0-0` : a = `>=${n}.${i}.${o} <${n}.${+i + 1}.0-0`, a;
   });
-}, zt = (e, t) => e.trim().split(/\s+/).map((s) => Ft(s, t)).join(" "), Ft = (e, t) => {
+}, Ut = (e, t) => e.trim().split(/\s+/).map((s) => zt(s, t)).join(" "), zt = (e, t) => {
   const s = t.loose ? A.CARETLOOSE.regex : A.CARET.regex, r = t.includePrerelease ? "-0" : "";
   return e.replace(s, (n, i, o, c, a) => {
     let l;
     return v(i) ? l = "" : v(o) ? l = `>=${i}.0.0${r} <${+i + 1}.0.0-0` : v(c) ? i === "0" ? l = `>=${i}.${o}.0${r} <${i}.${+o + 1}.0-0` : l = `>=${i}.${o}.0${r} <${+i + 1}.0.0-0` : a ? i === "0" ? o === "0" ? l = `>=${i}.${o}.${c}-${a} <${i}.${o}.${+c + 1}-0` : l = `>=${i}.${o}.${c}-${a} <${i}.${+o + 1}.0-0` : l = `>=${i}.${o}.${c}-${a} <${+i + 1}.0.0-0` : i === "0" ? o === "0" ? l = `>=${i}.${o}.${c}${r} <${i}.${o}.${+c + 1}-0` : l = `>=${i}.${o}.${c}${r} <${i}.${+o + 1}.0-0` : l = `>=${i}.${o}.${c} <${+i + 1}.0.0-0`, l;
   });
-}, Ut = (e, t) => e.split(/\s+/).map((s) => Bt(s, t)).join(" "), Bt = (e, t) => {
+}, Ft = (e, t) => e.split(/\s+/).map((s) => Bt(s, t)).join(" "), Bt = (e, t) => {
   e = e.trim();
   const s = t.loose ? A.XRANGELOOSE.regex : A.XRANGE.regex;
   return e.replace(s, (r, n, i, o, c, a) => {
@@ -1838,7 +1840,7 @@ function De(e, t, s) {
 }
 const Kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  SEMVER_SPEC_VERSION: Sr,
+  SEMVER_SPEC_VERSION: br,
   MAX_LENGTH: Ne,
   MAX_SAFE_INTEGER: X,
   MAX_SAFE_COMPONENT_LENGTH: te,
@@ -1862,9 +1864,9 @@ const Kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   isX: v,
   replaceTildes: jt,
   replaceTilde: Mt,
-  replaceCarets: zt,
-  replaceCaret: Ft,
-  replaceXRanges: Ut,
+  replaceCarets: Ut,
+  replaceCaret: zt,
+  replaceXRanges: Ft,
   replaceXRange: Bt,
   replaceStars: Gt,
   replaceGTE0: Wt,
@@ -1916,7 +1918,7 @@ const Kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   } catch (t) {
     throw console.warn(t), t;
   }
-}, { decompressFromURL: Tr } = br, Nr = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), tn = (e) => {
+}, { decompressFromURL: Tr } = Sr, Nr = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), tn = (e) => {
   try {
     const t = e.searchParams;
     let s = "", r = t.get("query") || t.get("q"), n = t.get("treeshake");
@@ -1947,12 +1949,12 @@ const Kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   } catch {
   }
 };
-let be;
+let Se;
 const Ze = async () => {
-  if (be)
-    return be;
-  const e = await import("./brotli-f636bd85.mjs"), { default: t, source: s } = e;
-  return await t(await s()), be = e;
+  if (Se)
+    return Se;
+  const e = await import("./brotli-21ba751b.mjs"), { default: t, source: s } = e;
+  return await t(await s()), Se = e;
 };
 async function xr(e, t = 4096, s = 6, r = 22) {
   const { compress: n } = await Ze();
@@ -1968,12 +1970,12 @@ const Ir = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   compress: xr,
   decompress: Cr
 }, Symbol.toStringTag, { value: "Module" }));
-let Yt, Se;
+let Yt, be;
 const L = async (e) => {
-  if (Se)
-    return Se;
+  if (be)
+    return be;
   const t = await import("./denoflate-82001750.mjs"), { default: s } = t, { wasm: r } = await import("./gzip-dfcdb483.mjs");
-  return Yt = await s(e ?? await r()), Se = t;
+  return Yt = await s(e ?? await r()), be = t;
 };
 async function Lr(e, t) {
   return (await L()).deflate(e, t);
@@ -1990,10 +1992,10 @@ async function jr(e) {
 async function Mr(e, t) {
   return (await L()).zlib(e, t);
 }
-async function zr(e) {
+async function Ur(e) {
   return (await L()).unzlib(e);
 }
-const Fr = Yt, Ur = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const zr = Yt, Fr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   getWASM: L,
   deflate: Lr,
@@ -2001,8 +2003,8 @@ const Fr = Yt, Ur = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   gzip: Dr,
   gunzip: jr,
   zlib: Mr,
-  unzlib: zr,
-  default: Fr
+  unzlib: Ur,
+  default: zr
 }, Symbol.toStringTag, { value: "Module" }));
 let ve;
 const Je = async () => {
@@ -2061,29 +2063,30 @@ export {
   fr as BIT_UNITS,
   lr as BUILD_CONFIG,
   ar as BYTE_UNITS,
-  bt as CACHE,
+  St as CACHE,
   Hs as CACHE_NAME,
   Ks as CDN,
   st as CDN_NAMESPACE,
   Te as CDN_RESOLVE,
   hr as COMPRESS_CONFIG,
-  U as DEFAULT_CDN_HOST,
-  Us as DeprecatedAPIs,
+  F as DEFAULT_CDN_HOST,
+  Fs as DeprecatedAPIs,
   Ms as EMPTY_EXPORT,
+  on as ESBUILD_SOURCE_WASM,
   nt as ESCAPE_TO_COLOR,
-  S as EVENTS,
+  b as EVENTS,
   Qt as EVENTS_OPTS,
   Ws as EXTERNAL,
   G as EXTERNALS_NAMESPACE,
   Bs as ExternalPackages,
-  F as FileSystem,
+  z as FileSystem,
   er as HTTP,
   x as HTTP_NAMESPACE,
   vt as HTTP_RESOLVE,
   we as OPEN_CACHE,
   le as PLATFORM_AUTO,
-  Fs as PolyfillKeys,
-  zs as PolyfillMap,
+  zs as PolyfillKeys,
+  Us as PolyfillMap,
   Ls as RESOLVE_EXTENSIONS,
   qs as RE_NON_SCOPED,
   Xs as RE_SCOPED,
@@ -2105,10 +2108,10 @@ export {
   ee as deepAssign,
   gr as deepDiff,
   kt as deepEqual,
-  Ur as denoflate,
-  Ue as encode,
+  Fr as denoflate,
+  Fe as encode,
   Qs as fetchAssets,
-  St as fetchPkg,
+  bt as fetchPkg,
   ot as formatBytes,
   Ds as getCDNOrigin,
   Rt as getCDNStyle,
@@ -2135,7 +2138,7 @@ export {
   Zs as legacy,
   T as loop,
   Wr as lz4,
-  br as lzstring,
+  Sr as lzstring,
   tt as newRequest,
   Ys as openCache,
   ce as parsePackageName,
