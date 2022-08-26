@@ -58,6 +58,7 @@ importers:
 
   packages/analysis:
     specifiers:
+      '@babel/core': ^7.18.13
       '@bundlejs/core': workspace:^0.0.0
       '@types/bytes': ^3.1.1
       '@types/d3': ^7.4.0
@@ -86,11 +87,12 @@ importers:
       solid-js: 1.4.8
       webcola: 3.4.0
     devDependencies:
+      '@babel/core': 7.18.13
       '@types/bytes': 3.1.1
       '@types/d3': 7.4.0
       '@types/node': 18.7.13
       '@vitest/ui': 0.22.1
-      babel-preset-solid: 1.4.8
+      babel-preset-solid: 1.4.8_@babel+core@7.18.13
       del-cli: 5.0.0
       esbuild-wasm: 0.15.5
       esno: 0.16.3
@@ -142,7 +144,6 @@ importers:
       '@astrojs/sitemap': ^1.0.0
       '@astrojs/solid-js': ^1.0.0
       '@astrojs/tailwind': ^1.0.0
-      '@astropub/flow': ^0.2.2
       '@babel/core': ^7.18.13
       '@bundlejs/core': workspace:^0.0.0
       '@dprint/formatter': ^0.2.0
@@ -151,8 +152,8 @@ importers:
       '@okikio/native': ^3.0.1
       '@okikio/sharedworker': ^1.0.4
       '@typescript/vfs': ^1.3.5
-      astro: 1.0.8
-      astro-service-worker: ^0.1.2
+      astro: 1.0.9
+      astrojs-service-worker: ^0.0.8
       clsx: ^1.2.1
       countapi-js: ^1.0.2
       esno: ^0.16.3
@@ -166,7 +167,7 @@ importers:
       sass: ^1.54.5
       solid-js: ^1.4.8
       tippy.js: ^6.3.7
-      typescript: ^4.7.4
+      typescript: ^4.8.2
       ultra-runner: ^3.10.5
       unplugin-icons: ^0.14.8
       vite: ^3.0.9
@@ -183,18 +184,17 @@ importers:
       monaco-editor: 0.34.0
       solid-js: 1.4.8
       tippy.js: 6.3.7
-      typescript: 4.7.4
+      typescript: 4.8.2
       workbox-window: 6.5.4
     devDependencies:
       '@astrojs/mdx': 0.10.1_rollup@2.78.1
       '@astrojs/sitemap': 1.0.0
       '@astrojs/solid-js': 1.0.0_5te3c4eqqgwcijl7bu6hevumfu
       '@astrojs/tailwind': 1.0.0
-      '@astropub/flow': 0.2.2
       '@babel/core': 7.18.13
       '@iconify/json': 2.1.97
-      astro: 1.0.8_sass@1.54.5
-      astro-service-worker: 0.1.2
+      astro: 1.0.9_sass@1.54.5
+      astrojs-service-worker: 0.0.8
       clsx: 1.2.1
       esno: 0.16.3
       pnpm: 7.9.5
@@ -384,10 +384,6 @@ packages:
     resolution: {integrity: sha512-+klQ75oQbRdAMEbvAgrKE14hxh6GVHsQWZE4j/eJ2qhnvMSu7pw13MVQtFaAV96+pUkcYSjwWd1k+Oxoxkuo3g==}
     dependencies:
       node-fetch: 3.2.10
-    dev: true
-
-  /@astropub/flow/0.2.2:
-    resolution: {integrity: sha512-WnfVvYnPkH621EBwdo1uKo5d3AdMLhTDawxfh0KgXFf/ShEWkEXNfWq7sxi/LIsX9M2yHZDYvnyAtCW6v/Omvg==}
     dev: true
 
   /@babel/code-frame/7.18.6:
@@ -955,15 +951,6 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.18.13
-      '@babel/helper-plugin-utils': 7.18.9
-    dev: true
-
-  /@babel/plugin-syntax-jsx/7.18.6:
-    resolution: {integrity: sha512-6mmljtAedFGTWu2p/8WIORGwy+61PLgOMPOdazc7YoJ9ZCWUyFy3A6CpPkRKLKD1ToAesxX8KGEViAiLo9N+7Q==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-    dependencies:
       '@babel/helper-plugin-utils': 7.18.9
     dev: true
 
@@ -1605,12 +1592,6 @@ packages:
       '@babel/helper-string-parser': 7.18.10
       '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
-    dev: true
-
-  /@cloudflare/kv-asset-handler/0.2.0:
-    resolution: {integrity: sha512-MVbXLbTcAotOPUj0pAMhVtJ+3/kFkwJqc5qNOleOZTv6QkZZABDMS21dSrSlVswEHwrpWC03e4fWytjqKvuE2A==}
-    dependencies:
-      mime: 3.0.0
     dev: true
 
   /@colors/colors/1.5.0:
@@ -2939,20 +2920,8 @@ packages:
     hasBin: true
     dev: true
 
-  /astro-service-worker/0.1.2:
-    resolution: {integrity: sha512-iFKQT3UvCTpeJTqATa90+b8ZorEy6AHrmz1GlYoixC2dm3Ki8dYWcV4wutzkHZSKXKvtzEAWJAW7YsPCvaVb6A==}
-    dependencies:
-      '@cloudflare/kv-asset-handler': 0.2.0
-      esbuild: 0.14.54
-      workbox-build: 6.5.4
-      workbox-precaching: 6.5.4
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - supports-color
-    dev: true
-
-  /astro/1.0.8_sass@1.54.5:
-    resolution: {integrity: sha512-cWey5M/EjdgeZCRlOAB6YP05ui3U9ZfHPdb4r5HmumOE/1w8auDqRiHPpb2RCGYD7RpxOXcJu5XfJL4V2F1UpQ==}
+  /astro/1.0.9_sass@1.54.5:
+    resolution: {integrity: sha512-Pa/7wLIuXFs+sgdVxUTT0QHe+9yKQVE21jxZU/p2ZzcUrAB+8JN32fHEG28QTwEx+NuwTqvC5xTvDBXLZJGtqw==}
     engines: {node: ^14.18.0 || >=16.12.0, npm: '>=6.14.0'}
     hasBin: true
     dependencies:
@@ -2997,7 +2966,7 @@ packages:
       recast: 0.20.5
       rehype: 12.0.1
       resolve: 1.22.1
-      rollup: 2.78.1
+      rollup: 2.77.3
       semver: 7.3.7
       shiki: 0.10.1
       sirv: 2.0.2
@@ -3018,6 +2987,15 @@ packages:
       - supports-color
       - terser
       - ts-node
+    dev: true
+
+  /astrojs-service-worker/0.0.8:
+    resolution: {integrity: sha512-zBdwgF94vgvaD164g2mvPwbPi5sxRuNL+YF/NgYRVJiXo/WRsZuzy/vbIuB0/znc8GIOnwTGCl5rAWbqIkCE4Q==}
+    dependencies:
+      workbox-build: 6.5.4
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - supports-color
     dev: true
 
   /async/3.2.4:
@@ -3049,17 +3027,6 @@ packages:
     resolution: {integrity: sha512-jZVI+s9Zg3IqA/kdi0i6UDCybUI3aSBLnglhYbSSjKlV7yF1F/5LWv8MakQmvYpnbJDS6fcBL2KzHSxNCMtWSQ==}
     dependencies:
       object.assign: 4.1.4
-    dev: true
-
-  /babel-plugin-jsx-dom-expressions/0.33.14:
-    resolution: {integrity: sha512-91T8uEz6Wb42bUm5vxRBawY05fBHiwUxah/xWBimuWpH3nf7E0KJ0Wm/s8R7lxRIZzwGCILv1IBlUCqA50WOVw==}
-    peerDependencies:
-      '@babel/core': ^7.0.0
-    dependencies:
-      '@babel/helper-module-imports': 7.16.0
-      '@babel/plugin-syntax-jsx': 7.18.6
-      '@babel/types': 7.18.13
-      html-entities: 2.3.2
     dev: true
 
   /babel-plugin-jsx-dom-expressions/0.33.14_@babel+core@7.18.13:
@@ -3108,14 +3075,6 @@ packages:
       '@babel/helper-define-polyfill-provider': 0.3.2_@babel+core@7.18.13
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /babel-preset-solid/1.4.8:
-    resolution: {integrity: sha512-Qv1yoE7yIux68egUsUUEV26t7B0KLNyXKz1MTk89GJDc6mt+2s7+lDVr4tXa29PTZ/hXDTu2uLbEN/1OtmFFBg==}
-    peerDependencies:
-      '@babel/core': ^7.0.0
-    dependencies:
-      babel-plugin-jsx-dom-expressions: 0.33.14
     dev: true
 
   /babel-preset-solid/1.4.8_@babel+core@7.18.13:
@@ -8937,6 +8896,13 @@ packages:
     resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+    dev: true
+
+  /typescript/4.8.2:
+    resolution: {integrity: sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false
 
   /uglify-js/3.17.0:
     resolution: {integrity: sha512-aTeNPVmgIMPpm1cxXr2Q/nEbvkmV8yq66F3om7X3P/cvOXQ0TMQ64Wk63iyT1gPlmdmGzjGpyLh1f3y8MZWXGg==}

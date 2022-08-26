@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import Icons from "unplugin-icons/vite";
 
+import ServiceWorker from "astrojs-service-worker";
 import Sitemap from "@astrojs/sitemap";
 import SolidJS from "@astrojs/solid-js";
 import Tailwind from "@astrojs/tailwind";
@@ -27,7 +28,50 @@ export default defineConfig({
       config: { applyBaseStyles: false }
     }),
     Sitemap(),
-    MDX()
+    MDX(),
+
+    ServiceWorker({
+      registration: { autoRegister: false },
+      workbox: {
+        skipWaiting: false,
+        clientsClaim: false,
+
+        // globDirectory: outDir,
+        globPatterns: ["**/*.{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm}"],
+        ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
+        cleanupOutdatedCaches: true,
+
+        // Define runtime caching rules.
+        runtimeCaching: [
+          {
+            // Match any request that starts with https://api.producthunt.com, https://api.countapi.xyz, https://opencollective.com, etc...
+            urlPattern:
+              /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com)|(?:bundlejs\.com\/take-measurement))/,
+            // Apply a network-first strategy.
+            handler: "NetworkFirst",
+            method: "GET",
+            options: {
+              cacheableResponse: {
+                statuses: [0, 200]
+              },
+            }
+          },
+          {
+            // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
+            urlPattern:
+              /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+            // Apply a stale-while-revalidate strategy.
+            handler: "StaleWhileRevalidate",
+            method: "GET",
+            options: {
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+        ]
+      }
+    })
   ],
   vite: {
     worker: { format: "es" },

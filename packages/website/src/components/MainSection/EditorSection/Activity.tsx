@@ -141,8 +141,11 @@ export function Activity(props?: ComponentProps<'div'>) {
             </div>
           }
 
+          ariaLabel="Build" 
+
           class="umami--click--bundle-build-button"
-          onClick={() => !state.monaco.loading && build()}>
+          onClick={() => !state.monaco.loading && build()}
+        >
           <IconLayer />
           <BuildText.render class="build-text lt-sm:hidden" />
         </ToolTip>
@@ -159,8 +162,11 @@ export function Activity(props?: ComponentProps<'div'>) {
             </div>
           }
 
+          ariaLabel="Share" 
+
           class="umami--click--bundle-share-button"
-          onClick={() => !state.monaco.loading && share()}>
+          onClick={() => !state.monaco.loading && share()}
+        >
           <IconShare />
           <ShareText.render class="share-text lt-sm:hidden" />
         </ToolTip>

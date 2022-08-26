@@ -1,6 +1,6 @@
-import { JSX } from 'solid-js';
+import { ComponentProps, JSX } from 'solid-js';
 
-export type ToastType = 'success' | 'error' | 'loading' | 'blank' | 'custom';
+export type ToastType = 'success' | 'error' | 'loading' | 'blank' | 'custom' | 'update';
 export type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
 
 export type Renderable = JSX.Element | string | null;
@@ -29,6 +29,8 @@ export interface Toast {
   pauseDuration: number;
   paused: boolean;
   position?: ToastPosition;
+  updateClick?: ComponentProps<'div'>['onClick'];
+  dismissClick?: ComponentProps<'div'>['onClick'];
 
   ariaProps: {
     role: 'status' | 'alert';
@@ -50,7 +52,7 @@ export interface Toast {
 export type ToastOptions = Partial<
   Pick<
     Toast,
-    'id' | 'icon' | 'duration' | 'ariaProps' | 'className' | 'style' | 'position' | 'unmountDelay' | 'iconTheme'
+    'id' | 'icon' | 'duration' | 'ariaProps' | 'className' | 'style' | 'position' | 'unmountDelay' | 'iconTheme' | 'updateClick' | 'dismissClick'
   >
 >;
 

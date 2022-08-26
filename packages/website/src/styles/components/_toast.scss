@@ -1,16 +1,19 @@
 .toast {
-  @apply transition-colors duration-300;
-  transition-property: background-color, border-color, text-decoration-color, fill, stroke;
+  @at-root .dom-loaded & {
+    @apply transition-colors duration-300;
+    transition-property: background-color, border-color, text-decoration-color, fill, stroke;
+  }
 
   @apply bg-blue-100/90 dark:bg-elevated/70;
   @apply backdrop-blur-lg rounded-full;
-  @apply w-[300px];
+  @apply w-[350px];
 
   @apply pl-4 pr-2 py-2;
   @apply border-2 border-dashed border-secondary dark:border-slate-700;
 
-  max-width: min(350px, 100%);
+  max-width: min(450px, 100%);
 
+  .reload-button,
   .cancel-button {
     @apply rounded-full;
     @apply bg-secondary/20 p-2;
@@ -55,6 +58,27 @@
     .cancel-button {
       @apply text-gray-800 dark:text-blue-200;
       @apply bg-gray-300/90 dark:bg-blue-200/30;
+    }
+  }
+
+  &[data-type=update] {
+    @apply bg-yellow-100/90 dark:bg-yellow-700/30;
+    @apply border-yellow-400 dark:border-yellow-700;
+    @apply lt-sm:flex-col gap-1.5;
+    @apply lt-sm:rounded-xl;
+
+    .loading-circle {
+      @apply stroke-yellow-300;
+    }
+
+    .reload-button,
+    .cancel-button {
+      @apply text-yellow-800 dark:text-yellow-200;
+      @apply bg-yellow-300/90 dark:bg-yellow-200/30;
+
+      &:hover {
+        @apply bg-yellow-400/90 dark:bg-yellow-700/40;
+      }
     }
   }
 }

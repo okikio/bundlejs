@@ -1,4 +1,4 @@
-import { createEffect, Match, Switch } from 'solid-js';
+import { createEffect, Match, Switch, Show } from 'solid-js';
 import { ActionType, resolveValue, ToastBarProps } from '../types';
 import { getToastYDirection as d, iconContainer, messageContainer, toastBarBase } from '../util';
 import { Error, Loader, Success } from '.';
@@ -9,6 +9,7 @@ import { dispatch } from '../core';
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 
 import IconCancel from "~icons/fluent/dismiss-24-regular";
+import IconArrowClockwise from "~icons/fluent/arrow-clockwise-24-filled";
 
 export const ToastBar = (props: ToastBarProps) => {
   let el: HTMLDivElement | undefined;
@@ -75,30 +76,53 @@ export const ToastBar = (props: ToastBarProps) => {
         </Match>
       </Switch>
 
-      <div style={messageContainer} {...props.toast.ariaProps}>
+      <div style={messageContainer} {...props.toast.ariaProps} onClick={() => { }}>
         {resolveValue(props.toast.message, props.toast)}
       </div>
 
-      <ToolTip
-        as={Button}
+      <div class="flex gap-1.5">
+        <Show when={props.toast.type === 'update'}>
+          <ToolTip
+            as={Button}
 
-        class="cancel-button"
-        content={"Dismiss"}
+            class="reload-button"
+            content={"Reload"}
 
-        tooltip={{
-          followCursor: false,
-          delay: [1000, 200],
-        }}
+            tooltip={{
+              followCursor: false,
+              delay: [1000, 200],
+            }}
 
-        onClick={() => (
-          dispatch({
-            type: ActionType.DISMISS_TOAST,
-            toastId: props.toast.id,
-          })
-        )}
-      >
+            onClick={props?.toast?.updateClick}
+          >
+            <IconArrowClockwise astro-icon rehype-icon />
+          </ToolTip>
+        </Show>
+
+        <ToolTip
+          as={Button}
+
+          class="cancel-button"
+          content={"Dismiss"}
+
+          tooltip={{
+            followCursor: false,
+            delay: [1000, 200],
+          }}
+
+          onClick={(e) => {
+            if (typeof props?.toast?.dismissClick == "function")
+              props?.toast?.dismissClick?.(e);
+
+            dispatch({
+              type: ActionType.DISMISS_TOAST,
+              toastId: props.toast.id,
+            });
+          }}
+        >
           <IconCancel astro-icon rehype-icon />
-      </ToolTip>
+        </ToolTip>
+      </div>
     </div>
   );
 };

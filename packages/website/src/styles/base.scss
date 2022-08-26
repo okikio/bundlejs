@@ -199,8 +199,6 @@ pre {
 }
 
 details {
-  @apply transition-colors duration-700;
-
   & > summary {
     @apply relative cursor-pointer;
     @apply py-5;
@@ -251,7 +249,12 @@ details {
     }
   }
 
-  @at-root .dom-loaded details > summary {
+  @at-root 
+  .dom-loaded details, 
+  .dom-loaded details > summary {
+    @apply transition-colors duration-200;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, border-radius;
+
     :is(h1, h2, h3, h4, h5, h6, p) {
       transition: font-weight ease 0.4s;
     }
