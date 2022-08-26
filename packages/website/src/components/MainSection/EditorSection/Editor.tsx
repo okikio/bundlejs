@@ -13,7 +13,7 @@ export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
-  const [monaco, { mutate, refetch }] = createResource(() => {
+  const [monaco] = createResource(() => {
     return import("../../../scripts/modules/monaco");
   });
 

@@ -28,13 +28,13 @@
     "workbox-window": "^6.5.4"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^0.10.1",
+    "@astrojs/mdx": "^0.10.2",
     "@astrojs/sitemap": "^1.0.0",
     "@astrojs/solid-js": "^1.0.0",
     "@astrojs/tailwind": "^1.0.0",
     "@babel/core": "^7.18.13",
-    "@iconify/json": "^2.1.97",
-    "astro": "1.0.9",
+    "@iconify/json": "^2.1.99",
+    "astro": "1.1.0",
     "astrojs-service-worker": "^0.0.8",
     "clsx": "^1.2.1",
     "esno": "^0.16.3",

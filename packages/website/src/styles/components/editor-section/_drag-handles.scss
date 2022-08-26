@@ -6,7 +6,7 @@
 
   @apply scale-100 hover:scale-100 active:scale-90;
 
-  svg[astro-icon] {
+  @at-root .dom-loaded & svg[astro-icon] {
     @apply transition duration-200 ease-out;
   }
 

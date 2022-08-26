@@ -4,12 +4,15 @@
 }
 
 .search-backdrop {
-  @apply transition-opacity duration-200;
   @apply fixed top-0 left-0 w-[100vw] h-[100vh];
   @apply bg-slate-200/50 dark:bg-black/50;
   @apply opacity-0;
   @apply pointer-events-none;
   @apply z-[5];
+
+  @at-root .dom-loaded & {
+    @apply transition-opacity duration-200;
+  }
 
   @supports (backdrop-filter: blur(10px)) {
     backdrop-filter: blur(10px);
