@@ -5,8 +5,8 @@
   "start_url": "/",
   "dir": "ltr",
   "display": "standalone",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#fdfefe",
+  "background_color": "#fdfefe",
   "description": "A quick and easy way to bundle, minify, and compress (gzip and brotli) your ts, js, jsx and npm projects all locally on your device, with the bundle file size.",
   "icons": [
     {

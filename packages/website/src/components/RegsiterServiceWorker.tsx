@@ -1,7 +1,8 @@
-import{ ComponentProps, onMount } from "solid-js";
+import { ComponentProps, onMount } from "solid-js";
 import { createServiceWorker } from "../hooks/service-worker";
 import toast from "./SolidToast";
 
+const intervalMS = 60 * 60 * 1000;
 export function RegisterServiceWorker(props?: ComponentProps<'div'>) {
   const {
     offlineReady: [offlineReady, setOfflineReady],
@@ -12,16 +13,15 @@ export function RegisterServiceWorker(props?: ComponentProps<'div'>) {
       toast.success(`App ready to work offline`);
     },
     onNeedRefresh() {
-      toast.update(`New content available, click on reload button to update`, { 
+      toast.update(`New content available, click on reload button to update`, {
         duration: Infinity,
-      async updateClick() {
-        await toast.promise(clearCache(), {
-          loading: 'Updating...',
-          success: (val) => (<>Update Successful</>),
-          error: 'Error Updating',
-        })
-        await updateServiceWorker(true);
-      },
+        async updateClick() {
+          await toast.promise(updateServiceWorker(true), {
+            loading: 'Updating...',
+            success: (val) => (<>Update Successful</>),
+            error: 'Error Updating',
+          });
+        },
         dismissClick() {
           close();
         }
@@ -29,18 +29,16 @@ export function RegisterServiceWorker(props?: ComponentProps<'div'>) {
     },
     onRegistered(r) {
       console.log('SW Registered: small change', r);
+      r && setInterval(() => {
+        r.update()
+      }, intervalMS)
     },
     onRegisterError(error) {
       console.log('SW registration error', error)
     },
   });
 
-  async function clearCache() {
-    const allKeys = await caches.keys();
-    return await Promise.all(allKeys.map(key => caches.delete(key)))
-  }
-
-  function close () {
+  function close() {
     setOfflineReady(false)
     setNeedRefresh(false)
   }

@@ -37,7 +37,7 @@ export default defineConfig({
         clientsClaim: false,
 
         // globDirectory: outDir,
-        globPatterns: ["**/*.{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm}"],
+        globPatterns: ["**/*"], // .{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm}
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
         cleanupOutdatedCaches: true,
 
@@ -59,7 +59,7 @@ export default defineConfig({
           {
             // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
             urlPattern:
-              /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+              /workbox\-(.*)\.js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
             // Apply a stale-while-revalidate strategy.
             handler: "StaleWhileRevalidate",
             method: "GET",
@@ -67,6 +67,19 @@ export default defineConfig({
               cacheableResponse: {
                 statuses: [0, 200]
               }
+            }
+          },
+          {
+            // Cache `monaco-editor` etc...
+            urlPattern:
+              /chunks\/(.*)$/,
+            // Apply a network-first strategy.
+            handler: "CacheFirst",
+            method: "GET",
+            options: {
+              cacheableResponse: {
+                statuses: [0, 200]
+              },
             }
           },
         ]

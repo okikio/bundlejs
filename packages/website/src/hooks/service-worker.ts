@@ -42,8 +42,9 @@ export function registerSW(options: RegisterSWOptions = {}) {
       // service worker has taken control.
       if (reloadPage) {
         wb?.addEventListener('controlling', (event) => {
-          if (event.isUpdate)
-            window.location.reload()
+          if (event.isUpdate) {
+            window.location.reload();
+          }
         })
       }
 

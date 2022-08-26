@@ -94,7 +94,6 @@ export const ToastBar = (props: ToastBarProps) => {
             }}
 
             aria-label="Reload"
-
             onClick={props?.toast?.updateClick}
           >
             <IconArrowClockwise astro-icon rehype-icon />

@@ -1,5 +1,5 @@
 import type { ComponentProps } from "solid-js";
-import { onMount, createSignal, Show, onCleanup } from "solid-js";
+import { onMount, createSignal, Show, onCleanup, createEffect, createResource } from "solid-js";
 
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
@@ -13,30 +13,33 @@ export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
-  onMount(() => {
-    (async () => {
-      const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = "document" in globalThis && await import("../../../scripts/modules/monaco");
-      const [editor, input, output, config] = build(ref);
+  const [monaco, { mutate, refetch }] = createResource(() => {
+    return import("../../../scripts/modules/monaco");
+  });
 
-      setState("monaco", {
-        loading: false,
-        editor,
-        languages,
-        // workers: {
-          // other: otherTSWorker as any
-        // },
-        initialValue: {
-          input: inputModelResetValue,
-          output: outputModelResetValue,
-          config: configModelResetValue,
-        },
-        models: {
-          input,
-          output,
-          config
-        }
-      });
-    })()
+  createEffect(async () => {
+    if (!monaco()) return;
+    const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = monaco();
+    const [editor, input, output, config] = build(ref);
+
+    setState("monaco", {
+      loading: false,
+      editor,
+      languages,
+      // workers: {
+      // other: otherTSWorker as any
+      // },
+      initialValue: {
+        input: inputModelResetValue,
+        output: outputModelResetValue,
+        config: configModelResetValue,
+      },
+      models: {
+        input,
+        output,
+        config
+      }
+    });
   });
 
   onCleanup(() => {
