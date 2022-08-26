@@ -42,6 +42,7 @@ const toast = (message: Message, opts?: ToastOptions) => createToastCreator('bla
 
 toast.error = createToastCreator('error');
 toast.success = createToastCreator('success');
+toast.update = createToastCreator('update');
 toast.loading = createToastCreator('loading');
 toast.custom = createToastCreator('custom');
 

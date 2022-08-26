@@ -84,6 +84,7 @@
     "webcola": "^3.4.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.13",
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
     "@types/node": "^18.7.13",
