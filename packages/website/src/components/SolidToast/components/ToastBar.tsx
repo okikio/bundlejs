@@ -93,6 +93,8 @@ export const ToastBar = (props: ToastBarProps) => {
               delay: [1000, 200],
             }}
 
+            aria-label="Reload"
+
             onClick={props?.toast?.updateClick}
           >
             <IconArrowClockwise astro-icon rehype-icon />
@@ -109,6 +111,8 @@ export const ToastBar = (props: ToastBarProps) => {
             followCursor: false,
             delay: [1000, 200],
           }}
+
+          aria-label="Dismiss"
 
           onClick={(e) => {
             if (typeof props?.toast?.dismissClick == "function")
