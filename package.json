@@ -68,12 +68,12 @@
     "sass": "^1.54.5",
     "semantic-release": "^19.0.5",
     "tiny-glob": "^0.2.9",
-    "typedoc": "^0.23.10",
+    "typedoc": "^0.23.11",
     "typedoc-plugin-extras": "^2.3.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-mdn-links": "^2.0.0",
     "typedoc-plugin-missing-exports": "^1.0.0",
-    "typescript": "^4.7.4",
+    "typescript": "^4.8.2",
     "ultra-runner": "^3.10.5"
   }
 }

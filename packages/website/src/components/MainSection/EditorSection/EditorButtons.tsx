@@ -145,9 +145,9 @@ export function EditorButtons() {
                       const thisWorker = await worker.getWorker();
 
                       // @ts-ignore
-                      const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
+                    const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
                       state.monaco.editor.setValue(formattedCode);
-                      toast.success(`Formatted ${getModelType()} code editor`);
+                      toast(`Formatted ${getModelType()} code editor`);
                     } catch (e) {
                       console.warn(e);
                       toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
@@ -174,7 +174,7 @@ export function EditorButtons() {
                 let modelType = getModelType();
 
                 resetEditor(modelType);
-                toast.success(`Reset ${modelType}`);
+                toast(`Reset ${modelType}`);
               }
             }}>
             <IconReset />
@@ -193,7 +193,7 @@ export function EditorButtons() {
                 state.monaco.editor
                   .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
                   .run();
-                toast.success(`Copy ${getModelType()}`);
+                toast(`Copy ${getModelType()}`);
               }
             }}>
             <IconCopy />
@@ -213,7 +213,7 @@ export function EditorButtons() {
                 });
 
                 downloadBlob(blob, model?.uri?.authority ?? "download.ts");
-                toast.success(`Download ${getModelType()}`);
+                toast(`Download ${getModelType()}`);
               }
             }}>
             <IconDownload />
@@ -229,7 +229,7 @@ export function EditorButtons() {
               if (!state.monaco.loading) {
                 const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
                 state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
-                toast.success(`${ wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
+                toast(`${ wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
               }
             }}>
             <IconCodeWrap />

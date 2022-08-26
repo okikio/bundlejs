@@ -66,21 +66,27 @@ export function Activity(props?: ComponentProps<'div'>) {
     if (!state.monaco.loading) {
       try {
         ShareText.setNext(navigator.share ? "Sharing!" : "Copying!");
-        await ShareText.switch("next");
-
-        if (navigator.share) {
-          await navigator.share({
-            title: 'bundlejs',
-            text: '',
-            url: await getShareableURL(),
-          });
-        } else {
-          await copyToClipboard(await getShareableURL());
-        }
-
-        toast.success(navigator.share ? "Shared!" : "Copied!");
+        ShareText.switch("next");
+        
+        await toast.promise(
+          (async () => {
+            if (navigator.share) {
+              await navigator.share({
+                title: 'bundlejs',
+                text: '',
+                url: await getShareableURL(),
+              });
+            } else {
+              await copyToClipboard(await getShareableURL());
+            }
+          })(),
+          {
+            loading: "Sharing...",
+            success: (val) => <>{navigator.share ? "Shared!" : "Copied!"}</>,
+            error: 'Share Error'
+          }
+        );
       } catch (error) {
-        toast.error("Error Sharing!");
         console.log('Error sharing', error);
       }
 
@@ -108,7 +114,6 @@ export function Activity(props?: ComponentProps<'div'>) {
         let result;
         await toast.promise(
           (async () => {
-            console.log("Worker")
             // @ts-ignore
             result = await thisWorker.build(
               inputModel.uri.authority,
@@ -119,7 +124,7 @@ export function Activity(props?: ComponentProps<'div'>) {
             return result;
           })(),
           {
-            loading: "Building",
+            loading: "Building...",
             success: (val) => <>Build Done with a size of {result.size} {timeFormatter.format((end - start) / 1000, "seconds")}</>,
             error: 'Build Error'
           }
