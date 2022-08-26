@@ -37,7 +37,7 @@ export default defineConfig({
         clientsClaim: false,
 
         // globDirectory: outDir,
-        globPatterns: ["**/*"], // .{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm}
+        globPatterns: ["**/*.{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm,ico,json}"], //
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
         cleanupOutdatedCaches: true,
 
