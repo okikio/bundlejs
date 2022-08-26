@@ -278,6 +278,7 @@ export class OtherTSWorker {
     let result = await build({
       init: {
         wasmModule: new WebAssembly.Module(await ESBUILD_SOURCE_WASM()),
+        worker: false
       }
     });
     let sizeInfo = await compress(result.contents.map(x => x.contents))
