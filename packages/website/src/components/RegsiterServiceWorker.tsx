@@ -14,9 +14,14 @@ export function RegisterServiceWorker(props?: ComponentProps<'div'>) {
     onNeedRefresh() {
       toast.update(`New content available, click on reload button to update`, { 
         duration: Infinity,
-        updateClick() {
-          updateServiceWorker(true);
-        },
+      async updateClick() {
+        await toast.promise(clearCache(), {
+          loading: 'Updating...',
+          success: (val) => (<>Update Successful</>),
+          error: 'Error Updating',
+        })
+        await updateServiceWorker(true);
+      },
         dismissClick() {
           close();
         }
@@ -30,19 +35,10 @@ export function RegisterServiceWorker(props?: ComponentProps<'div'>) {
     },
   });
 
-  onMount(() => {
-    toast.update(`New content available, click on reload button to update`, { 
-      duration: Infinity,
-      async updateClick() {
-        const allKeys = await caches.keys();
-        await Promise.all(allKeys.map(key => caches.delete(key)))
-        updateServiceWorker(true);
-      },
-      dismissClick() {
-        close();
-      }
-    });
-  });
+  async function clearCache() {
+    const allKeys = await caches.keys();
+    return await Promise.all(allKeys.map(key => caches.delete(key)))
+  }
 
   function close () {
     setOfflineReady(false)
