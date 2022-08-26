@@ -17,6 +17,8 @@ export * from "./plugins/external";
 export * from "./plugins/http";
 export * from "./plugins/virtual-fs";
 
+export { default as ESBUILD_SOURCE_WASM } from "./wasm";
+
 export * as brotli from "./deno/brotli/mod";
 export * as denoflate from "./deno/denoflate/mod";
 export * as lz4 from "./deno/lz4/mod";

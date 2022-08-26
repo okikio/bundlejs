@@ -15,6 +15,11 @@ import { createTextSwitch } from "../../../hooks/text-switch";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 
+const timeFormatter = new Intl.RelativeTimeFormat("en", {
+  style: "narrow",
+  numeric: "auto",
+});
+
 export function Activity(props?: ComponentProps<'div'>) {
   let shareRef: HTMLButtonElement = null;
   let buildRef: HTMLButtonElement = null;
@@ -72,7 +77,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         } else {
           await copyToClipboard(await getShareableURL());
         }
-        
+
         toast.success(navigator.share ? "Shared!" : "Copied!");
       } catch (error) {
         toast.error("Error Sharing!");
@@ -89,34 +94,48 @@ export function Activity(props?: ComponentProps<'div'>) {
       const configModel = state.monaco.models.config;
 
       setState("bundling", true);
-      
-      const toastId = toast.loading("Building!");
-      await BuildText.switch("next");
+
+      // const toastId = toast.loading("Building!");
+      BuildText.switch("next");
 
       try {
         const worker = state.monaco.workers.other;
         const thisWorker = await worker.getWorker();
 
-        // @ts-ignore
-        let result = await thisWorker.build(
-          inputModel.uri.authority,
-          inputModel.getValue(),
-          configModel.getValue()
+        const start = Date.now();
+        let end;
+
+        let result;
+        await toast.promise(
+          (async () => {
+            console.log("Worker")
+            // @ts-ignore
+            result = await thisWorker.build(
+              inputModel.uri.authority,
+              inputModel.getValue(),
+              configModel.getValue()
+            );
+            end = Date.now();
+            return result;
+          })(),
+          {
+            loading: "Building",
+            success: (val) => <>Build Done with a size of {result.size} {timeFormatter.format((end - start) / 1000, "seconds")}</>,
+            error: 'Build Error'
+          }
         );
 
-        console.log(result?.outputFiles)
+        console.log(result?.outputFiles, { size: result })
         if (result?.outputFiles) {
           state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
         }
 
         if (result?.size) {
-          toast.success(`Build Result ${result.size}`, { id: toastId });
           setState("bundleSize", result.size);
         }
       } catch (e) {
         console.warn(e);
         setState("bundleSize", "ERROR!");
-        toast.error(`Build Error`, { id: toastId });
       }
 
       BuildText.switch("initial", 50);
@@ -128,7 +147,7 @@ export function Activity(props?: ComponentProps<'div'>) {
     <div class="activity-section">
       <div class="activity-container">
         <div class="flex-grow"></div>
-        
+
         <ToolTip
           as={Button}
           ref={buildRef}
@@ -141,7 +160,7 @@ export function Activity(props?: ComponentProps<'div'>) {
             </div>
           }
 
-          aria-label="Build" 
+          aria-label="Build"
 
           class="umami--click--bundle-build-button"
           onClick={() => !state.monaco.loading && build()}
@@ -162,7 +181,7 @@ export function Activity(props?: ComponentProps<'div'>) {
             </div>
           }
 
-          aria-label="Share" 
+          aria-label="Share"
 
           class="umami--click--bundle-share-button"
           onClick={() => !state.monaco.loading && share()}

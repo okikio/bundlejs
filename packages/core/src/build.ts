@@ -136,7 +136,13 @@ export const BUILD_CONFIG: BuildConfig = {
   }
 };
 
-export async function build(opts: BuildConfig = {}) {
+export type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
+  outputs: ESBUILD.OutputFile[];
+  contents: ESBUILD.OutputFile[];
+};
+
+export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
+
   if (!getState("initialized"))
     EVENTS.emit("init.loading");
 
@@ -191,7 +197,8 @@ export async function build(opts: BuildConfig = {}) {
         EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
 
         const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return EVENTS.emit("logger.error", message);
+        EVENTS.emit("logger.error", message);
+        return;
       } else throw e;
     }
 
@@ -239,6 +246,6 @@ export async function build(opts: BuildConfig = {}) {
       outputs,
 
       ...result
-    } as const;
+    };
   } catch (e) { }
 }

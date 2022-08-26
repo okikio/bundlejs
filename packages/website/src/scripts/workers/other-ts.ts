@@ -10,14 +10,17 @@ import type { Uri, worker } from "monaco-editor";
 import { initialize } from "./worker-init";
 
 import { createDefaultMapFromCDN, createSystem, createVirtualCompilerHost, createVirtualTypeScriptEnvironment } from "@typescript/vfs";
-import * as ts from "typescript";
+import ts from "typescript";
 
 import { createStreaming, Formatter } from "@dprint/formatter";
 import { 
   setFile, deepAssign, deepDiff, lzstring, getRequest,
   // DefaultConfig, 
-  build 
-} from "@bundlejs/core";
+  ESBUILD_SOURCE_WASM,
+  build,
+  compress, 
+  init
+} from "@bundlejs/core/src/index";
 const { compressToURL } = lzstring;
 // build, 
 
@@ -127,8 +130,8 @@ export interface ICreateData {
   inlayHintsOptions?: InlayHintsOptions;
 }
 
-// let initializedWASM = init({
-//   platform: "browser"
+// let initializedWASM = init("browser", {
+//   wasmModule: new WebAssembly.Module(await ESBUILD_SOURCE_WASM()),
 // });
 
 export class OtherTSWorker {
@@ -272,10 +275,14 @@ export class OtherTSWorker {
     config = JSON.parse(config ? config : "{}") ?? {};
     // let changedConfig = deepAssign({}, DefaultConfig, config);
 
-    // await initializedWASM;
-    let result = await build();
+    let result = await build({
+      init: {
+        wasmModule: new WebAssembly.Module(await ESBUILD_SOURCE_WASM()),
+      }
+    });
+    let sizeInfo = await compress(result.contents.map(x => x.contents))
     // let result = {};
-    return result;
+    return { ...result, ...sizeInfo };
   }
 };
 
