@@ -28,7 +28,7 @@ let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
   // TypeScript & JavaScript config goes here
   "lineWidth": 80,
-  "indentWidth": 4,
+  "indentWidth": 2,
   "useTabs": false,
   "semiColons": "prefer",
   "quoteStyle": "alwaysDouble",
