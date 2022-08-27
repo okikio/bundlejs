@@ -38,3 +38,5 @@ export async function createFile(fileName: string, content: string) {
   const program = env.languageService.getProgram();
   return program.getSourceFile(fileName);
 }
+
+export default createFile;
