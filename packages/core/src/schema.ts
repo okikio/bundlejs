@@ -1,1 +1,0 @@
-const schema = null; export default schema;

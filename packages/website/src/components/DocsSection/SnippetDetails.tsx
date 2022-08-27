@@ -1,4 +1,4 @@
-import type { ComponentProps, JSX } from "solid-js";
+import { ComponentProps, createEffect, JSX } from "solid-js";
 import Details from "../Details";
 
 import { splitProps } from "solid-js";
@@ -17,7 +17,8 @@ export function SnippetDetails(props: ComponentProps<'details'> & {
         <IconLink rehype-icon="link-24-regular" />
       </a>
     </h3>
-  )
+  );
+  
   return (
     <Details 
       custom-detail="snippet" 

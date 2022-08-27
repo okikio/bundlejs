@@ -1,5 +1,10 @@
-// import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
-import { build, compress, setFile, PLATFORM_AUTO } from "./src/index";
+import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
+// import { build, compress, setFile, PLATFORM_AUTO } from "./src/index";
+
+globalThis.fetch = globalThis.fetch ?? (async function (...args: Parameters<typeof fetch>) {
+  const { fetch } = await import('cross-fetch');
+  return await fetch(...args);
+});
 
 console.log("\n");
 setFile("/index.tsx", `\
@@ -19,7 +24,12 @@ let result = await bundle({
     format: "esm"
   }
 });
-console.log(await compress(result.contents));
+
+console.log(
+  await compress(
+    result.contents.map((x) => x.contents)
+  )
+);
 
 if (PLATFORM_AUTO == "deno") {
   globalThis?.Deno?.exit?.();

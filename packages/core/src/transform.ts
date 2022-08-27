@@ -63,7 +63,8 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
         EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
 
         const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return EVENTS.emit("logger.error", message);
+        EVENTS.emit("logger.error", message);
+        return;
       } else throw e;
     }
 

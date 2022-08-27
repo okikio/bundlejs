@@ -18,6 +18,19 @@ import { state, setState } from "../store";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 
+// export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
+// export const SANDBOX_WORKER = USE_SHAREDWORKER ? new WebWorker(...SandboxWorkerConfig) : new Worker(...SandboxWorkerConfig) as WebWorker;
+
+// try {
+//   SANDBOX_WORKER?.start?.();
+//   channel.port1.start();
+//   channel.port2.start();
+//   SANDBOX_WORKER.postMessage({ port: channel.port1 }, [channel.port1]);
+//   BundleWorker.postMessage({ port: channel.port2 }, [channel.port2]);
+// } catch (err) {
+//   console.log(err);
+// }
+
 export function EditorButtons() {
   let shellRef: HTMLDivElement = null;
 
@@ -141,11 +154,10 @@ export function EditorButtons() {
                   const model = state.monaco.editor.getModel();
                   if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
                     try {
-                      const worker = state.monaco.workers.other;
+                      const worker = state.monaco.workers.taskRunner;
                       const thisWorker = await worker.getWorker();
 
-                      // @ts-ignore
-                    const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
+                      const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
                       state.monaco.editor.setValue(formattedCode);
                       toast(`Formatted ${getModelType()} code editor`);
                     } catch (e) {

@@ -42,16 +42,16 @@ export function Activity(props?: ComponentProps<'div'>) {
     return await Promise.reject('The Clipboard API is not available.');
   }
 
-  async function getShareableURL() {
+  async function getShareURL() {
     if (!state.monaco.loading) {
       const inputModel = state.monaco.models.input;
       const configModel = state.monaco.models.config;
       try {
-        const worker = state.monaco.workers.other;
+        const worker = state.monaco.workers.taskRunner;
         const thisWorker = await worker.getWorker();
 
         // @ts-ignore
-        return await thisWorker.getShareableURL(
+        return await thisWorker.getShareURL(
           inputModel.uri.authority,
           inputModel.getValue(),
           configModel.getValue()
@@ -74,10 +74,10 @@ export function Activity(props?: ComponentProps<'div'>) {
               await navigator.share({
                 title: 'bundlejs',
                 text: '',
-                url: await getShareableURL(),
+                url: await getShareURL(),
               });
             } else {
-              await copyToClipboard(await getShareableURL());
+              await copyToClipboard(await getShareURL());
             }
           })(),
           {
@@ -105,7 +105,7 @@ export function Activity(props?: ComponentProps<'div'>) {
       BuildText.switch("next");
 
       try {
-        const worker = state.monaco.workers.other;
+        const worker = state.monaco.workers.taskRunner;
         const thisWorker = await worker.getWorker();
 
         const start = Date.now();

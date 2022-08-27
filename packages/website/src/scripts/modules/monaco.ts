@@ -207,8 +207,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
 
         // result?.results   ->   api.npms.io
         // result?.objects   ->   registry.npmjs.com
-        const { description, version, date, publisher, repository } = info ?? {};
-        console.log(info)
+        const { name, description, version, date, publisher, repository } = info ?? {};
         const author = info?.maintainers?.[0]?.name ?? publisher?.username;
         const _date = date ? "on " + toLocaleDateString(date) : "";
         const _author = author ? ` by [@${author}](https://www.npmjs.com/~${author})` : "";

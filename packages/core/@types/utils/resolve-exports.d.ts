@@ -1,5 +1,5 @@
 /**
- * Based on `resolve.exports` (https://npmjs.com/resolve.exports) by lukeed (https://github.com/lukeed)
+ * Based on `resolve.exports` (https://npmjs.com/resolve.exports) by @lukeed (https://github.com/lukeed)
  */
 /**
  * @param {object} exports

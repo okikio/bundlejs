@@ -1,6 +1,6 @@
 export const CACHE = new Map();
 export const CACHE_NAME = 'EXTERNAL_FETCHES';
-export const newRequest = async (cache: Cache, request: Request, fetchOpts?: RequestInit) => {
+export const newRequest = async (cache: Cache, request: RequestInfo, fetchOpts?: RequestInit) => {
   let networkResponse: Response = await fetch(request, fetchOpts);
 
   let clonedResponse = networkResponse.clone();
@@ -19,7 +19,7 @@ export const openCache = async () => {
 }
 
 export const getRequest = async (url: RequestInfo | URL, permanent: boolean = false, fetchOpts?: RequestInit) => {
-  let request = new Request(url.toString());
+  let request = 'Request' in globalThis ? new Request(url.toString()) : url.toString();
   let response: Response;
 
   let cache: Cache;

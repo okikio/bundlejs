@@ -81,7 +81,7 @@ async function D(A) {
     ("string" == typeof A ||
         ("function" == typeof Request && A instanceof Request) ||
         ("function" == typeof URL && A instanceof URL)) &&
-        (A = fetch(A));
+        (A = fetch(A as RequestInfo));
     const { instance: Q, module: E } = await F(await A, {});
     // @ts-ignore
     return (B = Q.exports), (D.__wbindgen_wasm_module = E), B;

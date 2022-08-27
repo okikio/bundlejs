@@ -1,13 +1,17 @@
 import type { ComponentProps } from "solid-js";
+import type { TaskRunner as Tasks } from '../../../scripts/workers/task-runner';
+
 import { onMount, createSignal, Show, onCleanup, createEffect, createResource } from "solid-js";
 
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
 
 import { state, setState, initial } from "../store";
-import { OtherTSWorkerClient } from "../../../scripts/clients/other-ts-client";
+import { WorkerClient } from "../../../scripts/clients/worker-client";
 
-export const otherTSWorker = "document" in globalThis && new OtherTSWorkerClient();
+import TaskRunner from '../../../scripts/workers/task-runner.ts?worker';
+
+export const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(new TaskRunner(), "task-runner");
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
@@ -26,9 +30,7 @@ export function Editor(props?: ComponentProps<'div'>) {
       loading: false,
       editor,
       languages,
-      workers: {
-        other: otherTSWorker as any
-      },
+      workers: { taskRunner },
       initialValue: {
         input: inputModelResetValue,
         output: outputModelResetValue,
@@ -44,7 +46,7 @@ export function Editor(props?: ComponentProps<'div'>) {
 
   onCleanup(() => {
     state.monaco.editor?.dispose?.();
-    state.monaco.workers?.other?.dispose?.();
+    state.monaco.workers?.taskRunner?.dispose?.();
     setState(initial);
   });
 
