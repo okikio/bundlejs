@@ -50,7 +50,6 @@ export function Activity(props?: ComponentProps<'div'>) {
         const worker = state.monaco.workers.taskRunner;
         const thisWorker = await worker.getWorker();
 
-        // @ts-ignore
         return await thisWorker.getShareURL(
           inputModel.uri.authority,
           inputModel.getValue(),
@@ -114,7 +113,6 @@ export function Activity(props?: ComponentProps<'div'>) {
         let result;
         await toast.promise(
           (async () => {
-            // @ts-ignore
             result = await thisWorker.build(
               inputModel.uri.authority,
               inputModel.getValue(),
