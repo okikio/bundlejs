@@ -1,195 +1,148 @@
-let wasm;
-let cachedTextDecoder = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true });
-cachedTextDecoder.decode();
-let cachegetUint8Memory0 = null;
-function getUint8Memory0() {
-  if (cachegetUint8Memory0 === null || cachegetUint8Memory0.buffer !== wasm.memory.buffer) {
-    cachegetUint8Memory0 = new Uint8Array(wasm.memory.buffer);
-  }
-  return cachegetUint8Memory0;
+let t, p = new TextDecoder("utf-8", { ignoreBOM: !0, fatal: !0 });
+p.decode();
+let w = null;
+function v() {
+  return (w === null || w.buffer !== t.memory.buffer) && (w = new Uint8Array(t.memory.buffer)), w;
 }
-function getStringFromWasm0(ptr, len) {
-  return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+function m(e, n) {
+  return p.decode(v().subarray(e, e + n));
 }
-const heap = new Array(32).fill(void 0);
-heap.push(void 0, null, true, false);
-let heap_next = heap.length;
-function addHeapObject(obj) {
-  if (heap_next === heap.length)
-    heap.push(heap.length + 1);
-  const idx = heap_next;
-  heap_next = heap[idx];
-  heap[idx] = obj;
-  return idx;
+const f = new Array(32).fill(void 0);
+f.push(void 0, null, !0, !1);
+let g = f.length;
+function h(e) {
+  g === f.length && f.push(f.length + 1);
+  const n = g;
+  return g = f[n], f[n] = e, n;
 }
-function getObject(idx) {
-  return heap[idx];
+function k(e) {
+  return f[e];
 }
-function dropObject(idx) {
-  if (idx < 36)
-    return;
-  heap[idx] = heap_next;
-  heap_next = idx;
+function A(e) {
+  e < 36 || (f[e] = g, g = e);
 }
-function takeObject(idx) {
-  const ret = getObject(idx);
-  dropObject(idx);
-  return ret;
+function W(e) {
+  const n = k(e);
+  return A(e), n;
 }
-let WASM_VECTOR_LEN = 0;
-function passArray8ToWasm0(arg, malloc) {
-  const ptr = malloc(arg.length * 1);
-  getUint8Memory0().set(arg, ptr / 1);
-  WASM_VECTOR_LEN = arg.length;
-  return ptr;
+let l = 0;
+function u(e, n) {
+  const r = n(e.length * 1);
+  return v().set(e, r / 1), l = e.length, r;
 }
-function isLikeNone(x) {
-  return x === void 0 || x === null;
+function d(e) {
+  return e == null;
 }
-let cachegetInt32Memory0 = null;
-function getInt32Memory0() {
-  if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
-    cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
-  }
-  return cachegetInt32Memory0;
+let y = null;
+function c() {
+  return (y === null || y.buffer !== t.memory.buffer) && (y = new Int32Array(t.memory.buffer)), y;
 }
-function getArrayU8FromWasm0(ptr, len) {
-  return getUint8Memory0().subarray(ptr / 1, ptr / 1 + len);
+function b(e, n) {
+  return v().subarray(e / 1, e / 1 + n);
 }
-function deflate(input, compression) {
+function R(e, n) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.deflate(retptr, ptr0, len0, !isLikeNone(compression), isLikeNone(compression) ? 0 : compression);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const s = t.__wbindgen_add_to_stack_pointer(-16);
+    var r = u(e, t.__wbindgen_malloc), i = l;
+    t.deflate(s, r, i, !d(n), d(n) ? 0 : n);
+    var a = c()[s / 4 + 0], o = c()[s / 4 + 1], _ = b(a, o).slice();
+    return t.__wbindgen_free(a, o * 1), _;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-function inflate(input) {
+function O(e) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.inflate(retptr, ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const _ = t.__wbindgen_add_to_stack_pointer(-16);
+    var n = u(e, t.__wbindgen_malloc), r = l;
+    t.inflate(_, n, r);
+    var i = c()[_ / 4 + 0], a = c()[_ / 4 + 1], o = b(i, a).slice();
+    return t.__wbindgen_free(i, a * 1), o;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-function gzip(input, compression) {
+function U(e, n) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.gzip(retptr, ptr0, len0, !isLikeNone(compression), isLikeNone(compression) ? 0 : compression);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const s = t.__wbindgen_add_to_stack_pointer(-16);
+    var r = u(e, t.__wbindgen_malloc), i = l;
+    t.gzip(s, r, i, !d(n), d(n) ? 0 : n);
+    var a = c()[s / 4 + 0], o = c()[s / 4 + 1], _ = b(a, o).slice();
+    return t.__wbindgen_free(a, o * 1), _;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-function gunzip(input) {
+function I(e) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.gunzip(retptr, ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const _ = t.__wbindgen_add_to_stack_pointer(-16);
+    var n = u(e, t.__wbindgen_malloc), r = l;
+    t.gunzip(_, n, r);
+    var i = c()[_ / 4 + 0], a = c()[_ / 4 + 1], o = b(i, a).slice();
+    return t.__wbindgen_free(i, a * 1), o;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-function zlib(input, compression) {
+function L(e, n) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.zlib(retptr, ptr0, len0, !isLikeNone(compression), isLikeNone(compression) ? 0 : compression);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const s = t.__wbindgen_add_to_stack_pointer(-16);
+    var r = u(e, t.__wbindgen_malloc), i = l;
+    t.zlib(s, r, i, !d(n), d(n) ? 0 : n);
+    var a = c()[s / 4 + 0], o = c()[s / 4 + 1], _ = b(a, o).slice();
+    return t.__wbindgen_free(a, o * 1), _;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-function unzlib(input) {
+function S(e) {
   try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = passArray8ToWasm0(input, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.unzlib(retptr, ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var v1 = getArrayU8FromWasm0(r0, r1).slice();
-    wasm.__wbindgen_free(r0, r1 * 1);
-    return v1;
+    const _ = t.__wbindgen_add_to_stack_pointer(-16);
+    var n = u(e, t.__wbindgen_malloc), r = l;
+    t.unzlib(_, n, r);
+    var i = c()[_ / 4 + 0], a = c()[_ / 4 + 1], o = b(i, a).slice();
+    return t.__wbindgen_free(i, a * 1), o;
   } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+    t.__wbindgen_add_to_stack_pointer(16);
   }
 }
-async function load(module, imports) {
-  if (typeof Response === "function" && module instanceof Response) {
-    if (typeof WebAssembly.instantiateStreaming === "function") {
+async function z(e, n) {
+  if (typeof Response == "function" && e instanceof Response) {
+    if (typeof WebAssembly.instantiateStreaming == "function")
       try {
-        return await WebAssembly.instantiateStreaming(module, imports);
-      } catch (e) {
-        if (module.headers.get("Content-Type") != "application/wasm") {
-          console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
-        } else {
-          throw e;
-        }
+        return await WebAssembly.instantiateStreaming(e, n);
+      } catch (i) {
+        if (e.headers.get("Content-Type") != "application/wasm")
+          console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", i);
+        else
+          throw i;
       }
-    }
-    const bytes = await module.arrayBuffer();
-    return await WebAssembly.instantiate(bytes, imports);
+    const r = await e.arrayBuffer();
+    return await WebAssembly.instantiate(r, n);
   } else {
-    const instance = await WebAssembly.instantiate(module, imports);
-    if (instance instanceof WebAssembly.Instance) {
-      return { instance, module };
-    } else {
-      return instance;
-    }
+    const r = await WebAssembly.instantiate(e, n);
+    return r instanceof WebAssembly.Instance ? { instance: r, module: e } : r;
   }
 }
-async function init(input) {
-  if (typeof input === "undefined") {
-    input = new URL("denoflate_bg.wasm");
-  }
-  const imports = {};
-  imports.wbg = {};
-  imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
-    var ret = getStringFromWasm0(arg0, arg1);
-    return addHeapObject(ret);
-  };
-  imports.wbg.__wbindgen_rethrow = function(arg0) {
-    throw takeObject(arg0);
-  };
-  if (typeof input === "string" || typeof Request === "function" && input instanceof Request || typeof URL === "function" && input instanceof URL) {
-    input = fetch(input);
-  }
-  const { instance, module } = await load(await input, imports);
-  wasm = instance.exports;
-  init.__wbindgen_wasm_module = module;
-  return wasm;
+async function M(e) {
+  typeof e > "u" && (e = new URL("denoflate_bg.wasm"));
+  const n = {};
+  n.wbg = {}, n.wbg.__wbindgen_string_new = function(a, o) {
+    var _ = m(a, o);
+    return h(_);
+  }, n.wbg.__wbindgen_rethrow = function(a) {
+    throw W(a);
+  }, (typeof e == "string" || typeof Request == "function" && e instanceof Request || typeof URL == "function" && e instanceof URL) && (e = fetch(e));
+  const { instance: r, module: i } = await z(await e, n);
+  return t = r.exports, M.__wbindgen_wasm_module = i, t;
 }
-export { init as default, deflate, gunzip, gzip, inflate, unzlib, zlib };
+export {
+  M as default,
+  R as deflate,
+  I as gunzip,
+  U as gzip,
+  O as inflate,
+  S as unzlib,
+  L as zlib
+};
 //# sourceMappingURL=denoflate-85ff96b7.mjs.map

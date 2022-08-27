@@ -27,7 +27,7 @@ let result = await bundle({
 
 console.log(
   await compress(
-    result.contents.map((x) => x.contents)
+    result.contents.map((x: any) => x?.contents)
   )
 );
 
