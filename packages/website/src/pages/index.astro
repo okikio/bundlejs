@@ -6,9 +6,6 @@ import MainSection from '../components/MainSection/MainSection';
 
 import IntroHeader from "../components/IntroHeader.astro";
 
-import { Toaster } from '../components/SolidToast/index';
-import { RegisterServiceWorker } from '../components/RegsiterServiceWorker';
-
 import { default as Docs } from "../components/DocsSection/Docs.mdx";
 import { default as Content } from "../snippets/analysis.md";
 ---
@@ -31,15 +28,4 @@ import { default as Content } from "../snippets/analysis.md";
   <Container>
     <Docs />
   </Container> 
-
-  <RegisterServiceWorker client:only="solid" />
-  <Toaster 
-    client:only="solid" 
-    position="bottom-right"
-    toastOptions={{
-      // Define default options that each toast will inherit. Will be overwritten by individual toast options
-      className: 'toast',
-      duration: Infinity
-    }}
-  />
 </BaseLayout>

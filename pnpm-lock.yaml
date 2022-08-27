@@ -64,7 +64,6 @@ importers:
       '@types/d3': ^7.4.0
       '@types/node': ^18.7.13
       '@vitest/ui': ^0.22.1
-      babel-preset-solid: ^1.5.1
       bytes: ^3.1.2
       d3: ^7.6.1
       del-cli: ^5.0.0
@@ -92,7 +91,6 @@ importers:
       '@types/d3': 7.4.0
       '@types/node': 18.7.13
       '@vitest/ui': 0.22.1
-      babel-preset-solid: 1.5.1_@babel+core@7.18.13
       del-cli: 5.0.0
       esbuild-wasm: 0.15.5
       esno: 0.16.3
