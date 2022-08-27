@@ -1,14 +1,15 @@
 import { createStore } from "solid-js/store";
 
+import type { TaskRunner as Tasks } from '../../scripts/workers/task-runner';
 import type { Editor as MonacoEditor, languages } from "../../scripts/modules/monaco";
-import type { OtherTSWorkerClient } from "../../scripts/clients/other-ts-client";
+import type { WorkerClient } from "../../scripts/clients/worker-client";
 
 export const initial = {
   editorBtnsOpen: false,
   monaco: {
     editor: null as MonacoEditor.IStandaloneCodeEditor,
     workers: {
-      other: null as OtherTSWorkerClient
+      taskRunner: null as WorkerClient<Tasks>
     },
     initialValue: {
       input: null as string,
@@ -27,4 +28,5 @@ export const initial = {
   bundleSize: "..." as string,
   bundling: false,
 };
+
 export const [state, setState] = createStore(initial);

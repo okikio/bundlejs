@@ -9,6 +9,7 @@ export interface IAnimateChange {
 export function createDetailsEffect() {
   let [isClosing, setIsClosing] = createSignal(false);
   let [isExpanding, setIsExpanding] = createSignal(false);
+  let [isOpen, setIsOpen] = createSignal(false);
 
   let animation: Animation = null;
   let contentAnimation: Animation = null;
@@ -23,6 +24,8 @@ export function createDetailsEffect() {
     summaryRef = _summaryRef;
     contentRef = _contentRef;
     anchorRef = _summaryRef?.querySelector?.('a');
+
+    setIsOpen(ref.open);
 
     createEffect(() => {
       if (!ref) return;
@@ -72,14 +75,15 @@ export function createDetailsEffect() {
   }
 
   function animate(mode: "open" | "shrink") {
-    const isOpen = mode == "open";
+    const isOpenMode = mode == "open";
     if (!ref) return;
-    if (isOpen) {
+    if (isOpenMode) {
       // Apply a fixed height on the element
       ref.style.height = `${ref.offsetHeight}px`;
 
       // Force the [open] attribute on the details element
       ref.open = true;
+      setIsOpen(ref.open);
 
       // Set the element as "being expanding"
       setIsExpanding(true);
@@ -88,7 +92,7 @@ export function createDetailsEffect() {
       setIsClosing(true);
     }
 
-    const contentValue = isOpen ? contentRef.offsetHeight : 0;
+    const contentValue = isOpenMode ? contentRef.offsetHeight : 0;
 
     const startValue = ref.offsetHeight;
     const endValue = summaryRef.offsetHeight + contentValue;
@@ -96,11 +100,11 @@ export function createDetailsEffect() {
     const startHeight = `${startValue}px`;
     const endHeight = `${endValue}px`;
 
-    const opacity = isOpen ? [0, 1] : [1, 0];
+    const opacity = isOpenMode ? [0, 1] : [1, 0];
     const dist = Math.abs(endValue - startValue);
     const timingOpts = {
       // For longer content reduce the speed at which the details element opens and closes
-      duration: (isOpen ? 500 : 300) + (200 * (dist / 500)),
+      duration: (isOpenMode ? 500 : 300) + (200 * (dist / 500)),
       easing: "ease-out",
     };
 
@@ -123,7 +127,8 @@ export function createDetailsEffect() {
     };
 
     animation.onfinish = () => {
-      ref.open = isOpen;
+      ref.open = isOpenMode;
+      setIsOpen(ref.open);
 
       // Clear the stored animations
       animation = null;
@@ -158,7 +163,10 @@ export function createDetailsEffect() {
   return {
     onMount,
     onClick,
-    onCleanup
+    onCleanup,
+    isClosing,
+    isExpanding,
+    isOpen
   };
 }
 

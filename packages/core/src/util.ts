@@ -20,5 +20,3 @@ export * from "./utils/resolve-imports";
 export * as semver from "./utils/semver";
 export * from "./utils/npm-search";
 export * from "./utils/util-cdn";
-
-// export * from "./utils/treeshake";

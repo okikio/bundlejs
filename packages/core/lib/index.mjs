@@ -1,4 +1,4 @@
-import { source as on } from "./esbuild-wasm-8f1dd564.mjs";
+import { source as on } from "./esbuild-wasm-74fd8127.mjs";
 const Ke = "0.15.5", le = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
 var at = class {
   constructor(e) {
@@ -189,7 +189,7 @@ async function ft(e = le, t = {}) {
         if ("wasmModule" in t)
           await s.initialize(t);
         else {
-          const { default: r } = await import("./esbuild-wasm-8f1dd564.mjs");
+          const { default: r } = await import("./esbuild-wasm-74fd8127.mjs");
           await s.initialize({
             wasmModule: new WebAssembly.Module(await r()),
             ...t
@@ -796,7 +796,7 @@ const St = /* @__PURE__ */ new Map(), Hs = "EXTERNAL_FETCHES", tt = async (e, t,
 };
 let we;
 const Ys = async () => we || (we = await caches.open(Hs)), fe = async (e, t = !1, s) => {
-  let r = new Request(e.toString()), n, i, o;
+  let r = "Request" in globalThis ? new Request(e.toString()) : e.toString(), n, i, o;
   return "caches" in globalThis ? (i = await Ys(), o = await i.match(r)) : o = St.get(r), n = o, o ? t || tt(i, r, s) : n = await tt(i, r, s), n.clone();
 };
 function T(e, t) {
@@ -1416,7 +1416,8 @@ async function Zr(e, t = {}) {
         const u = [...await ie(f.errors, "error", !1)], g = [...await ie(f.errors, "error")];
         b.emit("logger.error", u, g);
         const m = (g.length > 1 ? `${g.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return b.emit("logger.error", m);
+        b.emit("logger.error", m);
+        return;
       } else
         throw f;
     }
@@ -1953,7 +1954,7 @@ let Se;
 const Ze = async () => {
   if (Se)
     return Se;
-  const e = await import("./brotli-21ba751b.mjs"), { default: t, source: s } = e;
+  const e = await import("./brotli-b79c05b0.mjs"), { default: t, source: s } = e;
   return await t(await s()), Se = e;
 };
 async function xr(e, t = 4096, s = 6, r = 22) {

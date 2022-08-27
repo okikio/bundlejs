@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationDir": "./@types"
@@ -11,7 +9,6 @@
     "src/**/*"
   ],
   "exclude": [
-    "src/plugins/analyzer/**/*",
     "node_modules",
     "tests/**/*",
     "@types/**/*",

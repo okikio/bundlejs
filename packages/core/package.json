@@ -30,12 +30,10 @@
   ],
   "scripts": {
     "build:wasm": "esno ./scripts/build-wasm.ts",
-    "build:schema": "esno ./scripts/build-schema.ts",
-    "build:scripts": "pnpm build:wasm && pnpm build:schema",
-    "build:all": "ultra build:scripts && pnpm build",
+    "build:all": "ultra build:wasm && pnpm build",
     "build": "vite build",
     "dev": "vite",
-    "test:run": "vitest run && pnpm deno",
+    "test:run": "vitest run && pnpm repl && pnpm deno",
     "test": "vitest",
     "repl": "esno repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
@@ -45,7 +43,6 @@
   },
   "ultra": {
     "concurrent": [
-      "build:scripts",
       "verify",
       "test:run"
     ]
@@ -87,18 +84,17 @@
   "dependencies": {
     "@okikio/emitter": "^2.1.7",
     "esbuild": "^0.15.5",
-    "esbuild-wasm": "^0.15.5",
-    "rollup": "^2.78.1",
-    "solid-js": "^1.5.1"
+    "esbuild-wasm": "^0.15.5"
   },
   "devDependencies": {
     "@types/node": "^18.7.13",
     "@vitest/ui": "^0.22.1",
+    "cross-fetch": "^3.1.5",
     "del-cli": "^5.0.0",
     "esno": "^0.16.3",
     "pnpm": "^7.9.5",
+    "rollup": "^2.78.1",
     "typescript": "^4.8.2",
-    "typescript-json-schema": "^0.54.0",
     "ultra-runner": "^3.10.5",
     "vite": "^3.0.9",
     "vitest": "^0.22.1"
