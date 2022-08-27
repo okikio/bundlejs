@@ -1,217 +1,128 @@
-let customAlphabet = (alphabet, defaultSize = 21) => {
-  return (size = defaultSize) => {
-    let id = "";
-    let i = size;
-    while (i--) {
-      id += alphabet[Math.random() * alphabet.length | 0];
-    }
-    return id;
-  };
+let v = (n, t = 21) => (e = t) => {
+  let s = "", i = e;
+  for (; i--; )
+    s += n[Math.random() * n.length | 0];
+  return s;
 };
-const nanoid = customAlphabet("1234567890abcdef", 4);
-const UNIQUE_PREFIX = nanoid();
-let COUNTER = 0;
-const uniqueId = () => `${UNIQUE_PREFIX}-${COUNTER++}`;
-class ModuleMapper {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.nodeParts = {};
-    this.nodeMetas = {};
+const B = v("1234567890abcdef", 4), T = B();
+let k = 0;
+const E = () => `${T}-${k++}`;
+class C {
+  constructor(t) {
+    this.projectRoot = t, this.nodeParts = {}, this.nodeMetas = {};
   }
-  trimProjectRootId(moduleId) {
-    return moduleId.replace(this.projectRoot, "");
+  trimProjectRootId(t) {
+    return t.replace(this.projectRoot, "");
   }
-  getModuleUid(moduleId) {
-    if (!(moduleId in this.nodeMetas)) {
-      this.nodeMetas[moduleId] = {
-        uid: uniqueId(),
-        meta: { id: this.trimProjectRootId(moduleId), moduleParts: {}, imported: /* @__PURE__ */ new Set(), importedBy: /* @__PURE__ */ new Set() }
-      };
-    }
-    return this.nodeMetas[moduleId].uid;
+  getModuleUid(t) {
+    return t in this.nodeMetas || (this.nodeMetas[t] = {
+      uid: E(),
+      meta: { id: this.trimProjectRootId(t), moduleParts: {}, imported: /* @__PURE__ */ new Set(), importedBy: /* @__PURE__ */ new Set() }
+    }), this.nodeMetas[t].uid;
   }
-  getBundleModuleUid(bundleId, moduleId) {
-    if (!(moduleId in this.nodeMetas)) {
-      this.nodeMetas[moduleId] = {
-        uid: uniqueId(),
-        meta: { id: this.trimProjectRootId(moduleId), moduleParts: {}, imported: /* @__PURE__ */ new Set(), importedBy: /* @__PURE__ */ new Set() }
-      };
-    }
-    if (!(bundleId in this.nodeMetas[moduleId].meta.moduleParts)) {
-      this.nodeMetas[moduleId].meta.moduleParts[bundleId] = uniqueId();
-    }
-    return this.nodeMetas[moduleId].meta.moduleParts[bundleId];
+  getBundleModuleUid(t, e) {
+    return e in this.nodeMetas || (this.nodeMetas[e] = {
+      uid: E(),
+      meta: { id: this.trimProjectRootId(e), moduleParts: {}, imported: /* @__PURE__ */ new Set(), importedBy: /* @__PURE__ */ new Set() }
+    }), t in this.nodeMetas[e].meta.moduleParts || (this.nodeMetas[e].meta.moduleParts[t] = E()), this.nodeMetas[e].meta.moduleParts[t];
   }
-  setNodePart(bundleId, moduleId, value) {
-    const uid = this.getBundleModuleUid(bundleId, moduleId);
-    if (uid in this.nodeParts) {
-      throw new Error(`Override module: bundle id ${bundleId}, module id ${moduleId}, value ${JSON.stringify(value)}, existing value: ${JSON.stringify(this.nodeParts[uid])}`);
-    }
-    this.nodeParts[uid] = { ...value, mainUid: this.getModuleUid(moduleId) };
-    return uid;
+  setNodePart(t, e, s) {
+    const i = this.getBundleModuleUid(t, e);
+    if (i in this.nodeParts)
+      throw new Error(
+        `Override module: bundle id ${t}, module id ${e}, value ${JSON.stringify(
+          s
+        )}, existing value: ${JSON.stringify(this.nodeParts[i])}`
+      );
+    return this.nodeParts[i] = { ...s, mainUid: this.getModuleUid(e) }, i;
   }
-  setNodeMeta(moduleId, value) {
-    this.getModuleUid(moduleId);
-    this.nodeMetas[moduleId].meta.isEntry = value.isEntry;
-    this.nodeMetas[moduleId].meta.isExternal = value.isExternal;
+  setNodeMeta(t, e) {
+    this.getModuleUid(t), this.nodeMetas[t].meta.isEntry = e.isEntry, this.nodeMetas[t].meta.isExternal = e.isExternal;
   }
-  hasNodePart(bundleId, moduleId) {
-    if (!(moduleId in this.nodeMetas)) {
-      return false;
-    }
-    if (!(bundleId in this.nodeMetas[moduleId].meta.moduleParts)) {
-      return false;
-    }
-    if (!(this.nodeMetas[moduleId].meta.moduleParts[bundleId] in this.nodeParts)) {
-      return false;
-    }
-    return true;
+  hasNodePart(t, e) {
+    return !(!(e in this.nodeMetas) || !(t in this.nodeMetas[e].meta.moduleParts) || !(this.nodeMetas[e].meta.moduleParts[t] in this.nodeParts));
   }
   getNodeParts() {
     return this.nodeParts;
   }
   getNodeMetas() {
-    const nodeMetas = {};
-    for (const { uid, meta } of Object.values(this.nodeMetas)) {
-      nodeMetas[uid] = {
-        ...meta,
-        imported: [...meta.imported].map((rawImport) => {
-          const [uid2, dynamic] = rawImport.split(",");
-          const importData = { uid: uid2 };
-          if (dynamic === "true") {
-            importData.dynamic = true;
-          }
-          return importData;
+    const t = {};
+    for (const { uid: e, meta: s } of Object.values(this.nodeMetas))
+      t[e] = {
+        ...s,
+        imported: [...s.imported].map((i) => {
+          const [r, o] = i.split(","), a = { uid: r };
+          return o === "true" && (a.dynamic = !0), a;
         }),
-        importedBy: [...meta.importedBy].map((rawImport) => {
-          const [uid2, dynamic] = rawImport.split(",");
-          const importData = { uid: uid2 };
-          if (dynamic === "true") {
-            importData.dynamic = true;
-          }
-          return importData;
+        importedBy: [...s.importedBy].map((i) => {
+          const [r, o] = i.split(","), a = { uid: r };
+          return o === "true" && (a.dynamic = !0), a;
         })
       };
-    }
-    return nodeMetas;
+    return t;
   }
-  addImportedByLink(targetId, sourceId) {
-    const sourceUid = this.getModuleUid(sourceId);
-    this.getModuleUid(targetId);
-    this.nodeMetas[targetId].meta.importedBy.add(sourceUid);
+  addImportedByLink(t, e) {
+    const s = this.getModuleUid(e);
+    this.getModuleUid(t), this.nodeMetas[t].meta.importedBy.add(s);
   }
-  addImportedLink(sourceId, targetId, dynamic = false) {
-    const targetUid = this.getModuleUid(targetId);
-    this.getModuleUid(sourceId);
-    this.nodeMetas[sourceId].meta.imported.add(String([targetUid, dynamic]));
+  addImportedLink(t, e, s = !1) {
+    const i = this.getModuleUid(e);
+    this.getModuleUid(t), this.nodeMetas[t].meta.imported.add(String([i, s]));
   }
 }
-const isModuleTree = (mod) => "children" in mod;
-const addToPath = (moduleId, tree, modulePath, node) => {
-  if (modulePath.length === 0) {
-    throw new Error(`Error adding node to path ${moduleId}`);
-  }
-  const [head, ...rest] = modulePath;
-  if (rest.length === 0) {
-    tree.children.push({ ...node, name: head });
+const w = (n) => "children" in n, U = (n, t, e, s) => {
+  if (e.length === 0)
+    throw new Error(`Error adding node to path ${n}`);
+  const [i, ...r] = e;
+  if (r.length === 0) {
+    t.children.push({ ...s, name: i });
     return;
   } else {
-    let newTree = tree.children.find((folder) => folder.name === head && isModuleTree(folder));
-    if (!newTree) {
-      newTree = { name: head, children: [] };
-      tree.children.push(newTree);
-    }
-    addToPath(moduleId, newTree, rest, node);
+    let o = t.children.find((a) => a.name === i && w(a));
+    o || (o = { name: i, children: [] }, t.children.push(o)), U(n, o, r, s);
     return;
   }
-};
-const mergeSingleChildTrees = (tree) => {
-  if (tree.children.length === 1) {
-    const child = tree.children[0];
-    const name = `${tree.name}/${child.name}`;
-    if (isModuleTree(child)) {
-      tree.name = name;
-      tree.children = child.children;
-      return mergeSingleChildTrees(tree);
-    } else {
-      return {
-        name,
-        uid: child.uid
-      };
-    }
-  } else {
-    tree.children = tree.children.map((node) => {
-      if (isModuleTree(node)) {
-        return mergeSingleChildTrees(node);
-      } else {
-        return node;
-      }
-    });
-    return tree;
-  }
-};
-const buildTree = (bundleId, modules, mapper) => {
-  const tree = {
-    name: bundleId,
+}, z = (n) => {
+  if (n.children.length === 1) {
+    const t = n.children[0], e = `${n.name}/${t.name}`;
+    return w(t) ? (n.name = e, n.children = t.children, z(n)) : {
+      name: e,
+      uid: t.uid
+    };
+  } else
+    return n.children = n.children.map((t) => w(t) ? z(t) : t), n;
+}, R = (n, t, e) => {
+  const s = {
+    name: n,
     children: []
   };
-  for (const { id, renderedLength, gzipLength, brotliLength } of modules) {
-    const bundleModuleUid = mapper.setNodePart(bundleId, id, { renderedLength, gzipLength, brotliLength });
-    const trimmedModuleId = mapper.trimProjectRootId(id);
-    const pathParts = trimmedModuleId.split(/\\|\//).filter((p) => p !== "");
-    addToPath(trimmedModuleId, tree, pathParts, { uid: bundleModuleUid });
+  for (const { id: i, renderedLength: r, gzipLength: o, brotliLength: a } of t) {
+    const f = e.setNodePart(n, i, { renderedLength: r, gzipLength: o, brotliLength: a }), y = e.trimProjectRootId(i), P = y.split(/\\|\//).filter((M) => M !== "");
+    U(y, s, P, { uid: f });
   }
-  tree.children = tree.children.map((node) => {
-    if (isModuleTree(node)) {
-      return mergeSingleChildTrees(node);
-    } else {
-      return node;
-    }
-  });
-  return tree;
-};
-const mergeTrees = (trees) => {
-  const newTree = {
-    name: "root",
-    children: trees,
-    isRoot: true
-  };
-  return newTree;
-};
-const addLinks = (startModuleId, getModuleInfo, mapper) => {
-  const processedNodes = {};
-  const moduleIds = [startModuleId];
-  while (moduleIds.length > 0) {
-    const moduleId = moduleIds.shift();
-    if (processedNodes[moduleId]) {
+  return s.children = s.children.map((i) => w(i) ? z(i) : i), s;
+}, x = (n) => ({
+  name: "root",
+  children: n,
+  isRoot: !0
+}), I = (n, t, e) => {
+  const s = {}, i = [n];
+  for (; i.length > 0; ) {
+    const r = i.shift();
+    if (s[r])
       continue;
-    } else {
-      processedNodes[moduleId] = true;
-    }
-    const moduleInfo = getModuleInfo(moduleId);
-    if (!moduleInfo) {
+    s[r] = !0;
+    const o = t(r);
+    if (!o)
       return;
-    }
-    if (moduleInfo.isEntry) {
-      mapper.setNodeMeta(moduleId, { isEntry: true });
-    }
-    if (moduleInfo.isExternal) {
-      mapper.setNodeMeta(moduleId, { isExternal: true });
-    }
-    for (const importedId of moduleInfo.importedIds) {
-      mapper.addImportedByLink(importedId, moduleId);
-      mapper.addImportedLink(moduleId, importedId);
-      moduleIds.push(importedId);
-    }
-    for (const importedId of moduleInfo.dynamicallyImportedIds) {
-      mapper.addImportedByLink(importedId, moduleId);
-      mapper.addImportedLink(moduleId, importedId, true);
-      moduleIds.push(importedId);
-    }
+    o.isEntry && e.setNodeMeta(r, { isEntry: !0 }), o.isExternal && e.setNodeMeta(r, { isExternal: !0 });
+    for (const a of o.importedIds)
+      e.addImportedByLink(a, r), e.addImportedLink(r, a), i.push(a);
+    for (const a of o.dynamicallyImportedIds)
+      e.addImportedByLink(a, r), e.addImportedLink(r, a, !0), i.push(a);
   }
-};
-const htmlEscape = (str) => str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-async function buildHtml({ title, data, template }) {
+}, A = (n) => n.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+async function q({ title: n, data: t, template: e }) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -219,14 +130,14 @@ async function buildHtml({ title, data, template }) {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <title>${htmlEscape(title)}</title>
-        <link rel='stylesheet' href='/js/${template}.min.css' />
+        <title>${A(n)}</title>
+        <link rel='stylesheet' href='/js/${e}.min.css' />
       </head>
       <body>
         <main></main>
         <script type="module" defer>
-          import * as drawChart from "/js/${template}.min.js";
-          const data = ${JSON.stringify(data)};
+          import * as drawChart from "/js/${e}.min.js";
+          const data = ${JSON.stringify(t)};
           
           const run = () => {
             const width = window.innerWidth;
@@ -243,112 +154,86 @@ async function buildHtml({ title, data, template }) {
     </html>
   `;
 }
-const emptySizeGetter = () => Promise.resolve(0);
-const gzipSizeGetter = async (code) => {
-  const { gzip, getWASM } = await import("./mod-e46b934e.mjs");
-  await getWASM();
-  const data = await gzip(code, 9);
-  return data.length;
-};
-const brotliSizeGetter = async (code) => {
-  const { compress } = await import("./mod-bd7250c2.mjs");
-  const data = await compress(code, code.length, 11);
-  return data.length;
-};
-const visualizer = async (metadata, outputFiles, opts = {}) => {
-  const title = opts.title ?? "Esbuild Visualizer";
-  const template = (opts.template == true ? "treemap" : opts.template) ?? "treemap";
-  const projectRoot = "";
-  let outputFilesMap = /* @__PURE__ */ new Map();
-  outputFiles.forEach(({ path, contents }) => {
-    outputFilesMap.set(path, contents);
+const S = () => Promise.resolve(0), D = async (n) => {
+  const { gzip: t, getWASM: e } = await import("./mod-88b45d97.mjs");
+  return await e(), (await t(n, 9)).length;
+}, F = async (n) => {
+  const { compress: t } = await import("./mod-27a4a102.mjs");
+  return (await t(n, n.length, 11)).length;
+}, G = async (n, t, e = {}) => {
+  const s = e.title ?? "Esbuild Visualizer", i = (e.template == !0 ? "treemap" : e.template) ?? "treemap", r = "";
+  let o = /* @__PURE__ */ new Map();
+  t.forEach(({ path: d, contents: c }) => {
+    o.set(d, c);
   });
-  const gzipSize = !!opts.gzipSize;
-  const brotliSize = !!opts.brotliSize;
-  const gzip = gzipSize ? gzipSizeGetter : emptySizeGetter;
-  const brotli = brotliSize ? brotliSizeGetter : emptySizeGetter;
-  const ModuleLengths = async ({
-    id,
-    mod
+  const a = !!e.gzipSize, f = !!e.brotliSize, y = a ? D : S, P = f ? F : S, M = async ({
+    id: d,
+    mod: c
   }) => {
-    const code = outputFilesMap.get(id);
-    let faultyCode = code == null || code == void 0 || code?.length == 0;
-    let [gzipLength, brotliLength, renderedLength] = await Promise.all(faultyCode ? [0, 0, mod.bytesInOutput] : [gzip(code), brotli(code), code?.length]);
-    const result = {
-      id,
-      gzipLength,
-      brotliLength,
-      renderedLength
-    };
-    return result;
-  };
-  const roots = [];
-  const mapper = new ModuleMapper(projectRoot);
-  for (const [bundleId, bundle] of Object.entries(metadata.outputs)) {
-    const modules = await Promise.all(Object.entries(bundle.inputs).map(([id, mod]) => ModuleLengths({ id, mod })));
-    const tree2 = buildTree(bundleId, modules, mapper);
-    const code = outputFilesMap.get(bundleId);
-    if (tree2.children.length === 0 && code) {
-      const bundleSizes = await ModuleLengths({
-        id: bundleId,
-        mod: { bytesInOutput: code?.length }
-      });
-      const facadeModuleId = `${bundleId}-unknown`;
-      const bundleUid = mapper.setNodePart(bundleId, facadeModuleId, bundleSizes);
-      mapper.setNodeMeta(facadeModuleId, { isEntry: true });
-      const leaf = { name: bundleId, uid: bundleUid };
-      roots.push(leaf);
-    } else {
-      roots.push(tree2);
-    }
-  }
-  const getModuleInfo = (bundle) => (moduleId) => {
-    const input = metadata.inputs?.[moduleId];
-    const imports = input?.imports.map((i) => i.path);
-    const code = outputFilesMap.get(moduleId);
+    const l = o.get(d);
+    let m = l == null || l == null || l?.length == 0, [g, u, p] = await Promise.all(m ? [0, 0, c.bytesInOutput] : [y(l), P(l), l?.length]);
     return {
-      renderedLength: code?.length ?? bundle.inputs?.[moduleId]?.bytesInOutput ?? 0,
-      importedIds: imports ?? [],
+      id: d,
+      gzipLength: g,
+      brotliLength: u,
+      renderedLength: p
+    };
+  }, b = [], h = new C(r);
+  for (const [d, c] of Object.entries(n.outputs)) {
+    const l = await Promise.all(
+      Object.entries(c.inputs).map(([u, p]) => M({ id: u, mod: p }))
+    ), m = R(d, l, h), g = o.get(d);
+    if (m.children.length === 0 && g) {
+      const u = await M({
+        id: d,
+        mod: { bytesInOutput: g?.length }
+      }), p = `${d}-unknown`, N = h.setNodePart(d, p, u);
+      h.setNodeMeta(p, { isEntry: !0 });
+      const O = { name: d, uid: N };
+      b.push(O);
+    } else
+      b.push(m);
+  }
+  const L = (d) => (c) => {
+    const m = n.inputs?.[c]?.imports.map((u) => u.path);
+    return {
+      renderedLength: o.get(c)?.length ?? d.inputs?.[c]?.bytesInOutput ?? 0,
+      importedIds: m ?? [],
       dynamicallyImportedIds: [],
-      isEntry: bundle.entryPoint === moduleId,
-      isExternal: false
+      isEntry: d.entryPoint === c,
+      isExternal: !1
     };
   };
-  for (const [bundleId, bundle] of Object.entries(metadata.outputs)) {
-    if (bundle.entryPoint == null)
-      continue;
-    addLinks(bundleId, getModuleInfo(bundle), mapper);
-  }
-  const tree = mergeTrees(roots);
-  const data = {
+  for (const [d, c] of Object.entries(n.outputs))
+    c.entryPoint != null && I(d, L(c), h);
+  const $ = x(b), j = {
     version: 3,
-    tree,
-    nodeParts: mapper.getNodeParts(),
-    nodeMetas: mapper.getNodeMetas(),
+    tree: $,
+    nodeParts: h.getNodeParts(),
+    nodeMetas: h.getNodeMetas(),
     env: {},
     options: {
-      gzip: gzipSize,
-      brotli: brotliSize
+      gzip: a,
+      brotli: f
     }
   };
-  const fileContent = await buildHtml({
-    title,
-    data,
-    template
+  return await q({
+    title: s,
+    data: j,
+    template: i
   });
-  return fileContent;
-};
-const analyze = async (metadata, outputFiles, opts = {}, logger = console.log) => {
+}, H = async (n, t, e = {}, s = console.log) => {
   try {
-    return await visualizer(metadata, outputFiles, {
+    return await G(n, t, {
       title: "Bundle Analysis",
-      ...opts
+      ...e
     });
-  } catch (err) {
-    let { stack } = err;
-    logger([`[Analyzer] ${err}`, stack], "warning");
-    console.warn(err, stack);
+  } catch (i) {
+    let { stack: r } = i;
+    s([`[Analyzer] ${i}`, r], "warning"), console.warn(i, r);
   }
 };
-export { analyze };
+export {
+  H as analyze
+};
 //# sourceMappingURL=index.mjs.map

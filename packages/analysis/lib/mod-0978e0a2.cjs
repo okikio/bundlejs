@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let s;const r=async()=>{if(s)return s;const e=await Promise.resolve().then(()=>require("./wasm-40c5fe09.cjs")),{default:t,source:c}=e;return await t(await c()),s=e};async function n(e){const{lz4_compress:t}=await r();return t(e)}async function o(e){const{lz4_decompress:t}=await r();return t(e)}exports.compress=n;exports.decompress=o;exports.getWASM=r;
+//# sourceMappingURL=mod-0978e0a2.cjs.map
