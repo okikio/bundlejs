@@ -29,8 +29,8 @@ export interface Toast {
   pauseDuration: number;
   paused: boolean;
   position?: ToastPosition;
-  updateClick?: ComponentProps<'div'>['onClick'];
-  dismissClick?: ComponentProps<'div'>['onClick'];
+  updateClick?: JSX.DOMAttributes<HTMLElement>['onClick'];
+  dismissClick?: JSX.DOMAttributes<HTMLElement>['onClick'];
 
   ariaProps: {
     role: 'status' | 'alert';

@@ -311,3 +311,7 @@ details {
 .accordian:not(:last-child) {
   @apply border-b border-b-gray-300 dark:border-b-quaternary rounded-none;
 }
+
+dynamic-el {
+  display: contents;
+}

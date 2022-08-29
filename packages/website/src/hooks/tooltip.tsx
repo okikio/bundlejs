@@ -1,7 +1,8 @@
-import type { ComponentProps, JSX } from "solid-js";
+import { Accessor, ComponentProps, createMemo, JSX, sharedConfig, untrack, ValidComponent, } from "solid-js";
 
-import { createEffect, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { createEffect, mergeProps, onCleanup, onMount, splitProps, $DEVCOMP } from "solid-js";
+import { getNextElement, spread, SVGElements, Dynamic, createComponent } from "solid-js/web";
+
 
 import type { Props, Instance, CreateSingletonProps } from 'tippy.js';
 
@@ -11,6 +12,15 @@ import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/animations/scale-subtle.css';
 
 import { followCursor } from "./plugins/follow-cursor";
+
+declare module "solid-js" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "dynamic-el": JSX.IntrinsicElements["div"];
+    }
+  }
+}
+
 
 export const defaultTippyOpts: Partial<Props> = {
   inertia: true,
@@ -25,23 +35,22 @@ export const defaultTippyOpts: Partial<Props> = {
 }
 
 export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: keyof JSX.IntrinsicElements, content?: Props["content"], allowHTML?: Props["allowHTML"], tooltip?: Partial<Props> }) {
-  let ref: HTMLElement = null;
-  let instance: Instance<Props> = null;
+  let instances: Instance<Props>[] = [];
 
-  let [newProps, attrs] = splitProps(props, ["children", "content", "allowHTML", "tooltip", "as", "ref"]);
+  let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as"]);
   let mergedProps = mergeProps({
     as: "span",
-    mobile: "(max-width: 640px)"
   }, newProps);
+  // mobile: "(max-width: 640px)"
 
   const title = mergedProps?.allowHTML ? "Tooltip" : newProps?.content?.toString();
   let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
 
   function mediaQueryRun(e?: MediaQueryListEvent) {
     if (e?.matches)
-      instance?.enable?.();
+      instances?.forEach(instance => instance?.enable?.());
     else
-      instance?.disable?.();
+      instances?.forEach(instance => instance?.disable?.());
   }
 
   let tippyProps = mergeProps({
@@ -52,7 +61,10 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-    instance = tippy(ref, tippyProps);
+    const children = Array.isArray(attrs.children) ? attrs.children : [attrs.children];
+    instances = tippy(children as HTMLElement[], tippyProps);
+    console.log(instances)
+    instances?.forEach(instance => instance?.enable?.());
 
     if (props.mobile) {
       mediaQueryRun(media as unknown as MediaQueryListEvent);
@@ -68,33 +80,31 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
       ...defaultTippyOpts
     } as Partial<Props>, mergedProps.tooltip ?? {});
 
-    instance?.setProps?.(tippyProps);
+    instances?.forEach(instance => instance?.setProps?.(tippyProps));
   })
 
   onCleanup(() => {
     if (props.mobile)
       media?.removeEventListener?.("change", mediaQueryRun);
-    instance?.destroy?.();
+    instances?.forEach(instance => instance?.destroy?.());
   });
 
   return (
-    <Dynamic component={mergedProps.as} custom-tooltip {...attrs} ref={(el: HTMLElement) => {
-      ref = el;
-      typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
-    }}>
-      {mergedProps.children}
-    </Dynamic>
+    <dynamic-el 
+      custom-tooltip 
+      {...attrs} 
+    />
   );
 }
 
-export function SingletonToolTip(props?: ComponentProps<any> & { as?: keyof JSX.IntrinsicElements, target?: Iterable<Node> | ArrayLike<Node> | string, tooltip?: CreateSingletonProps<Props> }) {
+export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: CreateSingletonProps<Props> }) {
   let instance: Instance<Props> = null;
-  let ref: HTMLDivElement = null;
+  let ref: HTMLElement = null;
 
-  let [newProps, attrs] = splitProps(props, ["children", "tooltip", "target", "as"]);
+  let [newProps, attrs] = splitProps(props, ["tooltip", "target", "as", "ref"]);
   let mergedProps = mergeProps({
     target: "[custom-button]",
-    as: "div"
+    as: "span"
   }, newProps);
 
   let tippyProps = mergeProps({
@@ -105,8 +115,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { as?: keyof JSX.
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-
-    let els = Array.from(typeof mergedProps?.target == "string" ? ref?.querySelectorAll?.(mergedProps?.target) : mergedProps?.target);
+    let els = Array.from(attrs.children ?? []);
     let tippyTargets = els.map(el => {
       return tippy(el as HTMLElement);
     });
@@ -123,11 +132,15 @@ export function SingletonToolTip(props?: ComponentProps<any> & { as?: keyof JSX.
   });
 
   return (
-    <Dynamic component={mergedProps.as} custom-tooltip {...attrs} ref={ref}>
-      {mergedProps.children}
-    </Dynamic>
+    <dynamic-el
+      custom-tooltip 
+      {...attrs} 
+      ref={(el: HTMLElement) => {
+        ref = el;
+        typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
+      }}
+    />
   );
 }
 
 export default ToolTip;
-

@@ -142,7 +142,6 @@ export type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
 };
 
 export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
-
   if (!getState("initialized"))
     EVENTS.emit("init.loading");
 
