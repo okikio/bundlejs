@@ -152,45 +152,34 @@ export function Activity(props?: ComponentProps<'div'>) {
         <div class="flex-grow"></div>
 
         <ToolTip
-          as={Button}
-          ref={buildRef}
-
           mobile="(min-width: 700px)"
-          allowHTML={true}
-          content={
-            <div class="build-text">
-              Build
-            </div>
-          }
-
-          aria-label="Build"
-
-          class="umami--click--bundle-build-button"
-          onClick={() => !state.monaco.loading && build()}
+          content={"Build"}
         >
-          <IconLayer />
-          <BuildText.render class="build-text lt-sm:hidden" />
+          <Button 
+            ref={buildRef} 
+            class="umami--click--bundle-build-button"
+            onClick={() => !state.monaco.loading && build()}
+            aria-label="Build"
+          >
+            <IconLayer />
+            <BuildText.render class="build-text lt-sm:hidden" />
+          </Button>
         </ToolTip>
-
+        
         <ToolTip
-          as={Button}
-          ref={shareRef}
-
           mobile="(min-width: 700px)"
-          allowHTML={true}
-          content={
-            <div class="share-text">
-              Share
-            </div>
-          }
-
-          aria-label="Share"
-
-          class="umami--click--bundle-share-button"
-          onClick={() => !state.monaco.loading && share()}
+          content={"Share"}
         >
-          <IconShare />
-          <ShareText.render class="share-text lt-sm:hidden" />
+          <Button 
+            custom-button
+            ref={shareRef}
+            class="umami--click--bundle-share-button"
+            onClick={() => !state.monaco.loading && share()}
+            aria-label="Share"
+          >
+            <IconShare />
+            <ShareText.render class="share-text lt-sm:hidden" />
+          </Button>
         </ToolTip>
 
         <div class="bundle-results" title="Compressed Size">

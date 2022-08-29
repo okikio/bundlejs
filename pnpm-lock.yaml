@@ -4,7 +4,7 @@ importers:
 
   .:
     specifiers:
-      '@commitlint/cli': ^17.1.1
+      '@commitlint/cli': ^17.1.2
       '@commitlint/config-conventional': ^17.1.0
       '@semantic-release/changelog': ^6.0.1
       '@semantic-release/git': ^10.0.1
@@ -30,7 +30,7 @@ importers:
       typescript: ^4.8.2
       ultra-runner: ^3.10.5
     devDependencies:
-      '@commitlint/cli': 17.1.1
+      '@commitlint/cli': 17.1.2
       '@commitlint/config-conventional': 17.1.0
       '@semantic-release/changelog': 6.0.1_semantic-release@19.0.5
       '@semantic-release/git': 10.0.1_semantic-release@19.0.5
@@ -71,7 +71,7 @@ importers:
       esno: ^0.16.3
       nanoid: ^4.0.0
       pnpm: ^7.9.5
-      solid-js: ^1.5.1
+      solid-js: ^1.5.2
       typescript: ^4.8.2
       ultra-runner: ^3.10.5
       vite: ^3.0.9
@@ -83,7 +83,7 @@ importers:
       bytes: 3.1.2
       d3: 7.6.1
       nanoid: 4.0.0
-      solid-js: 1.5.1
+      solid-js: 1.5.2
       webcola: 3.4.0
     devDependencies:
       '@babel/core': 7.18.13
@@ -98,7 +98,7 @@ importers:
       typescript: 4.8.2
       ultra-runner: 3.10.5
       vite: 3.0.9
-      vite-plugin-solid: 2.3.0_solid-js@1.5.1+vite@3.0.9
+      vite-plugin-solid: 2.3.0_solid-js@1.5.2+vite@3.0.9
       vitest: 0.22.1_@vitest+ui@0.22.1
 
   packages/core:
@@ -143,7 +143,7 @@ importers:
       '@babel/core': ^7.18.13
       '@bundlejs/core': workspace:^0.0.0
       '@dprint/formatter': ^0.2.0
-      '@iconify/json': ^2.1.99
+      '@iconify/json': ^2.1.100
       '@okikio/emitter': ^2.1.7
       '@okikio/native': ^3.0.1
       '@okikio/sharedworker': ^1.0.4
@@ -161,7 +161,7 @@ importers:
       prettier-plugin-astro: ^0.5.3
       rollup: ^2.78.1
       sass: ^1.54.5
-      solid-js: ^1.5.1
+      solid-js: ^1.5.2
       tippy.js: ^6.3.7
       typescript: ^4.8.2
       ultra-runner: ^3.10.5
@@ -178,17 +178,17 @@ importers:
       '@typescript/vfs': 1.3.5
       countapi-js: 1.0.2
       monaco-editor: 0.34.0
-      solid-js: 1.5.1
+      solid-js: 1.5.2
       tippy.js: 6.3.7
       typescript: 4.8.2
       workbox-window: 6.5.4
     devDependencies:
       '@astrojs/mdx': 0.10.2_rollup@2.78.1
       '@astrojs/sitemap': 1.0.0
-      '@astrojs/solid-js': 1.1.0_tgnzfiaphiwhltoilmf5oe47yq
+      '@astrojs/solid-js': 1.1.0_esailxjvuihiibgguv46fbebki
       '@astrojs/tailwind': 1.0.0
       '@babel/core': 7.18.13
-      '@iconify/json': 2.1.99
+      '@iconify/json': 2.1.100
       astro: 1.1.1_sass@1.54.5
       astrojs-service-worker: 0.0.8
       clsx: 1.2.1
@@ -339,14 +339,14 @@ packages:
       zod: 3.18.0
     dev: true
 
-  /@astrojs/solid-js/1.1.0_tgnzfiaphiwhltoilmf5oe47yq:
+  /@astrojs/solid-js/1.1.0_esailxjvuihiibgguv46fbebki:
     resolution: {integrity: sha512-Vys8y2eIBWqjjUmOMQyZuD3VVYacr/EZAu3iOnKx9RWJmo9Ox0JZTQXVNb5W6yseKN0ODIDdTGaP8/ZzdrhxUw==}
     engines: {node: ^14.18.0 || >=16.12.0}
     peerDependencies:
       solid-js: ^1.4.3
     dependencies:
-      babel-preset-solid: 1.5.1_@babel+core@7.18.13
-      solid-js: 1.5.1
+      babel-preset-solid: 1.5.2_@babel+core@7.18.13
+      solid-js: 1.5.2
     transitivePeerDependencies:
       - '@babel/core'
     dev: true
@@ -1599,14 +1599,14 @@ packages:
     dev: true
     optional: true
 
-  /@commitlint/cli/17.1.1:
-    resolution: {integrity: sha512-xyQJNJs1j18At5wSBF6bMo1on6ZrpcHUr4duacznPU0RnywCAABDBP1s63BmhkTMdNXLVgVM4J1H2sG0HSS3IA==}
+  /@commitlint/cli/17.1.2:
+    resolution: {integrity: sha512-h/4Hlka3bvCLbnxf0Er2ri5A44VMlbMSkdTRp8Adv2tRiklSTRIoPGs7OEXDv3EoDs2AAzILiPookgM4Gi7LOw==}
     engines: {node: '>=v14'}
     hasBin: true
     dependencies:
       '@commitlint/format': 17.0.0
       '@commitlint/lint': 17.1.0
-      '@commitlint/load': 17.1.1
+      '@commitlint/load': 17.1.2
       '@commitlint/read': 17.1.0
       '@commitlint/types': 17.0.0
       execa: 5.1.1
@@ -1615,7 +1615,8 @@ packages:
       resolve-global: 1.0.0
       yargs: 17.5.1
     transitivePeerDependencies:
-      - ts-node
+      - '@swc/core'
+      - '@swc/wasm'
     dev: true
 
   /@commitlint/config-conventional/17.1.0:
@@ -1672,11 +1673,9 @@ packages:
       '@commitlint/types': 17.0.0
     dev: true
 
-  /@commitlint/load/17.1.1:
-    resolution: {integrity: sha512-jEgdDabfj58kFKZmB7rMtmQa7Feo7Ozh3KmvIlXWqrJmal5auO1RC0Iczfl52DlPn26Uo0goUDHrhoAFs2ze0Q==}
+  /@commitlint/load/17.1.2:
+    resolution: {integrity: sha512-sk2p/jFYAWLChIfOIp/MGSIn/WzZ0vkc3afw+l4X8hGEYkvDe4gQUUAVxjl/6xMRn0HgnSLMZ04xXh5pkTsmgg==}
     engines: {node: '>=v14'}
-    peerDependencies:
-      ts-node: '>=10'
     dependencies:
       '@commitlint/config-validator': 17.1.0
       '@commitlint/execute-rule': 17.0.0
@@ -1685,10 +1684,14 @@ packages:
       '@types/node': 14.18.26
       chalk: 4.1.2
       cosmiconfig: 7.0.1
-      cosmiconfig-typescript-loader: 3.1.2_tlp2ikh6wwsnlp4ctsuiswg7zm
+      cosmiconfig-typescript-loader: 4.0.0_sojisuq57pai4d4e47xjxa5i7a
       lodash: 4.17.21
       resolve-from: 5.0.0
+      ts-node: 10.9.1_ys5ibmf2vqsgufkwyky27zwkd4
       typescript: 4.8.2
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
     dev: true
 
   /@commitlint/message/17.0.0:
@@ -1758,6 +1761,13 @@ packages:
       chalk: 4.1.2
     dev: true
 
+  /@cspotcode/source-map-support/0.8.1:
+    resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.9
+    dev: true
+
   /@dprint/formatter/0.2.0:
     resolution: {integrity: sha512-E1q1JaOPeEUBhG//IUayqJQvNpqprZ0OCF8B/bIhUqSsMIp0Y74PgF8JPvDCrOdq43qiGUYAavVO8iCBHOoU/A==}
     dev: false
@@ -1816,8 +1826,8 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@iconify/json/2.1.99:
-    resolution: {integrity: sha512-A3kvTZmF5cy3xVF3HhItNFwHN7vY27kzcqBXy53bZwuXmXUstevddoqOQi4/01/OGVFFe9sPowclSWUXX+dErg==}
+  /@iconify/json/2.1.100:
+    resolution: {integrity: sha512-ztPJgsoqJQ2T216O0Wl94YmK085kLWeu25SekkwZaaTVZ5XaByER/h84AWGaKz7sBnnvdWJ+8ExAGyBGdr44bg==}
     dependencies:
       '@iconify/types': 1.1.0
       pathe: 0.3.5
@@ -1880,6 +1890,13 @@ packages:
 
   /@jridgewell/trace-mapping/0.3.15:
     resolution: {integrity: sha512-oWZNOULl+UbhsgB51uuZzglikfIKSUBO/M9W2OfEjn7cmqoAiCgmv9lyACTUacZwBz0ITnJ2NqjU8Tx0DHL88g==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.0
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: true
+
+  /@jridgewell/trace-mapping/0.3.9:
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
@@ -2332,6 +2349,22 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /@tsconfig/node10/1.0.9:
+    resolution: {integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA==}
+    dev: true
+
+  /@tsconfig/node12/1.0.11:
+    resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==}
+    dev: true
+
+  /@tsconfig/node14/1.0.3:
+    resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==}
+    dev: true
+
+  /@tsconfig/node16/1.0.3:
+    resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
+    dev: true
+
   /@types/acorn/4.0.6:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
     dependencies:
@@ -2671,7 +2704,7 @@ packages:
       jsonc-parser: 2.3.1
       vscode-languageserver-textdocument: 1.0.5
       vscode-languageserver-types: 3.17.2
-      vscode-nls: 5.1.0
+      vscode-nls: 5.2.0
       vscode-uri: 2.1.2
     dev: true
 
@@ -2701,6 +2734,11 @@ packages:
 
   /acorn-walk/7.2.0:
     resolution: {integrity: sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==}
+    engines: {node: '>=0.4.0'}
+    dev: true
+
+  /acorn-walk/8.2.0:
+    resolution: {integrity: sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==}
     engines: {node: '>=0.4.0'}
     dev: true
 
@@ -2820,6 +2858,10 @@ packages:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
+    dev: true
+
+  /arg/4.1.3:
+    resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
     dev: true
 
   /arg/5.0.2:
@@ -2965,7 +3007,7 @@ packages:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.3
-      caniuse-lite: 1.0.30001383
+      caniuse-lite: 1.0.30001384
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
@@ -2979,8 +3021,8 @@ packages:
       object.assign: 4.1.4
     dev: true
 
-  /babel-plugin-jsx-dom-expressions/0.34.0_@babel+core@7.18.13:
-    resolution: {integrity: sha512-rYTucwtdVbyEPUXpyCHZ8XNYzYCeXRgMaRD316ameiSGL2e+V/bxbBGX+sz1fp/9Z5ZEgC6fg2K8QxIiR/aQlw==}
+  /babel-plugin-jsx-dom-expressions/0.34.2_@babel+core@7.18.13:
+    resolution: {integrity: sha512-iMq9DwscjF/qX4kPukR4FvVZSITnBd3oz0GQKsVf0xYLHS0gLJSAfpPezABHtkNkGN/cLlvBACNkbM3pirQ8Yg==}
     peerDependencies:
       '@babel/core': ^7.0.0
     dependencies:
@@ -3027,13 +3069,13 @@ packages:
       - supports-color
     dev: true
 
-  /babel-preset-solid/1.5.1_@babel+core@7.18.13:
-    resolution: {integrity: sha512-4etZheCtQpHp0ns25GPC8MEHkR1W/b9o6wdNaDowhifkQa4fcXfDsZwrj/WKCspYAu2t75fdLDoRyRllYOCG7A==}
+  /babel-preset-solid/1.5.2_@babel+core@7.18.13:
+    resolution: {integrity: sha512-T6cEWWAmLpTlQTgWiW0PUSd2Bji+QH8eP7S5oVfDDqWiv7FdwcXnwr4xjYO/Hj5k6p7UsM9dVtxkzqalM6FF4Q==}
     peerDependencies:
       '@babel/core': ^7.0.0
     dependencies:
       '@babel/core': 7.18.13
-      babel-plugin-jsx-dom-expressions: 0.34.0_@babel+core@7.18.13
+      babel-plugin-jsx-dom-expressions: 0.34.2_@babel+core@7.18.13
     dev: true
 
   /bail/2.0.2:
@@ -3116,7 +3158,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001383
+      caniuse-lite: 1.0.30001384
       electron-to-chromium: 1.4.233
       node-releases: 2.0.6
       update-browserslist-db: 1.0.5_browserslist@4.21.3
@@ -3201,8 +3243,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001383:
-    resolution: {integrity: sha512-swMpEoTp5vDoGBZsYZX7L7nXHe6dsHxi9o6/LKf/f0LukVtnrxly5GVb/fWdCDTqi/yw6Km6tiJ0pmBacm0gbg==}
+  /caniuse-lite/1.0.30001384:
+    resolution: {integrity: sha512-BBWt57kqWbc0GYZXb47wTXpmAgqr5LSibPzNjk/AWMdmJMQhLqOl3c/Kd4OAU/tu4NLfYkMx8Tlq3RVBkOBolQ==}
     dev: true
 
   /cardinal/2.1.1:
@@ -3417,7 +3459,8 @@ packages:
       strip-bom: 4.0.0
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
-      - ts-node
+      - '@swc/core'
+      - '@swc/wasm'
     dev: true
 
   /common-ancestor-path/1.0.1:
@@ -3515,8 +3558,8 @@ packages:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
 
-  /cosmiconfig-typescript-loader/3.1.2_tlp2ikh6wwsnlp4ctsuiswg7zm:
-    resolution: {integrity: sha512-rIwakk27LtK7vjSjGgs3FDbKkq41Byw3VHRGRuAkRQLfGla+O7s+cy1FXRkjLSZ2G9z1og1bcOIsELo1w4G0Kg==}
+  /cosmiconfig-typescript-loader/4.0.0_sojisuq57pai4d4e47xjxa5i7a:
+    resolution: {integrity: sha512-cVpucSc2Tf+VPwCCR7SZzmQTQkPbkk4O01yXsYqXBIbjE1bhwqSyAgYQkRK1un4i0OPziTleqFhdkmOc4RQ/9g==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
       '@types/node': '*'
@@ -3526,6 +3569,7 @@ packages:
     dependencies:
       '@types/node': 14.18.26
       cosmiconfig: 7.0.1
+      ts-node: 10.9.1_ys5ibmf2vqsgufkwyky27zwkd4
       typescript: 4.8.2
     dev: true
 
@@ -3547,6 +3591,10 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
+
+  /create-require/1.1.1:
+    resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+    dev: true
 
   /cross-fetch/3.1.5:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
@@ -3589,9 +3637,10 @@ packages:
       longest: 2.0.1
       word-wrap: 1.2.3
     optionalDependencies:
-      '@commitlint/load': 17.1.1
+      '@commitlint/load': 17.1.2
     transitivePeerDependencies:
-      - ts-node
+      - '@swc/core'
+      - '@swc/wasm'
     dev: true
 
   /d3-array/3.2.0:
@@ -4038,6 +4087,11 @@ packages:
 
   /didyoumean/1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
+    dev: true
+
+  /diff/4.0.2:
+    resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
     dev: true
 
   /diff/5.1.0:
@@ -4587,7 +4641,7 @@ packages:
     resolution: {integrity: sha512-6slSBEV1lMKcX13DBifvnDFpNno5WXhw4j/ff7RI0y51BZiDqEe5dNhhjhIQ3iCOQuzsm2MbVzmwqbN78BBhPg==}
     hasBin: true
     dependencies:
-      tsx: 3.8.2
+      tsx: 3.9.0
     dev: true
 
   /esprima/4.0.1:
@@ -6030,6 +6084,10 @@ packages:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}
     dependencies:
       sourcemap-codec: 1.4.8
+    dev: true
+
+  /make-error/1.3.6:
+    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
     dev: true
 
   /map-obj/1.0.1:
@@ -8130,12 +8188,12 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /solid-js/1.5.1:
-    resolution: {integrity: sha512-Y6aKystIxnrB0quV5nhqNuJV+l2Fk3/PQy1mMya/bzxlGiMHAym7v1NaqEgqDIvctbkxOi5dBj0ER/ewrH060g==}
+  /solid-js/1.5.2:
+    resolution: {integrity: sha512-4dUeAVVJsMNLuEZ4VjGYf3rUgOc2CXEvzp/Q01UcF1EJBnMoqhYmXTEDiLD829kAyDpgnE1O0bXG1PzYYiXOZQ==}
     dependencies:
       csstype: 3.1.0
 
-  /solid-refresh/0.4.1_solid-js@1.5.1:
+  /solid-refresh/0.4.1_solid-js@1.5.2:
     resolution: {integrity: sha512-v3tD/OXQcUyXLrWjPW1dXZyeWwP7/+GQNs8YTL09GBq+5FguA6IejJWUvJDrLIA4M0ho9/5zK2e9n+uy+4488g==}
     peerDependencies:
       solid-js: ^1.3
@@ -8143,7 +8201,7 @@ packages:
       '@babel/generator': 7.18.13
       '@babel/helper-module-imports': 7.18.6
       '@babel/types': 7.18.13
-      solid-js: 1.5.1
+      solid-js: 1.5.2
     dev: true
 
   /source-map-js/1.0.2:
@@ -8610,6 +8668,37 @@ packages:
     resolution: {integrity: sha512-AqTiAOLcj85xS7vQ8QkAV41hPDIJ71XJB4RCUrzo/1GM2CQwhkJGaf9Hgr7BOugMRpgGUrqRg/DrBDl4H40+8g==}
     dev: true
 
+  /ts-node/10.9.1_ys5ibmf2vqsgufkwyky27zwkd4:
+    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.3
+      '@types/node': 14.18.26
+      acorn: 8.8.0
+      acorn-walk: 8.2.0
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 4.8.2
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    dev: true
+
   /ts-toolbelt/9.6.0:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
     dev: true
@@ -8641,8 +8730,8 @@ packages:
       esbuild: 0.14.54
     dev: true
 
-  /tsx/3.8.2:
-    resolution: {integrity: sha512-Jf9izq3Youry5aEarspf6Gm+v/IE2A2xP7YVhtNH1VSCpM0jjACg7C3oD5rIoLBfXWGJSZj4KKC2bwE0TgLb2Q==}
+  /tsx/3.9.0:
+    resolution: {integrity: sha512-ofxsE+qjqCYYq4UBt5khglvb+ESgxef1YpuNcdQI92kvcAT2tZVrnSK3g4bRXTUhLmKHcC5q8vIZA47os/stng==}
     hasBin: true
     dependencies:
       '@esbuild-kit/cjs-loader': 2.3.3
@@ -9036,6 +9125,10 @@ packages:
       sade: 1.8.1
     dev: true
 
+  /v8-compile-cache-lib/3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+    dev: true
+
   /validate-npm-package-license/3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
     dependencies:
@@ -9066,7 +9159,7 @@ packages:
       vfile-message: 3.1.2
     dev: true
 
-  /vite-plugin-solid/2.3.0_solid-js@1.5.1+vite@3.0.9:
+  /vite-plugin-solid/2.3.0_solid-js@1.5.2+vite@3.0.9:
     resolution: {integrity: sha512-N2sa54C3UZC2nN5vpj5o6YP+XdIAZW6n6xv8OasxNAcAJPFeZT7EOVvumL0V4c8hBz1yuYniMWdESY8807fVSg==}
     peerDependencies:
       solid-js: ^1.3.17
@@ -9074,10 +9167,10 @@ packages:
     dependencies:
       '@babel/core': 7.18.13
       '@babel/preset-typescript': 7.18.6_@babel+core@7.18.13
-      babel-preset-solid: 1.5.1_@babel+core@7.18.13
+      babel-preset-solid: 1.5.2_@babel+core@7.18.13
       merge-anything: 5.0.4
-      solid-js: 1.5.1
-      solid-refresh: 0.4.1_solid-js@1.5.1
+      solid-js: 1.5.2
+      solid-refresh: 0.4.1_solid-js@1.5.2
       vite: 3.0.9
     transitivePeerDependencies:
       - supports-color
@@ -9222,7 +9315,7 @@ packages:
     dependencies:
       vscode-languageserver-textdocument: 1.0.5
       vscode-languageserver-types: 3.17.2
-      vscode-nls: 5.1.0
+      vscode-nls: 5.2.0
       vscode-uri: 3.0.3
     dev: true
 
@@ -9231,7 +9324,7 @@ packages:
     dependencies:
       vscode-languageserver-textdocument: 1.0.5
       vscode-languageserver-types: 3.17.2
-      vscode-nls: 5.1.0
+      vscode-nls: 5.2.0
       vscode-uri: 3.0.3
     dev: true
 
@@ -9262,8 +9355,8 @@ packages:
       vscode-languageserver-protocol: 3.17.2
     dev: true
 
-  /vscode-nls/5.1.0:
-    resolution: {integrity: sha512-37Ha44QrLFwR2IfSSYdOArzUvOyoWbOYTwQC+wS0NfqKjhW7s0WQ1lMy5oJXgSZy9sAiZS5ifELhbpXodeMR8w==}
+  /vscode-nls/5.2.0:
+    resolution: {integrity: sha512-RAaHx7B14ZU04EU31pT+rKz2/zSl7xMsfIZuo8pd+KZO6PXtQmpevpq3vxvWNcrGbdmhM/rr5Uw5Mz+NBfhVng==}
     dev: true
 
   /vscode-oniguruma/1.6.2:
@@ -9621,6 +9714,11 @@ packages:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+    dev: true
+
+  /yn/3.1.1:
+    resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
+    engines: {node: '>=6'}
     dev: true
 
   /yocto-queue/0.1.0:

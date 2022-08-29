@@ -101,151 +101,153 @@ export function EditorButtons() {
   onMount(() => {
     mediaQueryRun(media as unknown as MediaQueryListEvent);
     media?.addEventListener?.("change", mediaQueryRun);
-  }); 
+  });
 
-  onCleanup(() => { 
+  onCleanup(() => {
     media?.removeEventListener?.("change", mediaQueryRun);
   });
 
   return (
     <div class="editor-btn-container">
-      <SingletonToolTip
-        target="[custom-button]"
-        ref={shellRef}
-        class="editor-btn-shell"
-        switch-mode={state.editorBtnsOpen}>
-        <div class="hide-btn-container">
-          <Button
-            aria-label={"Show/Hide Editor Buttons"}
-            data-tippy-content={"Show/Hide Editor Buttons"}
-            data-tippy-placement={placement()}
-            hide-btn
-            class="umami--click--hide-editor-button"
-            onClick={() => setState("editorBtnsOpen", !state.editorBtnsOpen)}>
-            <IconMore />
-          </Button>
-        </div>
+      <SingletonToolTip target="[custom-button]">
+        <div
+          ref={shellRef}
+          class="editor-btn-shell"
+          switch-mode={state.editorBtnsOpen}
+        >
+          <div class="hide-btn-container">
+            <Button
+              aria-label={"Show/Hide Editor Buttons"}
+              data-tippy-content={"Show/Hide Editor Buttons"}
+              data-tippy-placement={placement()}
+              hide-btn
+              class="umami--click--hide-editor-button"
+              onClick={() => setState("editorBtnsOpen", !state.editorBtnsOpen)}>
+              <IconMore />
+            </Button>
+          </div>
 
-        <div class="editor-btns">
-          <Button
-            aria-label={"Clear Code Editor"}
-            data-tippy-content={"Clear Code Editor"}
-            clear-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--clear-editor-button"
-            onClick={() => { 
-              if (!state.monaco.loading) { 
-                state.monaco.editor?.setValue("");
-                toast("Cleared Editor");
-              }
-            }}>
-            <IconDelete />
-          </Button>
+          <div class="editor-btns">
+            <Button
+              aria-label={"Clear Code Editor"}
+              data-tippy-content={"Clear Code Editor"}
+              clear-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--clear-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  state.monaco.editor?.setValue("");
+                  toast("Cleared Editor");
+                }
+              }}>
+              <IconDelete />
+            </Button>
 
-          <Button
-            aria-label={"Format Code"}
-            data-tippy-content={"Format Code"}
-            format-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--format-editor-button"
-            onClick={() => {
-              if (!state.monaco.loading) {
-                (async () => {
-                  const model = state.monaco.editor.getModel();
-                  if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
-                    try {
-                      const worker = state.monaco.workers.taskRunner;
-                      const thisWorker = await worker.getWorker();
+            <Button
+              aria-label={"Format Code"}
+              data-tippy-content={"Format Code"}
+              format-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--format-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  (async () => {
+                    const model = state.monaco.editor.getModel();
+                    if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
+                      try {
+                        const worker = state.monaco.workers.taskRunner;
+                        const thisWorker = await worker.getWorker();
 
-                      const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
-                      state.monaco.editor.setValue(formattedCode);
-                      toast(`Formatted ${getModelType()} code editor`);
-                    } catch (e) {
-                      console.warn(e);
-                      toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
+                        const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
+                        state.monaco.editor.setValue(formattedCode);
+                        toast(`Formatted ${getModelType()} code editor`);
+                      } catch (e) {
+                        console.warn(e);
+                        toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
 
+                        await state.monaco.editor.getAction("editor.action.formatDocument").run();
+                      }
+                    } else {
                       await state.monaco.editor.getAction("editor.action.formatDocument").run();
                     }
-                  } else {
-                    await state.monaco.editor.getAction("editor.action.formatDocument").run();
-                  }
-                })();
-              }
-            }}>
-            <IconFormat />
-          </Button>
+                  })();
+                }
+              }}>
+              <IconFormat />
+            </Button>
 
-          <Button
-            aria-label={"Reset Code Editor"}
-            data-tippy-content={"Reset Code Editor"}
-            reset-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--reset-editor-button"
-            onClick={() => {
-              if (!state.monaco.loading) {
-                let modelType = getModelType();
+            <Button
+              aria-label={"Reset Code Editor"}
+              data-tippy-content={"Reset Code Editor"}
+              reset-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--reset-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  let modelType = getModelType();
 
-                resetEditor(modelType);
-                toast(`Reset ${modelType}`);
-              }
-            }}>
-            <IconReset />
-          </Button>
+                  resetEditor(modelType);
+                  toast(`Reset ${modelType}`);
+                }
+              }}>
+              <IconReset />
+            </Button>
 
-          <Button
-            aria-label={"Copy Code"}
-            data-tippy-content={"Copy Code"}
-            copy-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--copy-editor-button"
-            onClick={() => {
-              if (!state.monaco.loading) {
-                const range = state.monaco.editor.getModel().getFullModelRange();
-                state.monaco.editor.setSelection(range);
-                state.monaco.editor
-                  .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
-                  .run();
-                toast(`Copy ${getModelType()}`);
-              }
-            }}>
-            <IconCopy />
-          </Button>
+            <Button
+              aria-label={"Copy Code"}
+              data-tippy-content={"Copy Code"}
+              copy-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--copy-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  const range = state.monaco.editor.getModel().getFullModelRange();
+                  state.monaco.editor.setSelection(range);
+                  state.monaco.editor
+                    .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
+                    .run();
+                  toast(`Copy ${getModelType()}`);
+                }
+              }}>
+              <IconCopy />
+            </Button>
 
-          <Button
-            aria-label={"Download Code"}
-            data-tippy-content={"Download Code"}
-            download-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--download-editor-button"
-            onClick={() => {
-              if (!state.monaco.loading) {
-                const model = state.monaco.editor.getModel();
-                const blob = new Blob([model.getValue()], {
-                  type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
-                });
+            <Button
+              aria-label={"Download Code"}
+              data-tippy-content={"Download Code"}
+              download-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--download-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  const model = state.monaco.editor.getModel();
+                  const blob = new Blob([model.getValue()], {
+                    type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
+                  });
 
-                downloadBlob(blob, model?.uri?.authority ?? "download.ts");
-                toast(`Download ${getModelType()}`);
-              }
-            }}>
-            <IconDownload />
-          </Button>
+                  downloadBlob(blob, model?.uri?.authority ?? "download.ts");
+                  toast(`Download ${getModelType()}`);
+                }
+              }}>
+              <IconDownload />
+            </Button>
 
-          <Button
-            aria-label={"Toggle Code Wrap"}
-            data-tippy-content={"Toggle Code Wrap"}
-            code-wrap-btn
-            tabIndex={state.editorBtnsOpen ? 0 : -1}
-            class="umami--click--codewrap-editor-button"
-            onClick={() => {
-              if (!state.monaco.loading) {
-                const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
-                state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
-                toast(`${ wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
-              }
-            }}>
-            <IconCodeWrap />
-          </Button>
+            <Button
+              aria-label={"Toggle Code Wrap"}
+              data-tippy-content={"Toggle Code Wrap"}
+              code-wrap-btn
+              tabIndex={state.editorBtnsOpen ? 0 : -1}
+              class="umami--click--codewrap-editor-button"
+              onClick={() => {
+                if (!state.monaco.loading) {
+                  const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
+                  state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
+                  toast(`${wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
+                }
+              }}>
+              <IconCodeWrap />
+            </Button>
+          </div>
         </div>
       </SingletonToolTip>
     </div>

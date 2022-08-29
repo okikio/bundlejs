@@ -116,6 +116,7 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   return (
     <Button
+      custom-button
       {...attrs}
       title="Drag around to resz"
 

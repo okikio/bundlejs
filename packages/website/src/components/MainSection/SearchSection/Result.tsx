@@ -28,7 +28,7 @@ export function SearchResult(props?: SearchResultProps) {
   let _version = props?.version ? "@" + props?.version : "";
 
   let _package = `${_name}${_version}`;
-  let _packageHref = `https://www.npmjs.com/${_package}`;
+  let _packageHref = `https://www.npmjs.com/${_name}`;
   let _authorHref = `https://www.npmjs.com/~${_author}`;
 
   let BtnText = createTextSwitch(["Add Module", "Added!"]);

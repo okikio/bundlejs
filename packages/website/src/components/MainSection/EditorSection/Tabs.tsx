@@ -6,7 +6,6 @@ import { state } from "../store";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 
-
 export function Tabs(props?: ComponentProps<'div'>) {
   let inputRef: HTMLButtonElement = null;
   let outputRef: HTMLButtonElement = null;
@@ -58,12 +57,14 @@ export function Tabs(props?: ComponentProps<'div'>) {
 
   return (
     <div class="tab-bar">
-      <SingletonToolTip target="[custom-button]" class="tab-container" onClick={onClick}>
+      <SingletonToolTip target="[custom-button]" >
+        <div class="tab-container" onClick={onClick}>
         <Button data-tippy-content={"Input Editor Tab"} data-tippy-placement="top" data-model="input" class="active" ref={inputRef}>Input</Button>
         <Button data-tippy-content={"Output Editor Tab"} data-tippy-placement="top" data-model="output" class="umami--click--output-tab" ref={outputRef}>Output</Button>
         <Button data-tippy-content={"Config Editor Tab"} data-tippy-placement="top" data-model="config" class="umami--click--config-tab" ref={configRef} aria-label={"Config Editor Tab"}>
           <IconSettings />
         </Button>
+        </div>
       </SingletonToolTip>
     </div>
   )

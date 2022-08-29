@@ -83,47 +83,44 @@ export const ToastBar = (props: ToastBarProps) => {
       <div class="flex gap-1.5">
         <Show when={props.toast.type === 'update'}>
           <ToolTip
-            as={Button}
-
-            class="reload-button"
             content={"Reload"}
-
             tooltip={{
               followCursor: false,
               delay: [1000, 200],
             }}
-
-            aria-label="Reload"
-            onClick={props?.toast?.updateClick}
           >
-            <IconArrowClockwise astro-icon rehype-icon />
+            <Button 
+              class="reload-button"
+              aria-label="Reload"
+              onClick={props?.toast?.updateClick}
+            >
+              <IconArrowClockwise astro-icon rehype-icon />
+            </Button>
           </ToolTip>
         </Show>
 
         <ToolTip
-          as={Button}
-
-          class="cancel-button"
           content={"Dismiss"}
-
           tooltip={{
             followCursor: false,
             delay: [1000, 200],
           }}
-
-          aria-label="Dismiss"
-
-          onClick={(e) => {
-            if (typeof props?.toast?.dismissClick == "function")
-              props?.toast?.dismissClick?.(e);
-
-            dispatch({
-              type: ActionType.DISMISS_TOAST,
-              toastId: props.toast.id,
-            });
-          }}
         >
-          <IconCancel astro-icon rehype-icon />
+          <Button 
+            class="cancel-button"
+            aria-label="Dismiss"
+            onClick={(e) => {
+              if (typeof props?.toast?.dismissClick == "function")
+                props?.toast?.dismissClick?.(e);
+
+              dispatch({
+                type: ActionType.DISMISS_TOAST,
+                toastId: props.toast.id,
+              });
+            }}
+          >
+            <IconCancel astro-icon rehype-icon />
+          </Button>
         </ToolTip>
       </div>
     </div>

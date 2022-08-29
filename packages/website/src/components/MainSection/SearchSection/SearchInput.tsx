@@ -6,6 +6,7 @@ import { ComponentProps, onCleanup, onMount, Setter } from "solid-js";
 import { debounce } from "@bundlejs/core/src/util";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+
 export function SearchInput(props: ComponentProps<'div'> & {
   query?: Setter<string>;
 }) { 
@@ -16,7 +17,7 @@ export function SearchInput(props: ComponentProps<'div'> & {
     props?.query?.("");
   }
 
-  const onKeyup = debounce((e?: KeyboardEvent) => {
+  const onKeyUp = debounce((e?: KeyboardEvent) => {
     e?.stopPropagation?.();
     let { value } = ref;
     props?.query?.(value);
@@ -28,12 +29,22 @@ export function SearchInput(props: ComponentProps<'div'> & {
         <IconSearch astro-icon />
       </div>
 
-      {/* @ts-ignore */}
-      <input id="input" type="text" autocorrect="off" autocomplete="off" placeholder="Type a package name..." onKeyup={onKeyup} ref={ref} />
+      <input 
+        id="input" 
+        type="text" 
+        // @ts-ignore 
+        autocorrect="off" 
+        autocomplete="off" 
+        placeholder="Type a package name..." 
+        onKeyUp={onKeyUp} 
+        ref={ref} 
+      /> 
 
-      <ToolTip as={Button} content="Clear Search Input and Results" id="clear" aria-label="Clear search input and results" class="umami--click--search-clear-button" onClick={onClear}>
-        <IconClear astro-icon />
-      </ToolTip>
+      <ToolTip content="Clear Search Input and Results"> 
+        <Button id="clear" aria-label="Clear search input and results" class="umami--click--search-clear-button" onClick={onClear}>
+          <IconClear astro-icon />
+        </Button>
+      </ToolTip> 
     </div>
   );
 }

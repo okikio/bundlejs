@@ -80,7 +80,7 @@
     "bytes": "^3.1.2",
     "d3": "^7.6.1",
     "nanoid": "^4.0.0",
-    "solid-js": "^1.5.1",
+    "solid-js": "^1.5.2",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
