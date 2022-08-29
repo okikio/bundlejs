@@ -1,12 +1,12 @@
 ---
-import { Blank } from "../components/Blank";
-// SearchContainer
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 import Container from "../components/Container";
 import MainSection from '../components/MainSection/MainSection';
 
 import IntroHeader from "../components/IntroHeader.astro";
+
+// import { Blank } from "../components/Blank";
 
 import { default as Docs } from "../components/DocsSection/Docs.mdx";
 import { default as Content } from "../snippets/analysis.md";
@@ -20,6 +20,8 @@ import { default as Content } from "../snippets/analysis.md";
       mobile="Quickly bundle js & view the file size."
     />
   </Container>
+
+  <!-- <Blank client:load /> -->
 
   <MainSection client:load>
     <Fragment slot="analysisDocs">
