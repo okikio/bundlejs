@@ -36,6 +36,7 @@
     "@iconify/json": "^2.1.100",
     "astro": "1.1.1",
     "astrojs-service-worker": "^0.0.8",
+    "babel-preset-solid": "^1.5.2",
     "clsx": "^1.2.1",
     "esno": "^0.16.3",
     "pnpm": "^7.9.5",
