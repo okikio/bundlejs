@@ -5,7 +5,7 @@
     "**/@types/*.d.ts"
   ],
   "entryPoints": ["./packages/core/src/index.ts"],
-  "name": "spring-easing",
+  "name": "@bundlejs",
   "out": "docs",
   "media": "media",
   "theme": "default",
@@ -16,7 +16,6 @@
   "customCss": "./.typedoc/typedoc.css",
   "tsconfig": "./.typedoc/tsconfig.json",
   "umami-id": "4921ec19-210c-45b0-b5b8-cb9aaae292e9",
-  "internalNamespace": "External",
   "plugin": [
     "./.typedoc/typedoc.cjs",
     "typedoc-plugin-extras",
