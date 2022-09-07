@@ -80,23 +80,23 @@
     "bytes": "^3.1.2",
     "d3": "^7.6.1",
     "nanoid": "^4.0.0",
-    "solid-js": "^1.5.3",
+    "solid-js": "^1.5.4",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.13",
+    "@babel/core": "^7.19.0",
     "@types/bytes": "^3.1.1",
     "@types/d3": "^7.4.0",
-    "@types/node": "^18.7.14",
-    "@vitest/ui": "^0.22.1",
+    "@types/node": "^18.7.15",
+    "@vitest/ui": "^0.23.1",
     "del-cli": "^5.0.0",
-    "esbuild-wasm": "^0.15.6",
+    "esbuild-wasm": "^0.15.7",
     "esno": "^0.16.3",
-    "pnpm": "^7.9.5",
+    "pnpm": "^7.11.0",
     "typescript": "^4.8.2",
     "ultra-runner": "^3.10.5",
-    "vite": "^3.0.9",
+    "vite": "^3.1.0",
     "vite-plugin-solid": "^2.3.0",
-    "vitest": "^0.22.1"
+    "vitest": "^0.23.1"
   }
 }
