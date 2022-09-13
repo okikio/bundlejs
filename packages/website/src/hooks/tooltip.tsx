@@ -63,7 +63,6 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   onMount(() => {
     const children = Array.isArray(attrs.children) ? attrs.children : [attrs.children];
     instances = tippy(children as HTMLElement[], tippyProps);
-    console.log(instances)
     instances?.forEach(instance => instance?.enable?.());
 
     if (props.mobile) {
@@ -130,7 +129,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   onCleanup(() => {
     instance?.destroy?.();
   });
-
+  
   return (
     <dynamic-el
       custom-tooltip 

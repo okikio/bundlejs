@@ -35,7 +35,7 @@ function removeMouseCoordsListener(doc: Document): void {
 
 // https://stackoverflow.com/a/62759635/12140185
 function closestCommonAncestor(elements) {
-  const reducer = (prev, current) => current.parentElement.contains(prev) ? current.parentElement : prev;
+  const reducer = (prev, current) => current?.parentElement?.contains(prev) ? current.parentElement : prev;
   return elements.reduce(reducer, elements[0]);
 }
 
