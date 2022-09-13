@@ -19,12 +19,12 @@
     "@okikio/emitter": "^2.1.7",
     "@okikio/native": "^3.0.1",
     "@okikio/sharedworker": "^1.0.4",
-    "@typescript/vfs": "^1.3.5",
+    "@typescript/vfs": "^1.4.0",
     "countapi-js": "^1.0.2",
     "monaco-editor": "^0.34.0",
     "solid-js": "1.5.4",
     "tippy.js": "^6.3.7",
-    "typescript": "^4.8.2",
+    "typescript": "^4.8.3",
     "workbox-window": "^6.5.4"
   },
   "devDependencies": {
@@ -33,8 +33,8 @@
     "@astrojs/solid-js": "^1.1.0",
     "@astrojs/tailwind": "^1.0.0",
     "@babel/core": "^7.19.0",
-    "@iconify/json": "^2.1.103",
-    "astro": "1.1.6",
+    "@iconify/json": "^2.1.106",
+    "astro": "1.2.2",
     "astrojs-service-worker": "^0.0.8",
     "babel-preset-solid": "1.5.4",
     "clsx": "^1.2.1",
@@ -45,10 +45,10 @@
     "prettier": "^2.7.1",
     "prettier-plugin-astro": "^0.5.4",
     "rollup": "^2.79.0",
-    "sass": "^1.54.8",
+    "sass": "^1.54.9",
     "ultra-runner": "^3.10.5",
     "unplugin-icons": "^0.14.9",
     "vite": "^3.1.0",
-    "vitest": "^0.23.1"
+    "vitest": "^0.23.2"
   }
 }
