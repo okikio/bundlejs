@@ -29,11 +29,8 @@ github:
 tasks:
   - init: >
       npm install -g pnpm &&
-      pnpm setup && 
-      pnpm install -g gulp commitizen &&
       pnpm install
     command: >
       npm install -g pnpm &&
-      pnpm setup && 
-      pnpm install -g gulp commitizen &&
-      pnpm watch
+      pnpm install &&
+      pnpm dev
