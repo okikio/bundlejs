@@ -1322,7 +1322,7 @@ async function pn(e = {}) {
 }
 async function qn(e = [], t = {}) {
   const s = V({}, vt, t);
-  let { compression: n = {} } = s, { type: r = "gzip", quality: i = 9 } = typeof n == "string" ? { type: n } : n ?? {}, l = Qe(
+  let { compression: n = {} } = s, { type: r = "gzip", quality: i = 9 } = typeof n == "string" ? { type: n } : n ?? {},  l = (
     e.reduce((h, { contents: u }) => h + u.byteLength, 0)
   ), o = await (async () => {
     switch (r) {
@@ -1338,16 +1338,16 @@ async function qn(e = [], t = {}) {
     }
   })(), a = await Promise.all(
     e.map(({ contents: h }) => o(h))
-  ), c = Qe(
+  ), c = (
     a.reduce((h, { length: u }) => h + u, 0)
   );
   return {
     type: r,
     content: a,
-    totalByteLength: l,
+    totalInitialSize: l,
     totalCompressedSize: c,
-    initialSize: `${l}`,
-    size: `${c} (${r})`
+    initialSize: `${Qe(l)}`,
+    size: `${Qe(c)} (${r})`
   };
 }
 const Hn = (e, t = 300, s) => {

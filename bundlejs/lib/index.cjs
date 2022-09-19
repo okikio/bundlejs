@@ -1739,7 +1739,7 @@ async function Rr(e = [], t = {}) {
   let { compression: r = {} } = s,
     { type: n = "gzip", quality: i = 9 } =
       typeof r == "string" ? { type: r } : r ?? {},
-    l = Z(e.reduce((h, { contents: f }) => h + f.byteLength, 0)),
+    l = (e.reduce((h, { contents: f }) => h + f.byteLength, 0)),
     o = await (async () => {
       switch (n) {
         case "lz4":
@@ -1760,14 +1760,14 @@ async function Rr(e = [], t = {}) {
       }
     })(),
     a = await Promise.all(e.map(({ contents: h }) => o(h))),
-    c = Z(a.reduce((h, { length: f }) => h + f, 0));
+    c = (a.reduce((h, { length: f }) => h + f, 0));
   return {
     type: n,
     content: a,
-    totalByteLength: l,
+    totalInitialSize: l,
     totalCompressedSize: c,
-    initialSize: `${l}`,
-    size: `${c} (${n})`,
+    initialSize: `${Z(l)}`,
+    size: `${Z(c)} (${n})`,
   };
 }
 const vr = (e, t = 300, s) => {

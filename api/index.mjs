@@ -59,7 +59,8 @@ export default async function handler(request, response) {
         initialSize: size.initialSize,
         size: size.size
       },
-      time: timeFormatter.format((end - start) / 1000, "seconds")
+      time: timeFormatter.format((end - start) / 1000, "seconds"),
+      rawTime: (end - start) / 1000
     });
   } catch (e) {
     console.error(e)
