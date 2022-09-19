@@ -1106,7 +1106,7 @@ ${s.toString()}`);
               .map((u) => {
                 if (u.status == "fulfilled") return u.value;
               });
-            console.timeLog("esbuild.build", c());
+            // console.log("esbuild.plugins", c());
             return (
               (t.assets = i.concat(d)),
               {

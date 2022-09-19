@@ -53,7 +53,7 @@ export default async function handler(request, response) {
       size: {
         type: size.type,
 
-        totalByteLength: size.totalByteLength,
+        totalInitialSize: size.totalInitialSize,
         totalCompressedSize: size.totalCompressedSize,
 
         initialSize: size.initialSize,
