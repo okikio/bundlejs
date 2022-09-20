@@ -24,6 +24,7 @@
         "@astrojs/tailwind": "^2.0.1",
         "astro": "^1.2.7",
         "sass": "^1.54.9",
-        "tailwindcss": "^3.1.8"
+        "tailwindcss": "^3.1.8",
+        "@astrojs/sitemap": "^1.0.0"
     }
 }
