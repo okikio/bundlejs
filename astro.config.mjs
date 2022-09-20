@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     format: "file"
   },
-  site: "https://bundlejs.com",
+  site: "https://bundle.js.org",
   integrations: [
     tailwind({
       config: {

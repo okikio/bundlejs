@@ -150,19 +150,30 @@ import "../style/global.scss";
 
           For more info, go to <a
             class="anchor"
-            href="https://bundlejs.com/?ref=https://bundle.js.org"
+            href="https://bundlejs.com/?ref=https://bundle.js.org" rel="noopener"
             >https://bundlejs.com</a
           >
         </h2>
       </div>
 
-      <a class="btn" href="https://bundlejs.com/?ref=https://bundle.js.org"
+      <a class="btn" href="https://bundlejs.com/?ref=https://bundle.js.org" rel="noopener"
         >Visit <em>bundlejs.com</em>
       </a>
     </main>
 
     <script>
       import "../scripts/measure";
+      
+      try {
+        const btns = Array.from(document.querySelectorAll(".btn, .anchor")) as HTMLAnchorElement[];
+        btns.forEach(btn => {
+          const newURL = new URL(window.location.href.replace(window.location.origin, ""), "https://bundlejs.com");
+          newURL.searchParams.set("ref", "https://bundle.js.org");
+          btn.href = newURL.href;
+        });
+      } catch (e) {
+        console.log(e);
+      }
     </script>
   </body>
 </html>
