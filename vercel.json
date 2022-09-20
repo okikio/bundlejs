@@ -78,6 +78,19 @@
       ]
     },
     {
+      "source": "/(.*).woff2",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=1209600, must-revalidate"
+        },
+        {
+          "key": "Content-Type",
+          "value": "font/woff2"
+        }
+      ]
+    },
+    {
       "source": "/favicon/(.*)",
       "headers": [
         {
