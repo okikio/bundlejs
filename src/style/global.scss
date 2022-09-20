@@ -1,9 +1,21 @@
+// Generate CLS less font fallback https://deploy-preview-15--upbeat-shirley-608546.netlify.app/perfect-ish-font-fallback/?font=Manrope 
+@use "./fonts/manrope";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
+
+
+@font-face {
+  font-family: "Manrope-fallback";
+  size-adjust: 102.95%;
+  ascent-override: 105%;
+  src: local("Arial");
+}
     
 html, body {
+  @apply font-manrope;
   color-scheme: dark light;
   @apply dark:bg-black;
 }
