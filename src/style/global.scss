@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+    
+html, body {
+  color-scheme: dark light;
+  @apply dark:bg-black;
+}
+
+body {
+  @apply w-[100vw] h-[100vh];
+}
+
+main {
+  @apply w-full h-full;
+  @apply flex flex-col place-items-center place-content-center;
+  @apply gap-16;
+}
+
+h1 {
+  @apply justify-center;
+  @apply flex gap-2;
+  @apply lt-sm:text-3xl sm:text-4xl md:text-6xl;
+  @apply font-600;
+
+  img {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+h2 {
+  @apply p-2;
+  @apply leading-loose;
+  @apply text-base sm:text-lg;
+  @apply max-w-lg;
+}
+
+a.anchor {
+  @apply underline underline-offset-2;
+  @apply text-secondary dark:text-primary;
+  @apply hover:text-primary hover:dark:text-secondary;
+}
+
+a.btn {
+  @apply transition-all;
+  @apply px-4 py-2 rounded-full;
+  @apply bg-black dark:bg-white;
+  @apply text-white dark:text-black;
+
+  @apply ring-2 ring-offset-2;
+  @apply hover:ring-4 hover:ring-offset-2 hover:dark:ring-2 hover:dark:ring-offset-4 hover:dark:ring-offset-black;
+  @apply ring-black/0 hover:ring-black hover:dark:ring-white;
+
+  em {
+    @apply underline underline-offset-2;
+    @apply text-primary dark:text-secondary;
+  }
+}

@@ -1,86 +1,164 @@
 ---
-
+import "../style/global.scss";
 ---
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <meta name="description" content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online.">
-  
-  <title>bundlejs</title>
-  <meta name="title" property="og:title" content="bundlejs">
-  <meta name="twitter:title" itemprop="name" content="bundlejs">
-  <meta name="apple-mobile-web-app-title" content="bundlejs">
-  
-  <meta name="description" property="og:description" content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online.">
-  <meta property="twitter:description" itemprop="description" content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online.">
-  
-  <meta name="keywords" content="bundle js, bundle npm packages, bundle size checker, online bundler, treeshake bundles">
-  
-  <meta name="og:locale" content="en_Us">
-  <meta property="og:type" content="website">
-  
-  <meta name="web-author" content="Okiki Ojo">
-  <meta property="article:author" content="Okiki Ojo">
-  <meta name="contact" content="hey@okikio.dev">
-  
-  <meta name="twitter:card" content="summary">
-  <meta property="twitter:image:alt" content="An image of bundlejs's logo.">
-  
-  <meta name="twitter:site" content="@jsbundle">
-  <meta name="twitter:creator" content="@okikio_dev">
-  
-  <meta property="image" content="https://bundlejs.com/favicon/screenshot-poster.png">
-  <meta property="og:image" content="https://bundlejs.com/favicon/screenshot-poster.png">
-  <meta name="twitter:image" content="https://bundlejs.com/favicon/screenshot-poster.png">
-  
-  <meta name="twitter:url" property="og:site_name" content="https://bundlejs.com">
-  
-  <link rel="canonical" href="https://bundlejs.com/">
-  <meta itemprop="url" content="https://bundlejs.com/">
-  <meta name="shortlink" content="https://bundlejs.com/">
-  <meta property="og:url" content="https://bundlejs.com/">
-  
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-  <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#3b82f6">
-  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
-  <link rel="shortcut icon" href="/favicon/favicon.ico">
-  
-  <meta name="theme-color" content="#fdfefe" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  
-  <link rel="manifest" href="/manifest.json">
-  <meta name="robots" content="noindex, nofollow">
-  
-  <meta name="msvalidate.01" content="172CC0D862133254CEF11D5624943FB0">
-  <meta name="google-site-verification" content="S-6kBX5nZdh8ykHtFVIwp38pwSwX0AgYGWV0o-m3pBY">
-  <meta name="google-site-verification" content="-uCBVPddJYYe5bf7vg2nM14KhGtfzcHA432Eu6ebAeQ">
-  
-  <link href="https://twitter.com/jsbundle" rel="me">
-  <link rel="webmention" href="https://webmention.io/bundlejs.com/webmention">
-  <link rel="pingback" href="https://webmention.io/bundlejs.com/xmlrpc">
-  <link rel="pingback" href="https://webmention.io/webmention?forward=https://bundlejs.com/endpoint">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
 
-  <style>
-    html, body {
-      color-scheme: dark light;
-    }
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  </style>
+    <meta
+      name="description"
+      content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online."
+    />
 
-</head>
-<body>
+    <title>bundlejs</title>
+    <meta name="title" property="og:title" content="bundlejs" />
+    <meta name="twitter:title" itemprop="name" content="bundlejs" />
+    <meta name="apple-mobile-web-app-title" content="bundlejs" />
 
-  <img src="/badge-dark.svg" />
-  <h2>✨ New Domain ✨</h2>
-  <a href="https://bundlejs.com">Visit bundlejs.com</a>
-  
-</body>
+    <meta
+      name="description"
+      property="og:description"
+      content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online."
+    />
+    <meta
+      property="twitter:description"
+      itemprop="description"
+      content="Visit bundlejs.com - bundlejs is a quick and easy way to bundle, minify, and compress your ts, js, and npm packages all online."
+    />
+
+    <meta
+      name="keywords"
+      content="bundle js, bundle npm packages, bundle size checker, online bundler, treeshake bundles"
+    />
+
+    <meta name="og:locale" content="en_Us" />
+    <meta property="og:type" content="website" />
+
+    <meta name="web-author" content="Okiki Ojo" />
+    <meta property="article:author" content="Okiki Ojo" />
+    <meta name="contact" content="hey@okikio.dev" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta property="twitter:image:alt" content="An image of bundlejs's logo." />
+
+    <meta name="twitter:site" content="@jsbundle" />
+    <meta name="twitter:creator" content="@okikio_dev" />
+
+    <meta
+      property="image"
+      content="https://bundlejs.com/favicon/screenshot-poster.png"
+    />
+    <meta
+      property="og:image"
+      content="https://bundlejs.com/favicon/screenshot-poster.png"
+    />
+    <meta
+      name="twitter:image"
+      content="https://bundlejs.com/favicon/screenshot-poster.png"
+    />
+
+    <meta
+      name="twitter:url"
+      property="og:site_name"
+      content="https://bundlejs.com"
+    />
+
+    <link rel="canonical" href="https://bundlejs.com/" />
+    <meta itemprop="url" content="https://bundlejs.com/" />
+    <meta name="shortlink" content="https://bundlejs.com/" />
+    <meta property="og:url" content="https://bundlejs.com/" />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="mask-icon"
+      href="/favicon/safari-pinned-tab.svg"
+      color="#3b82f6"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+
+    <meta
+      name="theme-color"
+      content="#fdfefe"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#000000"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <meta name="msvalidate.01" content="172CC0D862133254CEF11D5624943FB0" />
+    <meta
+      name="google-site-verification"
+      content="S-6kBX5nZdh8ykHtFVIwp38pwSwX0AgYGWV0o-m3pBY"
+    />
+    <meta
+      name="google-site-verification"
+      content="-uCBVPddJYYe5bf7vg2nM14KhGtfzcHA432Eu6ebAeQ"
+    />
+
+    <link href="https://twitter.com/jsbundle" rel="me" />
+    <link
+      rel="webmention"
+      href="https://webmention.io/bundlejs.com/webmention"
+    />
+    <link rel="pingback" href="https://webmention.io/bundlejs.com/xmlrpc" />
+    <link
+      rel="pingback"
+      href="https://webmention.io/webmention?forward=https://bundlejs.com/endpoint"
+    />
+  </head>
+  <body>
+    <main>
+      <div class="text-center flex flex-col gap-4">
+        <h1>
+          <div class="img flex items-center justify-center">
+            <img src="/favicon.svg" width="24" height="24" />
+          </div>
+          bundlejs
+        </h1>
+        <h2>
+          A quick and easy way to bundle, minify, and compress your ts, js, and
+          npm packages all online.
+          <br /><br />
+
+          For more info, go to <a
+            class="anchor"
+            href="https://bundlejs.com/?ref=https://bundle.js.org"
+            >https://bundlejs.com</a
+          >
+        </h2>
+      </div>
+
+      <a class="btn" href="https://bundlejs.com/?ref=https://bundle.js.org"
+        >Visit <em>bundlejs.com</em>
+      </a>
+    </main>
+  </body>
 </html>
