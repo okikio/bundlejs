@@ -1,11 +1,10 @@
 import { ComponentProps, onCleanup, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 
-import SearchInput from "./SearchInput";
+import SearchInput, { setQuery, getQuery } from "./SearchInput";
 import SearchResults from "./SearchResults";
 
 export function SearchContainer(props?: ComponentProps<'div'>) {
-  const [getQuery, setQuery] = createSignal("");
   const [open, setOpen] = createSignal(false);
 
   let ref: HTMLDivElement & { open?: boolean } = null;
@@ -27,7 +26,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     if (ref.contains(target)) {
       if (!ref?.open) {
         ref.open = true;
-      setOpen(ref.open);
+        setOpen(ref.open);
         ref.style.pointerEvents = "auto";
       }
     }
@@ -54,13 +53,14 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     <div class="relative">
       <div class="search-backdrop" data-open={open()}></div>
       <div class="search-offset"></div>
-      <dialog class="search-container" ref={ref} {...props}>
+      {/*  {...props} */}
+      <dialog class="search-container" ref={ref} onKeyUp={props.onKeyUp}>
         <div class="search-input">
-          <SearchInput query={setQuery} />
+          <SearchInput />
         </div>
 
         <div class="search-results">
-          <SearchResults query={getQuery} />
+          <SearchResults />
         </div>
       </dialog>
     </div>

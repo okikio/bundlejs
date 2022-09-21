@@ -2,20 +2,20 @@ import type { ComponentProps, Accessor } from "solid-js";
 import type { SearchResultProps } from "./Result";
 
 import { For, createResource, onMount, createEffect, on, onCleanup } from "solid-js";
+
+import { setQuery, getQuery } from "./SearchInput";
 import { SearchResult, ErrorResult } from "./Result";
 
-import { getPackages } from "@bundlejs/core/src/util";
 import { rovingIndex } from '../../../hooks/roving-index';
+import { getPackages } from "@bundlejs/core/src/util";
 
-export function SearchResults(props?: ComponentProps<'dialog'> & {
-  query?: Accessor<string>;
-}) {
+export function SearchResults(props?: ComponentProps<'dialog'>) {
   let searchContainerEl: HTMLDivElement = null;
 
   let ref: HTMLDivElement = null;
   let heightRef: HTMLDivElement = null;
 
-  const [data] = createResource(props?.query, async (source) => {
+  const [data] = createResource(getQuery, async (source) => {
     if (ref) {
       let anim = heightRef.animate({
         opacity: "0"
