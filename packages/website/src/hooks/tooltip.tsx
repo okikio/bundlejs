@@ -37,23 +37,23 @@ export const defaultTippyOpts: Partial<Props> = {
 export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: keyof JSX.IntrinsicElements, content?: Props["content"], allowHTML?: Props["allowHTML"], tooltip?: Partial<Props> }) {
   let instances: Instance<Props>[] = [];
 
-  let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as"]);
+  let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as", "ref"]);
   let mergedProps = mergeProps({
     as: "span",
     mobile: "(max-width: 640px)"
   }, newProps);
-  // 
 
   const title = mergedProps?.allowHTML ? "Tooltip" : newProps?.content?.toString();
-  // let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
+  let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
 
   function mediaQueryRun(e?: MediaQueryListEvent) {
-    // if (e?.matches)
+    if (e?.matches)
       instances?.forEach(instance => instance?.enable?.());
-    // else
-      // instances?.forEach(instance => instance?.disable?.());
+    else
+      instances?.forEach(instance => instance?.disable?.());
   }
 
+  let ref: HTMLElement;
   let tippyProps = mergeProps({
     content: mergedProps?.content,
     allowHTML: mergedProps.allowHTML,
@@ -62,15 +62,14 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-    const children = Array.isArray(attrs.children) ? attrs.children : [attrs.children];
-    console.log({ children })
+    const children = Array.from(ref.children ?? []);
     instances = tippy(children as HTMLElement[], tippyProps);
     instances?.forEach(instance => instance?.enable?.());
 
-    // if (props.mobile) {
-      // mediaQueryRun(media as unknown as MediaQueryListEvent);
-      // media?.addEventListener?.("change", mediaQueryRun);
-    // }
+    if (props.mobile) {
+      mediaQueryRun(media as unknown as MediaQueryListEvent);
+      media?.addEventListener?.("change", mediaQueryRun);
+    }
   });
 
   createEffect(() => {
@@ -81,12 +80,14 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
       ...defaultTippyOpts
     } as Partial<Props>, mergedProps.tooltip ?? {});
 
-    instances?.forEach(instance => instance?.setProps?.(tippyProps));
+    instances?.forEach(instance => {
+      instance?.setProps?.(tippyProps);
+    });
   })
 
   onCleanup(() => {
-    // if (props.mobile)
-      // media?.removeEventListener?.("change", mediaQueryRun);
+    if (props.mobile)
+      media?.removeEventListener?.("change", mediaQueryRun);
     instances?.forEach(instance => instance?.destroy?.());
   });
 
@@ -94,6 +95,10 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
     <dynamic-el 
       custom-tooltip 
       {...attrs} 
+      ref={(el: HTMLElement) => {
+        ref = el;
+        typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
+      }}
     />
   );
 }
@@ -116,7 +121,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-    let els = Array.from(attrs.children ?? []);
+    let els = Array.from(ref.children ?? []);
     let tippyTargets = els.map(el => {
       return tippy(el as HTMLElement);
     });
