@@ -4,10 +4,10 @@ import { createSignal } from "solid-js";
 import SearchInput, { setQuery, getQuery } from "./SearchInput";
 import SearchResults from "./SearchResults";
 
-export function SearchContainer(props?: ComponentProps<'div'>) {
+export function SearchContainer(props?: ComponentProps<'dialog'>) {
   const [open, setOpen] = createSignal(false);
 
-  let ref: HTMLDivElement & { open?: boolean } = null;
+  let ref: HTMLDialogElement = null;
   function onClick(e?: MouseEvent) {
     let target = e.target as HTMLElement;
 
@@ -53,8 +53,7 @@ export function SearchContainer(props?: ComponentProps<'div'>) {
     <div class="relative">
       <div class="search-backdrop" data-open={open()}></div>
       <div class="search-offset"></div>
-      {/*  {...props} */}
-      <dialog class="search-container" ref={ref} onKeyUp={props.onKeyUp}>
+      <dialog class="search-container" ref={ref} {...props}>
         <div class="search-input">
           <SearchInput />
         </div>

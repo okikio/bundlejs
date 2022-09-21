@@ -312,6 +312,7 @@ details {
   @apply border-b border-b-gray-300 dark:border-b-quaternary rounded-none;
 }
 
-dynamic-el {
+dynamic-el {    
+  all: inherit;
   display: contents;
 }

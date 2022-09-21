@@ -109,12 +109,12 @@ export function EditorButtons() {
 
   return (
     <div class="editor-btn-container">
-      <SingletonToolTip target="[custom-button]">
-        <div
-          ref={shellRef}
-          class="editor-btn-shell"
-          switch-mode={state.editorBtnsOpen}
-        >
+      <div
+        ref={shellRef}
+        class="editor-btn-shell"
+        switch-mode={state.editorBtnsOpen}
+      >
+        <SingletonToolTip target="[custom-button]">
           <div class="hide-btn-container">
             <Button
               aria-label={"Show/Hide Editor Buttons"}
@@ -248,8 +248,8 @@ export function EditorButtons() {
               <IconCodeWrap />
             </Button>
           </div>
-        </div>
-      </SingletonToolTip>
+        </SingletonToolTip>
+      </div>
     </div>
   );
 }
