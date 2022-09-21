@@ -1,26 +1,28 @@
+
+import type { ComponentProps, Setter } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
+
+import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 import Button from "../../Button";
+
 import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 
-import { ComponentProps, onCleanup, onMount, Setter } from "solid-js";
 import { debounce } from "@bundlejs/core/src/util";
 
-import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
-
-export function SearchInput(props: ComponentProps<'div'> & {
-  query?: Setter<string>;
-}) { 
+export const [getQuery, setQuery] = createSignal("");
+export function SearchInput() { 
   let ref: HTMLInputElement;
 
   function onClear() { 
     ref.value = "";
-    props?.query?.("");
+    setQuery("");
   }
 
   const onKeyUp = debounce((e?: KeyboardEvent) => {
     e?.stopPropagation?.();
     let { value } = ref;
-    props?.query?.(value);
+    setQuery(value);
   }, 250);
 
   return (

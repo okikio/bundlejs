@@ -40,17 +40,18 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as"]);
   let mergedProps = mergeProps({
     as: "span",
+    mobile: "(max-width: 640px)"
   }, newProps);
-  // mobile: "(max-width: 640px)"
+  // 
 
   const title = mergedProps?.allowHTML ? "Tooltip" : newProps?.content?.toString();
-  let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
+  // let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
 
   function mediaQueryRun(e?: MediaQueryListEvent) {
-    if (e?.matches)
+    // if (e?.matches)
       instances?.forEach(instance => instance?.enable?.());
-    else
-      instances?.forEach(instance => instance?.disable?.());
+    // else
+      // instances?.forEach(instance => instance?.disable?.());
   }
 
   let tippyProps = mergeProps({
@@ -62,13 +63,14 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
 
   onMount(() => {
     const children = Array.isArray(attrs.children) ? attrs.children : [attrs.children];
+    console.log({ children })
     instances = tippy(children as HTMLElement[], tippyProps);
     instances?.forEach(instance => instance?.enable?.());
 
-    if (props.mobile) {
-      mediaQueryRun(media as unknown as MediaQueryListEvent);
-      media?.addEventListener?.("change", mediaQueryRun);
-    }
+    // if (props.mobile) {
+      // mediaQueryRun(media as unknown as MediaQueryListEvent);
+      // media?.addEventListener?.("change", mediaQueryRun);
+    // }
   });
 
   createEffect(() => {
@@ -83,8 +85,8 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   })
 
   onCleanup(() => {
-    if (props.mobile)
-      media?.removeEventListener?.("change", mediaQueryRun);
+    // if (props.mobile)
+      // media?.removeEventListener?.("change", mediaQueryRun);
     instances?.forEach(instance => instance?.destroy?.());
   });
 
