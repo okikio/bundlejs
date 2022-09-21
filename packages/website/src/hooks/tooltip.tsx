@@ -109,7 +109,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
 
   let [newProps, attrs] = splitProps(props, ["tooltip", "target", "as", "ref"]);
   let mergedProps = mergeProps({
-    target: "[custom-button]",
+    // target: "[custom-button]",
     as: "span"
   }, newProps);
 
@@ -121,11 +121,12 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-    let els = Array.from(ref.children ?? []);
+    let els = Array.from((mergedProps.target ? ref.querySelectorAll(mergedProps.target) : ref.children) ?? []);
     let tippyTargets = els.map(el => {
       return tippy(el as HTMLElement);
     });
 
+    console.log(tippyTargets)
     instance = createSingleton(tippyTargets, tippyProps);
   });
 
