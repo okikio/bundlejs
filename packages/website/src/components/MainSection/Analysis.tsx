@@ -3,7 +3,7 @@ import Details from "../Details";
 import Loading from "../Loading";
 import DragHandle from "./EditorSection/DragHandle";
 
-export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Element }) {
+export function Analysis(props?: ComponentProps<'details'>) {
   return (
     <div class="analysis-section">
       <Details
@@ -11,7 +11,7 @@ export function Analysis(props?: ComponentProps<'details'> & { docs?: JSX.Elemen
         summary="Analysis"
         contentClass="pr-5"
       >
-        {props.docs}
+        {props.children}
         <div class="relative w-full">
           <div class="relative w-full min-h-[150px]">
             <div class="analysis-loader">

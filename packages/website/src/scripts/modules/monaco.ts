@@ -55,6 +55,13 @@ export const inputModelResetValue = [
 export const configModelResetValue = JSON.stringify(EasyDefaultConfig, null, "\t"); // Indented with tab
 
 export { languages, Editor, Uri };
+
+export const createModel = (initialValue: string, lanuguage: string, uri: Uri) => {
+  const model = Editor.getModel(uri);
+  if (!model) return Editor.createModel(initialValue, lanuguage, uri)
+  return model;
+}
+
 export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
   const html = document.querySelector("html");
   const oldShareURL = new URL(globalThis.location.toString());
@@ -77,9 +84,9 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   // read is in https://github.com/microsoft/monaco-editor/issues/563
   const isAndroid = navigator && /android/i.test(navigator.userAgent);
 
-  const inputModel = Editor.createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
-  const outputModel = Editor.createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
-  const configModel = Editor.createModel(initialConfig, 'json', Uri.parse('file://config.json'));
+  const inputModel = createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
+  const outputModel = createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
+  const configModel = createModel(initialConfig, 'json', Uri.parse('file://config.json'));
 
   inputModel.updateOptions({ tabSize: 2 });
   outputModel.updateOptions({ tabSize: 2 });

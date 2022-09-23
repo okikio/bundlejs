@@ -87,10 +87,6 @@ export default defineConfig({
     })
   ],
   vite: {
-    server: {
-      port: 3000,
-      hmr: { port: 3001 }
-    },
     worker: { format: "es" },
     ssr: { external: ["svgo"] },
     plugins: [

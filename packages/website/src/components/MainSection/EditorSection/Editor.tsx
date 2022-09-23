@@ -22,7 +22,7 @@ export function Editor(props?: ComponentProps<'div'>) {
   });
 
   createEffect(async () => {
-    if (!monaco()) return;
+    if (monaco.loading) return;
     const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = monaco();
     const [editor, input, output, config] = build(ref);
 
