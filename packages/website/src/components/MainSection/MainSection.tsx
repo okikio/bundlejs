@@ -14,11 +14,11 @@ export const KEYCODE = {
   ESC: "Escape"
 }
 
-export function MainSection(props?: ComponentProps<'div'> & { analysisDocs?: JSX.Element}) {
+export function MainSection(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let editorRef: HTMLDivElement = null;
 
-  let searchEl: HTMLDialogElement & { open?: boolean } = null;
+  let searchEl: HTMLDialogElement = null;
   let tabBarEl: HTMLDivElement = null;
 
   function onKeyUp(e?: KeyboardEvent) {
@@ -49,9 +49,9 @@ export function MainSection(props?: ComponentProps<'div'> & { analysisDocs?: JSX
       <EditorSection ref={editorRef} /> 
   
       <Container class="lt-md:px-none pb-4">
-        <Analysis docs={props.analysisDocs} />
+        <Analysis>{props.children}</Analysis>
       </Container>
-    </Container> 
+    </Container>
   );
 }
 

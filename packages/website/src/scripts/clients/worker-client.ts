@@ -102,9 +102,7 @@ export class WorkerClient<T = {}> extends Disposable {
 	constructor(worker: Worker, private readonly _foreignModuleId: string = "other-ts.ts") {
 		super();
 		this._worker = null;
-		this._workerFactory = new DefaultWorkerFactory(
-			worker
-		);
+		this._workerFactory = new DefaultWorkerFactory(worker);
 		this._getOrCreateWorker();
 	}
 
@@ -112,11 +110,13 @@ export class WorkerClient<T = {}> extends Disposable {
 		if (!this._worker) {
 			try {
 				// @ts-ignore
-				this._worker = this._register(new SimpleWorkerClient(
-					this._workerFactory,
-					"other-ts-client.ts",
-					this
-				));
+				this._worker = this._register(
+					new SimpleWorkerClient(
+						this._workerFactory,
+						"worker-client.ts",
+						this
+					)
+				);
 			} catch (err) {
 				logOnceWebWorkerWarning(err);
 				throw err;
@@ -173,7 +173,7 @@ export class WorkerClient<T = {}> extends Disposable {
 	protected async _getProxy(): Promise<T> {
 		// @ts-ignore
 		try {
-			await this._getOrCreateWorker().getProxyObject();
+			return await this._getOrCreateWorker().getProxyObject();
 		} catch (err) {
 			logOnceWebWorkerWarning(err);
 			return await this._getOrCreateWorker().getProxyObject();

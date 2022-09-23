@@ -126,7 +126,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
       return tippy(el as HTMLElement);
     });
 
-    console.log(tippyTargets)
+    // console.log({ tippyTargets, tippyProps })
     instance = createSingleton(tippyTargets, tippyProps);
   });
 

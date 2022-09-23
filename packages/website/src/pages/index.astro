@@ -8,6 +8,9 @@ import IntroHeader from "../components/IntroHeader.astro";
 
 import { default as Docs } from "../components/DocsSection/Docs.mdx";
 import { default as Content } from "../snippets/analysis.md";
+import SearchContainer from '../components/MainSection/SearchSection/SearchContainer';
+import EditorSection from '../components/MainSection/EditorSection/EditorSection';
+import Analysis from '../components/MainSection/Analysis';
 ---
 
 <BaseLayout>
@@ -20,9 +23,7 @@ import { default as Content } from "../snippets/analysis.md";
   </Container>
 
   <MainSection client:load>
-    <Fragment slot="analysisDocs">
-      <Content />
-    </Fragment>
+    <Content />
   </MainSection>
 
   <Container>
