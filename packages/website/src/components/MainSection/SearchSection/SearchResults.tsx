@@ -14,6 +14,7 @@ export function SearchResults(props?: ComponentProps<'dialog'>) {
 
   let ref: HTMLDivElement = null;
   let heightRef: HTMLDivElement = null;
+  let contentRef: HTMLDivElement = null;
 
   const [data] = createResource(getQuery, async (source) => {
     if (ref) {
@@ -43,21 +44,26 @@ export function SearchResults(props?: ComponentProps<'dialog'>) {
   });
 
   onMount(() => {
-    let last = heightRef?.getBoundingClientRect();
-    heightRef.animate({
-      opacity: "1"
-    }, {
-      duration: 300,
-      easing: 'ease-in-out',
-      fill: 'both'
-    });
-
+    let last = contentRef?.getBoundingClientRect();
     ref.animate({
       height: `${last?.height}px`
     }, {
       duration: 350,
       easing: 'ease',
       fill: 'both'
+    });
+
+    let overflow = heightRef.style.overflow;
+    heightRef.style.overflow = "hidden";
+    heightRef.animate({
+      opacity: "1",
+      height: `${last?.height}px`
+    }, {
+      duration: 300,
+      easing: 'ease-in-out',
+      fill: 'both'
+    }).finished.then(() => {
+      heightRef.style.overflow = overflow;
     });
 
     searchContainerEl = document.querySelector(".search-container");
@@ -78,15 +84,7 @@ export function SearchResults(props?: ComponentProps<'dialog'>) {
           });
         }
 
-        let last = heightRef?.getBoundingClientRect();
-        heightRef.animate({
-          opacity: "1"
-        }, {
-          duration: 300,
-          easing: 'ease-in-out',
-          fill: 'both'
-        });
-
+        let last = contentRef?.getBoundingClientRect();
         ref.animate({
           height: `${last?.height}px`
         }, {
@@ -94,25 +92,40 @@ export function SearchResults(props?: ComponentProps<'dialog'>) {
           easing: 'ease',
           fill: 'both'
         });
+
+        let overflow = heightRef.style.overflow;
+        heightRef.style.overflow = "hidden";
+        heightRef.animate({
+          opacity: "1",
+          height: `${last?.height}px`
+        }, {
+          duration: 300,
+          easing: 'ease-in-out',
+          fill: 'both'
+        }).finished.then(() => {
+          heightRef.style.overflow = overflow;
+        });
       }
     })
   );
 
   return (
     <div class="results-list relative" ref={ref}>
-      <div class="divide-y divide-gray-200 dark:divide-quaternary" ref={heightRef}>
-        <For
-          each={data() as SearchResultProps[]}
-          fallback={
-            <ErrorResult />
-          }>
-          {(item) => {
-            // @ts-ignore
-            if (item?.type == "error")
-              return <ErrorResult {...item} />
-            return <SearchResult {...item} />;
-          }}
-        </For>
+      <div ref={heightRef}>
+        <div class="divide-y divide-gray-200 dark:divide-quaternary" ref={contentRef}>
+          <For
+            each={data() as SearchResultProps[]}
+            fallback={
+              <ErrorResult />
+            }>
+            {(item) => {
+              // @ts-ignore
+              if (item?.type == "error")
+                return <ErrorResult {...item} />
+              return <SearchResult {...item} />;
+            }}
+          </For>
+        </div>
       </div>
     </div>
   );

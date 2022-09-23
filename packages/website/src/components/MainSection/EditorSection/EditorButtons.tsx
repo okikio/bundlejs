@@ -89,6 +89,7 @@ export function EditorButtons() {
 
     // Remove link from body
     document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
   }
 
   let media = ("document" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
@@ -226,7 +227,7 @@ export function EditorButtons() {
                   });
 
                   downloadBlob(blob, model?.uri?.authority ?? "download.ts");
-                  toast(`Download ${getModelType()}`);
+                  toast(`Download ${model?.uri?.authority ?? "download.ts"}`);
                 }
               }}>
               <IconDownload />
