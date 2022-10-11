@@ -16,10 +16,8 @@ import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 import { mediaTheme, themeGet } from "../theme";
 
 import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
-import JSON_SHARED_WORKER from "../workers/json.ts?sharedworker";
 
 import TS_WORKER from "../workers/typescript.ts?worker";
-import JSON_WORKER from "../workers/json.ts?worker";
 import EDITOR_WORKER from "../workers/editor.ts?worker";
 
 import CONFIG_DTS from "@bundlejs/core/src/index?dts";
@@ -35,9 +33,6 @@ import { toLocaleDateString } from "../utils/locale-date-string";
     if (label === "typescript" || label === "javascript") {
       // USE_SHAREDWORKER && PRODUCTION_MODE ? new TS_SHARED_WORKER() : new TS_WORKER()
       return new TS_WORKER();
-    } else if (label === "json") {
-      // USE_SHAREDWORKER && PRODUCTION_MODE ? new JSON_SHARED_WORKER() : new JSON_WORKER()
-      return new JSON_WORKER();
     }
 
     return (() => {
