@@ -42,7 +42,6 @@
     "esno": "^0.16.3",
     "pnpm": "^7.13.4",
     "postcss": "^8.4.17",
-    "preact": "^10.11.1",
     "prettier": "^2.7.1",
     "prettier-plugin-astro": "^0.5.5",
     "rollup": "^2.79.1",
