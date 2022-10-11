@@ -193,12 +193,6 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
     `file://node_modules/@types/http/https.d.ts`
   );
-
-  // createModel(
-  //   `declare module '@bundlejs/core' {\n\t${CONFIG_DTS}\n}`,
-  //   'typescript',
-  //   Uri.parse(`file://node_modules/@types/config/config.d.ts`)
-  // );
   languages.typescript.typescriptDefaults.addExtraLib(
     `declare module '@bundlejs/core' {\n\t${CONFIG_DTS}\n}`,
     `file://node_modules/@types/config/config.d.ts`
