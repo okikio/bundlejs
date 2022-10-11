@@ -22,7 +22,8 @@ import TS_WORKER from "../workers/typescript.ts?worker";
 import JSON_WORKER from "../workers/json.ts?worker";
 import EDITOR_WORKER from "../workers/editor.ts?worker";
 
-import { PRODUCTION_MODE, USE_SHAREDWORKER } from "../../env";
+import CONFIG_DTS from "@bundlejs/core/src/index?dts";
+
 import { EasyDefaultConfig } from "../configs/options";
 import { toLocaleDateString } from "../utils/locale-date-string";
 
@@ -52,7 +53,12 @@ export const inputModelResetValue = [
   '// Click Build for the bundled, minified and compressed package size',
   'export * from "@okikio/animate";'
 ].join("\n");
-export const configModelResetValue = JSON.stringify(EasyDefaultConfig, null, "\t"); // Indented with tab
+//JSON.stringify(EasyDefaultConfig, null, "\t") 
+export const configModelResetValue = [
+  '// Configure Bundle',
+  `import type { ConfigOptions } from "@bundlejs/core"`,
+  `export default (async function() {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")} as ConfigOptions;\n})()`
+].join("\n"); // Indented with tab
 
 export { languages, Editor, Uri };
 
@@ -86,7 +92,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
 
   const inputModel = createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
   const outputModel = createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
-  const configModel = createModel(initialConfig, 'json', Uri.parse('file://config.json'));
+  const configModel = createModel(initialConfig, 'typescript', Uri.parse('file://config.ts'));
 
   inputModel.updateOptions({ tabSize: 2 });
   outputModel.updateOptions({ tabSize: 2 });
@@ -147,7 +153,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
     // noSemanticValidation: false,
 
-    noSemanticValidation: true,
+    noSemanticValidation: false,
     noSyntaxValidation: false,
     noSuggestionDiagnostics: false,
 
@@ -188,6 +194,16 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     `file://node_modules/@types/http/https.d.ts`
   );
 
+  // createModel(
+  //   `declare module '@bundlejs/core' {\n\t${CONFIG_DTS}\n}`,
+  //   'typescript',
+  //   Uri.parse(`file://node_modules/@types/config/config.d.ts`)
+  // );
+  languages.typescript.typescriptDefaults.addExtraLib(
+    `declare module '@bundlejs/core' {\n\t${CONFIG_DTS}\n}`,
+    `file://node_modules/@types/config/config.d.ts`
+  );
+
   const IMPORTS_REXPORTS_REQUIRE_REGEX =
     /(?:(?:import|export|require)(?:.)*?(?:from\s+|\((?:\s+)?)["']([^"']+)["'])\)?/g;
 
@@ -198,6 +214,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
 
       let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
       if (matches.length <= 0) return;
+      if (model == configModel && content.match("@bundlejs/core")) return;
 
       let matchArr = matches.map(([, pkg]) => pkg);
       let pkg = matchArr[0];
@@ -212,41 +229,27 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
         const info = await getResolvedPackage(pkg);
         if (!info) return;
 
-        // result?.results   ->   api.npms.io
-        // result?.objects   ->   registry.npmjs.com
-        const { name, description, version, date, publisher, repository } = info ?? {};
-        const author = info?.maintainers?.[0]?.name ?? publisher?.username;
+        const { name, description, version, date, publisher, links } = info ?? {};
+        const author = publisher?.username ?? info?.maintainers?.[0]?.name;
         const _date = date ? "on " + toLocaleDateString(date) : "";
-        const _author = author ? ` by [@${author}](https://www.npmjs.com/~${author})` : "";
-        const _repo_link = repository ? `[GitHub](${repository?.url.replace("git+", "")})  |  ` : "";
+        const _author = author ? `[@${author}](https://www.npmjs.com/~${author})` : "";
+        const _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
+        const _npm_link = links?.npm ?? `https://www.npmjs.com/package/${name}`;
+        const _version = version ? `v${version}` : '';
 
         return {
           contents: [].concat({
             value: [
-              `### [${name}](https://www.npmjs.com/package/${name}/v/${version}) v${version}`,
+              `### [${name}](${_npm_link}) ${_version}`,
               `${description}`,
-              ``,
-              `${date || author ? "Published " : ""}${_date}${_author}`,
-              ``,
-              `${_repo_link}[Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}@${version}/)  | [Openbase](https://openbase.com/js/${name})`
-            ].join("\n"),
+              `Published by ${_author} ${_date}`,
+              `${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}@${version}/)  | [Openbase](https://openbase.com/js/${name})`
+            ].map(x => x.trim()).join("\n"),
           }),
         };
       })();
     },
   });
-
-  // Configure the JSON language support with schemas and schema associations
-  // languages.json.jsonDefaults.setDiagnosticsOptions({
-  //   validate: true,
-  //   schemas: [
-  //     {
-  //       uri: "@bundlejs/core/schema.ts", // id of the first schema
-  //       fileMatch: [configModel.uri.toString()], // associate with our model
-  //       schema
-  //     }
-  //   ]
-  // });
 
   return [editor, inputModel, outputModel, configModel];
 };

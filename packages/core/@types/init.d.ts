@@ -1,5 +1,4 @@
 import type * as ESBUILD from "esbuild-wasm";
-export type { ESBUILD };
 import { Platform } from "./configs/platform";
 /**
  * Determines which esbuild skew to use depending on the platform option supplied,
@@ -19,4 +18,4 @@ export declare function getEsbuild(platform?: Platform): Promise<typeof ESBUILD>
 export declare type InitOptions = ESBUILD.InitializeOptions & {
     platform?: Platform;
 };
-export declare function init(platform?: Platform, opts?: ESBUILD.InitializeOptions): Promise<typeof ESBUILD>;
+export declare function init(platform?: Platform, opts?: ESBUILD.InitializeOptions): Promise<typeof import("esbuild-wasm/esm/browser")>;
