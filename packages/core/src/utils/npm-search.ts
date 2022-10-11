@@ -60,6 +60,24 @@ export const getPackage = async (input: string) => {
 }
 
 /**
+ * Searches the npm registry for a package with the same name
+ * 
+ * @param input package name to search for; it supports adding package versions "@okikio/animate@1.0", but will ignore them
+ * @returns resulting package info.
+ */
+export const getPackageOfVersion = async (input: string) => {
+  let { packageVersionURL } = getRegistryURL(input);
+
+  try {
+    let response = await getRequest(packageVersionURL, false);
+    return await response.json();
+  } catch (e) {
+    console.warn(e);
+    throw e;
+  }
+}
+
+/**
  * Searches the npm registry for a package an lists out all it versions with an object of available { versions, tags }.
  * 
  * @param input package name to search for; it supports adding package versions "@okikio/animate@1.0", but will ignore them
@@ -111,9 +129,10 @@ export const resolveVersion = async (input: string) => {
  */
 export const getResolvedPackage = async (input: string) => {
   try {
-    let { name } = getRegistryURL(input);
-    let version = await resolveVersion(input); 
-    return await getPackage(`${name}@${version}`);
+    const { name } = getRegistryURL(input);
+    const version = await resolveVersion(input);
+
+    return await getPackageOfVersion(`${name}@${version}`);
   } catch (e) {
     console.warn(e);
     throw e;

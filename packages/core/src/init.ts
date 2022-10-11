@@ -1,7 +1,5 @@
 import type * as ESBUILD from "esbuild-wasm";
 
-export type { ESBUILD };
-
 import { version } from "esbuild-wasm/package.json";
 import { Platform, PLATFORM_AUTO } from "./configs/platform";
 
