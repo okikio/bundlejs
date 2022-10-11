@@ -30,6 +30,13 @@ export declare const getPackages: (input: string) => Promise<{
  */
 export declare const getPackage: (input: string) => Promise<any>;
 /**
+ * Searches the npm registry for a package with the same name
+ *
+ * @param input package name to search for; it supports adding package versions "@okikio/animate@1.0", but will ignore them
+ * @returns resulting package info.
+ */
+export declare const getPackageOfVersion: (input: string) => Promise<any>;
+/**
  * Searches the npm registry for a package an lists out all it versions with an object of available { versions, tags }.
  *
  * @param input package name to search for; it supports adding package versions "@okikio/animate@1.0", but will ignore them
