@@ -19,9 +19,9 @@ function isPromiseLike<T>(obj: any): obj is PromiseLike<T> {
 class WebWorker implements IWorker {
 
 	private id: number;
-	private worker: Promise<Worker> | null;
+	private worker: Promise<Worker | SharedWorker> | null;
 
-	constructor(moduleId: string, id: number, worker: Worker | Promise<Worker>, onMessageCallback: IWorkerCallback, onErrorCallback: (err: any) => void) {
+	constructor(moduleId: string, id: number, worker: Worker | SharedWorker | Promise<Worker | SharedWorker>, onMessageCallback: IWorkerCallback, onErrorCallback: (err: any) => void) {
 		this.id = id;
 		const workerOrPromise = worker;
 		if (isPromiseLike(workerOrPromise)) {
@@ -31,12 +31,13 @@ class WebWorker implements IWorker {
 		}
 		this.postMessage(moduleId, []);
 		this.worker.then((w) => {
-			w.onmessage = function (ev) {
+			const messageChannel = w instanceof SharedWorker ? w.port : w;
+			messageChannel.onmessage = function (ev) {
 				onMessageCallback(ev.data);
 			};
-			w.onmessageerror = onErrorCallback;
-			if (typeof w.addEventListener === 'function') {
-				w.addEventListener('error', onErrorCallback);
+			messageChannel.onmessageerror = onErrorCallback;
+			if (typeof messageChannel.addEventListener === 'function') {
+				messageChannel.addEventListener('error', onErrorCallback);
 			}
 		});
 	}
@@ -47,13 +48,19 @@ class WebWorker implements IWorker {
 
 	public postMessage(message: any, transfer: Transferable[]): void {
 		if (this.worker) {
-			this.worker.then(w => w.postMessage(message, transfer));
+			this.worker.then(w => (w instanceof SharedWorker ? w.port : w).postMessage(message, transfer));
 		}
 	}
 
 	public dispose(): void {
 		if (this.worker) {
-			this.worker.then(w => w.terminate());
+			this.worker.then(w => { 
+				if (w instanceof SharedWorker) {
+					w.port.close();
+				} else {
+					w.terminate();
+				}
+			});
 		}
 		this.worker = null;
 	}
@@ -62,10 +69,10 @@ class WebWorker implements IWorker {
 export class DefaultWorkerFactory implements IWorkerFactory {
 	private static LAST_WORKER_ID = 0;
 
-	private _worker: Worker | undefined;
+	private _worker: Worker | SharedWorker | undefined;
 	private _webWorkerFailedBeforeError: any;
 
-	constructor(worker: Worker | undefined) {
+	constructor(worker: Worker | SharedWorker | undefined) {
 		this._worker = worker;
 		this._webWorkerFailedBeforeError = false;
 	}
@@ -99,7 +106,7 @@ export class WorkerClient<T = {}> extends Disposable {
 	private _foreignModuleCreateData: any | null = {};
 	private _foreignProxy: Promise<T> | null = null;
 
-	constructor(worker: Worker, private readonly _foreignModuleId: string = "other-ts.ts") {
+	constructor(worker: Worker | SharedWorker, private readonly _foreignModuleId: string = "other-ts.ts") {
 		super();
 		this._worker = null;
 		this._workerFactory = new DefaultWorkerFactory(worker);
