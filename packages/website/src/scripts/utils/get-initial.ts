@@ -33,5 +33,8 @@ export function getShareURLValues() {
     }
   }
 
-  return {};
+  return {
+    inputValue: parseShareURLQuery(shareURL),
+    configValue: configModelResetValue
+  };
 }
