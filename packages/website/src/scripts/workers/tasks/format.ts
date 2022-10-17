@@ -3,7 +3,7 @@ import { createStreaming, Formatter } from "@dprint/formatter";
 import { getRequest } from "@bundlejs/core/src/index";
 
 let formatter: Formatter;
-let config: Record<string, unknown> | undefined = {
+const config: Record<string, unknown> | undefined = {
   // TypeScript & JavaScript config goes here
   "lineWidth": 80,
   "indentWidth": 2,

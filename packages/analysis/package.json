@@ -81,7 +81,7 @@
     "d3": "^7.6.1",
     "esbuild-wasm": "^0.15.11",
     "nanoid": "^4.0.0",
-    "solid-js": "^1.5.7",
+    "solid-js": "^1.5.8",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
