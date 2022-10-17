@@ -5,7 +5,7 @@ import {
   Uri
 } from "monaco-editor";
 
-import { parseShareQuery, getResolvedPackage } from "@bundlejs/core/src/util";
+import { getResolvedPackage } from "@bundlejs/core/src/util";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
@@ -22,7 +22,7 @@ import EDITOR_WORKER from "../workers/editor.ts?worker";
 import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 
 import { toLocaleDateString } from "../utils/locale-date-string";
-import { configModelResetValue } from "../utils/get-initial";
+import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -58,8 +58,8 @@ export const createModel = (initialValue: string, lanuguage: string, uri: Uri) =
 export function build(inputEl: HTMLDivElement) {
   const html = document.querySelector("html");
 
-  const oldShareURL = new URL(globalThis.location.toString());
-  const initialValue = parseShareQuery(oldShareURL) || inputModelResetValue;
+  const { inputValue, configValue } = getShareURLValues();
+  const initialValue = inputValue || inputModelResetValue;
 
   inputEl.textContent = "";
 
@@ -76,7 +76,7 @@ export function build(inputEl: HTMLDivElement) {
 
   const inputModel = createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
   const outputModel = createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
-  const configModel = createModel(configModelResetValue, 'typescript', Uri.parse('file://config.ts'));
+  const configModel = createModel(configValue, 'typescript', Uri.parse('file://config.ts'));
 
   inputModel.updateOptions({ tabSize: 2 });
   outputModel.updateOptions({ tabSize: 2 });
