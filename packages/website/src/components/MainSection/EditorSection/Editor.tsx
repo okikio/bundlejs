@@ -2,6 +2,7 @@ import type { ComponentProps } from "solid-js";
 import type { TaskRunner as Tasks } from '../../../scripts/workers/task-runner';
 
 import { onCleanup, createEffect, createResource } from "solid-js";
+import { debounce } from "@bundlejs/core/src/util";
 
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";
@@ -9,24 +10,32 @@ import EditorButtons from "./EditorButtons";
 import { state, setState, initial } from "../../../scripts/utils/store";
 import { WorkerClient } from "../../../scripts/clients/worker-client";
 
-import TaskRunner from '../../../scripts/workers/task-runner.ts?worker';
+// import TaskRunner from '../../../scripts/workers/task-runner.ts?worker';
+import SharedTaskRunner from '../../../scripts/workers/task-runner.ts?sharedworker';
+
 import { getShareURLValues } from "../../../scripts/utils/get-initial";
-import { debounce } from "@bundlejs/core/src/util";
 import { createShareURL } from "../../../scripts/utils/share";
 
-export const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(new TaskRunner(), "task-runner");
+import { USE_SHAREDWORKER } from "../../../env";
+
+export const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(
+  new SharedTaskRunner(),
+  // USE_SHAREDWORKER ? new SharedTaskRunner() :
+  //   new TaskRunner(),
+  "task-runner"
+);
+
+const { configValue: configInitialValue } = "document" in globalThis && getShareURLValues();
+const [monaco] = "document" in globalThis ? createResource(() => {
+  return import("../../../scripts/modules/monaco");
+}) : [];
 
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
-  const { configValue: configInitialValue } = "document" in globalThis && getShareURLValues();
-  const [monaco] = createResource(() => {
-    return import("../../../scripts/modules/monaco");
-  });
-
   createEffect(async () => {
-    if (monaco.loading) return;
+    if (monaco?.loading) return;
     const { build, languages, inputModelResetValue, outputModelResetValue } = monaco();
     const [editor, input, output, config, getModelType] = build(ref);
 

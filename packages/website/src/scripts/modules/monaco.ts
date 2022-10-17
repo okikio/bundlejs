@@ -14,7 +14,7 @@ import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import { mediaTheme, themeGet } from "../theme";
 
-import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
+// import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
 
 import TS_WORKER from "../workers/typescript.ts?worker";
 import EDITOR_WORKER from "../workers/editor.ts?worker";
@@ -23,6 +23,7 @@ import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 
 import { toLocaleDateString } from "../utils/locale-date-string";
 import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
+import { USE_SHAREDWORKER } from "../../env";
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -30,7 +31,8 @@ import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
 (globalThis as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
-      // USE_SHAREDWORKER && PRODUCTION_MODE ? new TS_SHARED_WORKER() : new TS_WORKER()
+      // return new TS_SHARED_WORKER();
+      // return USE_SHAREDWORKER ? new TS_SHARED_WORKER() : new TS_WORKER();
       return new TS_WORKER();
     }
 
