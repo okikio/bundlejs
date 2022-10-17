@@ -9,7 +9,6 @@ export * from "./utils/loader";
 
 export * as lzstring from "./utils/lz-string";
 export * from "./utils/parse-package-name";
-export * from "./utils/parse-query";
 
 export * as path from "./utils/path";
 export * from "./utils/pretty-bytes";

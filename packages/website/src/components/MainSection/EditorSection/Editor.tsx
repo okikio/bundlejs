@@ -10,10 +10,9 @@ import { state, setState, initial } from "../../../scripts/utils/store";
 import { WorkerClient } from "../../../scripts/clients/worker-client";
 
 import TaskRunner from '../../../scripts/workers/task-runner.ts?worker';
-import { generateConfigValue, getShareURLValues } from "../../../scripts/utils/get-initial";
-import { debounce, deepAssign } from "@bundlejs/core/src/util";
+import { getShareURLValues } from "../../../scripts/utils/get-initial";
+import { debounce } from "@bundlejs/core/src/util";
 import { createShareURL } from "../../../scripts/utils/share";
-import { EasyDefaultConfig } from "../../../scripts/configs/options";
 
 export const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(new TaskRunner(), "task-runner");
 
@@ -21,20 +20,16 @@ export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
 
-  const { config: configQuery } = "document" in globalThis && getShareURLValues();
-
+  const { configValue: configInitialValue } = "document" in globalThis && getShareURLValues();
   const [monaco] = createResource(() => {
     return import("../../../scripts/modules/monaco");
   });
 
   createEffect(async () => {
     if (monaco.loading) return;
-    const { build, languages, inputModelResetValue, outputModelResetValue, configModelResetValue } = monaco();
+    const { build, languages, inputModelResetValue, outputModelResetValue } = monaco();
     const [editor, input, output, config, getModelType] = build(ref);
 
-    const configInitialValue = configQuery ? generateConfigValue(
-      deepAssign({}, EasyDefaultConfig, JSON.parse(configQuery))
-    ) : configModelResetValue;
     setState("monaco", {
       loading: false,
       editor,
@@ -51,8 +46,6 @@ export function Editor(props?: ComponentProps<'div'>) {
         config
       }
     });
-
-    config.setValue(configInitialValue);
 
     // Update the URL share query every time user makes a change 
     editor.onDidChangeModelContent(
@@ -75,10 +68,7 @@ export function Editor(props?: ComponentProps<'div'>) {
           shareUrl: await createShareURL()
         })
 
-        globalThis.navigation.navigate(
-          await createShareURL(),
-          { history: "replace" }
-        );
+        globalThis.history.replaceState(null, null, await createShareURL());
       }, 1000)
     );
   });
