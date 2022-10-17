@@ -7,7 +7,6 @@ export * from "./utils/fetch-and-cache";
 export * from "./utils/filesystem";
 export * from "./utils/loader";
 export * as lzstring from "./utils/lz-string";
-export * from "./utils/npm-search";
 export * from "./utils/parse-package-name";
 export * from "./utils/parse-query";
 export * as path from "./utils/path";

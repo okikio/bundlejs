@@ -1,6 +1,5 @@
 import type { Platform } from "./configs/platform";
 import type * as ESBUILD from "esbuild-wasm/esm/browser.d";
-import type * as ROLLUP from "rollup/dist/rollup.d";
 export declare type CommonConfigOptions = {
     /**
      * Configures how esbuild-wasm is initialized
@@ -9,4 +8,4 @@ export declare type CommonConfigOptions = {
         platform?: Platform;
     };
 };
-export type { ESBUILD, ROLLUP };
+export type { ESBUILD };

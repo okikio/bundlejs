@@ -38,7 +38,7 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
 
   const { platform, ...initOpts } = CONFIG.init;
   const { transform } = await init(platform, initOpts);
-  const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let result: ESBUILD.TransformResult;
