@@ -1,11 +1,12 @@
 /// <reference lib="webworker" />
-import * as types from '../utils/monaco-workers/types';
+import { getAllMethodNames } from '../utils/monaco-workers/types';
 import { SimpleWorkerServer } from '../utils/monaco-workers/simple-workers';
 
-import { format } from "../tasks/format";
-import { createFile } from "../tasks/create-file";
-import { getShareURL } from "../tasks/get-share-url";
-import { build } from "../tasks/build";
+import { format } from "./tasks/format";
+import { createFile } from "./tasks/create-file";
+import { createShareURL } from "./tasks/create-share-url";
+import { bundle } from "./tasks/build";
+import { parseConfig } from './tasks/parse-config';
 
 export class TaskRunner<H = object> {
   _requestHandlerBrand: "TaskRunner";
@@ -17,11 +18,12 @@ export class TaskRunner<H = object> {
 
   public format = format;
   public createFile = createFile;
-  public getShareURL = getShareURL;
-  public build = build;
+  public createShareURL = createShareURL;
+  public bundle = bundle;
+  public parseConfig = parseConfig;
 
   loadForeignModule() {
-    const allMethods = [...types.getAllMethodNames(this), ...Object.keys(this)]
+    const allMethods = [...getAllMethodNames(this), ...Object.keys(this)]
     const uniqueMethods = [...new Set(allMethods)].filter(key => typeof this[key] == "function");
     return Promise.resolve(uniqueMethods);
   }

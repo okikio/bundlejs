@@ -4,7 +4,7 @@ import type { ComponentProps } from "solid-js";
 import { createSignal } from "solid-js";
 import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
 
-import { state } from "../store";
+import { state } from "../../../scripts/utils/store";
 
 import toast from "../../SolidToast/index";
 import { createTextSwitch } from "../../../hooks/text-switch";

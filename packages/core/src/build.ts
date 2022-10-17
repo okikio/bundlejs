@@ -1,4 +1,4 @@
-import type { CommonConfigOptions, ESBUILD, ROLLUP } from "./types";
+import type { CommonConfigOptions, ESBUILD } from "./types";
 
 import { VIRTUAL_FS } from "./plugins/virtual-fs";
 import { EXTERNAL } from "./plugins/external";
@@ -35,9 +35,6 @@ export type LocalState = {
 }
 
 export type BuildConfig = CommonConfigOptions & {
-  /** Enable using rollup for treeshaking. Only works while the `esbuild.treeShaking` option is true */
-  rollup?: ROLLUP.OutputOptions | boolean,
-
   /** esbuild config options https://esbuild.github.io/api/#build-api */
   esbuild?: ESBUILD.BuildOptions,
 

@@ -5,7 +5,6 @@ import {
   Uri
 } from "monaco-editor";
 
-// parseConfig, schema, 
 import { parseShareQuery, getResolvedPackage } from "@bundlejs/core/src/util";
 
 import GithubLight from "../utils/github-light";
@@ -22,8 +21,8 @@ import EDITOR_WORKER from "../workers/editor.ts?worker";
 
 import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 
-import { EasyDefaultConfig } from "../configs/options";
 import { toLocaleDateString } from "../utils/locale-date-string";
+import { configModelResetValue } from "../utils/get-initial";
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -35,25 +34,18 @@ import { toLocaleDateString } from "../utils/locale-date-string";
       return new TS_WORKER();
     }
 
-    return (() => {
-      const EditorWorker = new EDITOR_WORKER();
-      EditorWorker?.terminate?.();
-      return EditorWorker;
-    })();
+    const EditorWorker = new EDITOR_WORKER();
+    EditorWorker?.terminate?.();
+    return EditorWorker;
   },
 } as Environment;
 
 export const outputModelResetValue = "// Output";
 export const inputModelResetValue = [
-  '// Click Build for the bundled, minified and compressed package size',
+  '// Click build for the bundled, minified and compressed package size',
   'export * from "@okikio/animate";'
 ].join("\n");
-//JSON.stringify(EasyDefaultConfig, null, "\t") 
-export const configModelResetValue = [
-  '// Configure Bundle',
-  `import type { ConfigOptions } from "@bundlejs/core"`,
-  `export default (async function() {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")} as ConfigOptions;\n})()`
-].join("\n"); // Indented with tab
+export { configModelResetValue };
 
 export { languages, Editor, Uri };
 
@@ -63,14 +55,11 @@ export const createModel = (initialValue: string, lanuguage: string, uri: Uri) =
   return model;
 }
 
-export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
+export function build(inputEl: HTMLDivElement) {
   const html = document.querySelector("html");
-  const oldShareURL = new URL(globalThis.location.toString());
 
+  const oldShareURL = new URL(globalThis.location.toString());
   const initialValue = parseShareQuery(oldShareURL) || inputModelResetValue;
-  const initialConfig =
-    // JSON.stringify(parseConfig(oldShareURL), null, "\t") ||
-    configModelResetValue;
 
   inputEl.textContent = "";
 
@@ -87,7 +76,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
 
   const inputModel = createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
   const outputModel = createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
-  const configModel = createModel(initialConfig, 'typescript', Uri.parse('file://config.ts'));
+  const configModel = createModel(configModelResetValue, 'typescript', Uri.parse('file://config.ts'));
 
   inputModel.updateOptions({ tabSize: 2 });
   outputModel.updateOptions({ tabSize: 2 });
@@ -139,6 +128,12 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
   const editor = Editor.create(inputEl, editorOpts);
   editor.setModel(inputModel);
 
+  function getModelType() {
+    if (editor.getModel() == inputModel) return "input";
+    else if (editor.getModel() == outputModel) return "output";
+    else return "config";
+  }
+
   document?.addEventListener("theme-change", () => {
     let theme = themeGet(html);
     Editor.setTheme(theme == "system" ? mediaTheme() : theme);
@@ -148,7 +143,7 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
     // noSemanticValidation: false,
 
-    noSemanticValidation: false,
+    noSemanticValidation: true,
     noSyntaxValidation: false,
     noSuggestionDiagnostics: false,
 
@@ -189,8 +184,8 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     `file://node_modules/@types/http/https.d.ts`
   );
   languages.typescript.typescriptDefaults.addExtraLib(
-    `declare module '@bundlejs/core' {\n\t${CONFIG_DTS}\n}`,
-    `file://node_modules/@types/config/config.d.ts`
+    `declare module '@bundlejs/core' {\n${CONFIG_DTS}\n}`,
+    `file://node_modules/@bundlejs/core/config.d.ts`
   );
 
   const IMPORTS_REXPORTS_REQUIRE_REGEX =
@@ -240,5 +235,5 @@ export const build = (inputEl: HTMLDivElement): [Editor.IStandaloneCodeEditor, E
     },
   });
 
-  return [editor, inputModel, outputModel, configModel];
+  return [editor, inputModel, outputModel, configModel, getModelType] as const;
 };

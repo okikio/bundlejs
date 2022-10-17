@@ -1,5 +1,5 @@
-import { source as ln } from "./esbuild-wasm-e937df80.mjs";
-const Ke = "0.15.10", ce = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
+import { source as ln } from "./esbuild-wasm-d7900831.mjs";
+const Ke = "0.15.11", ce = "Deno" in globalThis ? "deno" : "process" in globalThis ? "node" : "browser";
 var at = class {
   constructor(e) {
     this.map = new Map(e);
@@ -174,7 +174,7 @@ async function es(e = ce) {
           `https://deno.land/x/esbuild@v${Ke}/wasm.js`
         );
       default:
-        return await import("./esbuild-836f7916.mjs").then((t) => t.b);
+        return await import("./esbuild-8a68ea5e.mjs").then((t) => t.b);
     }
   } catch (t) {
     throw t;
@@ -189,7 +189,7 @@ async function ft(e = ce, t = {}) {
         if ("wasmModule" in t)
           await s.initialize(t);
         else {
-          const { default: r } = await import("./esbuild-wasm-e937df80.mjs");
+          const { default: r } = await import("./esbuild-wasm-d7900831.mjs");
           await s.initialize({
             wasmModule: new WebAssembly.Module(await r()),
             ...t
@@ -214,8 +214,8 @@ function pt(e) {
 }
 function dt(e, t, s, r) {
   let n = "", i = 0, o = -1, c = 0, a;
-  for (let l = 0, f = e.length; l <= f; ++l) {
-    if (l < f)
+  for (let l = 0, u = e.length; l <= u; ++l) {
+    if (l < u)
       a = e.charCodeAt(l);
     else {
       if (r(a))
@@ -227,8 +227,8 @@ function dt(e, t, s, r) {
         if (o !== l - 1 && c === 2) {
           if (n.length < 2 || i !== 2 || n.charCodeAt(n.length - 1) !== H || n.charCodeAt(n.length - 2) !== H) {
             if (n.length > 2) {
-              const u = n.lastIndexOf(s);
-              u === -1 ? (n = "", i = 0) : (n = n.slice(0, u), i = n.length - 1 - n.lastIndexOf(s)), o = l, c = 0;
+              const f = n.lastIndexOf(s);
+              f === -1 ? (n = "", i = 0) : (n = n.slice(0, f), i = n.length - 1 - n.lastIndexOf(s)), o = l, c = 0;
               continue;
             } else if (n.length === 2 || n.length === 1) {
               n = "", i = 0, o = l, c = 0;
@@ -313,27 +313,27 @@ function os(e, t) {
   for (; i < o && t.charCodeAt(i) === y; ++i)
     ;
   const c = o - i, a = n < c ? n : c;
-  let l = -1, f = 0;
-  for (; f <= a; ++f) {
-    if (f === a) {
+  let l = -1, u = 0;
+  for (; u <= a; ++u) {
+    if (u === a) {
       if (c > a) {
-        if (t.charCodeAt(i + f) === y)
-          return t.slice(i + f + 1);
-        if (f === 0)
-          return t.slice(i + f);
+        if (t.charCodeAt(i + u) === y)
+          return t.slice(i + u + 1);
+        if (u === 0)
+          return t.slice(i + u);
       } else
-        n > a && (e.charCodeAt(s + f) === y ? l = f : f === 0 && (l = 0));
+        n > a && (e.charCodeAt(s + u) === y ? l = u : u === 0 && (l = 0));
       break;
     }
-    const g = e.charCodeAt(s + f), m = t.charCodeAt(i + f);
+    const g = e.charCodeAt(s + u), m = t.charCodeAt(i + u);
     if (g !== m)
       break;
-    g === y && (l = f);
+    g === y && (l = u);
   }
-  let u = "";
-  for (f = s + l + 1; f <= r; ++f)
-    (f === r || e.charCodeAt(f) === y) && (u.length === 0 ? u += ".." : u += "/..");
-  return u.length > 0 ? u + t.slice(i + l) : (i += l, t.charCodeAt(i) === y && ++i, t.slice(i));
+  let f = "";
+  for (u = s + l + 1; u <= r; ++u)
+    (u === r || e.charCodeAt(u) === y) && (f.length === 0 ? f += ".." : f += "/..");
+  return f.length > 0 ? f + t.slice(i + l) : (i += l, t.charCodeAt(i) === y && ++i, t.slice(i));
 }
 function ls(e) {
   return e;
@@ -418,15 +418,15 @@ function hs(e) {
   s ? (t.root = "/", r = 1) : r = 0;
   let n = -1, i = 0, o = -1, c = !0, a = e.length - 1, l = 0;
   for (; a >= r; --a) {
-    const f = e.charCodeAt(a);
-    if (f === y) {
+    const u = e.charCodeAt(a);
+    if (u === y) {
       if (!c) {
         i = a + 1;
         break;
       }
       continue;
     }
-    o === -1 && (c = !1, o = a + 1), f === H ? n === -1 ? n = a : l !== 1 && (l = 1) : n !== -1 && (l = -1);
+    o === -1 && (c = !1, o = a + 1), u === H ? n === -1 ? n = a : l !== 1 && (l = 1) : n !== -1 && (l = -1);
   }
   return n === -1 || o === -1 || l === 0 || l === 1 && n === o - 1 && n === i + 1 ? o !== -1 && (i === 0 && s ? t.base = t.name = e.slice(1, o) : t.base = t.name = e.slice(i, o)) : (i === 0 && s ? (t.name = e.slice(1, n), t.base = e.slice(1, o)) : (t.name = e.slice(i, n), t.base = e.slice(i, o)), t.ext = e.slice(n, o)), i > 0 ? t.dir = e.slice(0, i - 1) : s && (t.dir = "/"), t;
 }
@@ -486,11 +486,11 @@ function $s(e, {
 } = {}) {
   if (e == "")
     return /(?!)/;
-  const i = r == "windows" ? "(?:\\\\|/)+" : "/+", o = r == "windows" ? "(?:\\\\|/)*" : "/*", c = r == "windows" ? ["\\", "/"] : ["/"], a = r == "windows" ? "(?:[^\\\\/]*(?:\\\\|/|$)+)*" : "(?:[^/]*(?:/|$)+)*", l = r == "windows" ? "[^\\\\/]*" : "[^/]*", f = r == "windows" ? "`" : "\\";
-  let u = e.length;
-  for (; u > 1 && c.includes(e[u - 1]); u--)
+  const i = r == "windows" ? "(?:\\\\|/)+" : "/+", o = r == "windows" ? "(?:\\\\|/)*" : "/*", c = r == "windows" ? ["\\", "/"] : ["/"], a = r == "windows" ? "(?:[^\\\\/]*(?:\\\\|/|$)+)*" : "(?:[^/]*(?:/|$)+)*", l = r == "windows" ? "[^\\\\/]*" : "[^/]*", u = r == "windows" ? "`" : "\\";
+  let f = e.length;
+  for (; f > 1 && c.includes(e[f - 1]); f--)
     ;
-  e = e.slice(0, u);
+  e = e.slice(0, f);
   let g = "";
   for (let m = 0; m < e.length; ) {
     let h = "";
@@ -501,7 +501,7 @@ function $s(e, {
         P = !1, h += (p ? ws : me).includes(e[w]) ? `\\${e[w]}` : e[w];
         continue;
       }
-      if (e[w] == f) {
+      if (e[w] == u) {
         P = !0;
         continue;
       }
@@ -828,22 +828,22 @@ function Ys(e, t = ".", s = {}) {
     let { browser: i, require: o, unsafe: c, conditions: a = [] } = s, l = Be(r, t);
     if (l[0] !== "." && (l = "./" + l), typeof n == "string")
       return l === "." ? n : _(r, l);
-    let f = /* @__PURE__ */ new Set(["default", ...a]);
-    c || f.add(o ? "require" : "import"), c || f.add(i ? "browser" : "node");
-    let u, g, m = !1;
-    for (u in n) {
-      m = u[0] !== ".";
+    let u = /* @__PURE__ */ new Set(["default", ...a]);
+    c || u.add(o ? "require" : "import"), c || u.add(i ? "browser" : "node");
+    let f, g, m = !1;
+    for (f in n) {
+      m = f[0] !== ".";
       break;
     }
     if (m)
-      return l === "." ? T(n, f) || _(r, l, 1) : _(r, l);
+      return l === "." ? T(n, u) || _(r, l, 1) : _(r, l);
     if (g = n[l])
-      return T(g, f) || _(r, l, 1);
-    for (u in n) {
-      if (g = u[u.length - 1], g === "/" && l.startsWith(u))
-        return (g = T(n[u], f)) ? g + l.substring(u.length) : _(r, l, 1);
-      if (g === "*" && l.startsWith(u.slice(0, -1)) && l.substring(u.length - 1).length > 0)
-        return (g = T(n[u], f)) ? g.replace("*", l.substring(u.length - 1)) : _(r, l, 1);
+      return T(g, u) || _(r, l, 1);
+    for (f in n) {
+      if (g = f[f.length - 1], g === "/" && l.startsWith(f))
+        return (g = T(n[f], u)) ? g + l.substring(f.length) : _(r, l, 1);
+      if (g === "*" && l.startsWith(f.slice(0, -1)) && l.substring(f.length - 1).length > 0)
+        return (g = T(n[f], u)) ? g.replace("*", l.substring(f.length - 1)) : _(r, l, 1);
     }
     return _(r, l);
   }
@@ -867,22 +867,22 @@ function Zs(e, t = ".", s = {}) {
     let { browser: i, require: o, unsafe: c, conditions: a = [] } = s, l = Be(r, t);
     if (typeof n == "string")
       return l === "#" ? n : _(r, l);
-    let f = /* @__PURE__ */ new Set(["default", ...a]);
-    c || f.add(o ? "require" : "import"), c || f.add(i ? "browser" : "node");
-    let u, g, m = !1;
-    for (u in n) {
-      m = u[0] !== "#";
+    let u = /* @__PURE__ */ new Set(["default", ...a]);
+    c || u.add(o ? "require" : "import"), c || u.add(i ? "browser" : "node");
+    let f, g, m = !1;
+    for (f in n) {
+      m = f[0] !== "#";
       break;
     }
     if (m)
-      return l === "#" ? T(n, f) || _(r, l, 1) : _(r, l);
+      return l === "#" ? T(n, u) || _(r, l, 1) : _(r, l);
     if (g = n[l])
-      return T(g, f) || _(r, l, 1);
-    for (u in n) {
-      if (g = u[u.length - 1], g === "/" && l.startsWith(u))
-        return (g = T(n[u], f)) ? g + l.substring(u.length) : _(r, l, 1);
-      if (g === "*" && l.startsWith(u.slice(0, -1)) && l.substring(u.length - 1).length > 0)
-        return (g = T(n[u], f)) ? g.replace("*", l.substring(u.length - 1)) : _(r, l, 1);
+      return T(g, u) || _(r, l, 1);
+    for (f in n) {
+      if (g = f[f.length - 1], g === "/" && l.startsWith(f))
+        return (g = T(n[f], u)) ? g + l.substring(f.length) : _(r, l, 1);
+      if (g === "*" && l.startsWith(f.slice(0, -1)) && l.substring(f.length - 1).length > 0)
+        return (g = T(n[f], u)) ? g.replace("*", l.substring(f.length - 1)) : _(r, l, 1);
     }
     return _(r, l);
   }
@@ -927,10 +927,10 @@ const st = "cdn-url", Te = (e = F, t) => async (s) => {
 There is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`
         ).emit("logger.warn", g);
       }
-    let f = i ? "@" + o.version : "", { url: u } = O(`${o.name}${f}${c}`, n);
+    let u = i ? "@" + o.version : "", { url: f } = O(`${o.name}${u}${c}`, n);
     return {
       namespace: x,
-      path: u.toString(),
+      path: f.toString(),
       pluginData: { pkg: a }
     };
   }
@@ -958,17 +958,17 @@ const x = "http-url", bt = async (e, t) => {
 ${s.toString()}`);
   }
 }, Ks = async (e, t, s, r, n) => {
-  const i = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g, o = new URL("./", e).toString(), c = n.filesystem, a = ke(t), f = Array.from(a.matchAll(i)).map(async ([, u]) => {
-    let { content: g, url: m } = await bt(oe(o, u), r);
+  const i = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g, o = new URL("./", e).toString(), c = n.filesystem, a = ke(t), u = Array.from(a.matchAll(i)).map(async ([, f]) => {
+    let { content: g, url: m } = await bt(oe(o, f), r);
     return c.set(s + ":" + m, t), {
-      path: u,
+      path: f,
       contents: g,
       get text() {
         return ke(g);
       }
     };
   });
-  return await Promise.allSettled(f);
+  return await Promise.allSettled(u);
 }, vt = (e = F, t) => async (s) => {
   let r = s.path.replace(/\/$/, "/index");
   if (!r.startsWith(".")) {
@@ -1003,13 +1003,13 @@ function Qs(e, t, s) {
         path: l.path,
         namespace: x
       })), a.onResolve({ filter: /.*/, namespace: x }, vt(r, e)), a.onLoad({ filter: /.*/, namespace: x }, async (l) => {
-        let f = Ue(l.path), u = (R = "") => f.length > 0 ? l.path : l.path + R, g, m;
-        const h = f.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"], d = h.length;
+        let u = Ue(l.path), f = (R = "") => u.length > 0 ? l.path : l.path + R, g, m;
+        const h = u.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"], d = h.length;
         let p;
         for (let R = 0; R < d; R++) {
           const w = h[R];
           try {
-            ({ content: g, url: m } = await bt(u(w), e));
+            ({ content: g, url: m } = await bt(f(w), e));
             break;
           } catch (E) {
             if (R == 0 && (p = E), R >= d - 1)
@@ -1145,7 +1145,7 @@ function ir(e) {
   return t < e.length && s.text(e.slice(t)), s.done();
 }
 const le = async (e, t = "error", s = !0) => {
-  const { formatMessages: r } = await import("./esbuild-836f7916.mjs").then((i) => i.b);
+  const { formatMessages: r } = await import("./esbuild-8a68ea5e.mjs").then((i) => i.b);
   return (await r(e, { color: s, kind: t })).map((i) => s ? ir(i.replace(/(\s+)(\d+)(\s+)\│/g, `
 $1$2$3\u2502`)) : i);
 }, or = {
@@ -1179,7 +1179,7 @@ $1$2$3\u2502`)) : i);
 async function Vr(e = {}) {
   Y("initialized") || b.emit("init.loading");
   const t = Ge("build", e), s = Qt({ assets: [], GLOBAL: [Y, _e] }), [r] = s, { platform: n, ...i } = t.init ?? {}, { build: o } = await ft(n, i), { define: c = {}, loader: a = {}, ...l } = t.esbuild ?? {};
-  let f = [], u = [], g;
+  let u = [], f = [], g;
   try {
     try {
       const m = "p.env.NODE_ENV".replace("p.", "process.");
@@ -1219,14 +1219,14 @@ async function Vr(e = {}) {
       } else
         throw m;
     }
-    return f = await Promise.all(
+    return u = await Promise.all(
       [...r().assets].concat(g?.outputFiles)
-    ), u = await Promise.all(
-      f?.map(({ path: m, text: h, contents: d }) => /\.map$/.test(m) ? null : (l?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(m) ? b.emit("logger.log", "Output File: " + m) : b.emit("logger.log", "Output File: " + m + `
+    ), f = await Promise.all(
+      u?.map(({ path: m, text: h, contents: d }) => /\.map$/.test(m) ? null : (l?.logLevel == "verbose" && (/\.(wasm|png|jpeg|webp)$/.test(m) ? b.emit("logger.log", "Output File: " + m) : b.emit("logger.log", "Output File: " + m + `
 ` + h)), { path: m, text: h, contents: d }))?.filter((m) => ![void 0, null].includes(m))
     ), {
-      contents: u,
-      outputs: f,
+      contents: f,
+      outputs: u,
       ...g
     };
   } catch {
@@ -1305,26 +1305,26 @@ const ur = {
 };
 async function Zr(e = [], t = {}) {
   const { type: s, quality: r } = Ge("compress", t), n = e.map((l) => l instanceof Uint8Array ? l : Fe(l)), i = ot(
-    n.reduce((l, f) => l + f.byteLength, 0)
+    n.reduce((l, u) => l + u.byteLength, 0)
   ), o = await (async () => {
     switch (s) {
       case "lz4": {
-        const { compress: l, getWASM: f } = await Promise.resolve().then(() => Xr);
-        return await f(), async (u) => await l(u);
+        const { compress: l, getWASM: u } = await Promise.resolve().then(() => Xr);
+        return await u(), async (f) => await l(f);
       }
       case "brotli": {
-        const { compress: l, getWASM: f } = await Promise.resolve().then(() => Ir);
-        return await f(), async (u) => await l(u, u.length, r);
+        const { compress: l, getWASM: u } = await Promise.resolve().then(() => Ir);
+        return await u(), async (f) => await l(f, f.length, r);
       }
       default: {
-        const { gzip: l, getWASM: f } = await Promise.resolve().then(() => Br);
-        return await f(), async (u) => await l(u, r);
+        const { gzip: l, getWASM: u } = await Promise.resolve().then(() => Br);
+        return await u(), async (f) => await l(f, r);
       }
     }
   })(), c = await Promise.all(
     n.map((l) => o(l))
   ), a = ot(
-    c.reduce((l, { length: f }) => l + f, 0)
+    c.reduce((l, { length: u }) => l + u, 0)
   );
   return {
     type: s,
@@ -1400,30 +1400,30 @@ const gr = {
 };
 async function Jr(e, t = {}) {
   Y("initialized") || b.emit("init.loading");
-  const s = Ge("transform", t), { platform: r, ...n } = s.init, { transform: i } = await ft(r, n), { define: o = {}, loader: c = {}, ...a } = s.esbuild ?? {};
-  let l;
+  const s = Ge("transform", t), { platform: r, ...n } = s.init, { transform: i } = await ft(r, n), { define: o = {}, ...c } = s.esbuild ?? {};
+  let a;
   try {
     try {
-      const f = "p.env.NODE_ENV".replace("p.", "process.");
-      l = await i(e, {
+      const l = "p.env.NODE_ENV".replace("p.", "process.");
+      a = await i(e, {
         define: {
           __NODE__: "false",
-          [f]: '"production"',
+          [l]: '"production"',
           ...o
         },
-        ...a
+        ...c
       });
-    } catch (f) {
-      if (f.errors) {
-        const u = [...await le(f.errors, "error", !1)], g = [...await le(f.errors, "error")];
-        b.emit("logger.error", u, g);
-        const m = (g.length > 1 ? `${g.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        b.emit("logger.error", m);
+    } catch (l) {
+      if (l.errors) {
+        const u = [...await le(l.errors, "error", !1)], f = [...await le(l.errors, "error")];
+        b.emit("logger.error", u, f);
+        const g = (f.length > 1 ? `${f.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+        b.emit("logger.error", g);
         return;
       } else
-        throw f;
+        throw l;
     }
-    return l;
+    return a;
   } catch {
   }
 }
@@ -1479,45 +1479,45 @@ function he(e, t, s) {
   if (e == null)
     return "";
   const r = [], n = {}, i = {};
-  let o, c, a, l = "", f = "", u = "", g = 2, m = 3, h = 2, d = 0, p = 0;
+  let o, c, a, l = "", u = "", f = "", g = 2, m = 3, h = 2, d = 0, p = 0;
   for (c = 0; c < e.length; c += 1)
-    if (l = e.charAt(c), Object.prototype.hasOwnProperty.call(n, l) || (n[l] = m++, i[l] = !0), u = f + l, Object.prototype.hasOwnProperty.call(n, u))
-      f = u;
+    if (l = e.charAt(c), Object.prototype.hasOwnProperty.call(n, l) || (n[l] = m++, i[l] = !0), f = u + l, Object.prototype.hasOwnProperty.call(n, f))
+      u = f;
     else {
-      if (Object.prototype.hasOwnProperty.call(i, f)) {
-        if (f.charCodeAt(0) < 256) {
+      if (Object.prototype.hasOwnProperty.call(i, u)) {
+        if (u.charCodeAt(0) < 256) {
           for (o = 0; o < h; o++)
             d = d << 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++;
-          for (a = f.charCodeAt(0), o = 0; o < 8; o++)
+          for (a = u.charCodeAt(0), o = 0; o < 8; o++)
             d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
         } else {
           for (a = 1, o = 0; o < h; o++)
             d = d << 1 | a, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = 0;
-          for (a = f.charCodeAt(0), o = 0; o < 16; o++)
+          for (a = u.charCodeAt(0), o = 0; o < 16; o++)
             d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
         }
-        g--, g == 0 && (g = Math.pow(2, h), h++), delete i[f];
+        g--, g == 0 && (g = Math.pow(2, h), h++), delete i[u];
       } else
-        for (a = n[f], o = 0; o < h; o++)
+        for (a = n[u], o = 0; o < h; o++)
           d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
-      g--, g == 0 && (g = Math.pow(2, h), h++), n[u] = m++, f = String(l);
+      g--, g == 0 && (g = Math.pow(2, h), h++), n[f] = m++, u = String(l);
     }
-  if (f !== "") {
-    if (Object.prototype.hasOwnProperty.call(i, f)) {
-      if (f.charCodeAt(0) < 256) {
+  if (u !== "") {
+    if (Object.prototype.hasOwnProperty.call(i, u)) {
+      if (u.charCodeAt(0) < 256) {
         for (o = 0; o < h; o++)
           d = d << 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++;
-        for (a = f.charCodeAt(0), o = 0; o < 8; o++)
+        for (a = u.charCodeAt(0), o = 0; o < 8; o++)
           d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
       } else {
         for (a = 1, o = 0; o < h; o++)
           d = d << 1 | a, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = 0;
-        for (a = f.charCodeAt(0), o = 0; o < 16; o++)
+        for (a = u.charCodeAt(0), o = 0; o < 16; o++)
           d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
       }
-      g--, g == 0 && (g = Math.pow(2, h), h++), delete i[f];
+      g--, g == 0 && (g = Math.pow(2, h), h++), delete i[u];
     } else
-      for (a = n[f], o = 0; o < h; o++)
+      for (a = n[u], o = 0; o < h; o++)
         d = d << 1 | a & 1, p == t - 1 ? (p = 0, r.push(s(d)), d = 0) : p++, a = a >> 1;
     g--, g == 0 && (g = Math.pow(2, h), h++);
   }
@@ -1532,51 +1532,51 @@ function he(e, t, s) {
   return r.join("");
 }
 function pe(e, t, s) {
-  let r = [], n = 4, i = 4, o = 3, c = "", a = [], l, f, u, g, m, h, d, p = { val: s(0), position: t, index: 1 };
+  let r = [], n = 4, i = 4, o = 3, c = "", a = [], l, u, f, g, m, h, d, p = { val: s(0), position: t, index: 1 };
   for (l = 0; l < 3; l += 1)
     r[l] = l;
-  for (u = 0, m = Math.pow(2, 2), h = 1; h != m; )
-    g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-  switch (u) {
+  for (f = 0, m = Math.pow(2, 2), h = 1; h != m; )
+    g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+  switch (f) {
     case 0:
-      for (u = 0, m = Math.pow(2, 8), h = 1; h != m; )
-        g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-      d = String.fromCharCode(u);
+      for (f = 0, m = Math.pow(2, 8), h = 1; h != m; )
+        g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+      d = String.fromCharCode(f);
       break;
     case 1:
-      for (u = 0, m = Math.pow(2, 16), h = 1; h != m; )
-        g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-      d = String.fromCharCode(u);
+      for (f = 0, m = Math.pow(2, 16), h = 1; h != m; )
+        g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+      d = String.fromCharCode(f);
       break;
     case 2:
       return "";
   }
-  for (r[3] = d, f = d, a.push(d); ; ) {
+  for (r[3] = d, u = d, a.push(d); ; ) {
     if (p.index > e)
       return "";
-    for (u = 0, m = Math.pow(2, o), h = 1; h != m; )
-      g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-    switch (d = u) {
+    for (f = 0, m = Math.pow(2, o), h = 1; h != m; )
+      g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+    switch (d = f) {
       case 0:
-        for (u = 0, m = Math.pow(2, 8), h = 1; h != m; )
-          g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-        r[i++] = String.fromCharCode(u), d = i - 1, n--;
+        for (f = 0, m = Math.pow(2, 8), h = 1; h != m; )
+          g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+        r[i++] = String.fromCharCode(f), d = i - 1, n--;
         break;
       case 1:
-        for (u = 0, m = Math.pow(2, 16), h = 1; h != m; )
-          g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), u |= (g > 0 ? 1 : 0) * h, h <<= 1;
-        r[i++] = String.fromCharCode(u), d = i - 1, n--;
+        for (f = 0, m = Math.pow(2, 16), h = 1; h != m; )
+          g = p.val & p.position, p.position >>= 1, p.position == 0 && (p.position = t, p.val = s(p.index++)), f |= (g > 0 ? 1 : 0) * h, h <<= 1;
+        r[i++] = String.fromCharCode(f), d = i - 1, n--;
         break;
       case 2:
         return a.join("");
     }
     if (n == 0 && (n = Math.pow(2, o), o++), r[d])
       c = r[d];
-    else if (d === i && typeof f == "string")
-      c = f + f.charAt(0);
+    else if (d === i && typeof u == "string")
+      c = u + u.charAt(0);
     else
       return null;
-    a.push(c), r[i++] = f + c.charAt(0), n--, f = c, n == 0 && (n = Math.pow(2, o), o++);
+    a.push(c), r[i++] = u + c.charAt(0), n--, u = c, n == 0 && (n = Math.pow(2, o), o++);
   }
 }
 const Rr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -1593,7 +1593,37 @@ const Rr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   decompress: Ar,
   _compress: he,
   _decompress: pe
-}, Symbol.toStringTag, { value: "Module" })), Sr = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, re = 16;
+}, Symbol.toStringTag, { value: "Module" })), { decompressFromURL: Sr } = Rr, br = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), Qr = (e) => {
+  try {
+    const t = e.searchParams;
+    let s = "", r = t.get("query") || t.get("q"), n = t.get("treeshake");
+    if (r) {
+      let c = r.trim().split(","), a = br((n ?? "").trim());
+      s += `// Click Build for the Bundled, Minified & Compressed package size
+` + c.map((l, u) => {
+        let f = a[u] && a[u].trim() !== "*" ? a[u].trim().split(",").join(", ") : "*", [
+          ,
+          ,
+          g = "export",
+          m
+        ] = /^(\((.*)\))?(.*)/.exec(l);
+        return `${g} ${f} from ${JSON.stringify(
+          m
+        )};`;
+      }).join(`
+`);
+    }
+    let i = t.get("share");
+    i && (s += `
+` + Sr(i.trim()));
+    let o = t.get("text");
+    return o && (s += `
+` + JSON.parse(
+      /^["']/.test(o) && /["']$/.test(o) ? o : JSON.stringify("" + o).replace(/\\\\/g, "\\")
+    )), s.trim();
+  } catch {
+  }
+}, vr = "2.0.0", Ne = 256, X = Number.MAX_SAFE_INTEGER || 9007199254740991, re = 16;
 let Tt = 0;
 const $ = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : void 0) }), M = "0|[1-9]\\d*", U = "[0-9]+", He = "\\d*[a-zA-Z-][a-zA-Z0-9-]*", xe = `(?:${M}|${He})`, Le = `(?:${U}|${He})`, Ce = "[0-9A-Za-z-]+", Nt = `(${M})\\.(${M})\\.(${M})`, xt = `(${U})\\.(${U})\\.(${U})`, J = `(?:\\+(${Ce}(?:\\.${Ce})*))`, Ye = `(?:-(${xe}(?:\\.${xe})*))`, Ve = `(?:-?(${Le}(?:\\.${Le})*))`, ye = `v?${Nt}${Ye}?${J}?`, ee = `[v=\\s]*${xt}${Ve}?${J}?`, ne = `${M}|x|X|\\*`, ie = `${U}|x|X|\\*`, D = "((?:<|>)?=?)", L = `[v=\\s]*(${ne})(?:\\.(${ne})(?:\\.(${ne})(?:${Ye})?${J}?)?)?`, j = `[v=\\s]*(${ie})(?:\\.(${ie})(?:\\.(${ie})(?:${Ve})?${J}?)?)?`, lt = `(^|[^\\d])(\\d{1,${re}})(?:\\.(\\d{1,${re}}))?(?:\\.(\\d{1,${re}}))?(?:$|[^\\d])`, Ae = "(?:~>?)", Re = "(?:\\^)", A = {
   NUMERICIDENTIFIER: $(M),
@@ -1636,7 +1666,7 @@ const $ = (e, t) => ({ index: Tt++, pattern: e, regex: new RegExp(e, t ? "g" : v
   STAR: $("(<|>)?=?\\s*\\*"),
   GTE0: $("^\\s*>=\\s*0\\.0\\.0\\s*$"),
   GTE0PRE: $("^\\s*>=\\s*0\\.0\\.0-0\\s*$")
-}, br = ["includePrerelease", "loose", "rtl"], de = (e) => e ? typeof e != "object" ? { loose: !0 } : br.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, Ie = /^[0-9]+$/, q = (e, t) => {
+}, _r = ["includePrerelease", "loose", "rtl"], de = (e) => e ? typeof e != "object" ? { loose: !0 } : _r.filter((t) => e[t]).reduce((t, s) => (t[s] = !0, t), {}) : {}, Ie = /^[0-9]+$/, q = (e, t) => {
   const s = Ie.test(e), r = Ie.test(t);
   let n = e, i = t;
   return s && r && (n = +e, i = +t), n === i ? 0 : s && !r ? -1 : r && !s ? 1 : n < i ? -1 : 1;
@@ -1746,7 +1776,7 @@ class ge {
     return this.value;
   }
 }
-const B = /* @__PURE__ */ new Map(), te = /* @__PURE__ */ new Map(), vr = 1e3, Lt = "$1^", Ct = "$1~", It = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = Ut(e, t), e = jt(e, t), e = Ft(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
+const B = /* @__PURE__ */ new Map(), te = /* @__PURE__ */ new Map(), Or = 1e3, Lt = "$1^", Ct = "$1~", It = "$1$2$3", Pe = (e) => e.value === "<0.0.0-0", Pt = (e) => e.value === "", Dt = (e, t) => (e = Ut(e, t), e = jt(e, t), e = Ft(e, t), e = Gt(e), e), v = (e) => !e || e.toLowerCase() === "x" || e === "*", jt = (e, t) => e.trim().split(/\s+/).map((s) => Mt(s, t)).join(" "), Mt = (e, t) => {
   const s = t.loose ? A.TILDELOOSE.regex : A.TILDE.regex;
   return e.replace(s, (r, n, i, o, c) => {
     let a;
@@ -1762,10 +1792,10 @@ const B = /* @__PURE__ */ new Map(), te = /* @__PURE__ */ new Map(), vr = 1e3, L
   e = e.trim();
   const s = t.loose ? A.XRANGELOOSE.regex : A.XRANGE.regex;
   return e.replace(s, (r, n, i, o, c, a) => {
-    const l = v(i), f = l || v(o), u = f || v(c), g = u;
-    return n === "=" && g && (n = ""), a = t.includePrerelease ? "-0" : "", l ? n === ">" || n === "<" ? r = "<0.0.0-0" : r = "*" : n && g ? (f && (o = 0), c = 0, n === ">" ? (n = ">=", f ? (i = +i + 1, o = 0, c = 0) : (o = +o + 1, c = 0)) : n === "<=" && (n = "<", f ? i = +i + 1 : o = +o + 1), n === "<" && (a = "-0"), r = `${n + i}.${o}.${c}${a}`) : f ? r = `>=${i}.0.0${a} <${+i + 1}.0.0-0` : u && (r = `>=${i}.${o}.0${a} <${i}.${+o + 1}.0-0`), r;
+    const l = v(i), u = l || v(o), f = u || v(c), g = f;
+    return n === "=" && g && (n = ""), a = t.includePrerelease ? "-0" : "", l ? n === ">" || n === "<" ? r = "<0.0.0-0" : r = "*" : n && g ? (u && (o = 0), c = 0, n === ">" ? (n = ">=", u ? (i = +i + 1, o = 0, c = 0) : (o = +o + 1, c = 0)) : n === "<=" && (n = "<", u ? i = +i + 1 : o = +o + 1), n === "<" && (a = "-0"), r = `${n + i}.${o}.${c}${a}`) : u ? r = `>=${i}.0.0${a} <${+i + 1}.0.0-0` : f && (r = `>=${i}.${o}.0${a} <${i}.${+o + 1}.0-0`), r;
   });
-}, Gt = (e, t) => e.trim().replace(A.STAR.regex, ""), Wt = (e, t) => e.trim().replace(A[t.includePrerelease ? "GTE0PRE" : "GTE0"].regex, ""), Xt = (e) => (t, s, r, n, i, o, c, a, l, f, u, g, m) => (v(r) ? s = "" : v(n) ? s = `>=${r}.0.0${e ? "-0" : ""}` : v(i) ? s = `>=${r}.${n}.0${e ? "-0" : ""}` : o ? s = `>=${s}` : s = `>=${s}${e ? "-0" : ""}`, v(l) ? a = "" : v(f) ? a = `<${+l + 1}.0.0-0` : v(u) ? a = `<${l}.${+f + 1}.0-0` : g ? a = `<=${l}.${f}.${u}-${g}` : e ? a = `<${l}.${f}.${+u + 1}-0` : a = `<=${a}`, `${s} ${a}`.trim()), qt = (e, t, s) => {
+}, Gt = (e, t) => e.trim().replace(A.STAR.regex, ""), Wt = (e, t) => e.trim().replace(A[t.includePrerelease ? "GTE0PRE" : "GTE0"].regex, ""), Xt = (e) => (t, s, r, n, i, o, c, a, l, u, f, g, m) => (v(r) ? s = "" : v(n) ? s = `>=${r}.0.0${e ? "-0" : ""}` : v(i) ? s = `>=${r}.${n}.0${e ? "-0" : ""}` : o ? s = `>=${s}` : s = `>=${s}${e ? "-0" : ""}`, v(l) ? a = "" : v(u) ? a = `<${+l + 1}.0.0-0` : v(f) ? a = `<${l}.${+u + 1}.0-0` : g ? a = `<=${l}.${u}.${f}-${g}` : e ? a = `<${l}.${u}.${+f + 1}-0` : a = `<=${a}`, `${s} ${a}`.trim()), qt = (e, t, s) => {
   for (let r = 0; r < e.length; r++)
     if (!e[r].test(t))
       return !1;
@@ -1819,18 +1849,18 @@ class V {
       return te.set(r, Date.now()), B.get(r);
     const n = this.options.loose, i = n ? A.HYPHENRANGELOOSE.regex : A.HYPHENRANGE.regex;
     t = t.replace(i, Xt(this.options.includePrerelease)), t = t.replace(A.COMPARATORTRIM.regex, It), t = t.replace(A.TILDETRIM.regex, Ct), t = t.replace(A.CARETTRIM.regex, Lt), t = t.split(/\s+/).join(" ");
-    let o = t.split(" ").map((u) => Dt(u, this.options)).join(" ").split(/\s+/).map((u) => Wt(u, this.options));
-    n && (o = o.filter((u) => !!u.match(A.COMPARATORLOOSE.regex)));
-    const c = /* @__PURE__ */ new Map(), a = o.map((u) => new ge(u, this.options));
-    for (const u of a) {
-      if (Pe(u))
-        return [u];
-      c.set(u.value, u);
+    let o = t.split(" ").map((f) => Dt(f, this.options)).join(" ").split(/\s+/).map((f) => Wt(f, this.options));
+    n && (o = o.filter((f) => !!f.match(A.COMPARATORLOOSE.regex)));
+    const c = /* @__PURE__ */ new Map(), a = o.map((f) => new ge(f, this.options));
+    for (const f of a) {
+      if (Pe(f))
+        return [f];
+      c.set(f.value, f);
     }
     c.size > 1 && c.has("") && c.delete("");
     const l = [...c.values()];
-    let f = l;
-    if (B.set(r, f), te.set(r, Date.now()), B.size >= vr) {
+    let u = l;
+    if (B.set(r, u), te.set(r, Date.now()), B.size >= Or) {
       let g = [...te.entries()].sort((m, h) => m[1] - h[1])[0][0];
       B.delete(g), te.delete(g);
     }
@@ -1862,9 +1892,9 @@ function De(e, t, s) {
     i.test(o) && (!r || n.compare(o) === -1) && (r = o, n = new k(r, s));
   }), r;
 }
-const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const en = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  SEMVER_SPEC_VERSION: Sr,
+  SEMVER_SPEC_VERSION: vr,
   MAX_LENGTH: Ne,
   MAX_SAFE_INTEGER: X,
   MAX_SAFE_COMPONENT_LENGTH: re,
@@ -1903,7 +1933,7 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   const t = "https://registry.npmjs.com";
   let { name: s, version: r, path: n } = ue(e), i = `${t}/-/v1/search?text=${encodeURIComponent(s)}&popularity=0.5&size=30`, o = `${t}/${s}/${r}`, c = `${t}/${s}`;
   return { searchURL: i, packageURL: c, packageVersionURL: o, version: r, name: s, path: n };
-}, en = async (e) => {
+}, tn = async (e) => {
   let { searchURL: t } = K(e), s;
   try {
     s = await (await Z(t, !1)).json();
@@ -1911,30 +1941,30 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     throw console.warn(n), n;
   }
   return { packages: s?.objects, info: s };
-}, _r = async (e) => {
+}, kr = async (e) => {
   let { packageURL: t } = K(e);
   try {
     return await (await Z(t, !1)).json();
   } catch (s) {
     throw console.warn(s), s;
   }
-}, Or = async (e) => {
+}, Tr = async (e) => {
   let { packageVersionURL: t } = K(e);
   try {
     return await (await Z(t, !1)).json();
   } catch (s) {
     throw console.warn(s), s;
   }
-}, kr = async (e) => {
+}, Nr = async (e) => {
   try {
-    let t = await _r(e), s = Object.keys(t.versions), r = t["dist-tags"];
+    let t = await kr(e), s = Object.keys(t.versions), r = t["dist-tags"];
     return { versions: s, tags: r };
   } catch (t) {
     throw console.warn(t), t;
   }
-}, Tr = async (e) => {
+}, xr = async (e) => {
   try {
-    let { version: t } = K(e), s = await kr(e);
+    let { version: t } = K(e), s = await Nr(e);
     if (s) {
       const { versions: r, tags: n } = s;
       return t in n && (t = n[t]), r.includes(t) ? t : De(r, t);
@@ -1942,49 +1972,19 @@ const Qr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   } catch (t) {
     throw console.warn(t), t;
   }
-}, tn = async (e) => {
+}, sn = async (e) => {
   try {
-    const { name: t } = K(e), s = await Tr(e);
-    return await Or(`${t}@${s}`);
+    const { name: t } = K(e), s = await xr(e);
+    return await Tr(`${t}@${s}`);
   } catch (t) {
     throw console.warn(t), t;
-  }
-}, { decompressFromURL: Nr } = Rr, xr = (e) => (e ?? "").split(/\],/).map((t) => t.replace(/\[|\]/g, "")), sn = (e) => {
-  try {
-    const t = e.searchParams;
-    let s = "", r = t.get("query") || t.get("q"), n = t.get("treeshake");
-    if (r) {
-      let c = r.trim().split(","), a = xr((n ?? "").trim());
-      s += `// Click Build for the Bundled, Minified & Compressed package size
-` + c.map((l, f) => {
-        let u = a[f] && a[f].trim() !== "*" ? a[f].trim().split(",").join(", ") : "*", [
-          ,
-          ,
-          g = "export",
-          m
-        ] = /^(\((.*)\))?(.*)/.exec(l);
-        return `${g} ${u} from ${JSON.stringify(
-          m
-        )};`;
-      }).join(`
-`);
-    }
-    let i = t.get("share");
-    i && (s += `
-` + Nr(i.trim()));
-    let o = t.get("text");
-    return o && (s += `
-` + JSON.parse(
-      /^["']/.test(o) && /["']$/.test(o) ? o : JSON.stringify("" + o).replace(/\\\\/g, "\\")
-    )), s.trim();
-  } catch {
   }
 };
 let Se;
 const Ze = async () => {
   if (Se)
     return Se;
-  const e = await import("./brotli-01fd6cf1.mjs"), { default: t, source: s } = e;
+  const e = await import("./brotli-ebabf0ac.mjs"), { default: t, source: s } = e;
   return await t(await s()), Se = e;
 };
 async function Lr(e, t = 4096, s = 6, r = 22) {
@@ -2149,14 +2149,14 @@ export {
   O as getCDNUrl,
   es as getEsbuild,
   tr as getFile,
-  _r as getPackage,
-  Or as getPackageOfVersion,
-  kr as getPackageVersions,
-  en as getPackages,
+  kr as getPackage,
+  Tr as getPackageOfVersion,
+  Nr as getPackageVersions,
+  tn as getPackages,
   Ds as getPureImportPath,
   K as getRegistryURL,
   Z as getRequest,
-  tn as getResolvedPackage,
+  sn as getResolvedPackage,
   Ot as getResolvedPath,
   Y as getState,
   rr as htmlEscape,
@@ -2174,15 +2174,15 @@ export {
   tt as newRequest,
   Hs as openCache,
   ue as parsePackageName,
-  sn as parseShareQuery,
-  xr as parseTreeshakeExports,
+  Qr as parseShareQuery,
+  br as parseTreeshakeExports,
   Yr as path,
   ot as prettyBytes,
   ir as render,
   Ys as resolveExports,
   Zs as resolveImports,
-  Tr as resolveVersion,
-  Qr as semver,
+  xr as resolveVersion,
+  en as semver,
   sr as setFile,
   _e as setState,
   it as toLocaleString,

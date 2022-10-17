@@ -2,7 +2,7 @@ import { ComponentProps, onMount } from "solid-js";
 import Button from "../../Button";
 
 import IconSettings from "~icons/fluent/settings-24-regular";
-import { state } from "../store";
+import { state } from "../../../scripts/utils/store";
 
 import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
 
