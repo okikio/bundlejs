@@ -1,17 +1,18 @@
 /// <reference lib="webworker" />
 import type { ConfigOptions } from "../../configs/options";
 
+import type { ESBUILD } from "@bundlejs/core/src/index";
+
+// import ESBUILD_SOURCE_WASM_URL from "esbuild-wasm/esbuild.wasm?url";
 import { ESBUILD_SOURCE_WASM, setFile, build, compress, init, PLATFORM_AUTO, deepAssign } from "@bundlejs/core/src/index";
 import { DefaultConfig } from "../../configs/options";
 import { parseConfig } from "./parse-config";
 
-let initOpts: {
-  wasmModule: WebAssembly.Module,
-  worker: boolean
-} = null;
+let initOpts: ESBUILD.InitializeOptions = null;
 
 const ready = (async () => {
   initOpts = {
+    // wasmURL: ESBUILD_SOURCE_WASM_URL,
     wasmModule: new WebAssembly.Module(await ESBUILD_SOURCE_WASM()),
     worker: false
   };
