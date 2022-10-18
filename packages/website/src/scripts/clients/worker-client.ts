@@ -3,6 +3,8 @@ import { SimpleWorkerClient, logOnceWebWorkerWarning } from '../utils/monaco-wor
 import { Disposable } from '../utils/monaco-workers/lifecycle';
 import * as types from '../utils/monaco-workers/types';
 
+import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
+
 export const channel = new MessageChannel();
 
 function isPromiseLike<T>(obj: any): obj is PromiseLike<T> {
