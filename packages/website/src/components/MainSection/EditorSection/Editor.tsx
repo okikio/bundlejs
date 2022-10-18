@@ -10,29 +10,28 @@ import EditorButtons from "./EditorButtons";
 import { state, setState, initial } from "../../../scripts/utils/store";
 import { WorkerClient } from "../../../scripts/clients/worker-client";
 
-// import TaskRunner from '../../../scripts/workers/task-runner.ts?worker';
-import SharedTaskRunner from '../../../scripts/workers/task-runner.ts?sharedworker';
-
 import { getShareURLValues } from "../../../scripts/utils/get-initial";
 import { createShareURL } from "../../../scripts/utils/share";
 
+import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 import { USE_SHAREDWORKER } from "../../../env";
-
-export const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(
-  new SharedTaskRunner(),
-  // USE_SHAREDWORKER ? new SharedTaskRunner() :
-  //   new TaskRunner(),
-  "task-runner"
-);
 
 const { configValue: configInitialValue } = "document" in globalThis && getShareURLValues();
 const [monaco] = "document" in globalThis ? createResource(() => {
   return import("../../../scripts/modules/monaco");
 }) : [];
 
+const TASK_RUNNER = "document" in globalThis && (
+  USE_SHAREDWORKER ?
+    new SharedWorker(new URL('../../../scripts/workers/task-runner.ts', import.meta.url), { name: "task-runner", type: 'module' }) :
+    new Worker(new URL('../../../scripts/workers/task-runner.ts', import.meta.url), { name: "task-runner", type: 'module' })
+);
+
 export function Editor(props?: ComponentProps<'div'>) {
   let ref: HTMLDivElement = null;
   let loadingRef: HTMLDivElement = null;
+
+  const taskRunner = "document" in globalThis && new WorkerClient<Tasks>(TASK_RUNNER, "task-runner");
 
   createEffect(async () => {
     if (monaco?.loading) return;

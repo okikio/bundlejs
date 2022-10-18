@@ -14,16 +14,18 @@ import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import { mediaTheme, themeGet } from "../theme";
 
-// import TS_SHARED_WORKER from "../workers/typescript.ts?sharedworker";
-
-import TS_WORKER from "../workers/typescript.ts?worker";
-import EDITOR_WORKER from "../workers/editor.ts?worker";
-
 import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 
 import { toLocaleDateString } from "../utils/locale-date-string";
 import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
 import { USE_SHAREDWORKER } from "../../env";
+
+const TS_WORKER = USE_SHAREDWORKER ?
+  new SharedWorker(new URL('../workers/typescript.ts', import.meta.url), { name: "typescript", type: 'module' }) :
+  new Worker(new URL('../workers/typescript.ts', import.meta.url), { name: "typescript", type: 'module' });
+
+const EDITOR_WORKER = new Worker(new URL('../workers/editor.ts', import.meta.url), { name: "editor", type: 'module' });
+EDITOR_WORKER?.terminate?.();
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -31,14 +33,10 @@ import { USE_SHAREDWORKER } from "../../env";
 (globalThis as any).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
-      // return new TS_SHARED_WORKER();
-      // return USE_SHAREDWORKER ? new TS_SHARED_WORKER() : new TS_WORKER();
-      return new TS_WORKER();
+      return TS_WORKER;
     }
 
-    const EditorWorker = new EDITOR_WORKER();
-    EditorWorker?.terminate?.();
-    return EditorWorker;
+    return EDITOR_WORKER;
   },
 } as Environment;
 
