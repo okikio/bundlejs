@@ -44,7 +44,7 @@ export const COMPRESS_CONFIG: CompressionOptions = {
  * @returns The compressed size, the initial size, and the compression format used
  */
 export async function compress(inputs: Uint8Array[] | string[] = [], opts: CompressConfig = {} as CompressionOptions) {
-  const { type, quality } = createConfig("compress", opts) as CompressionOptions;
+  const { type, quality } = createConfig("compress", opts);
 
   // Convert inputs to binary in Uint8Array form
   const contents = inputs.map((input: Uint8Array | string) => {

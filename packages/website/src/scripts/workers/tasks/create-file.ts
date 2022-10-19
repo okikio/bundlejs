@@ -5,14 +5,14 @@
 // which can do work on a bg thread.
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
-import { createSystem, createVirtualTypeScriptEnvironment } from "@typescript/vfs";
+import { createSystem, createVirtualTypeScriptEnvironment, knownLibFilesForCompilerOptions } from "@typescript/vfs";
 import ts from "typescript";
 
+import { getRequest } from "@bundlejs/core/src/util";
 import TS_LIBS_URL from "../../ts-libs.json?url";
 
 export async function createFile(fileName: string, content: string) {  
-  // const libFiles = import.meta.glob('/node_modules/typescript/lib/lib.*.ts', { as: 'raw', eager: true });
-  const libFiles = await (await fetch(TS_LIBS_URL)).json();
+  const libFiles: Record<string, string> = await (await getRequest(TS_LIBS_URL, true)).json();
   const compilerOpts: ts.CompilerOptions = {
     target: ts.ScriptTarget.Latest,
     module: ts.ModuleKind.ESNext,
@@ -23,15 +23,11 @@ export async function createFile(fileName: string, content: string) {
     ],
   };
 
-  const fsMap = new Map<string, string>();
-  const ENTRY_POINT = "index.ts";
-  fsMap.set(ENTRY_POINT, "const hello = 'hi'");
-
-  await Promise.all(
-    Object.keys(libFiles).map(lib => {
-      return fsMap.set(lib.replace("/node_modules/typescript/lib/", "/"), libFiles[lib] as unknown as string);
-    })
-  );
+  const libs = knownLibFilesForCompilerOptions(compilerOpts, ts);
+  const fsMap = new Map<string, string>();  
+  for (const path of libs) {
+    fsMap.set(`/${path}`, libFiles[path]);
+  }
 
   fsMap.set(fileName, content);
 

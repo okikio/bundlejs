@@ -12,7 +12,6 @@ import { create } from 'monaco-editor/esm/vs/language/typescript/ts.worker.js';
 const connect = (port) => {
   let initialized = false;
   port.onmessage = (e) => {
-    console.log(port)
     initialize(function (ctx, createData) {
       return create(ctx, createData);
     }, port, initialized);

@@ -19,7 +19,6 @@ const ready = (async () => {
 
 export async function parseConfig(input = configModelResetValue) {
   input = input.trim();
-  console.log({ input })
 
   try {
     await ready;
