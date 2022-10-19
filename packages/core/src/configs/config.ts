@@ -15,7 +15,7 @@ import { deepAssign } from "../utils/deep-equal";
  * @returns An object representing the configuration for that type of function
  */
 export function createConfig<T extends "build", O extends BuildConfig>(type: T, opts?: O): BuildConfig;
-export function createConfig<T extends "compress", O extends CompressConfig>(type: T, opts?: O): BuildConfig;
+export function createConfig<T extends "compress", O extends CompressConfig>(type: T, opts?: O): CompressionOptions;
 export function createConfig<T extends "transform", O extends TransformConfig>(type: T, opts?: O): TransformConfig;
 export function createConfig<T extends "transform" | "build" | "compress", O extends TransformConfig | BuildConfig | CompressConfig>(type: T, opts?: O) {
   if (type == "transform") {
