@@ -1,6 +1,6 @@
 import { Accessor, ComponentProps, createMemo, JSX, sharedConfig, untrack, ValidComponent, } from "solid-js";
 
-import { createEffect, mergeProps, onCleanup, onMount, splitProps, $DEVCOMP } from "solid-js";
+import { createEffect, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
 import { getNextElement, spread, SVGElements, Dynamic, createComponent } from "solid-js/web";
 
 
@@ -31,15 +31,15 @@ export const defaultTippyOpts: Partial<Props> = {
   followCursor: 'horizontal',
   inlinePositioning: true,
   plugins: [followCursor, inlinePositioning],
-  delay: [500, 0]
+  delay: [200, 0]
 }
 
 export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: keyof JSX.IntrinsicElements, content?: Props["content"], allowHTML?: Props["allowHTML"], tooltip?: Partial<Props> }) {
   let instances: Instance<Props>[] = [];
 
   let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as", "ref"]);
-  let mergedProps = mergeProps({
-    as: "span",
+  let mergedProps = Object.assign({
+    as: "dynamic-el",
     mobile: "(max-width: 640px)"
   }, newProps);
 
@@ -73,7 +73,7 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   });
 
   createEffect(() => {
-    tippyProps = mergeProps({
+    tippyProps = Object.assign({
       content: mergedProps?.content,
       allowHTML: mergedProps.allowHTML,
 
@@ -92,7 +92,8 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   });
 
   return (
-    <dynamic-el 
+    <Dynamic
+      component={mergedProps.as}
       custom-tooltip 
       {...attrs} 
       ref={(el: HTMLElement) => {
@@ -108,12 +109,12 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   let ref: HTMLElement = null;
 
   let [newProps, attrs] = splitProps(props, ["tooltip", "target", "as", "ref"]);
-  let mergedProps = mergeProps({
-    // target: "[custom-button]",
-    as: "span"
+  let mergedProps = Object.assign({
+    target: "[custom-button]",
+    as: "dynamic-el"
   }, newProps);
 
-  let tippyProps = mergeProps({
+  let tippyProps = Object.assign({
     ...defaultTippyOpts,
 
     delay: [500, 0],
@@ -139,7 +140,8 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   });
   
   return (
-    <dynamic-el
+    <Dynamic
+      component={mergedProps.as}
       custom-tooltip 
       {...attrs} 
       ref={(el: HTMLElement) => {
