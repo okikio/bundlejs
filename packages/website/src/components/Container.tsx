@@ -10,10 +10,10 @@ export function Container(props?: Props) {
   let mergedProps = mergeProps({
     max: "md",
     class: "col"
-  }, newProps)
+  }, newProps);
 
   return (
-    <div class={`contain ${mergedProps.max} ${mergedProps.class}`} custom-container {...attrs}>
+    <div class={`contain ${mergedProps.max ?? "md"} ${mergedProps.class ?? "col"}`} custom-container {...attrs}>
       {mergedProps.children}
     </div>
   );

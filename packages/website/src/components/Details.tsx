@@ -16,10 +16,10 @@ export function Details(props: ComponentProps<'details'> & {
 }) {
   let [newProps, attrs] = splitProps(props, ["children", "summary", "summaryClass", "contentClass"]);
 
-  let mergedProps = mergeProps({
+  let mergedProps = Object.assign({
     summaryClass: "px-4 py-2 cursor-pointer select-none",
     contentClass: "pl-4 pr-2 py-4",
-  }, newProps)
+  }, newProps);
 
   let ref: HTMLDetailsElement;
   let summaryRef: HTMLElement;
