@@ -52,4 +52,4 @@ import '../../../node_modules/monaco-editor/esm/vs/editor/contrib/wordPartOperat
 // Load up these strings even in VSCode, even if they are not used
 // in order to get them translated
 import '../../../node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js';
-// import '../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js'; // The codicons are defined here and must be loaded
+import '../../../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js'; // The codicons are defined here and must be loaded

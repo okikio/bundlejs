@@ -4,11 +4,12 @@ import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/ty
 import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js";
 // import "../../../node_modules/monaco-editor/esm/vs/basic-languages/json/json.contribution.js";
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
-import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
 
-// import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
-import "./editor.all.ts";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
+
+import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
+// import "./editor.all.ts";
 
 import {
     editor as Editor,
@@ -186,17 +187,17 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     });
     
     // @ts-ignore
-    languages.typescript.typescriptDefaults.setInlayHintsOptions({
+    languages.typescript?.typescriptDefaults.setInlayHintsOptions({
         includeInlayParameterNameHints: "literals",
         includeInlayParameterNameHintsWhenArgumentMatchesName: true
     });
     
-    languages.typescript.typescriptDefaults.setEagerModelSync(true);
-    languages.typescript.typescriptDefaults.addExtraLib(
+    languages.typescript?.typescriptDefaults?.setEagerModelSync(true);
+    languages.typescript?.typescriptDefaults?.addExtraLib(
         "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
         `file://node_modules/@types/http/https.d.ts`
     );
-    languages.typescript.typescriptDefaults.addExtraLib(
+    languages.typescript?.typescriptDefaults?.addExtraLib(
         `declare module '@bundlejs/core/config' {\n\t${CONFIG_DTS}\n}`,
         `file://node_modules/@types/config/config.d.ts`
     );
