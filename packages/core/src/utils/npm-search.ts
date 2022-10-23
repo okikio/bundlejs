@@ -11,10 +11,10 @@ import { maxSatisfying } from "./semver";
 export const getRegistryURL = (input: string) => {
   const host = "https://registry.npmjs.com";
 
-  let { name, version, path } = parsePackageName(input);
-  let searchURL = `${host}/-/v1/search?text=${encodeURIComponent(name)}&popularity=0.5&size=30`;
-  let packageVersionURL = `${host}/${name}/${version}`;
-  let packageURL = `${host}/${name}`;
+  const { name, version, path } = parsePackageName(input);
+  const searchURL = `${host}/-/v1/search?text=${encodeURIComponent(name)}&popularity=0.5&size=30`;
+  const packageVersionURL = `${host}/${name}/${version}`;
+  const packageURL = `${host}/${name}`;
 
   return { searchURL, packageURL, packageVersionURL, version, name, path };
 };
@@ -26,20 +26,20 @@ export const getRegistryURL = (input: string) => {
  * @returns resulting package info.
  */
 export const getPackages = async (input: string) => {
-  let { searchURL } = getRegistryURL(input);
+  const { searchURL } = getRegistryURL(input);
   let result: any;
 
   try {
-    let response = await getRequest(searchURL, false);
+    const response = await getRequest(searchURL, false);
     result = await response.json();
   } catch (e) {
     console.warn(e);
     throw e;
   }
 
-  let packages = result?.objects;
+  const packages = result?.objects;
   return { packages, info: result };
-}
+};
 
 /**
  * Searches the npm registry for a package with the same name
@@ -48,16 +48,16 @@ export const getPackages = async (input: string) => {
  * @returns resulting package info.
  */
 export const getPackage = async (input: string) => {
-  let { packageURL } = getRegistryURL(input);
+  const { packageURL } = getRegistryURL(input);
 
   try {
-    let response = await getRequest(packageURL, false);
+    const response = await getRequest(packageURL, false);
     return await response.json();
   } catch (e) {
     console.warn(e);
     throw e;
   }
-}
+};
 
 /**
  * Searches the npm registry for a package with the same name
@@ -66,16 +66,16 @@ export const getPackage = async (input: string) => {
  * @returns resulting package info.
  */
 export const getPackageOfVersion = async (input: string) => {
-  let { packageVersionURL } = getRegistryURL(input);
+  const { packageVersionURL } = getRegistryURL(input);
 
   try {
-    let response = await getRequest(packageVersionURL, false);
+    const response = await getRequest(packageVersionURL, false);
     return await response.json();
   } catch (e) {
     console.warn(e);
     throw e;
   }
-}
+};
 
 /**
  * Searches the npm registry for a package an lists out all it versions with an object of available { versions, tags }.
@@ -85,15 +85,15 @@ export const getPackageOfVersion = async (input: string) => {
  */
 export const getPackageVersions = async (input: string) => {
   try {
-    let pkg = await getPackage(input);
-    let versions = Object.keys(pkg.versions);
-    let tags = pkg['dist-tags'];
+    const pkg = await getPackage(input);
+    const versions = Object.keys(pkg.versions);
+    const tags = pkg["dist-tags"];
     return { versions, tags };
   } catch (e) {
     console.warn(e);
     throw e;
   }
-}
+};
 
 /**
  * Searches the npm registry for a package with matching names
@@ -104,7 +104,7 @@ export const getPackageVersions = async (input: string) => {
 export const resolveVersion = async (input: string) => {
   try {
     let { version: range } = getRegistryURL(input);
-    let versionsAndTags = await getPackageVersions(input);
+    const versionsAndTags = await getPackageVersions(input);
     if (versionsAndTags) {
       const { versions, tags } = versionsAndTags;
 
@@ -120,7 +120,7 @@ export const resolveVersion = async (input: string) => {
     console.warn(e);
     throw e;
   }
-}
+};
 /**
  * Searches the npm registry for a package with the same name, it then resolves the package version making sure it's valid, and give the appropriate package that matches the version set
  * 
@@ -137,4 +137,4 @@ export const getResolvedPackage = async (input: string) => {
     console.warn(e);
     throw e;
   }
-}
+};

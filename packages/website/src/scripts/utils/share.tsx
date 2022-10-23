@@ -1,22 +1,20 @@
-import toast from "../../components/SolidToast";
 import { copyToClipboard } from "./copy-to-clipboard";
 import { state } from "./store";
+import toast from "../../components/SolidToast";
+import { taskRunner } from "../index";
 
 export async function createShareURL() {
   if (!state.monaco.loading) {
     const { input, config } = state.monaco.models;
 
     try {
-      const worker = state.monaco.workers.taskRunner;
-      const thisWorker = await worker.getWorker();
-
-      return await thisWorker.createShareURL(
+      return await taskRunner.createShareURL(
         input.uri.authority,
         input.getValue(),
         config.getValue()
       );
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
   }
 }
@@ -28,8 +26,8 @@ export async function share() {
         (async () => {
           if (navigator.share) {
             await navigator.share({
-              title: 'bundlejs',
-              text: '',
+              title: "bundlejs",
+              text: "",
               url: await createShareURL(),
             });
           } else {
@@ -39,11 +37,11 @@ export async function share() {
         {
           loading: "Sharing...",
           success: () => <>{navigator.share ? "Shared!" : "Copied!"}</>,
-          error: 'Share Error'
+          error: "Share Error"
         }
       );
     } catch (error) {
-      console.log('Error sharing', error);
+      console.log("Error sharing", error);
       throw error;
     }
   }

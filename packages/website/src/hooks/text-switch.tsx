@@ -1,4 +1,5 @@
-import { ComponentProps, createSignal, onCleanup, onMount, splitProps } from "solid-js";
+import type { ComponentProps} from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 
 export type TextSwitchProps = [
   /**
@@ -13,15 +14,15 @@ export type TextSwitchProps = [
 ]
 
 export function createTextSwitch([initial, next]: TextSwitchProps) {
-  let [initialValue, setInitialValue] = createSignal(initial);
-  let [nextValue, setNextValue] = createSignal(next);
+  const [initialValue, setInitialValue] = createSignal(initial);
+  const [nextValue, setNextValue] = createSignal(next);
 
-  let refList = new Map<HTMLElement, null>();
-  let refElList = new Map<HTMLElement, null>();
+  const refList = new Map<HTMLElement, null>();
+  const refElList = new Map<HTMLElement, null>();
 
-  let initialRef: HTMLElement = null;
-  let nextRef: HTMLElement = null;
-  let nextInitialRef: HTMLElement = null;
+  const initialRef: HTMLElement = null;
+  const nextRef: HTMLElement = null;
+  const nextInitialRef: HTMLElement = null;
 
   return {
     getInitial: initialValue,
@@ -31,7 +32,7 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
     setNext: setNextValue,
 
     async switch(dir: "next" | "initial" = "next", delay = 100) {
-      let arr = [];
+      const arr = [];
       
       refList.forEach((_, ref) => {
         arr.push(
@@ -52,7 +53,7 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
     },
 
     render(props?: ComponentProps<"span">) {
-      let ref: HTMLElement = null;
+      const ref: HTMLElement = null;
       onMount(() => {
         refList.set(ref, null);
 

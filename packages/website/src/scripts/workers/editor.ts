@@ -8,19 +8,17 @@
 // import { initialize } from "./worker-init";
 
 // The Editor worker is really not nesscary, so, I set it up to be self terminating 
-const connect = (port) => {
-    console.log('Empty Editor Worker');
-    self.close();
-}
+const connect = () => {
+  console.log("Empty Editor Worker");
+  self.close();
+};
 
-// @ts-ignore
-self.onconnect = (e) => {
-    let [port] = e.ports;
-    connect(port)
-}
+(self as unknown as SharedWorkerGlobalScope).onconnect = () => {
+  connect();
+};
 
 if (!("SharedWorkerGlobalScope" in self)) {
-    connect(self);
+  connect();
 }
 
 export { };

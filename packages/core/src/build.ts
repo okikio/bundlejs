@@ -31,7 +31,7 @@ export type LocalState = {
    */
   GLOBAL?: [typeof getState, typeof setState],
 
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export type BuildConfig = CommonConfigOptions & {
@@ -39,7 +39,7 @@ export type BuildConfig = CommonConfigOptions & {
   esbuild?: ESBUILD.BuildOptions,
 
   /** The default CDN to import packages from */
-  cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & {}),
+  cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & object),
 
   /** Aliases for replacing packages with different ones, e.g. replace "fs" with "memfs", so, it can work on the web, etc... */
   alias?: Record<string, string>,
@@ -148,7 +148,7 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
 
   const { platform, ...initOpts } = CONFIG.init ?? {};
   const { build: bundle } = await init(platform, initOpts);
-  const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
@@ -157,20 +157,20 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
 
   try {
     try {
-      const key = `p.env.NODE_ENV`.replace("p.", "process.");
+      const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         loader: {
-          '.png': 'file',
-          '.jpeg': 'file',
-          '.ttf': 'file',
-          '.svg': 'text',
-          '.html': 'text',
-          '.scss': 'css'
+          ".png": "file",
+          ".jpeg": "file",
+          ".ttf": "file",
+          ".svg": "text",
+          ".html": "text",
+          ".scss": "css"
         },
         define: {
-          "__NODE__": `false`,
-          [key]: `"production"`,
+          "__NODE__": "false",
+          [key]: "\"production\"",
           ...define
         },
         write: false,
@@ -243,5 +243,7 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
 
       ...result
     };
-  } catch (e) { }
+  } catch (e) { 
+    EVENTS.emit("build.error", e);
+  }
 }

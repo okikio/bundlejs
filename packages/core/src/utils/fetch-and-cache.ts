@@ -1,9 +1,9 @@
 export const CACHE = new Map();
-export const CACHE_NAME = 'EXTERNAL_FETCHES';
+export const CACHE_NAME = "EXTERNAL_FETCHES";
 export const newRequest = async (cache: Cache, request: RequestInfo, fetchOpts?: RequestInit) => {
-  let networkResponse: Response = await fetch(request, fetchOpts);
+  const networkResponse: Response = await fetch(request, fetchOpts);
 
-  let clonedResponse = networkResponse.clone();
+  const clonedResponse = networkResponse.clone();
   if ("caches" in globalThis)
     cache.put(request, clonedResponse);
   else
@@ -15,11 +15,11 @@ export const newRequest = async (cache: Cache, request: RequestInfo, fetchOpts?:
 export let OPEN_CACHE: Cache;
 export const openCache = async () => {
   if (OPEN_CACHE) return OPEN_CACHE;
-  return (OPEN_CACHE = await caches.open(CACHE_NAME))
-}
+  return (OPEN_CACHE = await caches.open(CACHE_NAME));
+};
 
-export const getRequest = async (url: RequestInfo | URL, permanent: boolean = false, fetchOpts?: RequestInit) => {
-  let request = 'Request' in globalThis ? new Request(url.toString()) : url.toString();
+export const getRequest = async (url: RequestInfo | URL, permanent = false, fetchOpts?: RequestInit) => {
+  const request = "Request" in globalThis ? new Request(url.toString()) : url.toString();
   let response: Response;
 
   let cache: Cache;
@@ -44,4 +44,4 @@ export const getRequest = async (url: RequestInfo | URL, permanent: boolean = fa
     newRequest(cache, request, fetchOpts);
 
   return response.clone();
-}
+};

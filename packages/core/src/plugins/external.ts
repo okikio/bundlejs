@@ -1,60 +1,60 @@
-import type { BuildConfig, LocalState } from '../build';
-import type { StateArray } from '../configs/state';
-import type { EVENTS } from '../configs/events';
+import type { BuildConfig, LocalState } from "../build";
+import type { StateArray } from "../configs/state";
+import type { EVENTS } from "../configs/events";
 import type { ESBUILD } from "../types";
 
 import { encode } from "../utils/encode-decode";
-import { getCDNUrl } from '../utils/util-cdn';
+import { getCDNUrl } from "../utils/util-cdn";
 
 /** External Plugin Namespace */
-export const EXTERNALS_NAMESPACE = 'external-globals';
+export const EXTERNALS_NAMESPACE = "external-globals";
 
 /** An empty export as a Uint8Array */
-export const EMPTY_EXPORT = encode(`export default {}`);
+export const EMPTY_EXPORT = encode("export default {}");
 
 /** List of polyfillable native node modules, you should now use aliases to polyfill features */
 export const PolyfillMap = {
-  "console": 'console-browserify',
-  "constants": 'constants-browserify',
-  "crypto": 'crypto-browserify',
-  "http": 'http-browserify',
-  "buffer": 'buffer',
+  "console": "console-browserify",
+  "constants": "constants-browserify",
+  "crypto": "crypto-browserify",
+  "http": "http-browserify",
+  "buffer": "buffer",
   "Dirent": "dirent",
-  "vm": 'vm-browserify',
-  "zlib": 'zlib-browserify',
-  "assert": 'assert',
-  "child_process": 'child_process',
-  "cluster": 'child_process',
-  "dgram": 'dgram',
-  "dns": 'dns',
-  "domain": 'domain-browser',
-  "events": 'events',
-  "https": 'https',
-  "module": 'module',
-  "net": 'net',
-  "path": 'path-browserify',
-  "punycode": 'punycode',
-  "querystring": 'querystring',
-  "readline": 'readline',
-  "repl": 'repl',
-  "stream": 'stream',
-  "string_decoder": 'string_decoder',
-  "sys": 'sys',
-  "timers": 'timers',
-  "tls": 'tls',
-  "tty": 'tty-browserify',
-  "url": 'url',
-  "util": 'util',
-  "_shims": '_shims',
-  "_stream_duplex": '_stream_duplex',
-  "_stream_readable": '_stream_readable',
-  "_stream_writable": '_stream_writable',
-  "_stream_transform": '_stream_transform',
-  "_stream_passthrough": '_stream_passthrough',
-  process: 'process/browser',
-  fs: 'memfs',
-  os: 'os-browserify/browser',
-  'v8': "v8",
+  "vm": "vm-browserify",
+  "zlib": "zlib-browserify",
+  "assert": "assert",
+  "child_process": "child_process",
+  "cluster": "child_process",
+  "dgram": "dgram",
+  "dns": "dns",
+  "domain": "domain-browser",
+  "events": "events",
+  "https": "https",
+  "module": "module",
+  "net": "net",
+  "path": "path-browserify",
+  "punycode": "punycode",
+  "querystring": "querystring",
+  "readline": "readline",
+  "repl": "repl",
+  "stream": "stream",
+  "string_decoder": "string_decoder",
+  "sys": "sys",
+  "timers": "timers",
+  "tls": "tls",
+  "tty": "tty-browserify",
+  "url": "url",
+  "util": "util",
+  "_shims": "_shims",
+  "_stream_duplex": "_stream_duplex",
+  "_stream_readable": "_stream_readable",
+  "_stream_writable": "_stream_writable",
+  "_stream_transform": "_stream_transform",
+  "_stream_passthrough": "_stream_passthrough",
+  process: "process/browser",
+  fs: "memfs",
+  os: "os-browserify/browser",
+  "v8": "v8",
   "node-inspect": "node-inspect",
   "_linklist": "_linklist",
   "_stream_wrap": "_stream_wrap"
@@ -65,7 +65,7 @@ export const PolyfillKeys = Object.keys(PolyfillMap);
 /** API's & Packages that were later removed from nodejs */
 export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"];
 /** Packages `bundle` should ignore, including deprecated apis, and polyfillable API's */
-export const ExternalPackages = ['chokidar', 'yargs', 'fsevents', `worker_threads`, "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
+export const ExternalPackages = ["chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 /** Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51 */
 export const isExternal = (id: string, external: string[] = []) => {
@@ -91,8 +91,8 @@ export function EXTERNAL (events: typeof EVENTS, state: StateArray<LocalState>, 
       // Tag them with the "http-url" namespace to associate them with
       // this plugin.
       build.onResolve({ filter: /.*/ }, (args) => {
-        let path = args.path.replace(/^node\:/, "");
-        let { path: argPath } = getCDNUrl(path);
+        const path = args.path.replace(/^node\:/, "");
+        const { path: argPath } = getCDNUrl(path);
 
         if (isExternal(argPath, external)) {
           return {
@@ -125,4 +125,4 @@ export function EXTERNAL (events: typeof EVENTS, state: StateArray<LocalState>, 
       });
     },
   };
-};
+}

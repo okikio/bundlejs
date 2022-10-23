@@ -87,11 +87,11 @@ export function render(ansi: string) {
   ansi = ansi.trimEnd();
   let i = 0;
   const buffer = new AnsiBuffer();
-  for (let m of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
+  for (const m of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
     const escape = m[1] as Escape;
     buffer.text(ansi.slice(i, m.index));
     i = m.index! + m[0].length;
-      /*  */ if (escape === "0") {
+    /*  */ if (escape === "0") {
       buffer.reset();
     } else if (escape === "1") {
       buffer.bold();

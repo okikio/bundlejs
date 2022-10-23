@@ -20,7 +20,7 @@ export type CompressConfig = CompressionOptions | CompressionType;
 export const COMPRESS_CONFIG: CompressionOptions = {
   type: "gzip",
   quality: 9
-}
+};
 
 /**
  * Use multiple compression algorithims & pretty-bytes for the total gzip, brotli and/or lz4 compressed size

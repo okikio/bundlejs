@@ -1,20 +1,20 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { BuildConfig, LocalState } from '../build';
-import type { StateArray } from '../configs/state';
-import type { EVENTS } from '../configs/events';
+import type { BuildConfig, LocalState } from "../build";
+import type { StateArray } from "../configs/state";
+import type { EVENTS } from "../configs/events";
 import type { ESBUILD } from "../types";
 
-import { getRequest } from '../utils/fetch-and-cache';
-import { decode } from '../utils/encode-decode';
+import { CDN_RESOLVE } from "./cdn";
+import { getRequest } from "../utils/fetch-and-cache";
+import { decode } from "../utils/encode-decode";
 
-import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from '../utils/util-cdn';
-import { inferLoader } from '../utils/loader';
+import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn";
+import { inferLoader } from "../utils/loader";
 
 import { urlJoin, extname, isBareImport } from "../utils/path";
-import { CDN_RESOLVE } from './cdn';
 
 /** HTTP Plugin Namespace */
-export const HTTP_NAMESPACE = 'http-url';
+export const HTTP_NAMESPACE = "http-url";
 
 /**
  * Fetches packages
@@ -24,7 +24,7 @@ export const HTTP_NAMESPACE = 'http-url';
  */
 export const fetchPkg = async (url: string, events: typeof EVENTS) => {
   try {
-    let response = await getRequest(url);
+    const response = await getRequest(url);
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url} (${response.status} code)`);
 
@@ -58,7 +58,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
   const matches = Array.from(code.matchAll(rgx)) as RegExpMatchArray[];
 
   const promises = matches.map(async ([, assetURL]) => {
-    let { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), events);
+    const { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), events);
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
@@ -82,7 +82,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
 export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
-    let argPath = args.path.replace(/\/$/, "/index");
+    const argPath = args.path.replace(/\/$/, "/index");
 
     // If the import path isn't relative do this...
     if (!argPath.startsWith(".")) {
@@ -95,14 +95,14 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
         };
       }
 
-      let pathOrigin = new URL(
+      const pathOrigin = new URL(
         // Use the parent files URL as a host
         urlJoin(args.pluginData?.url ? args.pluginData?.url : host, "../", argPath)
       ).origin;
 
       // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
-      let NPM_CDN = getCDNStyle(pathOrigin) == "npm";
-      let origin = NPM_CDN ? pathOrigin : host;
+      const NPM_CDN = getCDNStyle(pathOrigin) == "npm";
+      const origin = NPM_CDN ? pathOrigin : host;
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
@@ -131,7 +131,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
     }
 
     // For relative imports
-    let path = urlJoin(args.pluginData?.url, "../", argPath);
+    const path = urlJoin(args.pluginData?.url, "../", argPath);
     return {
       path,
       namespace: HTTP_NAMESPACE,
@@ -149,11 +149,11 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
  */
 export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const FileSystem = config.filesystem;
 
   const [get, set] = state;
-  const assets = get()['assets'] ?? [];
+  const assets = get()["assets"] ?? [];
   return {
     name: HTTP_NAMESPACE,
     setup(build) {
@@ -182,12 +182,12 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
       build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
-        let ext = extname(args.path);
-        let argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
+        const ext = extname(args.path);
+        const argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
         let content: Uint8Array, url: string;
 
         // Imports have various extentions, fetch each extention to confirm what the user meant
-        const exts = ext.length > 0 ? [''] : ['', ".ts", ".tsx", ".js", ".mjs", ".cjs"];
+        const exts = ext.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"];
         const extLength = exts.length;
         let err: Error;
 
@@ -213,7 +213,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         // This is for building a package bundle analyzer 
         await FileSystem.set(args.namespace + ":" + args.path, content);
 
-        let _assetResults =
+        const _assetResults =
           (await fetchAssets(url, content, args.namespace, events, config))
             .filter((result) => {
               if (result.status == "rejected") {
@@ -226,7 +226,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
                 return result.value;
             });
 
-        set({ assets: assets.concat(_assetResults) })
+        set({ assets: assets.concat(_assetResults) });
         return {
           contents: content,
           loader: inferLoader(url),
@@ -235,4 +235,4 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
       });
     },
   };
-};
+}

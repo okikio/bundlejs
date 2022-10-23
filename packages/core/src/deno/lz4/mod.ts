@@ -7,17 +7,17 @@
 //     lz4_decompress,
 // } from "./wasm";
 
-let initialized = false;
+const initialized = false;
 let initWASM: typeof import("./wasm");
 export const getWASM = async () => {
-    if (initWASM) return initWASM;
+  if (initWASM) return initWASM;
 
-    const wasm = await import("./wasm");
-    const { default: init, source } = wasm;
+  const wasm = await import("./wasm");
+  const { default: init, source } = wasm;
     
-    if (!initialized) await init(await source());
-    return (initWASM = wasm);
-}
+  if (!initialized) await init(await source());
+  return (initWASM = wasm);
+};
 
 /**
  * Compress a byte array using lz4.
@@ -32,8 +32,8 @@ export const getWASM = async () => {
  * @param input Input data.
  */
 export async function compress(input: Uint8Array): Promise<Uint8Array> {
-    const { lz4_compress } = await getWASM();
-    return lz4_compress(input);
+  const { lz4_compress } = await getWASM();
+  return lz4_compress(input);
 }
 
 /**
@@ -49,6 +49,6 @@ export async function compress(input: Uint8Array): Promise<Uint8Array> {
  * @param input Input data.
  */
 export async function decompress(input: Uint8Array): Promise<Uint8Array> {
-    const { lz4_decompress } = await getWASM();
-    return lz4_decompress(input);
+  const { lz4_decompress } = await getWASM();
+  return lz4_decompress(input);
 }

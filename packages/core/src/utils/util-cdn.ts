@@ -1,7 +1,7 @@
 /**
  * The default CDN host
  */
-export const DEFAULT_CDN_HOST = 'https://unpkg.com';
+export const DEFAULT_CDN_HOST = "https://unpkg.com";
 
 /**
  * Returns the CDN style supported by certain CDN's
@@ -28,7 +28,7 @@ export const getCDNStyle = (urlStr: string) => {
   ) return "deno";
 
   return "other";
-}
+};
 
 /**
  * Based on the URL scheme of the import, this method will return an actual CDN host origin to use,
@@ -50,34 +50,34 @@ export const getCDNStyle = (urlStr: string) => {
 export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
   // `skypack:` --> `https://cdn.skypack.dev`
   if (/^skypack\:/.test(importStr))
-    cdn = `https://cdn.skypack.dev`;
+    cdn = "https://cdn.skypack.dev";
 
   // `esm.sh:` or `esm:` --> `https://cdn.esm.sh`
   else if (/^(esm\.sh|esm)\:/.test(importStr))
-    cdn = `https://cdn.esm.sh`;
+    cdn = "https://cdn.esm.sh";
 
   // `unpkg:` --> `https://unpkg.com`
   else if (/^unpkg\:/.test(importStr))
-    cdn = `https://unpkg.com`;
+    cdn = "https://unpkg.com";
 
   // (NPM) `jsdelivr:` or `esm.run:` --> `https://cdn.jsdelivr.net/npm`
   else if (/^(jsdelivr|esm\.run)\:/.test(importStr))
-    cdn = `https://cdn.jsdelivr.net/npm`;
+    cdn = "https://cdn.jsdelivr.net/npm";
 
   // (GitHub) `jsdelivr.gh:` --> `https://cdn.jsdelivr.net/gh`
   else if (/^(jsdelivr\.gh)\:/.test(importStr))
-    cdn = `https://cdn.jsdelivr.net/gh`;
+    cdn = "https://cdn.jsdelivr.net/gh";
 
   // `deno:` --> `https://deno.land/x`
   else if (/^(deno)\:/.test(importStr))
-    cdn = `https://deno.land/x`;
+    cdn = "https://deno.land/x";
 
   // `github:` --> `https://raw.githubusercontent.com`
   else if (/^(github)\:/.test(importStr))
-    cdn = `https://raw.githubusercontent.com`;
+    cdn = "https://raw.githubusercontent.com";
 
   return /\/$/.test(cdn) ? cdn : `${cdn}/`;
-}
+};
 
 /**
  * Remove CDN URL Schemes like `deno:...`, `unpkg:...`, etc... and known CDN hosts, e.g. `https://raw.githubusercontent.com/...`, `https://cdn.skypack.dev/...`, etc...  Leaving only the import path
@@ -93,9 +93,9 @@ export const getPureImportPath = (importStr: string) =>
  * Read through {@link getCDNOrigin} and {@link getPureImportPath}
  */
 export const getCDNUrl = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
-  let origin = getCDNOrigin(importStr, cdn);
-  let path = getPureImportPath(importStr);
-  let url = new URL(path, origin);
+  const origin = getCDNOrigin(importStr, cdn);
+  const path = getPureImportPath(importStr);
+  const url = new URL(path, origin);
   return { import: importStr, path, origin, cdn, url };
-}
+};
 

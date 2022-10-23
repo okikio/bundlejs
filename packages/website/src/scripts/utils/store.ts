@@ -1,16 +1,16 @@
-import { createStore } from "solid-js/store";
-
-import type { TaskRunner as Tasks } from '../workers/task-runner';
+import type { TaskRunner as Tasks } from "../workers/task-runner";
 import type { Editor as MonacoEditor, languages } from "../modules/monaco";
-import type { WorkerClient } from "../clients/worker-client";
+import type { wrap } from "comlink";
+
+import { createStore } from "solid-js/store";
 
 export const initial = {
   editorBtnsOpen: false,
+  workers: {
+    tasks: null as ReturnType<typeof wrap<typeof Tasks>>
+  },
   monaco: {
     editor: null as MonacoEditor.IStandaloneCodeEditor,
-    workers: {
-      taskRunner: null as WorkerClient<Tasks>
-    },
     initialValue: {
       input: null as string,
       output: null as string,

@@ -2,7 +2,7 @@ import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
 // import { build, compress, setFile, PLATFORM_AUTO } from "./src/index";
 
 globalThis.fetch = globalThis.fetch ?? (async function (...args: Parameters<typeof fetch>) {
-  const { fetch } = await import('cross-fetch');
+  const { fetch } = await import("cross-fetch");
   return await fetch(...args);
 });
 
@@ -10,13 +10,13 @@ console.log("\n");
 setFile("/index.tsx", `\
 export * as Other from "/new.tsx";
 export * from "@okikio/animate";`);
-setFile("/new.tsx", `export * from "@okikio/native";`);
+setFile("/new.tsx", "export * from \"@okikio/native\";");
 setFile("/other.tsx", `\
 export * as Other from "/index.tsx";
 export * from "@okikio/emitter";`);
 
 const bundle = build; //  as typeof buildType
-let result = await bundle({
+const result = await bundle({
   entryPoints: ["/index.tsx", "/new.tsx"],
   esbuild: {
     treeShaking: true,

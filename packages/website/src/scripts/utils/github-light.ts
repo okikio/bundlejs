@@ -154,186 +154,186 @@ export default {
     "welcomePage.buttonHoverBackground": "#e1e4e8"
   },
   rules: [
-    { token: 'comment', foreground: '#6a737d' },
-    { token: 'punctuation.definition.comment', foreground: '#6a737d' },
-    { token: 'string.comment', foreground: '#6a737d' },
-    { token: 'constant', foreground: '#005cc5' },
-    { token: 'entity.name.constant', foreground: '#005cc5' },
-    { token: 'variable.other.constant', foreground: '#005cc5' },
-    { token: 'variable.language', foreground: '#005cc5' },
-    { token: 'entity', foreground: '#6f42c1' },
-    { token: 'entity.name', foreground: '#6f42c1' },
-    { token: 'variable.parameter.function', foreground: '#24292e' },
-    { token: 'entity.name.tag', foreground: '#22863a' },
-    { token: 'keyword', foreground: '#d73a49' },
-    { token: 'storage', foreground: '#d73a49' },
-    { token: 'storage.type', foreground: '#d73a49' },
-    { token: 'storage.modifier.package', foreground: '#24292e' },
-    { token: 'storage.modifier.import', foreground: '#24292e' },
-    { token: 'storage.type.java', foreground: '#24292e' },
-    { token: 'string', foreground: '#032f62' },
-    { token: 'punctuation.definition.string', foreground: '#032f62' },
+    { token: "comment", foreground: "#6a737d" },
+    { token: "punctuation.definition.comment", foreground: "#6a737d" },
+    { token: "string.comment", foreground: "#6a737d" },
+    { token: "constant", foreground: "#005cc5" },
+    { token: "entity.name.constant", foreground: "#005cc5" },
+    { token: "variable.other.constant", foreground: "#005cc5" },
+    { token: "variable.language", foreground: "#005cc5" },
+    { token: "entity", foreground: "#6f42c1" },
+    { token: "entity.name", foreground: "#6f42c1" },
+    { token: "variable.parameter.function", foreground: "#24292e" },
+    { token: "entity.name.tag", foreground: "#22863a" },
+    { token: "keyword", foreground: "#d73a49" },
+    { token: "storage", foreground: "#d73a49" },
+    { token: "storage.type", foreground: "#d73a49" },
+    { token: "storage.modifier.package", foreground: "#24292e" },
+    { token: "storage.modifier.import", foreground: "#24292e" },
+    { token: "storage.type.java", foreground: "#24292e" },
+    { token: "string", foreground: "#032f62" },
+    { token: "punctuation.definition.string", foreground: "#032f62" },
     {
-      token: 'string punctuation.section.embedded source',
-      foreground: '#032f62'
+      token: "string punctuation.section.embedded source",
+      foreground: "#032f62"
     },
-    { token: 'support', foreground: '#005cc5' },
-    { token: 'meta.property-name', foreground: '#005cc5' },
-    { token: 'variable', foreground: '#e36209' },
-    { token: 'variable.other', foreground: '#24292e' },
+    { token: "support", foreground: "#005cc5" },
+    { token: "meta.property-name", foreground: "#005cc5" },
+    { token: "variable", foreground: "#e36209" },
+    { token: "variable.other", foreground: "#24292e" },
     {
-      token: 'invalid.broken',
-      fontStyle: 'italic',
-      foreground: '#b31d28'
-    },
-    {
-      token: 'invalid.deprecated',
-      fontStyle: 'italic',
-      foreground: '#b31d28'
+      token: "invalid.broken",
+      fontStyle: "italic",
+      foreground: "#b31d28"
     },
     {
-      token: 'invalid.illegal',
-      fontStyle: 'italic',
-      foreground: '#b31d28'
+      token: "invalid.deprecated",
+      fontStyle: "italic",
+      foreground: "#b31d28"
     },
     {
-      token: 'invalid.unimplemented',
-      fontStyle: 'italic',
-      foreground: '#b31d28'
+      token: "invalid.illegal",
+      fontStyle: "italic",
+      foreground: "#b31d28"
     },
     {
-      token: 'carriage-return',
-      fontStyle: 'italic underline',
-      background: '#d73a49',
-      foreground: '#fafbfc',
-      content: '^M'
-    },
-    { token: 'message.error', foreground: '#b31d28' },
-    { token: 'string source', foreground: '#24292e' },
-    { token: 'string variable', foreground: '#005cc5' },
-    { token: 'source.regexp', foreground: '#032f62' },
-    { token: 'string.regexp', foreground: '#032f62' },
-    { token: 'string.regexp.character-class', foreground: '#032f62' },
-    {
-      token: 'string.regexp constant.character.escape',
-      foreground: '#032f62'
+      token: "invalid.unimplemented",
+      fontStyle: "italic",
+      foreground: "#b31d28"
     },
     {
-      token: 'string.regexp source.ruby.embedded',
-      foreground: '#032f62'
+      token: "carriage-return",
+      fontStyle: "italic underline",
+      background: "#d73a49",
+      foreground: "#fafbfc",
+      content: "^M"
+    },
+    { token: "message.error", foreground: "#b31d28" },
+    { token: "string source", foreground: "#24292e" },
+    { token: "string variable", foreground: "#005cc5" },
+    { token: "source.regexp", foreground: "#032f62" },
+    { token: "string.regexp", foreground: "#032f62" },
+    { token: "string.regexp.character-class", foreground: "#032f62" },
+    {
+      token: "string.regexp constant.character.escape",
+      foreground: "#032f62"
     },
     {
-      token: 'string.regexp string.regexp.arbitrary-repitition',
-      foreground: '#032f62'
+      token: "string.regexp source.ruby.embedded",
+      foreground: "#032f62"
     },
     {
-      token: 'string.regexp constant.character.escape',
-      fontStyle: 'bold',
-      foreground: '#22863a'
-    },
-    { token: 'support.constant', foreground: '#005cc5' },
-    { token: 'support.variable', foreground: '#005cc5' },
-    { token: 'meta.module-reference', foreground: '#005cc5' },
-    {
-      token: 'punctuation.definition.list.begin.markdown',
-      foreground: '#e36209'
+      token: "string.regexp string.regexp.arbitrary-repitition",
+      foreground: "#032f62"
     },
     {
-      token: 'markup.heading',
-      fontStyle: 'bold',
-      foreground: '#005cc5'
+      token: "string.regexp constant.character.escape",
+      fontStyle: "bold",
+      foreground: "#22863a"
+    },
+    { token: "support.constant", foreground: "#005cc5" },
+    { token: "support.variable", foreground: "#005cc5" },
+    { token: "meta.module-reference", foreground: "#005cc5" },
+    {
+      token: "punctuation.definition.list.begin.markdown",
+      foreground: "#e36209"
     },
     {
-      token: 'markup.heading entity.name',
-      fontStyle: 'bold',
-      foreground: '#005cc5'
-    },
-    { token: 'markup.quote', foreground: '#22863a' },
-    {
-      token: 'markup.italic',
-      fontStyle: 'italic',
-      foreground: '#24292e'
-    },
-    { token: 'markup.bold', fontStyle: 'bold', foreground: '#24292e' },
-    { token: 'markup.raw', foreground: '#005cc5' },
-    {
-      token: 'markup.deleted',
-      background: '#ffeef0',
-      foreground: '#b31d28'
+      token: "markup.heading",
+      fontStyle: "bold",
+      foreground: "#005cc5"
     },
     {
-      token: 'meta.diff.header.from-file',
-      background: '#ffeef0',
-      foreground: '#b31d28'
+      token: "markup.heading entity.name",
+      fontStyle: "bold",
+      foreground: "#005cc5"
+    },
+    { token: "markup.quote", foreground: "#22863a" },
+    {
+      token: "markup.italic",
+      fontStyle: "italic",
+      foreground: "#24292e"
+    },
+    { token: "markup.bold", fontStyle: "bold", foreground: "#24292e" },
+    { token: "markup.raw", foreground: "#005cc5" },
+    {
+      token: "markup.deleted",
+      background: "#ffeef0",
+      foreground: "#b31d28"
     },
     {
-      token: 'punctuation.definition.deleted',
-      background: '#ffeef0',
-      foreground: '#b31d28'
+      token: "meta.diff.header.from-file",
+      background: "#ffeef0",
+      foreground: "#b31d28"
     },
     {
-      token: 'markup.inserted',
-      background: '#f0fff4',
-      foreground: '#22863a'
+      token: "punctuation.definition.deleted",
+      background: "#ffeef0",
+      foreground: "#b31d28"
     },
     {
-      token: 'meta.diff.header.to-file',
-      background: '#f0fff4',
-      foreground: '#22863a'
+      token: "markup.inserted",
+      background: "#f0fff4",
+      foreground: "#22863a"
     },
     {
-      token: 'punctuation.definition.inserted',
-      background: '#f0fff4',
-      foreground: '#22863a'
+      token: "meta.diff.header.to-file",
+      background: "#f0fff4",
+      foreground: "#22863a"
     },
     {
-      token: 'markup.changed',
-      background: '#ffebda',
-      foreground: '#e36209'
+      token: "punctuation.definition.inserted",
+      background: "#f0fff4",
+      foreground: "#22863a"
     },
     {
-      token: 'punctuation.definition.changed',
-      background: '#ffebda',
-      foreground: '#e36209'
+      token: "markup.changed",
+      background: "#ffebda",
+      foreground: "#e36209"
     },
     {
-      token: 'markup.ignored',
-      foreground: '#f6f8fa',
-      background: '#005cc5'
+      token: "punctuation.definition.changed",
+      background: "#ffebda",
+      foreground: "#e36209"
     },
     {
-      token: 'markup.untracked',
-      foreground: '#f6f8fa',
-      background: '#005cc5'
+      token: "markup.ignored",
+      foreground: "#f6f8fa",
+      background: "#005cc5"
     },
     {
-      token: 'meta.diff.range',
-      foreground: '#6f42c1',
-      fontStyle: 'bold'
-    },
-    { token: 'meta.diff.header', foreground: '#005cc5' },
-    {
-      token: 'meta.separator',
-      fontStyle: 'bold',
-      foreground: '#005cc5'
-    },
-    { token: 'meta.output', foreground: '#005cc5' },
-    { token: 'brackethighlighter.tag', foreground: '#586069' },
-    { token: 'brackethighlighter.curly', foreground: '#586069' },
-    { token: 'brackethighlighter.round', foreground: '#586069' },
-    { token: 'brackethighlighter.square', foreground: '#586069' },
-    { token: 'brackethighlighter.angle', foreground: '#586069' },
-    { token: 'brackethighlighter.quote', foreground: '#586069' },
-    { token: 'brackethighlighter.unmatched', foreground: '#b31d28' },
-    {
-      token: 'constant.other.reference.link',
-      foreground: '#032f62',
-      fontStyle: 'underline'
+      token: "markup.untracked",
+      foreground: "#f6f8fa",
+      background: "#005cc5"
     },
     {
-      token: 'string.other.link',
-      foreground: '#032f62',
-      fontStyle: 'underline'
+      token: "meta.diff.range",
+      foreground: "#6f42c1",
+      fontStyle: "bold"
+    },
+    { token: "meta.diff.header", foreground: "#005cc5" },
+    {
+      token: "meta.separator",
+      fontStyle: "bold",
+      foreground: "#005cc5"
+    },
+    { token: "meta.output", foreground: "#005cc5" },
+    { token: "brackethighlighter.tag", foreground: "#586069" },
+    { token: "brackethighlighter.curly", foreground: "#586069" },
+    { token: "brackethighlighter.round", foreground: "#586069" },
+    { token: "brackethighlighter.square", foreground: "#586069" },
+    { token: "brackethighlighter.angle", foreground: "#586069" },
+    { token: "brackethighlighter.quote", foreground: "#586069" },
+    { token: "brackethighlighter.unmatched", foreground: "#b31d28" },
+    {
+      token: "constant.other.reference.link",
+      foreground: "#032f62",
+      fontStyle: "underline"
+    },
+    {
+      token: "string.other.link",
+      foreground: "#032f62",
+      fontStyle: "underline"
     }
   ],
   "encodedTokensColors": []

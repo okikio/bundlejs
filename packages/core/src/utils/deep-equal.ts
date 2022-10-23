@@ -1,7 +1,7 @@
 export const isObject = (obj: any) => typeof obj === "object" && obj != null;
-export const isPrimitive = (val) => (typeof val === 'object' ? val === null : typeof val !== 'function');
+export const isPrimitive = (val) => (typeof val === "object" ? val === null : typeof val !== "function");
 export const isValidKey = key => {
-  return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+  return key !== "__proto__" && key !== "constructor" && key !== "prototype";
 };
 
 // Based on https://gist.github.com/egardner/efd34f270cc33db67c0246e837689cb9
@@ -26,7 +26,7 @@ export const deepEqual = (obj1: any, obj2: any) => {
     return true;
   } else if (isObject(obj1) && isObject(obj2)) {
     if (Object.keys(obj1).length !== Object.keys(obj2).length) { return false; }
-    for (var prop in obj1) {
+    for (const prop in obj1) {
       if (!deepEqual(obj1[prop], obj2[prop])) return false;
     }
 
@@ -36,15 +36,15 @@ export const deepEqual = (obj1: any, obj2: any) => {
 
 /** Compares 2 objects and only keep the keys that are different in both objects */
 export const deepDiff = (obj1: any, obj2: any) => {
-  let keys = Object.keys(obj2);
-  let result = {};
+  const keys = Object.keys(obj2);
+  const result = {};
   let i = 0;
   for (; i < keys.length; i++) {
-    let key = keys[i];
-    let value = obj2[key];
+    const key = keys[i];
+    const value = obj2[key];
 
     if (key in obj1) {
-      let bothAreArrays = Array.isArray(obj1[key]) && Array.isArray(value);
+      const bothAreArrays = Array.isArray(obj1[key]) && Array.isArray(value);
       if (obj1[key] == value) {
         continue;
       } else if (bothAreArrays) {
@@ -53,7 +53,7 @@ export const deepDiff = (obj1: any, obj2: any) => {
         else continue;
       } else if (isObject(obj1[key]) && isObject(value)) {
         // Remove empty objects
-        let diff = deepDiff(obj1[key], value);
+        const diff = deepDiff(obj1[key], value);
         if (Object.keys(diff).length)
           result[key] = diff;
       } else {
@@ -92,4 +92,4 @@ export function deepAssign(target, ...args) {
   }
 
   return target;
-};
+}

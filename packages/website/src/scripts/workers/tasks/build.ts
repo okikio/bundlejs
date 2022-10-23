@@ -2,11 +2,13 @@
 import type { ConfigOptions } from "../../configs/options";
 
 import type { ESBUILD } from "@bundlejs/core/src/index";
+import type { BuildConfig } from "@bundlejs/core/src/build";
 
-// import ESBUILD_SOURCE_WASM_URL from "esbuild-wasm/esbuild.wasm?url";
-import { ESBUILD_SOURCE_WASM, setFile, build, compress, init, PLATFORM_AUTO, deepAssign } from "@bundlejs/core/src/index";
-import { DefaultConfig } from "../../configs/options";
+import { build, compress, deepAssign, init, setFile } from "@bundlejs/core/src/index";
+import { ESBUILD_SOURCE_WASM, PLATFORM_AUTO } from "@bundlejs/core/src/index";
+
 import { parseConfig } from "./parse-config";
+import { DefaultConfig } from "../../configs/options";
 
 let initOpts: ESBUILD.InitializeOptions = null;
 
@@ -28,9 +30,10 @@ export async function bundle(fileName: string, content: string, _config = "expor
 
   await ready;
 
+  const buildConfig = config as BuildConfig;
   const result = await build({
+    ...buildConfig,
     init: initOpts,
-    ...config
   });
 
   const sizeInfo = await compress(

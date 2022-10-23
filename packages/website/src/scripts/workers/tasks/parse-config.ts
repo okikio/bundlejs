@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
-import { ESBUILD_SOURCE_WASM, transform, init, PLATFORM_AUTO } from "@bundlejs/core/src/index";
 import { configModelResetValue } from "../../utils/get-initial";
+import { ESBUILD_SOURCE_WASM, transform, init, PLATFORM_AUTO } from "@bundlejs/core/src/index";
 
 const configs = new Map<string, string>();
 
@@ -27,9 +27,9 @@ export async function parseConfig(input = configModelResetValue) {
       await transform(input, {
         init: initOpts,
         esbuild: {
-          loader: 'ts',
-          format: 'iife',
-          globalName: 'std_global',
+          loader: "ts",
+          format: "iife",
+          globalName: "std_global",
           treeShaking: true
         }
       })
@@ -38,7 +38,7 @@ export async function parseConfig(input = configModelResetValue) {
     if (config)
       configs.set(input, config);
 
-    return await Function('"use strict";return (async function () { "use strict";' + config + 'return await (std_global?.default ?? std_global); })()')();
+    return await Function("\"use strict\";return (async function () { \"use strict\";" + config + "return await (std_global?.default ?? std_global); })()")();
   } catch (e) {
     console.warn(e);
   }

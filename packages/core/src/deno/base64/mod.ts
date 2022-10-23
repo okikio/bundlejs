@@ -5,7 +5,7 @@
  * Converts given data with base64 encoding
  * @param data input to encode
  */
- export function encode(data: string | ArrayBuffer): string {
+export function encode(data: string | ArrayBuffer): string {
   if (typeof data === "string") {
     return btoa(data);
   } else {

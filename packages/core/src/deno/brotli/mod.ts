@@ -6,17 +6,17 @@
 //     decompress as wasm_decompress,
 // } from "./wasm";
 
-let initialized = false;
+const initialized = false;
 let initWASM: typeof import("./wasm");
 export const getWASM = async () => {
-    if (initWASM) return initWASM;
+  if (initWASM) return initWASM;
 
-    const wasm = await import("./wasm");
-    const { default: init, source } = wasm;
+  const wasm = await import("./wasm");
+  const { default: init, source } = wasm;
     
-    if (!initialized) await init(await source());
-    return (initWASM = wasm);
-}
+  if (!initialized) await init(await source());
+  return (initWASM = wasm);
+};
 
 /**
  * Compress a byte array.
@@ -35,13 +35,13 @@ export const getWASM = async () => {
  * @param lgwin Base 2 logarithm of the sliding window size.
  */
 export async function compress(
-    input: Uint8Array,
-    bufferSize: number = 4096,
-    quality: number = 6,
-    lgwin: number = 22,
+  input: Uint8Array,
+  bufferSize = 4096,
+  quality = 6,
+  lgwin = 22,
 ): Promise<Uint8Array> {
-    const { compress } = await getWASM();
-    return compress(input, bufferSize, quality, lgwin);
+  const { compress } = await getWASM();
+  return compress(input, bufferSize, quality, lgwin);
 }
 
 /**
@@ -58,9 +58,9 @@ export async function compress(
  * @param bufferSize Read buffer size
  */
 export async function decompress(
-    input: Uint8Array,
-    bufferSize: number = 4096,
+  input: Uint8Array,
+  bufferSize = 4096,
 ): Promise<Uint8Array> {
-    const { decompress } = await getWASM();
-    return decompress(input, bufferSize);
+  const { decompress } = await getWASM();
+  return decompress(input, bufferSize);
 }

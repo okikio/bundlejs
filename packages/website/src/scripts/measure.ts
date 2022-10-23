@@ -1,30 +1,28 @@
-export const hook = (_this, method, callback) => {
+export const hook = (_this, method, callback: (...args: unknown[]) => unknown) => {
   const orig = _this[method];
 
   return (...args) => {
-    callback.apply(null, args);
+    callback(...args);
 
     return orig.apply(_this, args);
   };
 };
 
 export const doNotTrack = () => {
-  // @ts-ignore
-  const { doNotTrack, navigator, external } = window;
+  const { doNotTrack, navigator, external } = globalThis as typeof globalThis & { doNotTrack: boolean };
 
-  const msTrackProtection = 'msTrackingProtectionEnabled';
+  const msTrackProtection = "msTrackingProtectionEnabled";
   const msTracking = () => {
     return external && msTrackProtection in external && external[msTrackProtection]();
   };
 
-  // @ts-ignore
-  const dnt = doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || msTracking();
+  const dnt = doNotTrack || navigator.doNotTrack  || msTracking();
 
-  return dnt == '1' || dnt === 'yes';
+  return dnt == "1" || dnt === "yes";
 };
 
 export function removeTrailingSlash(url) {
-  return url && url.length > 1 && url.endsWith('/') ? url.slice(0, -1) : url;
+  return url && url.length > 1 && url.endsWith("/") ? url.slice(0, -1) : url;
 }
 
 (window => {
@@ -44,26 +42,26 @@ export function removeTrailingSlash(url) {
   // if (!script) return;
 
   // const attr = script.getAttribute.bind(script);
-  let attr = (id: string) => {
+  const attr = (id: string) => {
     return ({
       "data-host-url": "https://bundlejs.com",
       "data-domains": "bundlejs.com,bundle.js.org,bundlesize.com",
       "data-website-id": "8bc0c9cc-4c05-4667-971e-6f3cf4200de5"
     })[id];
-  }
-  const website = attr('data-website-id');
-  const hostUrl = attr('data-host-url');
-  const autoTrack = attr('data-auto-track') !== 'false';
-  const dnt = attr('data-do-not-track');
-  const cssEvents = attr('data-css-events') !== 'false';
-  const domain = attr('data-domains') || '';
-  const domains = domain.split(',').map(n => n.trim());
+  };
+  const website = attr("data-website-id");
+  const hostUrl = attr("data-host-url");
+  const autoTrack = attr("data-auto-track") !== "false";
+  const dnt = attr("data-do-not-track");
+  const cssEvents = attr("data-css-events") !== "false";
+  const domain = attr("data-domains") || "";
+  const domains = domain.split(",").map(n => n.trim());
 
   const eventClass = /^umami--([a-z]+)--([\w]+[\w-]*)$/;
   const eventSelect = "[class*='umami--']";
 
   const trackingDisabled = () =>
-    (localStorage && localStorage.getItem('umami.disabled')) ||
+    (localStorage && localStorage.getItem("umami.disabled")) ||
     (dnt && doNotTrack()) ||
     (domain && !domains.includes(hostname));
 
@@ -80,9 +78,9 @@ export function removeTrailingSlash(url) {
 
   const post = (url, data, callback) => {
     const req = new XMLHttpRequest();
-    req.open('POST', url, true);
-    req.setRequestHeader('Content-Type', 'application/json');
-    if (cache) req.setRequestHeader('x-umami-cache', cache);
+    req.open("POST", url, true);
+    req.setRequestHeader("Content-Type", "application/json");
+    if (cache) req.setRequestHeader("x-umami-cache", cache);
 
     req.onreadystatechange = () => {
       if (req.readyState === 4) {
@@ -123,7 +121,7 @@ export function removeTrailingSlash(url) {
 
   const trackView = (url = currentUrl, referrer = currentRef, uuid = website) => {
     collect(
-      'pageview',
+      "pageview",
       assign(getPayload(), {
         website: uuid,
         url,
@@ -132,9 +130,9 @@ export function removeTrailingSlash(url) {
     );
   };
 
-  const trackEvent = (event_value, event_type = 'custom', url = currentUrl, uuid = website) => {
+  const trackEvent = (event_value, event_type = "custom", url = currentUrl, uuid = website) => {
     collect(
-      'event',
+      "event",
       assign(getPayload(), {
         website: uuid,
         url,
@@ -149,15 +147,13 @@ export function removeTrailingSlash(url) {
   const sendEvent = (value, type) => {
     const payload = getPayload();
 
-    // @ts-ignore
-    payload.event_type = type;
-
-    // @ts-ignore
-    payload.event_value = value;
-
     const data = JSON.stringify({
-      type: 'event',
-      payload,
+      type: "event",
+      payload: {
+        ...payload,
+        event_type: type,
+        event_value: value
+      },
     });
 
     navigator.sendBeacon(`${root}${apiRoute}`, data);
@@ -169,14 +165,14 @@ export function removeTrailingSlash(url) {
   };
 
   const addEvent = element => {
-    (element.getAttribute('class') || '').split(' ').forEach(className => {
+    (element.getAttribute("class") || "").split(" ").forEach(className => {
       if (!eventClass.test(className)) return;
 
-      const [, type, value] = className.split('--');
+      const [, type, value] = className.split("--");
       const listener = listeners[className]
         ? listeners[className]
         : (listeners[className] = () => {
-          if (element.tagName === 'A') {
+          if (element.tagName === "A") {
             sendEvent(value, type);
           } else {
             trackEvent(value, type);
@@ -195,8 +191,8 @@ export function removeTrailingSlash(url) {
     currentRef = currentUrl;
     const newUrl = url.toString();
 
-    if (newUrl.substring(0, 4) === 'http') {
-      currentUrl = '/' + newUrl.split('/').splice(3).join('/');
+    if (newUrl.substring(0, 4) === "http") {
+      currentUrl = "/" + newUrl.split("/").splice(3).join("/");
     } else {
       currentUrl = newUrl;
     }
@@ -221,24 +217,22 @@ export function removeTrailingSlash(url) {
 
   /* Global */
 
-  // @ts-ignore
-  if (!window.umami) {
+  if (!(globalThis as typeof globalThis & { umami: object}).umami) {
     const umami = eventValue => trackEvent(eventValue);
     umami.trackView = trackView;
     umami.trackEvent = trackEvent;
 
-    // @ts-ignore
-    window.umami = umami;
+    (globalThis as typeof globalThis & { umami: object }).umami = umami;
   }
 
   /* Start */
 
   if (autoTrack && !trackingDisabled()) {
-    history.pushState = hook(history, 'pushState', handlePush);
-    history.replaceState = hook(history, 'replaceState', handlePush);
+    history.pushState = hook(history, "pushState", handlePush);
+    history.replaceState = hook(history, "replaceState", handlePush);
 
     const update = () => {
-      if (document.readyState === 'complete') {
+      if (document.readyState === "complete") {
         trackView();
 
         if (cssEvents) {
@@ -248,7 +242,7 @@ export function removeTrailingSlash(url) {
       }
     };
 
-    document.addEventListener('readystatechange', update, true);
+    document.addEventListener("readystatechange", update, true);
 
     update();
   }

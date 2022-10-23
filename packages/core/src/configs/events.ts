@@ -8,7 +8,9 @@ export const EVENTS_OPTS = {
   "logger.log": console.log,
   "logger.error": console.error,
   "logger.warn": console.warn,
-  "logger.info": console.info
+  "logger.info": console.info,
+
+  "build.error": console.error,
 };
 
 export const EVENTS = new EventEmitter();

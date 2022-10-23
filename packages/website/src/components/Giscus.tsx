@@ -1,20 +1,20 @@
 import { runTheme } from "../scripts/theme";
 
 function handleMessage(event: MessageEvent) {
-  if (event.origin !== 'https://giscus.bundlejs.com') return;
-  if (!(typeof event.data === 'object' && event.data.giscus)) return;
+  if (event.origin !== "https://giscus.bundlejs.com") return;
+  if (!(typeof event.data === "object" && event.data.giscus)) return;
 
   // Do whatever you want with it, e.g. `console.log(giscusData)`.
   // You'll need to make sure that `giscusData` contains the message you're
   // expecting, e.g. by using `if ('discussion' in giscusData)`.
-  const html = document.querySelector('html');
+  const html = document.querySelector("html");
   if (html) runTheme(html);
 
-  globalThis?.removeEventListener?.('message', handleMessage);
+  globalThis?.removeEventListener?.("message", handleMessage);
 }
 
 export function Giscus() {
-  globalThis?.addEventListener?.('message', handleMessage);
+  globalThis?.addEventListener?.("message", handleMessage);
 
   return (
     <script   

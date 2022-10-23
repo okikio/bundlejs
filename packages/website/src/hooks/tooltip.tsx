@@ -1,15 +1,13 @@
-import { Accessor, ComponentProps, createMemo, JSX, sharedConfig, untrack, ValidComponent, } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
+import type { Props, Instance, CreateSingletonProps } from "tippy.js";
 
 import { createEffect, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
-import { getNextElement, spread, SVGElements, Dynamic, createComponent } from "solid-js/web";
+import { Dynamic } from "solid-js/web";
 
-
-import type { Props, Instance, CreateSingletonProps } from 'tippy.js';
-
-import tippy, { roundArrow, createSingleton, inlinePositioning } from 'tippy.js';
-import 'tippy.js/dist/tippy.css'; // optional for styling
-import 'tippy.js/dist/svg-arrow.css';
-import 'tippy.js/animations/scale-subtle.css';
+import tippy, { roundArrow, createSingleton, inlinePositioning } from "tippy.js";
+import "tippy.js/dist/tippy.css"; // optional for styling
+import "tippy.js/dist/svg-arrow.css";
+import "tippy.js/animations/scale-subtle.css";
 
 import { followCursor } from "./plugins/follow-cursor";
 
@@ -21,30 +19,28 @@ declare module "solid-js" {
   }
 }
 
-
 export const defaultTippyOpts: Partial<Props> = {
   inertia: true,
   arrow: roundArrow,
-  animation: 'scale-subtle',
+  animation: "scale-subtle",
   hideOnClick: false,
 
-  followCursor: 'horizontal',
+  followCursor: "horizontal",
   inlinePositioning: true,
   plugins: [followCursor, inlinePositioning],
   delay: [200, 0]
-}
+};
 
 export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: keyof JSX.IntrinsicElements, content?: Props["content"], allowHTML?: Props["allowHTML"], tooltip?: Partial<Props> }) {
   let instances: Instance<Props>[] = [];
 
-  let [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as", "ref"]);
-  let mergedProps = Object.assign({
+  const [newProps, attrs] = splitProps(props, ["content", "allowHTML", "tooltip", "as", "ref"]);
+  const mergedProps = Object.assign({
     as: "dynamic-el",
     mobile: "(max-width: 640px)"
   }, newProps);
 
-  const title = mergedProps?.allowHTML ? "Tooltip" : newProps?.content?.toString();
-  let media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
+  const media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
 
   function mediaQueryRun(e?: MediaQueryListEvent) {
     if (e?.matches)
@@ -83,7 +79,7 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
     instances?.forEach(instance => {
       instance?.setProps?.(tippyProps);
     });
-  })
+  });
 
   onCleanup(() => {
     if (props.mobile)
@@ -94,8 +90,8 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
   return (
     <Dynamic
       component={mergedProps.as}
-      custom-tooltip 
-      {...attrs} 
+      custom-tooltip
+      {...attrs}
       ref={(el: HTMLElement) => {
         ref = el;
         typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
@@ -108,42 +104,41 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
   let instance: Instance<Props> = null;
   let ref: HTMLElement = null;
 
-  let [newProps, attrs] = splitProps(props, ["tooltip", "target", "as", "ref"]);
-  let mergedProps = Object.assign({
+  const [newProps, attrs] = splitProps(props, ["tooltip", "target", "as", "ref"]);
+  const mergedProps = Object.assign({
     target: "[custom-button]",
     as: "dynamic-el"
   }, newProps);
 
-  let tippyProps = Object.assign({
+  const tippyProps = Object.assign({
     ...defaultTippyOpts,
 
     delay: [500, 0],
-    overrides: ['placement'],
+    overrides: ["placement"],
   } as Partial<Props>, mergedProps.tooltip ?? {});
 
   onMount(() => {
-    let els = Array.from((mergedProps.target ? ref.querySelectorAll(mergedProps.target) : ref.children) ?? []);
-    let tippyTargets = els.map(el => {
+    const els = Array.from((mergedProps.target ? ref.querySelectorAll(mergedProps.target) : ref.children) ?? []);
+    const tippyTargets = els.map(el => {
       return tippy(el as HTMLElement);
     });
 
-    // console.log({ tippyTargets, tippyProps })
     instance = createSingleton(tippyTargets, tippyProps);
   });
 
   createEffect(() => {
     instance?.setProps?.(tippyProps);
-  })
+  });
 
   onCleanup(() => {
     instance?.destroy?.();
   });
-  
+
   return (
     <Dynamic
       component={mergedProps.as}
-      custom-tooltip 
-      {...attrs} 
+      custom-tooltip
+      {...attrs}
       ref={(el: HTMLElement) => {
         ref = el;
         typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);

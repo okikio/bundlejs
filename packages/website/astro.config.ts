@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 
-import { FileSystemIconLoader } from 'unplugin-icons/loaders';
+import { FileSystemIconLoader } from "unplugin-icons/loaders";
 import Icons from "unplugin-icons/vite";
 
 import ServiceWorker from "astrojs-service-worker";
@@ -28,10 +28,10 @@ const dtsExtRE = /\?dts$/;
 // strip UTF-8 BOM
 export function stripBomTag(content) {
   if (content.charCodeAt(0) === 0xfeff) {
-    return content.slice(1)
+    return content.slice(1);
   }
 
-  return content
+  return content;
 }
 
 // Based on https://medium.com/@martin_hotell/typescript-library-tips-rollup-your-types-995153cc81c7
@@ -46,8 +46,8 @@ const generateDTS = async (id) => {
   });
 
   const { output } = await bundle.generate({
-    file: 'dist/js/config.d.ts',
-    format: 'es'
+    file: "dist/js/config.d.ts",
+    format: "es"
   });
 
   const result = output?.[0]?.code;
@@ -56,29 +56,29 @@ const generateDTS = async (id) => {
 
 function DTS() {
   return {
-    name: 'vite:dts',
+    name: "vite:dts",
     async transform(dts, id) {
       if (!dtsExtRE.test(id)) return null;
       if (SPECIAL_QUERY_RE.test(id)) return null;
 
-      id = id.replace(dtsExtRE, '');
+      id = id.replace(dtsExtRE, "");
       dts = stripBomTag(dts);
 
       try {
         if (!this.meta.watchMode) dts = await generateDTS(id);
         return `export default ${JSON.stringify(dts)}`;
       } catch (e) {
-        const errorMessageList = /[\d]+/.exec(e.message)
-        const position = errorMessageList && parseInt(errorMessageList[0], 10)
+        const errorMessageList = /[\d]+/.exec(e.message);
+        const position = errorMessageList && parseInt(errorMessageList[0], 10);
         const msg = position
           ? `, invalid DTS syntax found at line ${position}`
-          : `.`
-        this.error(`Failed to parse DTS file` + msg, e.idx)
+          : ".";
+        this.error("Failed to parse DTS file" + msg, e.idx);
 
         return `export default ${JSON.stringify(dts)}`;
       }
     }
-  }
+  };
 }
 
 // https://astro.build/config
@@ -117,7 +117,7 @@ export default defineConfig({
           {
             // Match any request that starts with https://api.producthunt.com, https://api.countapi.xyz, https://opencollective.com, etc...
             urlPattern:
-              /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com)|(?:bundlejs\.com\/take-measurement))/,
+              /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com)|(?:bundlejs\.com\/take-measurement))|(?:unpkg\.com)|(?:cdn\.skypack\.dev)|(?:(cdn\.)?esm\.sh)|(?:esm\.run)|(?:cdn\.jsdelivr\.net)|(?:deno\.land)|(?:raw\.githubusercontent\.com)/,
             // Apply a network-first strategy.
             handler: "NetworkFirst",
             method: "GET",
@@ -130,7 +130,7 @@ export default defineConfig({
           {
             // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
             urlPattern:
-              /workbox\-(.*)\.js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+              /workbox\-(.*)\.js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
             // Apply a stale-while-revalidate strategy.
             handler: "StaleWhileRevalidate",
             method: "GET",
@@ -170,13 +170,13 @@ export default defineConfig({
           // a helper to load icons from the file system
           // files under `./assets/icons` with `.svg` extension will be loaded as it's file name
           // you can also provide a transform callback to change each icon (optional)
-          'local': FileSystemIconLoader('./src/icons'),
+          "local": FileSystemIconLoader("./src/icons"),
         },
         iconCustomizer(collection, icon, props) {
           // customize this @iconify icon in this collection
-          if (collection === 'local') {
-            props.width = '24';
-            props.height = '24';
+          if (collection === "local") {
+            props.width = "24";
+            props.height = "24";
             props.viewBox = "0 0 1024 1024";
           }
         },

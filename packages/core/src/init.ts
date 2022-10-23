@@ -1,10 +1,11 @@
 import type * as ESBUILD from "esbuild-wasm";
 
-import { version } from "esbuild-wasm/package.json";
-import { Platform, PLATFORM_AUTO } from "./configs/platform";
+import type { Platform } from "./configs/platform";
+import { PLATFORM_AUTO } from "./configs/platform";
 
 import { EVENTS } from "./configs/events";
 import { getState, setState } from "./configs/state";
+import { version } from "esbuild-wasm/package.json";
 
 /**
  * Determines which esbuild skew to use depending on the platform option supplied, 
@@ -59,7 +60,7 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
       ) {
         if ("wasmModule" in opts) {
           await esbuild.initialize(opts);
-        } else { 
+        } else {
           const { default: ESBUILD_WASM } = await import("./wasm");
           await esbuild.initialize({
             wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),

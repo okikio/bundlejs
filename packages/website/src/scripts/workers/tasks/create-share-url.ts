@@ -1,14 +1,14 @@
 /// <reference lib="webworker" />
-import ts from "typescript";
 
-import { deepAssign, deepDiff, lzstring } from "@bundlejs/core/src/index";
 import { createFile } from "./create-file";
 
-import { DefaultConfig } from "../../configs/options";
 import { parseConfig } from "./parse-config";
+import { DefaultConfig } from "../../configs/options";
 
 import { serialize } from "../../utils/serialize-javascript";
 import { configModelResetValue } from "../../utils/get-initial";
+import { deepAssign, deepDiff, lzstring } from "@bundlejs/core/src/index";
+import ts from "typescript";
 
 const { compressToURL } = lzstring;
 export async function createShareURL(fileName: string, content: string, _config = configModelResetValue) {
@@ -27,15 +27,15 @@ export async function createShareURL(fileName: string, content: string, _config 
 
   source.forEachChild(
     (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
-      let isImport =
+      const isImport =
         node.kind == ts.SyntaxKind.ImportDeclaration;
-      let isExport =
+      const isExport =
         node.kind == ts.SyntaxKind.ExportDeclaration;
       if (!BackToBackImportExport) return;
 
       BackToBackImportExport = (isImport || isExport) && Boolean(node.moduleSpecifier);
       if (BackToBackImportExport) {
-        let clause = isImport ?
+        const clause = isImport ?
           (node as ts.ImportDeclaration)?.importClause :
           (node as ts.ExportDeclaration)?.exportClause;
 
@@ -56,8 +56,8 @@ export async function createShareURL(fileName: string, content: string, _config 
   // Remove import and export statements
   let remainingCode = source.getFullText();
   [...ImportExportStatements].map(({ pos }) => {
-    let { start, end } = pos;
-    let snippet = remainingCode.substring(start, end);
+    const { start, end } = pos;
+    const snippet = remainingCode.substring(start, end);
     return snippet;
   }).forEach((snippet) => {
     remainingCode = remainingCode.replace(snippet, "");
@@ -66,7 +66,7 @@ export async function createShareURL(fileName: string, content: string, _config 
   // Collect import/export statements and create URL from them
   let modules = "";
   let treeshake = "";
-  ImportExportStatements.forEach((v, i) => {
+  ImportExportStatements.forEach((v) => {
     modules +=
       (v.kind == "import" ? "(import)" : "") +
       v.module.replace(/^["']|["']$/g, "") +

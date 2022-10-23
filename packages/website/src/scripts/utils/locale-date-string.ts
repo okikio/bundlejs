@@ -5,4 +5,4 @@ export const toLocaleDateString = (date: string | number | Date) => {
       month: "long",
       day: "numeric"
     });
-}
+};

@@ -1,27 +1,23 @@
 import { Workbox, messageSW } from "workbox-window";
-import { createSignal } from 'solid-js';
+import { createSignal } from "solid-js";
 
 export interface RegisterSWOptions {
   immediate?: boolean
   onNeedRefresh?: (wb?: Workbox) => void
   onOfflineReady?: (wb?: Workbox) => void
   onRegistered?: (registration: ServiceWorkerRegistration | undefined, wb?: Workbox) => void
-  onRegisterError?: (error: any, wb?: Workbox) => void
+  onRegisterError?: (error: Error, wb?: Workbox) => void
 }
 
-const ServiceWorkerUrl = `/service-worker.js`;
+const ServiceWorkerUrl = "/service-worker.js";
 
 // __SW_AUTO_UPDATE__ will be replaced by virtual module
-const autoUpdateMode = 'false'; // '__SW_AUTO_UPDATE__'
+// const autoUpdateMode = "false"; // '__SW_AUTO_UPDATE__'
 // __SW_SELF_DESTROYING__ will be replaced by virtual module
-const selfDestroying = 'false'; // '__SW_SELF_DESTROYING__'
+// const selfDestroying = "false"; // '__SW_SELF_DESTROYING__'
 
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-// @ts-ignore replace at build
-const auto = autoUpdateMode === 'true'
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-// @ts-ignore replace at build time
-const autoDestroy = selfDestroying === 'true'
+const auto = false; // autoUpdateMode === "true";
+const autoDestroy = false; // selfDestroying === "true";
 
 export function registerSW(options: RegisterSWOptions = {}) {
   const {
@@ -30,10 +26,10 @@ export function registerSW(options: RegisterSWOptions = {}) {
     onOfflineReady,
     onRegistered,
     onRegisterError,
-  } = options
+  } = options;
 
-  let wb: Workbox | undefined
-  let registration: ServiceWorkerRegistration | undefined
+  let wb: Workbox | undefined;
+  let registration: ServiceWorkerRegistration | undefined;
 
   const updateServiceWorker = async (reloadPage = true) => {
     if (!auto) {
@@ -41,11 +37,11 @@ export function registerSW(options: RegisterSWOptions = {}) {
       // that will reload the page as soon as the previously waiting
       // service worker has taken control.
       if (reloadPage) {
-        wb?.addEventListener('controlling', (event) => {
+        wb?.addEventListener("controlling", (event) => {
           if (event.isUpdate) {
             window.location.reload();
           }
-        })
+        });
       }
 
       if (registration && registration.waiting) {
@@ -53,24 +49,24 @@ export function registerSW(options: RegisterSWOptions = {}) {
         // instructing it to activate.
         // Note: for this to work, you have to add a message
         // listener in your service worker. See below.
-        await messageSW(registration.waiting, { type: 'SKIP_WAITING' })
+        await messageSW(registration.waiting, { type: "SKIP_WAITING" });
       }
     }
-  }
+  };
 
-  if ('serviceWorker' in navigator) {
+  if ("serviceWorker" in navigator) {
     // __SW__, __SCOPE__ and __TYPE__ will be replaced by virtual module
     wb = new Workbox(ServiceWorkerUrl); 
 
-    wb.addEventListener('activated', (event) => {
+    wb.addEventListener("activated", (event) => {
       // this will only controls the offline request.
       // event.isUpdate will be true if another version of the service
       // worker was controlling the page when this version was registered.
       if (event.isUpdate)
-        auto && window.location.reload()
+        auto && window.location.reload();
       else if (!autoDestroy)
-        onOfflineReady?.(wb)
-    })
+        onOfflineReady?.(wb);
+    });
 
     if (!auto) {
       const showSkipWaitingPrompt = () => {
@@ -82,23 +78,23 @@ export function registerSW(options: RegisterSWOptions = {}) {
 
         // Assumes your app has some sort of prompt UI element
         // that a user can either accept or reject.
-        onNeedRefresh?.(wb)
-      }
+        onNeedRefresh?.(wb);
+      };
 
       // Add an event listener to detect when the registered
       // service worker has installed but is waiting to activate.
-      wb.addEventListener('waiting', showSkipWaitingPrompt)
+      wb.addEventListener("waiting", showSkipWaitingPrompt);
       // @ts-expect-error event listener provided by workbox-window
-      wb.addEventListener('externalwaiting', showSkipWaitingPrompt)
+      wb.addEventListener("externalwaiting", showSkipWaitingPrompt);
     }
 
     // register the service worker
     wb.register({ immediate }).then((r) => {
-      registration = r
-      onRegistered?.(r, wb)
+      registration = r;
+      onRegistered?.(r, wb);
     }).catch((e) => {
-      onRegisterError?.(e, wb)
-    })
+      onRegisterError?.(e, wb);
+    });
   }
 
   return updateServiceWorker;
@@ -111,31 +107,28 @@ export function createServiceWorker(options: RegisterSWOptions = {}) {
     onOfflineReady,
     onRegistered,
     onRegisterError,
-  } = options
+  } = options;
 
-  const needRefresh = createSignal(false)
-  const offlineReady = createSignal(false)
-
-  const [getNeedRefresh, setNeedRefresh] = needRefresh;
-  const [getOfflineReady, setOfflineReady] = offlineReady;
+  const [needRefresh, setNeedRefresh] = createSignal(false);
+  const [offlineReady, setOfflineReady] = createSignal(false);
 
   const updateServiceWorker = registerSW({
     immediate,
     onOfflineReady() {
-      setOfflineReady(true)
-      onOfflineReady?.()
+      setOfflineReady(true);
+      onOfflineReady?.();
     },
     onNeedRefresh() {
-      setNeedRefresh(true)
-      onNeedRefresh?.()
+      setNeedRefresh(true);
+      onNeedRefresh?.();
     },
     onRegistered,
     onRegisterError,
-  })
+  });
 
   return {
-    needRefresh,
-    offlineReady,
+    needRefresh: [needRefresh, setNeedRefresh] as const,
+    offlineReady: [offlineReady, setOfflineReady] as const,
     updateServiceWorker,
-  }
+  };
 }

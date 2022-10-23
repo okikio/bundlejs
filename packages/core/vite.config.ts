@@ -9,7 +9,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
     lib: {
       entry: "./src/index.ts",
-      name: 'bundlejs'
+      name: "bundlejs"
     },
     rollupOptions: {
       output: [
@@ -46,4 +46,4 @@ export default defineConfig({
       external: ["esbuild"]
     }
   },
-})
+});

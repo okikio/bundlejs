@@ -59,7 +59,7 @@
     "esno": "^0.16.3",
     "hastscript": "^7.1.0",
     "husky": "^8.0.1",
-    "pnpm": "^7.13.6",
+    "pnpm": "^7.14.0",
     "postcss": "^8.4.18",
     "postcss-font-grabber": "^3.1.0",
     "rehype": "^12.0.1",

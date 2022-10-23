@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
-import { createStreaming, Formatter } from "@dprint/formatter";
+import type { Formatter } from "@dprint/formatter";
+import { createStreaming } from "@dprint/formatter";
 import { getRequest } from "@bundlejs/core/src/index";
 
 let formatter: Formatter;
@@ -61,16 +62,12 @@ const config: Record<string, unknown> | undefined = {
 };
 
 const getFormatter = async () => {
-  try {
-    const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
-    const response = getRequest(url);
-    const formatter = await createStreaming(response);
-    formatter.setConfig({}, config);
-    return formatter;
-  } catch (err) {
-    throw err;
-  }
-}
+  const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
+  const response = getRequest(url);
+  const formatter = await createStreaming(response);
+  formatter.setConfig({}, config);
+  return formatter;
+};
 
 getFormatter().then(result => (formatter = result));
 
