@@ -1,4 +1,4 @@
-import { init, parse } from 'es-module-lexer';
+import { init, parse } from "es-module-lexer";
 
 (async () => {
   await init;
@@ -16,7 +16,7 @@ import { init, parse } from 'es-module-lexer';
     import /*comment!*/.meta.asdf;
   `;
 
-  const [imports, exports] = parse(source, 'optional-sourcename');
+  const [imports, exports] = parse(source, "optional-sourcename");
   console.log(source.substring(imports[0].ss, imports[0].se));
   console.log(exports);
 

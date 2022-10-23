@@ -14,11 +14,11 @@ export const urlJoin = (urlStr: string, ...args: string[]) => {
     join(url.pathname, ...args).replace(/%/g, "%25").replace(/\\/g, "%5C"),
   );
   return url.toString();
-}
+};
 
 /**
  * An import counts as a bare import if it's neither a relative import of an absolute import
  */
 export const isBareImport = (importStr: string) => {
   return /^(?!\.).*/.test(importStr) && !isAbsolute(importStr);
-}
+};

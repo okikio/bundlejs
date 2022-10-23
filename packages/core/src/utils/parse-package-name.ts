@@ -9,17 +9,17 @@ export const RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 export const RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 
 export function parsePackageName(input: string) {
-  const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input)
+  const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
 
   if (!m) {
-    throw new Error(`[parse-package-name] invalid package name: ${input}`)
+    throw new Error(`[parse-package-name] invalid package name: ${input}`);
   }
 
   return {
-    name: m[1] || '',
-    version: m[2] || 'latest',
-    path: m[3] || '',
-  }
+    name: m[1] || "",
+    version: m[2] || "latest",
+    path: m[3] || "",
+  };
 }
 
 export default parsePackageName;

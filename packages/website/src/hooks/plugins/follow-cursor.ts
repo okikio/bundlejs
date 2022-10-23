@@ -1,12 +1,12 @@
 
-import { type Props, type Instance, type FollowCursor } from 'tippy.js';
-export function isType(value: any, type: string): boolean {
+import { type Instance, type FollowCursor } from "tippy.js";
+export function isType(value: unknown, type: string): boolean {
   const str = {}.toString.call(value);
-  return str.indexOf('[object') === 0 && str.indexOf(`${type}]`) > -1;
+  return str.indexOf("[object") === 0 && str.indexOf(`${type}]`) > -1;
 }
 
 export function isMouseEvent(value: unknown): value is MouseEvent {
-  return isType(value, 'MouseEvent');
+  return isType(value, "MouseEvent");
 }
 
 export function getOwnerDocument(
@@ -26,11 +26,11 @@ function storeMouseCoords({ clientX, clientY }: MouseEvent): void {
 }
 
 function addMouseCoordsListener(doc: Document): void {
-  doc.addEventListener('mousemove', storeMouseCoords);
+  doc.addEventListener("mousemove", storeMouseCoords);
 }
 
 function removeMouseCoordsListener(doc: Document): void {
-  doc.removeEventListener('mousemove', storeMouseCoords);
+  doc.removeEventListener("mousemove", storeMouseCoords);
 }
 
 // https://stackoverflow.com/a/62759635/12140185
@@ -40,7 +40,7 @@ function closestCommonAncestor(elements) {
 }
 
 export const followCursor: FollowCursor = {
-  name: 'followCursor',
+  name: "followCursor",
   defaultValue: false,
   fn(instance) {
     const triggerTargets = Array.from((instance.props.triggerTarget ?? []) as Element[]);
@@ -54,16 +54,16 @@ export const followCursor: FollowCursor = {
 
     function getIsInitialBehavior(): boolean {
       return (
-        instance.props.followCursor === 'initial' && instance.state.isVisible
+        instance.props.followCursor === "initial" && instance.state.isVisible
       );
     }
 
     function addListener(): void {
-      doc.addEventListener('mousemove', onMouseMove);
+      doc.addEventListener("mousemove", onMouseMove);
     }
 
     function removeListener(): void {
-      doc.removeEventListener('mousemove', onMouseMove);
+      doc.removeEventListener("mousemove", onMouseMove);
     }
 
     function unsetGetReferenceClientRect(): void {
@@ -75,7 +75,7 @@ export const followCursor: FollowCursor = {
     function onMouseMove(event: MouseEvent): void {
       // If the instance is interactive, avoid updating the position unless it's
       // over the reference element
-      let isCursorOverReference = event.target ? reference.contains(event.target as Node) : true;
+      const isCursorOverReference = event.target ? reference.contains(event.target as Node) : true;
 
       const { followCursor } = instance.props;
       const { clientX, clientY } = event ?? {};
@@ -93,15 +93,15 @@ export const followCursor: FollowCursor = {
             let x = clientX;
             let y = clientY;
 
-            if (followCursor === 'initial') {
+            if (followCursor === "initial") {
               x = rect.left + relativeX;
               y = rect.top + relativeY;
             }
 
-            const top = followCursor === 'horizontal' ? rect.top : y;
-            const right = followCursor === 'vertical' ? rect.right : x;
-            const bottom = followCursor === 'horizontal' ? rect.bottom : y;
-            const left = followCursor === 'vertical' ? rect.left : x;
+            const top = followCursor === "horizontal" ? rect.top : y;
+            const right = followCursor === "vertical" ? rect.right : x;
+            const bottom = followCursor === "horizontal" ? rect.bottom : y;
+            const left = followCursor === "vertical" ? rect.left : x;
 
             return {
               width: right - left,
@@ -182,7 +182,7 @@ export const followCursor: FollowCursor = {
         if (isMouseEvent(event)) {
           mouseCoords = { clientX: event.clientX, clientY: event.clientY };
         }
-        wasFocusEvent = event.type === 'focus';
+        wasFocusEvent = event.type === "focus";
       },
       onHidden(): void {
         if (instance.props.followCursor) {

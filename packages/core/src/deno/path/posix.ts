@@ -249,7 +249,7 @@ export function dirname(path: string): string {
  */
 export function basename(path: string, ext = ""): string {
   if (ext !== undefined && typeof ext !== "string") {
-    throw new TypeError('"ext" argument must be a string');
+    throw new TypeError("\"ext\" argument must be a string");
   }
   assertPath(path);
 

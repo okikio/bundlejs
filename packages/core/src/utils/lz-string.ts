@@ -3,8 +3,8 @@
  */
 
 // private property
-export const keyStrBase64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-export const keyStrUriSafe = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$';
+export const keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+export const keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
 export const baseReverseDic: Record<string, Record<string, number>> = {};
 
 export function getBaseValue(alphabet: string, character: string) {
@@ -20,40 +20,40 @@ export function getBaseValue(alphabet: string, character: string) {
 }
 
 export function compressToBase64(input: string): string {
-  if (input == null) return '';
+  if (input == null) return "";
   const res = _compress(input, 6, (a) => keyStrBase64.charAt(a));
 
   // To produce valid Base64
   switch (res.length % 4) {
-    default: // When could this happen ?
-    case 0:
-      return res;
-    case 1:
-      return res + '===';
-    case 2:
-      return res + '==';
-    case 3:
-      return res + '=';
+  default: // When could this happen ?
+  case 0:
+    return res;
+  case 1:
+    return res + "===";
+  case 2:
+    return res + "==";
+  case 3:
+    return res + "=";
   }
 }
 
 export function decompressFromBase64(input: string): string | null {
-  if (input == null) return '';
-  if (input == '') return null;
+  if (input == null) return "";
+  if (input == "") return null;
   return _decompress(input.length, 32, (index) => getBaseValue(keyStrBase64, input.charAt(index)));
 }
 
 //compress into a string that is already URI encoded
 export function compressToURL(input: string): string {
-  if (input == null) return '';
+  if (input == null) return "";
   return _compress(input, 6, (a) => keyStrUriSafe.charAt(a));
 }
 
 //decompress from an output of decompressFromURL
 export function decompressFromURL(input: string): string | null {
-  if (input == null) return '';
-  if (input == '') return null;
-  input = input.replaceAll(' ', '+');
+  if (input == null) return "";
+  if (input == "") return null;
+  input = input.replaceAll(" ", "+");
 
   return _decompress(input.length, 32, (index) => getBaseValue(keyStrUriSafe, input.charAt(index)));
 }
@@ -63,8 +63,8 @@ export function compress(uncompressed: string): string {
 }
 
 export function decompress(compressed: null | string): string | null {
-  if (compressed == null) return '';
-  if (compressed == '') return null;
+  if (compressed == null) return "";
+  if (compressed == "") return null;
   return _decompress(compressed.length, 32768, (index) => compressed.charCodeAt(index));
 }
 
@@ -76,7 +76,7 @@ export function _compress(
   bitsPerChar: number,
   getCharFromInt: (int: number) => string,
 ) {
-  if (uncompressed == null) return '';
+  if (uncompressed == null) return "";
 
   const contextData = [];
   const contextDictionary: Record<string, number> = {};
@@ -86,9 +86,9 @@ export function _compress(
   let j: number;
   let value: number;
 
-  let contextC = '';
-  let contextW = '';
-  let contextWc = '';
+  let contextC = "";
+  let contextW = "";
+  let contextWc = "";
 
   // Compensate for the first entry which should not count
   let contextEnlargeIn = 2;
@@ -192,7 +192,7 @@ export function _compress(
   }
 
   // Output the code for w.
-  if (contextW !== '') {
+  if (contextW !== "") {
     if (Object.prototype.hasOwnProperty.call(contextDictionaryToCreate, contextW)) {
       if (contextW.charCodeAt(0) < 256) {
         for (i = 0; i < contextNumBits; i++) {
@@ -293,20 +293,20 @@ export function _compress(
     } else contextDataPosition++;
   }
 
-  return contextData.join('');
+  return contextData.join("");
 }
 
 /**
  * @internal
  */
 export function _decompress(length: number, resetValue: number, getNextValue: (index: number) => number) {
-  let dictionary: (string | number)[] = [];
+  const dictionary: (string | number)[] = [];
   let next: number;
   let enlargeIn = 4;
   let dictSize = 4;
   let numBits = 3;
-  let entry: string = '';
-  let result = [];
+  let entry = "";
+  const result = [];
   let i: number;
   let w: string | number;
   let bits: number;
@@ -314,7 +314,7 @@ export function _decompress(length: number, resetValue: number, getNextValue: (i
   let maxpower: number;
   let power: number;
   let c: string | number;
-  let data = { val: getNextValue(0), position: resetValue, index: 1 };
+  const data = { val: getNextValue(0), position: resetValue, index: 1 };
 
   for (i = 0; i < 3; i += 1) dictionary[i] = i;
 
@@ -333,47 +333,47 @@ export function _decompress(length: number, resetValue: number, getNextValue: (i
   }
 
   switch ((next = bits)) {
-    case 0:
-      bits = 0;
-      maxpower = Math.pow(2, 8);
-      power = 1;
-      while (power != maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) {
-          data.position = resetValue;
-          data.val = getNextValue(data.index++);
-        }
-        bits |= (resb > 0 ? 1 : 0) * power;
-        power <<= 1;
+  case 0:
+    bits = 0;
+    maxpower = Math.pow(2, 8);
+    power = 1;
+    while (power != maxpower) {
+      resb = data.val & data.position;
+      data.position >>= 1;
+      if (data.position == 0) {
+        data.position = resetValue;
+        data.val = getNextValue(data.index++);
       }
-      c = String.fromCharCode(bits);
-      break;
-    case 1:
-      bits = 0;
-      maxpower = Math.pow(2, 16);
-      power = 1;
-      while (power != maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) {
-          data.position = resetValue;
-          data.val = getNextValue(data.index++);
-        }
-        bits |= (resb > 0 ? 1 : 0) * power;
-        power <<= 1;
+      bits |= (resb > 0 ? 1 : 0) * power;
+      power <<= 1;
+    }
+    c = String.fromCharCode(bits);
+    break;
+  case 1:
+    bits = 0;
+    maxpower = Math.pow(2, 16);
+    power = 1;
+    while (power != maxpower) {
+      resb = data.val & data.position;
+      data.position >>= 1;
+      if (data.position == 0) {
+        data.position = resetValue;
+        data.val = getNextValue(data.index++);
       }
-      c = String.fromCharCode(bits);
-      break;
-    case 2:
-      return '';
+      bits |= (resb > 0 ? 1 : 0) * power;
+      power <<= 1;
+    }
+    c = String.fromCharCode(bits);
+    break;
+  case 2:
+    return "";
   }
   dictionary[3] = c! as string;
   w = c!;
   result.push(c!);
   while (true) {
     if (data.index > length) {
-      return '';
+      return "";
     }
 
     bits = 0;
@@ -391,45 +391,45 @@ export function _decompress(length: number, resetValue: number, getNextValue: (i
     }
 
     switch ((c = bits)) {
-      case 0:
-        bits = 0;
-        maxpower = Math.pow(2, 8);
-        power = 1;
-        while (power != maxpower) {
-          resb = data.val & data.position;
-          data.position >>= 1;
-          if (data.position == 0) {
-            data.position = resetValue;
-            data.val = getNextValue(data.index++);
-          }
-          bits |= (resb > 0 ? 1 : 0) * power;
-          power <<= 1;
+    case 0:
+      bits = 0;
+      maxpower = Math.pow(2, 8);
+      power = 1;
+      while (power != maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) {
+          data.position = resetValue;
+          data.val = getNextValue(data.index++);
         }
+        bits |= (resb > 0 ? 1 : 0) * power;
+        power <<= 1;
+      }
 
-        dictionary[dictSize++] = String.fromCharCode(bits);
-        c = dictSize - 1;
-        enlargeIn--;
-        break;
-      case 1:
-        bits = 0;
-        maxpower = Math.pow(2, 16);
-        power = 1;
-        while (power != maxpower) {
-          resb = data.val & data.position;
-          data.position >>= 1;
-          if (data.position == 0) {
-            data.position = resetValue;
-            data.val = getNextValue(data.index++);
-          }
-          bits |= (resb > 0 ? 1 : 0) * power;
-          power <<= 1;
+      dictionary[dictSize++] = String.fromCharCode(bits);
+      c = dictSize - 1;
+      enlargeIn--;
+      break;
+    case 1:
+      bits = 0;
+      maxpower = Math.pow(2, 16);
+      power = 1;
+      while (power != maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) {
+          data.position = resetValue;
+          data.val = getNextValue(data.index++);
         }
-        dictionary[dictSize++] = String.fromCharCode(bits);
-        c = dictSize - 1;
-        enlargeIn--;
-        break;
-      case 2:
-        return result.join('');
+        bits |= (resb > 0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+      dictionary[dictSize++] = String.fromCharCode(bits);
+      c = dictSize - 1;
+      enlargeIn--;
+      break;
+    case 2:
+      return result.join("");
     }
 
     if (enlargeIn == 0) {
@@ -440,7 +440,7 @@ export function _decompress(length: number, resetValue: number, getNextValue: (i
     if (dictionary[c]) {
       entry = dictionary[c] as string;
     } else {
-      if (c === dictSize && typeof w === 'string') {
+      if (c === dictSize && typeof w === "string") {
         entry = w + w.charAt(0);
       } else {
         return null;

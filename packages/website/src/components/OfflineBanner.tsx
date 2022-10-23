@@ -1,5 +1,5 @@
 import type { ComponentProps } from "solid-js";
-import { createSignal, onMount, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import OfflineIcon from "~icons/fluent/cloud-offline-24-regular";
 
 const [isOnline, setIsOnline] = createSignal(true);

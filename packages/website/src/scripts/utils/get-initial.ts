@@ -3,10 +3,10 @@ import { EasyDefaultConfig } from "../configs/options";
 import { parseShareURLQuery } from "./parse-query";
 export function generateConfigValue(config: string | Record<string, unknown>) {
   return [
-    '// Configure',
-    `import type { ConfigOptions } from "@bundlejs/core";`,
-    `export default ${typeof config == 'string' ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
-  ].join("\n")
+    "// Configure",
+    "import type { ConfigOptions } from \"@bundlejs/core\";",
+    `export default ${typeof config == "string" ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
+  ].join("\n");
 }
 export const configModelResetValue = generateConfigValue(EasyDefaultConfig);
 
@@ -30,7 +30,7 @@ export function getShareURLValues() {
       configValue: configQuery ? generateConfigValue(
         deepAssign({}, EasyDefaultConfig, JSON.parse(configQuery))
       ) : configModelResetValue
-    }
+    };
   }
 
   return {

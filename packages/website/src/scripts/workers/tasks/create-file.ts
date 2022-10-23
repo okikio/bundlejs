@@ -5,11 +5,11 @@
 // which can do work on a bg thread.
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
+import TS_LIBS_URL from "../../ts-libs.json?url";
 import { createSystem, createVirtualTypeScriptEnvironment, knownLibFilesForCompilerOptions } from "@typescript/vfs";
 import ts from "typescript";
 
 import { getRequest } from "@bundlejs/core/src/util";
-import TS_LIBS_URL from "../../ts-libs.json?url";
 
 export async function createFile(fileName: string, content: string) {  
   const libFiles: Record<string, string> = await (await getRequest(TS_LIBS_URL, true)).json();

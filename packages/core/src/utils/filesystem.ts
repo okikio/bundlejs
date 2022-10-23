@@ -1,5 +1,5 @@
-import { dirname, resolve } from "../deno/path/mod";
 import { decode, encode } from "./encode-decode";
+import { dirname, resolve } from "../deno/path/mod";
 
 /** Virtual Filesystem Storage */
 export const FileSystem = new Map<string, Uint8Array>();
@@ -13,12 +13,12 @@ export const FileSystem = new Map<string, Uint8Array>();
  */
 export const getResolvedPath = async (path: string, importer?: string) => {
   let resolvedPath = path;
-  if (importer && path.startsWith('.'))
+  if (importer && path.startsWith("."))
     resolvedPath = resolve(dirname(importer), path);
 
   if (FileSystem.has(resolvedPath)) return resolvedPath;
   throw `File "${resolvedPath}" does not exist`;
-}
+};
 
 /**
  * Retrevies file from virtual file system storage in either string or uint8array buffer format
@@ -28,14 +28,14 @@ export const getResolvedPath = async (path: string, importer?: string) => {
  * @param importer an absolute path to use to determine a relative file path
  * @returns file from file system storage in either string format or as a Uint8Array buffer
  */
-export const getFile = async (path: string, type: 'string' | 'buffer' = "buffer", importer?: string) => {
-  let resolvedPath = await getResolvedPath(path, importer);
+export const getFile = async (path: string, type: "string" | "buffer" = "buffer", importer?: string) => {
+  const resolvedPath = await getResolvedPath(path, importer);
 
   if (FileSystem.has(resolvedPath)) {
-    let file = FileSystem.get(resolvedPath);
+    const file = FileSystem.get(resolvedPath);
     return type == "string" ? decode(file) : file;
   }
-}
+};
 
 /**
  * Writes file to filesystem in either string or uint8array buffer format
@@ -46,7 +46,7 @@ export const getFile = async (path: string, type: 'string' | 'buffer' = "buffer"
  */
 export const setFile = async (path: string, content: Uint8Array | string, importer?: string) => {
   let resolvedPath = path;
-  if (importer && path.startsWith('.'))
+  if (importer && path.startsWith("."))
     resolvedPath = resolve(dirname(importer), path);
 
   try {
@@ -54,4 +54,4 @@ export const setFile = async (path: string, content: Uint8Array | string, import
   } catch (e) {
     throw `Error occurred while writing to "${resolvedPath}"`;
   }
-}
+};

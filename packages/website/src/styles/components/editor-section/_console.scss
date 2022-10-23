@@ -21,4 +21,17 @@
     @apply px-0 h-full;
     @apply overflow-auto;
   }
+
+  .console-list {
+    @apply flex flex-col flex-grow;
+    @apply overflow-auto;
+    @apply gap-2;
+  }
+
+  .console-log {
+    @apply px-2 py-1.5;
+    @apply border-b border-gray-200 dark:border-gray-700/90;
+    @apply text-sm;
+    @apply text-gray-700 dark:text-gray-300;
+  }
 }

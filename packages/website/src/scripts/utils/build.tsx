@@ -1,5 +1,6 @@
-import toast from "../../components/SolidToast";
 import { setState, state } from "./store";
+import toast from "../../components/SolidToast";
+import { taskRunner } from "../index";
 
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
   style: "narrow",
@@ -11,10 +12,7 @@ export async function bundle() {
     const { input, config } = state.monaco.models;
 
     try {
-      const worker = state.monaco.workers.taskRunner;
-      const thisWorker = await worker.getWorker();
-
-      return await thisWorker.bundle(
+      return await taskRunner.bundle(
         input.uri.authority,
         input.getValue(),
         config.getValue()
@@ -46,11 +44,11 @@ export async function build() {
         {
           loading: "Building...",
           success: () => <>Build Done with a size of {result.size} {timeFormatter.format(elapsed, "seconds")}</>,
-          error: 'Build Error'
+          error: "Build Error"
         }
       );
 
-      console.log(result?.outputFiles, { size: result })
+      console.log(result?.outputFiles, { size: result });
       if (result?.outputFiles) {
         state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
       }

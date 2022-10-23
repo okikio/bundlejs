@@ -10,8 +10,8 @@ import { wasm as WASM } from "../src/deno/denoflate/pkg/denoflate_bg.wasm.js";
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 
-export async function build(src = `./node_modules/esbuild-wasm/esbuild.wasm`, target = `src/wasm.ts`, mode: "gzip" | "lz4" = "gzip") {
-  console.log(`\n- Source file: ${src}`)
+export async function build(src = "./node_modules/esbuild-wasm/esbuild.wasm", target = "src/wasm.ts", mode: "gzip" | "lz4" = "gzip") {
+  console.log(`\n- Source file: ${src}`);
   const res = await fs.readFile(src);
   const wasm = new Uint8Array(res);
   console.log(`- Read WASM (size: ${bytes(wasm.length)} bytes)`);
@@ -62,4 +62,3 @@ export async function build(src = `./node_modules/esbuild-wasm/esbuild.wasm`, ta
 }
 
 await build();
-// await build("./src/deno/denoflate/pkg/denoflate_bg.wasm", "src/deno/denoflate/pkg/wasm.ts", "lz4");

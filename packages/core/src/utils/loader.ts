@@ -1,5 +1,5 @@
-import type { Loader } from 'esbuild-wasm';
-import { extname } from './path';
+import type { Loader } from "esbuild-wasm";
+import { extname } from "./path";
 
 /** Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts */
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];
@@ -23,4 +23,4 @@ export const inferLoader = (urlStr: string): Loader => {
   if (ext == ".wasm") return "file";
 
   return ext.length ? "text" : "ts";
-}
+};

@@ -45,11 +45,11 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
 
   try {
     try {
-      const key = `p.env.NODE_ENV`.replace("p.", "process.");
+      const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await transform(input, {
         define: {
-          "__NODE__": `false`,
-          [key]: `"production"`,
+          "__NODE__": "false",
+          [key]: "\"production\"",
           ...define
         },
         ...esbuildOpts,

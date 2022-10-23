@@ -1,4 +1,6 @@
 import type { Environment } from "monaco-editor";
+
+import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 import {
   editor as Editor,
   languages,
@@ -10,27 +12,17 @@ import { getResolvedPackage } from "@bundlejs/core/src/util";
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
 
-import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
-
+import { EDITOR_WORKER, TS_WORKER } from "../index";
 import { mediaTheme, themeGet } from "../theme";
 
-import CONFIG_DTS from "@bundlejs/core/src/index?dts";
 
 import { toLocaleDateString } from "../utils/locale-date-string";
 import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
-import { USE_SHAREDWORKER } from "../../env";
-
-const TS_WORKER = USE_SHAREDWORKER ?
-  new SharedWorker(new URL('../workers/typescript.ts', import.meta.url), { name: "typescript", type: 'module' }) :
-  new Worker(new URL('../workers/typescript.ts', import.meta.url), { name: "typescript", type: 'module' });
-
-const EDITOR_WORKER = new Worker(new URL('../workers/editor.ts', import.meta.url), { name: "editor", type: 'module' });
-EDITOR_WORKER?.terminate?.();
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
 // bundles that contain the web workers.
-(globalThis as any).MonacoEnvironment = {
+(globalThis as typeof globalThis & { MonacoEnvironment: object }).MonacoEnvironment = {
   getWorker: function (_, label) {
     if (label === "typescript" || label === "javascript") {
       return TS_WORKER;
@@ -42,8 +34,8 @@ EDITOR_WORKER?.terminate?.();
 
 export const outputModelResetValue = "// Output";
 export const inputModelResetValue = [
-  '// Click build for the bundled, minified and compressed package size',
-  'export * from "@okikio/animate";'
+  "// Click build for the bundled, minified and compressed package size",
+  "export * from \"@okikio/animate\";"
 ].join("\n");
 export { configModelResetValue };
 
@@ -51,9 +43,9 @@ export { languages, Editor, Uri };
 
 export const createModel = (initialValue: string, lanuguage: string, uri: Uri) => {
   const model = Editor.getModel(uri);
-  if (!model) return Editor.createModel(initialValue, lanuguage, uri)
+  if (!model) return Editor.createModel(initialValue, lanuguage, uri);
   return model;
-}
+};
 
 export function build(inputEl: HTMLDivElement) {
   const html = document.querySelector("html");
@@ -63,11 +55,8 @@ export function build(inputEl: HTMLDivElement) {
 
   inputEl.textContent = "";
 
-  // @ts-ignore
-  Editor.defineTheme("dark", GithubDark);
-
-  // @ts-ignore
-  Editor.defineTheme("light", GithubLight);
+  Editor.defineTheme("dark", GithubDark as Editor.IStandaloneThemeData);
+  Editor.defineTheme("light", GithubLight as Editor.IStandaloneThemeData);
 
   // Basically monaco on android is pretty bad, this makes it less bad
   // See https://github.com/microsoft/pxt/pull/7099 for this, and the long
@@ -76,7 +65,7 @@ export function build(inputEl: HTMLDivElement) {
 
   const inputModel = createModel(initialValue, "typescript", Uri.parse("file://input.tsx"));
   const outputModel = createModel(outputModelResetValue, "typescript", Uri.parse("file://output.tsx"));
-  const configModel = createModel(configValue, 'typescript', Uri.parse('file://config.ts'));
+  const configModel = createModel(configValue, "typescript", Uri.parse("file://config.ts"));
 
   inputModel.updateOptions({ tabSize: 2 });
   outputModel.updateOptions({ tabSize: 2 });
@@ -84,7 +73,6 @@ export function build(inputEl: HTMLDivElement) {
 
   const editorOpts: Editor.IStandaloneEditorConstructionOptions = {
     model: null,
-    // @ts-ignore
     bracketPairColorization: {
       enabled: true,
     },
@@ -117,7 +105,7 @@ export function build(inputEl: HTMLDivElement) {
     scrollBeyondLastLine: true,
     smoothScrolling: true,
     theme: (() => {
-      let theme = themeGet(html);
+      const theme = themeGet(html);
       return theme == "system" ? mediaTheme() : theme;
     })(),
     automaticLayout: true,
@@ -135,7 +123,7 @@ export function build(inputEl: HTMLDivElement) {
   }
 
   document?.addEventListener("theme-change", () => {
-    let theme = themeGet(html);
+    const theme = themeGet(html);
     Editor.setTheme(theme == "system" ? mediaTheme() : theme);
   });
 
@@ -172,7 +160,6 @@ export function build(inputEl: HTMLDivElement) {
     jsx: languages.typescript.JsxEmit.ReactJSX,
   });
 
-  // @ts-ignore
   languages.typescript.typescriptDefaults.setInlayHintsOptions({
     includeInlayParameterNameHints: "literals",
     includeInlayParameterNameHintsWhenArgumentMatchesName: true
@@ -181,11 +168,11 @@ export function build(inputEl: HTMLDivElement) {
   languages.typescript.typescriptDefaults.setEagerModelSync(true);
   languages.typescript.typescriptDefaults.addExtraLib(
     "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
-    `file://node_modules/@types/http/https.d.ts`
+    "file://node_modules/@types/http/https.d.ts"
   );
   languages.typescript.typescriptDefaults.addExtraLib(
     `declare module '@bundlejs/core' {\n${CONFIG_DTS}\n}`,
-    `file://node_modules/@bundlejs/core/config.d.ts`
+    "file://node_modules/@bundlejs/core/config.d.ts"
   );
 
   const IMPORTS_REXPORTS_REQUIRE_REGEX =
@@ -193,14 +180,14 @@ export function build(inputEl: HTMLDivElement) {
 
   languages.registerHoverProvider("typescript", {
     provideHover(model, position) {
-      let content = model.getLineContent(position.lineNumber);
+      const content = model.getLineContent(position.lineNumber);
       if (typeof content != "string" || content.length == 0) return;
 
-      let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
+      const matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
       if (matches.length <= 0) return;
       if (model == configModel && content.match("@bundlejs/core")) return;
 
-      let matchArr = matches.map(([, pkg]) => pkg);
+      const matchArr = matches.map(([, pkg]) => pkg);
       let pkg = matchArr[0];
 
       if (/\.|http(s)?\:/.test(pkg)) return;
@@ -219,7 +206,7 @@ export function build(inputEl: HTMLDivElement) {
         const _author = author ? `[@${author}](https://www.npmjs.com/~${author})` : "";
         const _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
         const _npm_link = links?.npm ?? `https://www.npmjs.com/package/${name}`;
-        const _version = version ? `v${version}` : '';
+        const _version = version ? `v${version}` : "";
 
         return {
           contents: [].concat({
@@ -236,4 +223,4 @@ export function build(inputEl: HTMLDivElement) {
   });
 
   return [editor, inputModel, outputModel, configModel, getModelType] as const;
-};
+}

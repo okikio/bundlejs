@@ -7,9 +7,9 @@ export interface IAnimateChange {
 }
 
 export function createDetailsEffect() {
-  let [isClosing, setIsClosing] = createSignal(false);
-  let [isExpanding, setIsExpanding] = createSignal(false);
-  let [isOpen, setIsOpen] = createSignal(false);
+  const [isClosing, setIsClosing] = createSignal(false);
+  const [isExpanding, setIsExpanding] = createSignal(false);
+  const [isOpen, setIsOpen] = createSignal(false);
 
   let animation: Animation = null;
   let contentAnimation: Animation = null;
@@ -23,26 +23,23 @@ export function createDetailsEffect() {
     ref = _ref;
     summaryRef = _summaryRef;
     contentRef = _contentRef;
-    anchorRef = _summaryRef?.querySelector?.('a');
+    anchorRef = _summaryRef?.querySelector?.("a");
 
     setIsOpen(ref.open);
 
     createEffect(() => {
       if (!ref) return;
 
-      // @ts-ignore
-      ref.dataset.isClosing = isClosing();
-
-      // @ts-ignore
-      ref.dataset.isExpanding = isExpanding();
+      ref.dataset.isClosing = `${isClosing()}`;
+      ref.dataset.isExpanding = `${isExpanding()}`;
     });
 
     hashChange();
-    globalThis?.addEventListener?.('hashchange', hashChange);
+    globalThis?.addEventListener?.("hashchange", hashChange);
   }
 
   function hashChange() {
-    let { hash } = globalThis.location;
+    const { hash } = globalThis.location;
 
     if (ref && hash && hash.length) {
       if (ref.open != true && ref.id == hash.slice(1)) {
@@ -157,7 +154,7 @@ export function createDetailsEffect() {
     setIsClosing(false);
     setIsExpanding(false);
 
-    globalThis?.removeEventListener?.('hashchange', hashChange);
+    globalThis?.removeEventListener?.("hashchange", hashChange);
   }
 
   return {

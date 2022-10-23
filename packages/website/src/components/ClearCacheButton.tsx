@@ -1,25 +1,19 @@
-import { onCleanup, onMount } from "solid-js";
-import { createSignal } from "solid-js";
-
+import Button from "./Button";
 import { CACHE } from "@bundlejs/core/src/util";
 
 import IconArrowClockwise from "~icons/fluent/arrow-clockwise-24-filled";
-import Button from "./Button";
 
 export function ClearCacheButton() {
-  function onClick() { 
-    (async () => {
-      // Clear Cache
-      if ("caches" in globalThis) {
-        let cache_names = await caches.keys();
-        await Promise.all(cache_names.map(cache_name => {
-          return caches.delete(cache_name);
-        }));
-      } else await CACHE.clear();
+  async function onClick() {
+    if ("caches" in globalThis) {
+      const cache_names = await caches.keys();
+      await Promise.all(cache_names.map(cache_name => {
+        return caches.delete(cache_name);
+      }));
+    } else CACHE.clear();
 
-      console.log("Clear Cache");
-      globalThis?.location?.reload();
-    })();
+    console.log("Clear Cache");
+    globalThis?.location?.reload();
   }
 
   return (

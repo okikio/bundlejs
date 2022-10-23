@@ -5,13 +5,13 @@ import { basename } from "path";
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 
-export async function generateLibs(src = `./node_modules/typescript/lib/*.d.ts`, target = `src/scripts/ts-libs.json`) {
+export async function generateLibs(src = "./node_modules/typescript/lib/*.d.ts", target = "src/scripts/ts-libs.json") {
   console.log(`\n- Source file: ${src}`);
 
   const files = await glob([src]);
-  console.log(files)
+  console.log(files);
   const res = await Promise.all(
-    files.map(async (path) => [basename(path), (await fs.readFile(path, 'utf-8')).trim()])
+    files.map(async (path) => [basename(path), (await fs.readFile(path, "utf-8")).trim()])
   );
   const json = Object.fromEntries(res);
 
