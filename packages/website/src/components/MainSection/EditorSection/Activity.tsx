@@ -16,17 +16,12 @@ import { createTextSwitch } from "../../../hooks/text-switch";
 import { ToolTip } from "../../../hooks/tooltip";
 import { build } from "../../../scripts/utils/build";
 
-const timeFormatter = new Intl.RelativeTimeFormat("en", {
-  style: "narrow",
-  numeric: "auto",
-});
-
-export function Activity(props?: ComponentProps<'div'>) {
+export function Activity() {
   let shareRef: HTMLButtonElement = null;
   let buildRef: HTMLButtonElement = null;
 
-  let ShareText = createTextSwitch(["Share", "Shared!"]);
-  let BuildText = createTextSwitch(["Build", "Building!"]);
+  const ShareText = createTextSwitch(["Share", "Shared!"]);
+  const BuildText = createTextSwitch(["Build", "Building!"]);
 
   onMount(() => {
     // toast("Hey, that's cool", { duration: Infinity });
@@ -38,7 +33,7 @@ export function Activity(props?: ComponentProps<'div'>) {
   return (
     <div class="activity-section">
       <div class="activity-container">
-        <div class="flex-grow"></div>
+        <div class="flex-grow" />
 
         <ToolTip
           mobile="(min-width: 700px)"
@@ -98,7 +93,7 @@ export function Activity(props?: ComponentProps<'div'>) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Activity;

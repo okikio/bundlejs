@@ -35,7 +35,7 @@ const COMPRESSED = (
 export const Tooltip: Component<TooltipProps> = ({ node, visible, root, sizeProperty }) => {
   const { availableSizeProperties, getModuleSize, data } = useContext(StaticContext);
 
-  const ref: HTMLDivElement = null;
+  let ref: HTMLDivElement = null;
   const [style, setStyle] = createSignal({});
 
   const content = createMemo(() => {

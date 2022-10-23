@@ -21,8 +21,11 @@ export const connect = async (port: MessagePort | typeof globalThis) => {
   Comlink.expose(TaskRunner, port);
   const proxy = Comlink.wrap<typeof addLogs>(port);
 
-  EVENTS.on("logger.log", (data) => {
-    port.postMessage({ type: "log", data });
+  EVENTS.on("init.complete", (data) => {
+    proxy({ type: "info", data: "Initialized 🚀✨" });
+  });
+
+  EVENTS.on("logger.info", (data) => {
     proxy({ type: "log", data });
   });
 };

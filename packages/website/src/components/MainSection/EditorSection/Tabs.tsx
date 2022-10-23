@@ -1,12 +1,12 @@
-import { ComponentProps, onMount } from "solid-js";
+import { onMount } from "solid-js";
 import Button from "../../Button";
 
 import IconSettings from "~icons/fluent/settings-24-regular";
 import { state } from "../../../scripts/utils/store";
 
-import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+import { SingletonToolTip } from "../../../hooks/tooltip";
 
-export function Tabs(props?: ComponentProps<'div'>) {
+export function Tabs() {
   let inputRef: HTMLButtonElement = null;
   let outputRef: HTMLButtonElement = null;
   let configRef: HTMLButtonElement = null;
@@ -26,7 +26,7 @@ export function Tabs(props?: ComponentProps<'div'>) {
   }
 
   function getRefByModelId(model: string) {
-    let list = {
+    const list = {
       "input": inputRef,
       "output": outputRef,
       "config": configRef
@@ -44,7 +44,7 @@ export function Tabs(props?: ComponentProps<'div'>) {
       else if (isTarget(configRef, e?.target)) { modelId = "config"; }
       else { return; }
 
-      let model = state.monaco.models?.[modelId];
+      const model = state.monaco.models?.[modelId];
       state.monaco?.editor?.setModel(model);
 
       let tabRef = getRefByModelId(modelId);
@@ -57,17 +57,15 @@ export function Tabs(props?: ComponentProps<'div'>) {
 
   return (
     <div class="tab-bar">
-      {/* <div class="tab-container" onClick={onClick}> */}
-        <SingletonToolTip as="div" class="tab-container" onClick={onClick}>
-          <Button data-tippy-content={"Input Editor Tab"} data-tippy-placement="top" data-model="input" class="active" ref={inputRef}>Input</Button>
-          <Button data-tippy-content={"Output Editor Tab"} data-tippy-placement="top" data-model="output" class="umami--click--output-tab" ref={outputRef}>Output</Button>
-          <Button data-tippy-content={"Config Editor Tab"} data-tippy-placement="top" data-model="config" class="umami--click--config-tab" ref={configRef} aria-label={"Config Editor Tab"}>
-            <IconSettings />
-          </Button>
-        </SingletonToolTip>
-      {/* </div> */}
+      <SingletonToolTip as="div" class="tab-container" onClick={onClick}>
+        <Button data-tippy-content={"Input Editor Tab"} data-tippy-placement="top" data-model="input" class="active" ref={inputRef}>Input</Button>
+        <Button data-tippy-content={"Output Editor Tab"} data-tippy-placement="top" data-model="output" class="umami--click--output-tab" ref={outputRef}>Output</Button>
+        <Button data-tippy-content={"Config Editor Tab"} data-tippy-placement="top" data-model="config" class="umami--click--config-tab" ref={configRef} aria-label={"Config Editor Tab"}>
+          <IconSettings />
+        </Button>
+      </SingletonToolTip>
     </div>
-  )
+  );
 }
 
 export default Tabs;

@@ -8,8 +8,8 @@ import Button from "../../Button";
 
 import { debounce } from "@bundlejs/core/src/util";
 
-export function DragHandle(props?: ComponentProps<'button'> & {
-  direction?: 'x' | 'y';
+export function DragHandle(props?: ComponentProps<"button"> & {
+  direction?: "x" | "y";
   constrain?: boolean;
 }) {
   let ref: HTMLButtonElement = null;
@@ -26,11 +26,11 @@ export function DragHandle(props?: ComponentProps<'button'> & {
   // Size of parent element
   let parentSize = 0;
 
-  let [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
+  const [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
 
-  let [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
-  let [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
-  let [cursorProp, setCursorProp] = createSignal(dirIsX() ? "col-resize" : "row-resize");
+  const [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
+  const [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
+  const [cursorProp, setCursorProp] = createSignal(dirIsX() ? "col-resize" : "row-resize");
   
   function drag (e: MouseEvent) {
     // How far the mouse has been moved
@@ -41,19 +41,19 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     targetEl.style[sizeProp()] = `${newSize}${unit}`;
     document.body.style.cursor = cursorProp();
 
-    targetEl.style.userSelect = 'none';
-    targetEl.style.pointerEvents = 'none';
+    targetEl.style.userSelect = "none";
+    targetEl.style.pointerEvents = "none";
   }
 
   function stopDrag () {
-    ref.style.removeProperty('cursor');
-    document.body.style.removeProperty('cursor');
+    ref.style.removeProperty("cursor");
+    document.body.style.removeProperty("cursor");
 
-    targetEl.style.removeProperty('user-select');
-    targetEl.style.removeProperty('pointer-events');
+    targetEl.style.removeProperty("user-select");
+    targetEl.style.removeProperty("pointer-events");
 
-    document.removeEventListener('pointermove', drag);
-    document.removeEventListener('pointerup', stopDrag);
+    document.removeEventListener("pointermove", drag);
+    document.removeEventListener("pointerup", stopDrag);
 
     if (props?.constrain) {
       observer?.unobserve?.(parentEl);
@@ -85,8 +85,8 @@ export function DragHandle(props?: ComponentProps<'button'> & {
 
   onCleanup(() => { 
     newProps.ref = ref = null;
-    document.removeEventListener('pointermove', drag);
-    document.removeEventListener('pointerup', stopDrag);
+    document.removeEventListener("pointermove", drag);
+    document.removeEventListener("pointerup", stopDrag);
 
     if (props?.constrain) {
       observer?.unobserve?.(parentEl);
@@ -104,15 +104,15 @@ export function DragHandle(props?: ComponentProps<'button'> & {
     parentSize = parentEl.getBoundingClientRect()[sizeProp()];
 
     // Attach the listeners to `document`
-    document.addEventListener('pointermove', drag);
-    document.addEventListener('pointerup', stopDrag);
+    document.addEventListener("pointermove", drag);
+    document.addEventListener("pointerup", stopDrag);
 
     if (props?.constrain) {
       observer?.observe?.(parentEl);
     } 
   }
 
-  let [newProps, attrs] = splitProps(props, ["ref"]);
+  const [newProps, attrs] = splitProps(props, ["ref"]);
 
   return (
     <Button
