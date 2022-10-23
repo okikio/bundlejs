@@ -60,6 +60,8 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
       ) {
         if ("wasmModule" in opts) {
           await esbuild.initialize(opts);
+        } else if ("wasmURL" in opts) { 
+          await esbuild.initialize(opts);
         } else {
           const { default: ESBUILD_WASM } = await import("./wasm");
           await esbuild.initialize({

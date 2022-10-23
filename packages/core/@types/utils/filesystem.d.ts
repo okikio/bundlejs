@@ -16,7 +16,7 @@ export declare const getResolvedPath: (path: string, importer?: string) => Promi
  * @param importer an absolute path to use to determine a relative file path
  * @returns file from file system storage in either string format or as a Uint8Array buffer
  */
-export declare const getFile: (path: string, type?: 'string' | 'buffer', importer?: string) => Promise<string | Uint8Array>;
+export declare const getFile: (path: string, type?: "string" | "buffer", importer?: string) => Promise<string | Uint8Array>;
 /**
  * Writes file to filesystem in either string or uint8array buffer format
  *

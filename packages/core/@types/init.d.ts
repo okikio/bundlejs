@@ -1,5 +1,5 @@
 import type * as ESBUILD from "esbuild-wasm";
-import { Platform } from "./configs/platform";
+import type { Platform } from "./configs/platform";
 /**
  * Determines which esbuild skew to use depending on the platform option supplied,
  * by default it will choose the most perfomnant esbuild skew,

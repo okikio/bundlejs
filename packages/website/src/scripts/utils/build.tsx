@@ -1,6 +1,10 @@
-import { setState, state } from "./store";
+
 import toast from "../../components/SolidToast";
+
+import { setState, state } from "./store";
 import { taskRunner } from "../index";
+
+import { outputModelResetValue } from "./get-initial";
 
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
   style: "narrow",
@@ -32,6 +36,9 @@ export async function build() {
     setState("bundling", true);
 
     try {
+      state.monaco?.models?.output.setValue(outputModelResetValue);
+      setState("bundleSize", "...");
+
       await toast.promise(
         (async () => {
           const start = Date.now();
@@ -48,7 +55,6 @@ export async function build() {
         }
       );
 
-      console.log(result?.outputFiles, { size: result });
       if (result?.outputFiles) {
         state.monaco?.models?.output.setValue(result?.outputFiles[0].text);
       }
@@ -56,6 +62,9 @@ export async function build() {
       if (result?.size) {
         setState("bundleSize", result.size);
       }
+
+      // Signifier to no longer hold results in memory
+      result = null;
     } catch (e) {
       console.warn(e);
       setState("bundleSize", "ERROR!");

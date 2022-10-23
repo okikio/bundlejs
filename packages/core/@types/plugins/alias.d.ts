@@ -1,6 +1,6 @@
-import type { BuildConfig, LocalState } from '../build';
-import type { StateArray } from '../configs/state';
-import type { EVENTS } from '../configs/events';
+import type { BuildConfig, LocalState } from "../build";
+import type { StateArray } from "../configs/state";
+import type { EVENTS } from "../configs/events";
 import type { ESBUILD } from "../types";
 /** Alias Plugin Namespace */
 export declare const ALIAS_NAMESPACE = "alias-globals";

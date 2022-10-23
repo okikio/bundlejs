@@ -8,6 +8,12 @@ export function generateConfigValue(config: string | Record<string, unknown>) {
     `export default ${typeof config == "string" ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
   ].join("\n");
 }
+
+export const outputModelResetValue = "// Output";
+export const inputModelResetValue = [
+  "// Click build for the bundled, minified and compressed package size",
+  "export * from \"@okikio/animate\";"
+].join("\n");
 export const configModelResetValue = generateConfigValue(EasyDefaultConfig);
 
 export function getShareURLValues() {

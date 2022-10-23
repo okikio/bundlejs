@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import copy from 'vite-plugin-cp';
 
 export default defineConfig({
   test: {},
@@ -23,7 +24,7 @@ export default defineConfig({
             "brotli": ["/src/deno/brotli/wasm.ts"],
           },
           chunkFileNames: "[name]-[hash].mjs",
-          entryFileNames: "[name].mjs"
+          entryFileNames: "[name].mjs",
         },
         {
           format: "cjs",
@@ -43,7 +44,15 @@ export default defineConfig({
           inlineDynamicImports: true
         }
       ],
+      plugins: [
+        copy({
+          targets: [
+            // @ts-ignore
+            { src: 'src/esbuild.wasm', dest: './lib' },
+          ]
+        })
+      ],
       external: ["esbuild"]
-    }
+    },
   },
 });

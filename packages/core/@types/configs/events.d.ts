@@ -32,5 +32,9 @@ export declare const EVENTS_OPTS: {
         (...data: any[]): void;
         (message?: any, ...optionalParams: any[]): void;
     };
+    "build.error": {
+        (...data: any[]): void;
+        (message?: any, ...optionalParams: any[]): void;
+    };
 };
 export declare const EVENTS: EventEmitter;
