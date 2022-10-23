@@ -1,8 +1,6 @@
+import { createSignal } from "solid-js";
 
-import type { ComponentProps, Setter } from "solid-js";
-import { createSignal, onCleanup, onMount } from "solid-js";
-
-import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+import { ToolTip } from "../../../hooks/tooltip";
 import Button from "../../Button";
 
 import IconSearch from "~icons/fluent/search-24-filled";
@@ -21,7 +19,7 @@ export function SearchInput() {
 
   const onKeyUp = debounce((e?: KeyboardEvent) => {
     e?.stopPropagation?.();
-    let { value } = ref;
+    const { value } = ref;
     setQuery(value);
   }, 250);
 

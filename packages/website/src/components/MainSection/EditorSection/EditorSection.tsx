@@ -1,5 +1,4 @@
 import type { ComponentProps } from "solid-js";
-
 import { createSignal, onCleanup, onMount } from "solid-js";
 
 import DragHandle from "./DragHandle";
@@ -10,15 +9,15 @@ import Console from "./Console";
 import Editor from "./Editor";
 import Tabs from "./Tabs";
 
-export function EditorSection(props?: ComponentProps<'div'>) {
+export function EditorSection(props?: ComponentProps<"div">) {
   const [direction, setDirection] = createSignal<"x" | "y">("x");
   
   function onResize(e: MediaQueryListEvent | MediaQueryList) {
-    setDirection(e?.matches ? 'x' : 'y');
+    setDirection(e?.matches ? "x" : "y");
   }
 
   onMount(() => {
-    let mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
+    const mediaQuery = globalThis?.matchMedia?.("(min-width: 640px)");
     onResize(mediaQuery);
     mediaQuery?.addEventListener?.("change", onResize);
 
@@ -40,7 +39,7 @@ export function EditorSection(props?: ComponentProps<'div'>) {
 
       <DragHandle drag-height direction="y" />
     </div>
-  )
+  );
 }
 
 export default EditorSection;

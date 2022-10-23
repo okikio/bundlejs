@@ -1,14 +1,14 @@
-import { createSignal, onMount } from "solid-js";
+import { PRODUCTION_MODE } from "../../../env";
+import { createSignal } from "solid-js";
 
 import { hit } from "countapi-js";
-import { PRODUCTION_MODE } from "../../../env";
-let [count, setCount] = createSignal("00000");
+const [count, setCount] = createSignal("00000");
 
 // countapi-js hit counter. It counts the number of times the website is loaded
 (async () => {
   if (!PRODUCTION_MODE || !("document" in globalThis)) return;
   try {
-    let { value } = await hit("bundle.js.org", "visits");
+    const { value } = await hit("bundle.js.org", "visits");
     setCount(`${value}`);
   } catch (err) {
     console.warn(

@@ -1,14 +1,14 @@
-import { ComponentProps, createEffect, JSX } from "solid-js";
+import type { ComponentProps, JSX } from "solid-js";
 import Details from "../Details";
 
 import { splitProps } from "solid-js";
 import IconLink from "~icons/fluent/link-24-regular";
 
-export function SnippetDetails(props: ComponentProps<'details'> & {
+export function SnippetDetails(props: ComponentProps<"details"> & {
   children?: JSX.Element;
   summary?: string;
 }) {
-  let [newProps, attrs] = splitProps(props, ["children", "summary"]);
+  const [newProps, attrs] = splitProps(props, ["children", "summary"]);
 
   const summary = (
     <h3 slot="summary" class="inline-flex items-center">

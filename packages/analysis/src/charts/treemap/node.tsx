@@ -19,7 +19,7 @@ export const Node: Component<NodeProps> = ({ node, onMouseOver, onClick, selecte
   const { backgroundColor, fontColor } = getModuleColor(node);
   const { x0, x1, y1, y0, data, children = null } = node;
 
-  const textRef: SVGTextElement = null;
+  let textRef: SVGTextElement = null;
   let textRectRef: DOMRect = null;
 
   const width = x1 - x0;

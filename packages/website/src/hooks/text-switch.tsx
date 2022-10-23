@@ -20,9 +20,9 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
   const refList = new Map<HTMLElement, null>();
   const refElList = new Map<HTMLElement, null>();
 
-  const initialRef: HTMLElement = null;
-  const nextRef: HTMLElement = null;
-  const nextInitialRef: HTMLElement = null;
+  let initialRef: HTMLElement = null;
+  let nextRef: HTMLElement = null;
+  let nextInitialRef: HTMLElement = null;
 
   return {
     getInitial: initialValue,
@@ -53,7 +53,7 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
     },
 
     render(props?: ComponentProps<"span">) {
-      const ref: HTMLElement = null;
+      let ref: HTMLElement = null;
       onMount(() => {
         refList.set(ref, null);
 

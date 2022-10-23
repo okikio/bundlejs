@@ -1,9 +1,7 @@
 import type { Placement } from "tippy.js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 
-import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
-
-import toast from '../../SolidToast/index';
-
+import toast from "../../SolidToast/index";
 import Button from "../../Button";
 
 import IconMore from "~icons/fluent/more-24-regular";
@@ -15,8 +13,9 @@ import IconDownload from "~icons/fluent/arrow-download-24-regular";
 import IconCodeWrap from "~icons/fluent/text-wrap-24-regular";
 
 import { state, setState } from "../../../scripts/utils/store";
+import { SingletonToolTip } from "../../../hooks/tooltip";
 
-import { ToolTip, SingletonToolTip } from "../../../hooks/tooltip";
+import { taskRunner } from "../../../scripts/index";
 
 export function EditorButtons() {
   let shellRef: HTMLDivElement = null;
@@ -50,7 +49,7 @@ export function EditorButtons() {
     }
   }
 
-  function downloadBlob(blob: Blob, name = 'file.txt') {
+  function downloadBlob(blob: Blob, name = "file.txt") {
     // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
     const blobUrl = URL.createObjectURL(blob);
 
@@ -67,7 +66,7 @@ export function EditorButtons() {
     // Dispatch click event on the link
     // This is necessary as link.click() does not work on the latest firefox
     link.dispatchEvent(
-      new MouseEvent('click', {
+      new MouseEvent("click", {
         bubbles: true,
         cancelable: true,
         view: window
@@ -79,9 +78,8 @@ export function EditorButtons() {
     URL.revokeObjectURL(blobUrl);
   }
 
-  let media = ("document" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
-
-  let [placement, setPlacement] = createSignal<Placement>(media?.matches ? "bottom" : "top");
+  const media = ("document" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
+  const [placement, setPlacement] = createSignal<Placement>(media?.matches ? "bottom" : "top");
   function mediaQueryRun(e?: MediaQueryListEvent) {
     setPlacement(e?.matches ? "bottom" : "top");
   }
@@ -143,10 +141,7 @@ export function EditorButtons() {
                     const model = state.monaco.editor.getModel();
                     if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
                       try {
-                        const worker = state.monaco.workers.taskRunner;
-                        const thisWorker = await worker.getWorker();
-
-                        const formattedCode = await thisWorker.format(model.uri.authority, model.getValue());
+                        const formattedCode = await taskRunner.format(model.uri.authority, model.getValue());
                         state.monaco.editor.setValue(formattedCode);
                         toast(`Formatted ${getModelType()} code editor`);
                       } catch (e) {
@@ -172,7 +167,7 @@ export function EditorButtons() {
               class="umami--click--reset-editor-button"
               onClick={() => {
                 if (!state.monaco.loading) {
-                  let modelType = getModelType();
+                  const modelType = getModelType();
 
                   resetEditor(modelType);
                   toast(`Reset ${modelType}`);

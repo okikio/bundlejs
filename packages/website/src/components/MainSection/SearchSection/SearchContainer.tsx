@@ -1,15 +1,15 @@
-import { ComponentProps, onCleanup, onMount } from "solid-js";
-import { createSignal } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import { onCleanup, onMount, createSignal } from "solid-js";
 
-import SearchInput, { setQuery, getQuery } from "./SearchInput";
+import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
 
-export function SearchContainer(props?: ComponentProps<'dialog'>) {
+export function SearchContainer(props?: ComponentProps<"dialog">) {
   const [open, setOpen] = createSignal(false);
 
   let ref: HTMLDialogElement = null;
   function onClick(e?: MouseEvent) {
-    let target = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
 
     if (ref?.open && !ref.contains(target)) {
       e?.stopPropagation?.();
@@ -21,7 +21,7 @@ export function SearchContainer(props?: ComponentProps<'dialog'>) {
   }
 
   function onFocus(e?: MouseEvent) {
-    let target = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
 
     if (ref.contains(target)) {
       if (!ref?.open) {
@@ -51,8 +51,8 @@ export function SearchContainer(props?: ComponentProps<'dialog'>) {
 
   return (
     <div class="relative">
-      <div class="search-backdrop" data-open={open()}></div>
-      <div class="search-offset"></div>
+      <div class="search-backdrop" data-open={open()} />
+      <div class="search-offset" />
       <dialog class="search-container" ref={ref} {...props}>
         <div class="search-input">
           <SearchInput />

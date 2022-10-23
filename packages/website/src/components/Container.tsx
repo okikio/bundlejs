@@ -1,13 +1,14 @@
-import { ComponentProps, mergeProps, splitProps } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import { mergeProps, splitProps } from "solid-js";
 
-export interface Props extends ComponentProps<'div'> {
+export interface Props extends ComponentProps<"div"> {
   max?: string;
   class?: string;
 }
 
 export function Container(props?: Props) {
-  let [newProps, attrs] = splitProps(props, ["max", "class", "children"]);
-  let mergedProps = mergeProps({
+  const [newProps, attrs] = splitProps(props, ["max", "class", "children"]);
+  const mergedProps = mergeProps({
     max: "md",
     class: "col"
   }, newProps);

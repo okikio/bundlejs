@@ -17,7 +17,7 @@ const Tooltip_marginY = 30;
 export const Tooltip: Component<TooltipProps> = ({ node, visible, sizeProperty }) => {
     const { availableSizeProperties, data } = useContext(StaticContext);
 
-  const ref: HTMLDivElement = null;
+    let ref: HTMLDivElement = null;
     const [style, setStyle] = createSignal({});
     const content = createMemo(() => {
         if (!node) return null;
