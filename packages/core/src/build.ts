@@ -153,7 +153,7 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental;
+  let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental = null;
 
   try {
     try {
@@ -228,7 +228,7 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
     );
 
     // Ensure a fresh filesystem on every run
-    // FileSystem.clear();
+    FileSystem.clear();
 
     return {
       /** 

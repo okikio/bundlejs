@@ -14,13 +14,13 @@ export declare type LocalState = {
      * Array storing the [getter, setter] of the global state
      */
     GLOBAL?: [typeof getState, typeof setState];
-    [key: string]: any;
+    [key: string]: unknown;
 };
 export declare type BuildConfig = CommonConfigOptions & {
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: ESBUILD.BuildOptions;
     /** The default CDN to import packages from */
-    cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & {});
+    cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & object);
     /** Aliases for replacing packages with different ones, e.g. replace "fs" with "memfs", so, it can work on the web, etc... */
     alias?: Record<string, string>;
     /**

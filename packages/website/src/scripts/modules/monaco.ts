@@ -15,9 +15,10 @@ import GithubDark from "../utils/github-dark";
 import { EDITOR_WORKER, TS_WORKER } from "../index";
 import { mediaTheme, themeGet } from "../theme";
 
-
 import { toLocaleDateString } from "../utils/locale-date-string";
-import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
+import { configModelResetValue, getShareURLValues, inputModelResetValue, outputModelResetValue } from "../utils/get-initial";
+
+export { configModelResetValue };
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -31,13 +32,6 @@ import { configModelResetValue, getShareURLValues } from "../utils/get-initial";
     return EDITOR_WORKER;
   },
 } as Environment;
-
-export const outputModelResetValue = "// Output";
-export const inputModelResetValue = [
-  "// Click build for the bundled, minified and compressed package size",
-  "export * from \"@okikio/animate\";"
-].join("\n");
-export { configModelResetValue };
 
 export { languages, Editor, Uri };
 

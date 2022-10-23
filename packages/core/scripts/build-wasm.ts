@@ -53,7 +53,10 @@ export async function build(src = "./node_modules/esbuild-wasm/esbuild.wasm", ta
   export default source;`;
 
   console.log(`- Writing output to file (${target})`);
-  await fs.writeFile(target, encoder.encode(source));
+  await Promise.all([
+    fs.writeFile(target, encoder.encode(source)),
+    fs.writeFile("src/esbuild.wasm", res)
+  ]);
 
   const outputFile = await fs.stat(target);
   console.log(

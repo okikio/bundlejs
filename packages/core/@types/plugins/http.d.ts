@@ -1,7 +1,7 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { BuildConfig, LocalState } from '../build';
-import type { StateArray } from '../configs/state';
-import type { EVENTS } from '../configs/events';
+import type { BuildConfig, LocalState } from "../build";
+import type { StateArray } from "../configs/state";
+import type { EVENTS } from "../configs/events";
 import type { ESBUILD } from "../types";
 /** HTTP Plugin Namespace */
 export declare const HTTP_NAMESPACE = "http-url";
