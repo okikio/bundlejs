@@ -18,7 +18,7 @@ import { mediaTheme, themeGet } from "../theme";
 import { toLocaleDateString } from "../utils/locale-date-string";
 import { configModelResetValue, getShareURLValues, inputModelResetValue, outputModelResetValue } from "../utils/get-initial";
 
-export { configModelResetValue };
+export { inputModelResetValue, outputModelResetValue, configModelResetValue };
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the

@@ -3,7 +3,7 @@ import { themeSet, themeGet } from "../scripts/theme";
 import { onMount } from "solid-js";
 
 let html: HTMLHtmlElement;
-if ("document" in globalThis) { 
+if ("visualViewport" in globalThis) { 
   html = html ?? document.querySelector("html");
 }
 

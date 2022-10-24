@@ -117,7 +117,7 @@ const focusNextItem = rover => {
     rx.index = rx.targets.length - 1;
 
   // use rover index state to find next
-  const next = rx.targets[rx.index];
+  let next = rx.targets[rx.index];
 
   // found something, activate it
   next && activate(rover, next);
@@ -134,13 +134,14 @@ const focusPreviousItem = rover => {
     rx.index = 0;
 
   // use rover index state to find next
-  const prev = rx.targets[rx.index];
+  let prev = rx.targets[rx.index];
 
   // found something, activate it
   prev && activate(rover, prev);
 };
 
 const activate = (rover, item) => {
+  if (!item) return;
   const rx = state.get(rover);
 
   // remove old tab index item

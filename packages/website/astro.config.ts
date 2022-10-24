@@ -108,7 +108,7 @@ export default defineConfig({
         clientsClaim: false,
 
         // globDirectory: outDir,
-        globPatterns: ["**/*.{html,js,css,svg,ttf,woff2,png,jpg,jpeg,wasm,ico,json}"], //
+        globPatterns: ["**/*.{html,js,css,svg,ttf,woff2,png,webp,jpg,jpeg,wasm,ico,json,xml}"], //
         ignoreURLParametersMatching: [/index\.html\?(.*)/, /\\?(.*)/],
         cleanupOutdatedCaches: true,
 
@@ -117,7 +117,7 @@ export default defineConfig({
           {
             // Match any request that starts with https://api.producthunt.com, https://api.countapi.xyz, https://opencollective.com, etc...
             urlPattern:
-              /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com)|(?:bundlejs\.com\/take-measurement))|(?:unpkg\.com)|(?:cdn\.skypack\.dev)|(?:(cdn\.)?esm\.sh)|(?:esm\.run)|(?:cdn\.jsdelivr\.net)|(?:deno\.land)|(?:raw\.githubusercontent\.com)/,
+              /^https:\/\/((?:api\.producthunt\.com)|(?:api\.countapi\.xyz)|(?:opencollective\.com)|(?:giscus\.bundlejs\.com)|(?:bundlejs\.com\/take-measurement))/,
             // Apply a network-first strategy.
             handler: "NetworkFirst",
             method: "GET",
@@ -130,7 +130,7 @@ export default defineConfig({
           {
             // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
             urlPattern:
-              /workbox\-(.*)\.js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+              /workbox\-(.*)\.js|\.(?:png|jpg|jpeg|svg|webp|map|ts|wasm|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
             // Apply a stale-while-revalidate strategy.
             handler: "StaleWhileRevalidate",
             method: "GET",
@@ -143,7 +143,7 @@ export default defineConfig({
           {
             // Cache `monaco-editor` etc...
             urlPattern:
-              /chunks\/(.*)$/,
+              /(?:chunks|assets|favicon|fonts|giscus)\/(.*)$/,
             // Apply a network-first strategy.
             handler: "CacheFirst",
             method: "GET",

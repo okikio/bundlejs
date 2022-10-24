@@ -1,4 +1,6 @@
 /// <reference lib="webworker" />
+import type { addLogs } from "../../components/MainSection/EditorSection/Console";
+
 import { format } from "./tasks/format";
 import { createFile } from "./tasks/create-file";
 import { createShareURL } from "./tasks/create-share-url";
@@ -7,7 +9,8 @@ import { parseConfig } from "./tasks/parse-config";
 
 import { EVENTS } from "@bundlejs/core/src/index";
 import * as Comlink from "comlink";
-import type { addLogs } from "../../components/MainSection/EditorSection/Console";
+
+import "../utils/transferhandle";
 
 export const TaskRunner = {
   format,
@@ -19,14 +22,14 @@ export const TaskRunner = {
 
 export const connect = async (port: MessagePort | typeof globalThis) => {
   Comlink.expose(TaskRunner, port);
-  const proxy = Comlink.wrap<typeof addLogs>(port);
 
+  const addLog = Comlink.wrap<typeof addLogs>(port);
   EVENTS.on("init.complete", (data) => {
-    proxy({ type: "info", data: "Initialized 🚀✨" });
+    addLog({ type: "info", data: "Initialized 🚀✨" });
   });
 
   EVENTS.on("logger.info", (data) => {
-    proxy({ type: "log", data });
+    addLog({ type: "log", data });
   });
 };
 

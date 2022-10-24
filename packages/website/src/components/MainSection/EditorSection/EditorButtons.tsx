@@ -78,7 +78,7 @@ export function EditorButtons() {
     URL.revokeObjectURL(blobUrl);
   }
 
-  const media = ("document" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
+  const media = ("visualViewport" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
   const [placement, setPlacement] = createSignal<Placement>(media?.matches ? "bottom" : "top");
   function mediaQueryRun(e?: MediaQueryListEvent) {
     setPlacement(e?.matches ? "bottom" : "top");

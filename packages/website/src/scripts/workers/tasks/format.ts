@@ -69,7 +69,7 @@ const getFormatter = async () => {
   return formatter;
 };
 
-getFormatter().then(result => (formatter = result));
+// getFormatter().then(result => (formatter = result));
 
 export async function format(fileName: string, content: string) {
   if (!formatter) formatter = await getFormatter();
