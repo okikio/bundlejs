@@ -1,5 +1,5 @@
 import type { ComponentProps } from "solid-js";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, For } from "solid-js";
 
 import { ConsoleButtons } from "./ConsoleButtons";
 import { Log } from "./ConsoleLogs";
@@ -13,17 +13,11 @@ export function addLogs(...args: unknown[]) {
   setLogsList([...logsList(), ...args]);
 }
 
-if ("document" in globalThis) {
+if ("visualViewport" in globalThis) {
   expose(addLogs, TASK_RUNNER);
 }
 
 export function Console(props?: ComponentProps<"div">) {
-  createEffect(() => {
-    if ("document" in globalThis) {
-      console.log(logsList());
-    }
-  });
-
   return (
     <div class="console-container">
       <div class="console-head">
@@ -31,14 +25,18 @@ export function Console(props?: ComponentProps<"div">) {
         <ConsoleButtons />
       </div>
 
-      {/* <pre>
-        <code>
-          <p>No logs...</p>
-        </code>
-      </pre> */}
-
       <div class="console-list">
-        <Log>Class</Log>
+        <For each={logsList()} fallback={
+          <pre>
+            <code>
+              <p>No logs...</p>
+            </code>
+          </pre>
+        }>
+          {(value) => (
+            <Log>{value.data}</Log>
+          )}
+        </For>
 
         {/* <Details class="inline-details log" summary="Console log">
           What do you mean?

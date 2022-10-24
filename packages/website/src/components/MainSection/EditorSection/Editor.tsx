@@ -9,8 +9,8 @@ import { state, setState, initial } from "../../../scripts/utils/store";
 import { getShareURLValues } from "../../../scripts/utils/get-initial";
 import { createShareURL } from "../../../scripts/utils/share";
 
-const { configValue: configInitialValue } = "document" in globalThis && getShareURLValues();
-const [monaco] = "document" in globalThis ? createResource(() => {
+const { configValue: configInitialValue } = "visualViewport" in globalThis && getShareURLValues();
+const [monaco] = "visualViewport" in globalThis ? createResource(() => {
   return import("../../../scripts/modules/monaco");
 }) : [];
 

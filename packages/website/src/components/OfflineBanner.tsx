@@ -4,7 +4,7 @@ import OfflineIcon from "~icons/fluent/cloud-offline-24-regular";
 
 const [isOnline, setIsOnline] = createSignal(true);
 
-if ("document" in globalThis) {
+if ("visualViewport" in globalThis) {
   setIsOnline(navigator.onLine);
 
   globalThis.addEventListener("online", () => {

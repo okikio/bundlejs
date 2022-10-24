@@ -2,7 +2,7 @@
 import { configModelResetValue } from "../../utils/get-initial";
 
 import { transform } from "@bundlejs/core/src/index";
-import { initOpts, ready } from "./utils/esbuild-init";
+import { initOpts, ready } from "./utils/init";
 
 const configs = new Map<string, string>();
 

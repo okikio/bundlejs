@@ -9,6 +9,7 @@ import { createTextSwitch } from "../../../hooks/text-switch";
 
 import Anchor from "../../../components/Anchor";
 import Button from "../../../components/Button";
+import { inputModelResetValue } from "../../../scripts/utils/get-initial";
 
 export interface SearchResultProps extends ComponentProps<"div"> {
   type?: string;
@@ -33,27 +34,27 @@ export function SearchResult(props?: SearchResultProps) {
   const BtnText = createTextSwitch(["Add Module", "Added!"]);
 
   // When user clicks the "Add Module button" give the user some feedback
-  function onClick() {
-    (async () => {
-      toast.success(`Added ${_package}`);
-      await BtnText.switch("next");
+  async function onClick() {
+    toast.success(`Added ${_package}`);
+    await BtnText.switch("next");
 
-      const inputValue = state.monaco.models.input.getValue();
-      const inputInitialValue = state.monaco.initialValue.input;
+    const inputValue = state.monaco.models.input.getValue();
+    const inputInitialValue = state.monaco.initialValue.input ?? inputModelResetValue;
 
-      // Ths initial values starting comment
-      const startingComment = inputInitialValue.split("\n")[0];
+    // Ths initial values starting comment
+    const startingComment = inputInitialValue.split("\n")[0];
 
-      state.monaco.models.input.setValue(
-        // If the input model has change from it's initial value then
-        // add the module under the rest of the code
-        // Otherwise, replace the input model value with the new export
-        (inputValue !== inputInitialValue ? inputValue : startingComment)?.trim() +
-        `\nexport * from "${_package}";`
-      );
+    console.log({ _package })
 
-      await BtnText.switch("initial", 500);
-    })();
+    state.monaco.models.input.setValue(
+      // If the input model has change from it's initial value then
+      // add the module under the rest of the code
+      // Otherwise, replace the input model value with the new export
+      (inputValue !== inputInitialValue ? inputValue : startingComment)?.trim() +
+      `\nexport * from "${_package}";`
+    );
+
+    await BtnText.switch("initial", 500);
   }
 
   return (

@@ -40,7 +40,7 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
     mobile: "(max-width: 640px)"
   }, newProps);
 
-  const media = ("document" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
+  const media = ("visualViewport" in globalThis) && globalThis?.matchMedia(mergedProps?.mobile);
 
   function mediaQueryRun(e?: MediaQueryListEvent) {
     if (e?.matches)

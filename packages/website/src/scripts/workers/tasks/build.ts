@@ -7,7 +7,7 @@ import { build, compress, deepAssign, setFile } from "@bundlejs/core/src/index";
 import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";
 
-import { initOpts, ready } from "./utils/esbuild-init";
+import { initOpts, ready } from "./utils/init";
 
 export async function bundle(fileName: string, content: string, _config = "export default {}") {
   setFile("/index.tsx", content);
@@ -22,6 +22,8 @@ export async function bundle(fileName: string, content: string, _config = "expor
     ...buildConfig,
     init: initOpts,
   });
+
+  console.log({ result })
 
   const sizeInfo = await compress(
     result.contents.map(x => x.contents),

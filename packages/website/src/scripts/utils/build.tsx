@@ -5,6 +5,7 @@ import { setState, state } from "./store";
 import { taskRunner } from "../index";
 
 import { outputModelResetValue } from "./get-initial";
+import { addLogs } from "../../components/MainSection/EditorSection/Console";
 
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
   style: "narrow",
@@ -62,6 +63,8 @@ export async function build() {
       if (result?.size) {
         setState("bundleSize", result.size);
       }
+
+      addLogs({ type: "info", data: `Build Done with a size of ${result.size} ${timeFormatter.format(elapsed, "seconds")}` })
 
       // Signifier to no longer hold results in memory
       result = null;

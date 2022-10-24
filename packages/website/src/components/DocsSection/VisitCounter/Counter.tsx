@@ -6,7 +6,7 @@ const [count, setCount] = createSignal("00000");
 
 // countapi-js hit counter. It counts the number of times the website is loaded
 (async () => {
-  if (!PRODUCTION_MODE || !("document" in globalThis)) return;
+  if (!PRODUCTION_MODE || !("visualViewport" in globalThis)) return;
   try {
     const { value } = await hit("bundle.js.org", "visits");
     setCount(`${value}`);
