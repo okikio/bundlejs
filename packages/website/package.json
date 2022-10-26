@@ -39,7 +39,7 @@
     "@babel/core": "^7.19.6",
     "@iconify/json": "^2.1.127",
     "@types/offscreencanvas": "^2019.7.0",
-    "@typescript/lib-dom": "npm:@types/web@^0.0.75",
+    "@typescript/lib-dom": "npm:@types/web@^0.0.76",
     "astro": "^1.5.2",
     "astrojs-service-worker": "^0.0.8",
     "babel-preset-solid": "^1.6.0",

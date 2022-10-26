@@ -23,7 +23,7 @@ importers:
       sass: ^1.55.0
       semantic-release: ^19.0.5
       tiny-glob: ^0.2.9
-      typedoc: ^0.23.17
+      typedoc: ^0.23.18
       typedoc-plugin-extras: ^2.3.0
       typedoc-plugin-inline-sources: ^1.0.1
       typedoc-plugin-mdn-links: ^2.0.0
@@ -50,11 +50,11 @@ importers:
       sass: 1.55.0
       semantic-release: 19.0.5
       tiny-glob: 0.2.9
-      typedoc: 0.23.17_typescript@4.8.4
-      typedoc-plugin-extras: 2.3.0_typedoc@0.23.17
-      typedoc-plugin-inline-sources: 1.0.1_typedoc@0.23.17
-      typedoc-plugin-mdn-links: 2.0.0_typedoc@0.23.17
-      typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.17
+      typedoc: 0.23.18_typescript@4.8.4
+      typedoc-plugin-extras: 2.3.0_typedoc@0.23.18
+      typedoc-plugin-inline-sources: 1.0.1_typedoc@0.23.18
+      typedoc-plugin-mdn-links: 2.0.0_typedoc@0.23.18
+      typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.18
       typescript: 4.8.4
       ultra-runner: 3.10.5
 
@@ -64,7 +64,7 @@ importers:
       '@bundlejs/core': workspace:^0.0.0
       '@types/bytes': ^3.1.1
       '@types/d3': ^7.4.0
-      '@types/node': ^18.11.4
+      '@types/node': ^18.11.5
       bytes: ^3.1.2
       d3: ^7.6.1
       del-cli: ^5.0.0
@@ -91,7 +91,7 @@ importers:
       '@babel/core': 7.19.6
       '@types/bytes': 3.1.1
       '@types/d3': 7.4.0
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
       del-cli: 5.0.0
       esno: 0.16.3
       pnpm: 7.14.0
@@ -104,7 +104,7 @@ importers:
   packages/core:
     specifiers:
       '@okikio/emitter': ^2.1.7
-      '@types/node': ^18.11.4
+      '@types/node': ^18.11.5
       cross-fetch: ^3.1.5
       del-cli: ^5.0.0
       esbuild: ^0.15.12
@@ -121,7 +121,7 @@ importers:
       esbuild: 0.15.12
       esbuild-wasm: 0.15.12
     devDependencies:
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
       cross-fetch: 3.1.5
       del-cli: 5.0.0
       esno: 0.16.3
@@ -146,7 +146,7 @@ importers:
       '@okikio/native': ^3.0.1
       '@okikio/sharedworker': ^1.0.4
       '@types/offscreencanvas': ^2019.7.0
-      '@typescript/lib-dom': npm:@types/web@^0.0.75
+      '@typescript/lib-dom': npm:@types/web@^0.0.76
       '@typescript/vfs': ^1.4.0
       astro: ^1.5.2
       astrojs-service-worker: ^0.0.8
@@ -196,7 +196,7 @@ importers:
       '@babel/core': 7.19.6
       '@iconify/json': 2.1.127
       '@types/offscreencanvas': 2019.7.0
-      '@typescript/lib-dom': /@types/web/0.0.75
+      '@typescript/lib-dom': /@types/web/0.0.76
       astro: 1.5.2_sass@1.55.0
       astrojs-service-worker: 0.0.8
       babel-preset-solid: 1.6.0_@babel+core@7.19.6
@@ -279,9 +279,9 @@ packages:
     dependencies:
       '@astrojs/micromark-extension-mdx-jsx': 1.0.3
       '@astrojs/prism': 1.0.1
-      acorn: 8.8.0
-      acorn-jsx: 5.3.2_acorn@8.8.0
-      github-slugger: 1.4.0
+      acorn: 8.8.1
+      acorn-jsx: 5.3.2_acorn@8.8.1
+      github-slugger: 1.5.0
       hast-util-to-html: 8.0.3
       import-meta-resolve: 2.1.0
       mdast-util-from-markdown: 1.2.0
@@ -312,10 +312,10 @@ packages:
       '@astrojs/prism': 1.0.1
       '@mdx-js/mdx': 2.1.5
       '@mdx-js/rollup': 2.1.5_rollup@3.2.3
-      acorn: 8.8.0
+      acorn: 8.8.1
       es-module-lexer: 0.10.5
       estree-util-visit: 1.2.0
-      github-slugger: 1.4.0
+      github-slugger: 1.5.0
       gray-matter: 4.0.3
       kleur: 4.1.5
       rehype-raw: 6.1.1
@@ -2695,8 +2695,8 @@ packages:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
     dev: true
 
-  /@types/node/18.11.4:
-    resolution: {integrity: sha512-BxcJpBu8D3kv/GZkx/gSMz6VnTJREBj/4lbzYOQueUOELkt8WrO6zAcSPmp9uRPEW/d+lUO8QK0W2xnS1hEU0A==}
+  /@types/node/18.11.5:
+    resolution: {integrity: sha512-3JRwhbjI+cHLAkUorhf8RnqUbFXajvzX4q6fMn5JwkgtuwfYtRQYI3u4V92vI6NJuTsbBQWWh3RZjFsuevyMGQ==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -2718,7 +2718,7 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
     dev: true
 
   /@types/resolve/1.20.2:
@@ -2742,8 +2742,8 @@ packages:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
     dev: true
 
-  /@types/web/0.0.75:
-    resolution: {integrity: sha512-42MBIWop5E6TENKBwwMONJfctJsHc5o1k6Fn3FOXsPz892cW6wuiWGPvQh+Tle+yaAMaIpRsdOnlFMDKUKkdGw==}
+  /@types/web/0.0.76:
+    resolution: {integrity: sha512-IuhJV22vw751K6M3tqXwVp16w5YlZqDUdNOJJRVg3cdu1y4eXcqX8JQ1mFC8A3KbiWorU5LTPT2OLUPkGxwmsw==}
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -2777,12 +2777,12 @@ packages:
       through: 2.3.8
     dev: true
 
-  /acorn-jsx/5.3.2_acorn@8.8.0:
+  /acorn-jsx/5.3.2_acorn@8.8.1:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      acorn: 8.8.0
+      acorn: 8.8.1
     dev: true
 
   /acorn-node/1.8.2:
@@ -2809,8 +2809,8 @@ packages:
     hasBin: true
     dev: true
 
-  /acorn/8.8.0:
-    resolution: {integrity: sha512-QOxyigPVrpZ2GXT+PFyZTl6TtOFc5egxHIP9IlQ+RbupQuX4RkT/Bee4/kQuC02Xkzg84JcT7oLYtDIQxp+v7w==}
+  /acorn/8.8.1:
+    resolution: {integrity: sha512-7zFpHzhnqYKrkYdUjF1HI1bzd0VygEGX8lFk4k5zVMqHEoES+P+7TKI+EvLO9WVMJ8eekdO0aDEK044xTXwPPA==}
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
@@ -3006,7 +3006,7 @@ packages:
       esbuild: 0.14.54
       execa: 6.1.0
       fast-glob: 3.2.12
-      github-slugger: 1.4.0
+      github-slugger: 1.5.0
       gray-matter: 4.0.3
       html-entities: 2.3.3
       html-escaper: 3.0.3
@@ -3074,7 +3074,7 @@ packages:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.4
-      caniuse-lite: 1.0.30001423
+      caniuse-lite: 1.0.30001425
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
@@ -3223,7 +3223,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001423
+      caniuse-lite: 1.0.30001425
       electron-to-chromium: 1.4.284
       node-releases: 2.0.6
       update-browserslist-db: 1.0.10_browserslist@4.21.4
@@ -3308,8 +3308,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001423:
-    resolution: {integrity: sha512-09iwWGOlifvE1XuHokFMP7eR38a0JnajoyL3/i87c8ZjRWRrdKo1fqjNfugfBD0UDBIOz0U+jtNhJ0EPm1VleQ==}
+  /caniuse-lite/1.0.30001425:
+    resolution: {integrity: sha512-/pzFv0OmNG6W0ym80P3NtapU0QEiDS3VuYAZMGoLLqiC7f6FJFe1MjpQDREGApeenD9wloeytmVDj+JLXPC6qw==}
     dev: true
 
   /cardinal/2.1.1:
@@ -4741,7 +4741,7 @@ packages:
     resolution: {integrity: sha512-6slSBEV1lMKcX13DBifvnDFpNno5WXhw4j/ff7RI0y51BZiDqEe5dNhhjhIQ3iCOQuzsm2MbVzmwqbN78BBhPg==}
     hasBin: true
     dependencies:
-      tsx: 3.10.4
+      tsx: 3.11.0
     dev: true
 
   /esprima/4.0.1:
@@ -5128,8 +5128,8 @@ packages:
       through2: 4.0.2
     dev: true
 
-  /github-slugger/1.4.0:
-    resolution: {integrity: sha512-w0dzqw/nt51xMVmlaV1+JRzN+oCa1KfcgGEWhxUG16wbdA+Xnt/yoFO8Z8x/V82ZcZ0wy6ln9QDup5avbhiDhQ==}
+  /github-slugger/1.5.0:
+    resolution: {integrity: sha512-wIh+gKBI9Nshz2o46B0B3f5k/W+WI9ZAv6y5Dn5WJ5SK1t0TnDimB4WE5rmTD05ZAIn8HALCZVmCsvj0w0v0lw==}
     dev: true
 
   /glob-parent/5.1.2:
@@ -5966,7 +5966,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
@@ -6671,8 +6671,8 @@ packages:
   /micromark-extension-mdxjs/1.0.0:
     resolution: {integrity: sha512-TZZRZgeHvtgm+IhtgC2+uDMR7h8eTKF0QUX9YsgoL9+bADBpBY6SiLvWqnBlLbCEevITmTqmEuY3FoxMKVs1rQ==}
     dependencies:
-      acorn: 8.8.0
-      acorn-jsx: 5.3.2_acorn@8.8.0
+      acorn: 8.8.1
+      acorn-jsx: 5.3.2_acorn@8.8.1
       micromark-extension-mdx-expression: 1.0.3
       micromark-extension-mdx-jsx: 1.0.3
       micromark-extension-mdx-md: 1.0.0
@@ -7861,7 +7861,7 @@ packages:
     resolution: {integrity: sha512-X5v3wV/meuOX9NFcGhJvUpEjIvQl2gDvjg3z40RVprYFt7q3th4qMmYLULiu3gXvbNX1ppx+oaa6JyY1W67pTA==}
     dependencies:
       '@types/hast': 2.3.4
-      github-slugger: 1.4.0
+      github-slugger: 1.5.0
       hast-util-has-property: 2.0.0
       hast-util-heading-rank: 2.1.0
       hast-util-to-string: 2.0.0
@@ -8640,7 +8640,7 @@ packages:
   /strip-literal/0.4.2:
     resolution: {integrity: sha512-pv48ybn4iE1O9RLgCAN0iU4Xv7RlBTiit6DKmMiErbs9x1wH6vXBs45tWc0H5wUIF6TLTrKweqkmYF/iraQKNw==}
     dependencies:
-      acorn: 8.8.0
+      acorn: 8.8.1
     dev: true
 
   /style-to-object/0.3.0:
@@ -8762,7 +8762,7 @@ packages:
     hasBin: true
     dependencies:
       '@jridgewell/source-map': 0.3.2
-      acorn: 8.8.0
+      acorn: 8.8.1
       commander: 2.20.3
       source-map-support: 0.5.21
     dev: true
@@ -8891,7 +8891,7 @@ packages:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
       '@types/node': 14.18.32
-      acorn: 8.8.0
+      acorn: 8.8.1
       acorn-walk: 8.2.0
       arg: 4.1.3
       create-require: 1.1.1
@@ -8933,8 +8933,8 @@ packages:
       esbuild: 0.14.54
     dev: true
 
-  /tsx/3.10.4:
-    resolution: {integrity: sha512-sBxeSgUAPVqRgBPk6TY0yFiNDUlva9rA+Nj46oYEd89FXVD2MFWChFhybTtq7Qh1Ies/O75mQNwpLuO7m8gToA==}
+  /tsx/3.11.0:
+    resolution: {integrity: sha512-q+q4xxu41+AafVwvAGqtNJ1ekPFd33ZhTMXvgIpHMqv/W89efwDRE9IyjhEAZm5iTHsshKaf1BYWSk789BrNCA==}
     hasBin: true
     dependencies:
       '@esbuild-kit/cjs-loader': 2.4.0
@@ -8989,41 +8989,41 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /typedoc-plugin-extras/2.3.0_typedoc@0.23.17:
+  /typedoc-plugin-extras/2.3.0_typedoc@0.23.18:
     resolution: {integrity: sha512-XjzutqICAkSpl1vhyloYfd35mn0U6WwOQ7BttRkwGhmBQs/qFLz2K+AU0/lj2Cx4WY6AqVr4c/PzFbqI4fACqw==}
     peerDependencies:
       typedoc: 0.23.x
     dependencies:
-      typedoc: 0.23.17_typescript@4.8.4
+      typedoc: 0.23.18_typescript@4.8.4
     dev: true
 
-  /typedoc-plugin-inline-sources/1.0.1_typedoc@0.23.17:
+  /typedoc-plugin-inline-sources/1.0.1_typedoc@0.23.18:
     resolution: {integrity: sha512-UB2pyxARGP1bG5RFm2e3dUAjuFWPBqZUcH4DWk+or+8S7fgWwskzG/4rDeTgqL6IDkfyo+PFSuYCSeBDqfWolA==}
     engines: {node: '>= 10.8.0'}
     peerDependencies:
       typedoc: '>=0.22.0'
     dependencies:
-      typedoc: 0.23.17_typescript@4.8.4
+      typedoc: 0.23.18_typescript@4.8.4
     dev: true
 
-  /typedoc-plugin-mdn-links/2.0.0_typedoc@0.23.17:
+  /typedoc-plugin-mdn-links/2.0.0_typedoc@0.23.18:
     resolution: {integrity: sha512-IGLuelXPOenGdmklr5DHgPPf/MfZj7aEYCxCMtPN8C1D0lA7w0YLahd0jhDDcOMU7zL1EPcM5pPnhZHltDhqGQ==}
     peerDependencies:
       typedoc: 0.22.x || 0.23.x
     dependencies:
-      typedoc: 0.23.17_typescript@4.8.4
+      typedoc: 0.23.18_typescript@4.8.4
     dev: true
 
-  /typedoc-plugin-missing-exports/1.0.0_typedoc@0.23.17:
+  /typedoc-plugin-missing-exports/1.0.0_typedoc@0.23.18:
     resolution: {integrity: sha512-7s6znXnuAj1eD9KYPyzVzR1lBF5nwAY8IKccP5sdoO9crG4lpd16RoFpLsh2PccJM+I2NASpr0+/NMka6ThwVA==}
     peerDependencies:
       typedoc: 0.22.x || 0.23.x
     dependencies:
-      typedoc: 0.23.17_typescript@4.8.4
+      typedoc: 0.23.18_typescript@4.8.4
     dev: true
 
-  /typedoc/0.23.17_typescript@4.8.4:
-    resolution: {integrity: sha512-3rtNubo1dK0pvs6ixpMAq4pESULd5/JNUqJbdyZoeilI14reb1RNVomN4fMgIadd0RMX1aenYjJSSMBOJ+/+0Q==}
+  /typedoc/0.23.18_typescript@4.8.4:
+    resolution: {integrity: sha512-0Tq/uFkUuWyRYyjOShTkhsOm6u5E8wf0i6L76/k5znEaxvWKHGeT2ywZThGrDrryV/skO/REM824D1gm8ccQuA==}
     engines: {node: '>= 14.14'}
     hasBin: true
     peerDependencies:
@@ -9255,7 +9255,7 @@ packages:
   /unplugin/0.9.6:
     resolution: {integrity: sha512-YYLtfoNiie/lxswy1GOsKXgnLJTE27la/PeCGznSItk+8METYZErO+zzV9KQ/hXhPwzIJsfJ4s0m1Rl7ZCWZ4Q==}
     dependencies:
-      acorn: 8.8.0
+      acorn: 8.8.1
       chokidar: 3.5.3
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.5
@@ -9439,7 +9439,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.3
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
       chai: 4.3.6
       debug: 4.3.4
       local-pkg: 0.4.2
@@ -9480,7 +9480,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.3
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.11.4
+      '@types/node': 18.11.5
       chai: 4.3.6
       debug: 4.3.4
       local-pkg: 0.4.2
