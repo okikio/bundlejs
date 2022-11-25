@@ -1,5 +1,5 @@
 import type { CommonConfigOptions, ESBUILD } from "./types";
-export declare type TransformConfig = CommonConfigOptions & {
+export type TransformConfig = CommonConfigOptions & {
     esbuild?: ESBUILD.TransformOptions;
 };
 /**

@@ -19,8 +19,8 @@ export declare const ESCAPE_TO_COLOR: {
     readonly "43;33": "yellow-bg-yellow";
     readonly "43;30": "yellow-bg-black";
 };
-export declare type Escape = "0" | "1" | "4" | keyof typeof ESCAPE_TO_COLOR;
-export declare type Color = typeof ESCAPE_TO_COLOR[keyof typeof ESCAPE_TO_COLOR];
+export type Escape = "0" | "1" | "4" | keyof typeof ESCAPE_TO_COLOR;
+export type Color = typeof ESCAPE_TO_COLOR[keyof typeof ESCAPE_TO_COLOR];
 export declare function htmlEscape(string: string): string;
 export declare class AnsiBuffer {
     result: string;

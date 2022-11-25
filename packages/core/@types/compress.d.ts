@@ -1,12 +1,12 @@
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
-export declare type CompressionType = "gzip" | "brotli" | "lz4";
-export declare type CompressionOptions = {
+export type CompressionType = "gzip" | "brotli" | "lz4";
+export type CompressionOptions = {
     /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
     type: CompressionType;
     /** Compression quality ranging from 1 to 11 */
     quality: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 };
-export declare type CompressConfig = CompressionOptions | CompressionType;
+export type CompressConfig = CompressionOptions | CompressionType;
 /**
  * Default compress config
  */

@@ -4,7 +4,7 @@ import { FileSystem, getFile, setFile, getResolvedPath } from "./utils/filesyste
 /**
  * Local state available to all plugins
  */
-export declare type LocalState = {
+export type LocalState = {
     /**
      * Assets are files during the build process that esbuild can't handle natively,
      * e.g. fetching web workers using the `new URL("...", import.meta.url)`
@@ -16,7 +16,7 @@ export declare type LocalState = {
     GLOBAL?: [typeof getState, typeof setState];
     [key: string]: unknown;
 };
-export declare type BuildConfig = CommonConfigOptions & {
+export type BuildConfig = CommonConfigOptions & {
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: ESBUILD.BuildOptions;
     /** The default CDN to import packages from */
@@ -72,7 +72,7 @@ export declare type BuildConfig = CommonConfigOptions & {
  * Default build config
  */
 export declare const BUILD_CONFIG: BuildConfig;
-export declare type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
+export type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
     outputs: ESBUILD.OutputFile[];
     contents: ESBUILD.OutputFile[];
 };

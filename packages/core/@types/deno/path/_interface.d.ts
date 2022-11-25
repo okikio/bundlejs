@@ -23,4 +23,4 @@ export interface ParsedPath {
      */
     name: string;
 }
-export declare type FormatInputPathObject = Partial<ParsedPath>;
+export type FormatInputPathObject = Partial<ParsedPath>;

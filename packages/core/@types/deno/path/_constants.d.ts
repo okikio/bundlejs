@@ -39,4 +39,4 @@ export declare const CHAR_0 = 48;
 export declare const CHAR_9 = 57;
 export declare const SEP = "/";
 export declare const SEP_PATTERN: RegExp;
-export declare type OSType = "windows" | "linux" | "darwin";
+export type OSType = "windows" | "linux" | "darwin";

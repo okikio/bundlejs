@@ -50,17 +50,17 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.2.0",
-    "@commitlint/config-conventional": "^17.2.0",
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "commitizen": "^4.2.5",
-    "esbuild": "^0.15.13",
+    "esbuild": "^0.15.15",
     "esno": "^0.16.3",
     "hastscript": "^7.1.0",
     "husky": "^8.0.2",
-    "pnpm": "^7.15.0",
-    "postcss": "^8.4.18",
+    "pnpm": "^7.17.0",
+    "postcss": "^8.4.19",
     "postcss-font-grabber": "^3.1.0",
     "rehype": "^12.0.1",
     "rehype-external-links": "^2.0.1",
@@ -69,12 +69,12 @@
     "sass": "^1.56.1",
     "semantic-release": "^19.0.5",
     "tiny-glob": "^0.2.9",
-    "typedoc": "^0.23.20",
+    "typedoc": "^0.23.21",
     "typedoc-plugin-extras": "^2.3.1",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-mdn-links": "^2.0.0",
     "typedoc-plugin-missing-exports": "^1.0.0",
-    "typescript": "^4.8.4",
+    "typescript": "^4.9.3",
     "ultra-runner": "^3.10.5"
   }
 }

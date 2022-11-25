@@ -15,7 +15,7 @@ export declare function getEsbuild(platform?: Platform): Promise<typeof ESBUILD>
 /**
  * Configures how esbuild running in wasm is initialized
  */
-export declare type InitOptions = ESBUILD.InitializeOptions & {
+export type InitOptions = ESBUILD.InitializeOptions & {
     platform?: Platform;
 };
 export declare function init(platform?: Platform, opts?: ESBUILD.InitializeOptions): Promise<typeof import("esbuild-wasm/esm/browser")>;

@@ -17,7 +17,7 @@ export declare function bail(name: string, entry: string, condition?: number): v
  * @param {string} entry the target path/import
  */
 export declare function toName(name: string, entry: string): string;
-export declare type Options = {
+export type Options = {
     browser?: boolean;
     conditions?: readonly string[];
     require?: boolean;
@@ -36,7 +36,7 @@ export declare type Options = {
  * @param {boolean} [options.unsafe]
  */
 export declare function resolveExports<T = Record<any, any>>(pkg: T, entry?: string, options?: Options): string | void;
-export declare type BrowserFiles = Record<string, string | false>;
+export type BrowserFiles = Record<string, string | false>;
 /**
  * @param {object} pkg
  * @param {object} [options]
