@@ -1,7 +1,7 @@
 /**
  * `@bundlejs/core`'s supported platforms
  */
-export declare type Platform = "node" | "deno" | "browser" | "wasm" | "deno-wasm";
+export type Platform = "node" | "deno" | "browser" | "wasm" | "deno-wasm";
 /**
  * Automatically chooses the esbuild version to run based off platform heuristics,
  * e.g.

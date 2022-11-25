@@ -50,9 +50,9 @@ export declare function setState<T extends keyof typeof STATE>(name: T, value: t
      */
     esbuild: typeof ESBUILD;
 }[T];
-export declare type Getter<T> = () => T;
-export declare type Setter<T> = (value?: T) => T;
-export declare type StateArray<T> = [Getter<T>, Setter<T>];
+export type Getter<T> = () => T;
+export type Setter<T> = (value?: T) => T;
+export type StateArray<T> = [Getter<T>, Setter<T>];
 /**
  * Returns a state array
  * @param initial Initial state

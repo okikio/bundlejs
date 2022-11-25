@@ -13,7 +13,7 @@ export interface GlobOptions {
     /** Operating system. Defaults to the native OS. */
     os?: OSType;
 }
-export declare type GlobToRegExpOptions = GlobOptions;
+export type GlobToRegExpOptions = GlobOptions;
 /** Convert a glob string to a regular expression.
  *
  * Tries to match bash glob expansion as closely as possible.

@@ -272,7 +272,7 @@ export declare class SemVer {
     comparePre(other: string | SemVer): 1 | 0 | -1;
 }
 export declare const ANY: unique symbol;
-export declare type ComparatorOperator = "" | "=" | "<" | ">" | "<=" | ">=";
+export type ComparatorOperator = "" | "=" | "<" | ">" | "<=" | ">=";
 export declare class Comparator {
     semver: SemVer | typeof ANY;
     operator: ComparatorOperator;
