@@ -41,7 +41,8 @@ export default defineConfig({
         {
           format: "umd",
           entryFileNames: "[name].js",
-          inlineDynamicImports: true
+          inlineDynamicImports: true,
+          name: "bundlejs"
         }
       ],
       plugins: [
