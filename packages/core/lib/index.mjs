@@ -170,7 +170,7 @@ async function es(e = ce) {
       case "deno-wasm":
         return await import(`https://deno.land/x/esbuild@v${Qe}/wasm.js`);
       default:
-        return await import("./esbuild-5181e8c1.mjs").then((t) => t.b);
+        return await import("./esbuild-e276c716.mjs").then((t) => t.b);
     }
   } catch (t) {
     throw t;
@@ -1146,7 +1146,7 @@ function on(e) {
   return t < e.length && s.text(e.slice(t)), s.done();
 }
 const ae = async (e, t = "error", s = !0) => {
-  const { formatMessages: n } = await import("./esbuild-5181e8c1.mjs").then((i) => i.b);
+  const { formatMessages: n } = await import("./esbuild-e276c716.mjs").then((i) => i.b);
   return (await n(e, { color: s, kind: t })).map((i) => s ? on(i.replace(/(\s+)(\d+)(\s+)\│/g, `
 $1$2$3│`)) : i);
 }, an = {
