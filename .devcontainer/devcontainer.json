@@ -23,7 +23,6 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"denoland.vscode-deno",
-				"vivaxy.vscode-conventional-commits",
 				"astro-build.astro-vscode",
 				"eamodio.gitlens",
 				"antfu.iconify",
@@ -32,8 +31,6 @@
 				"esbenp.prettier-vscode",
 				"bradlc.vscode-tailwindcss",
 				"macieklad.tailwind-sass-syntax",
-				"ZixuanChen.vitest-explorer",
-				"formulahendry.auto-rename-tag",
 				"mattpocock.ts-error-translator"
 			]
 		}
