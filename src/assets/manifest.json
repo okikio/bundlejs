@@ -3,6 +3,7 @@
   "short_name": "bundle",
   "id": "bundle",
   "start_url": "/",
+  "author": "Okiki Ojo",
   "dir": "ltr",
   "display": "standalone",
   "theme_color": "#000000",
