@@ -4,6 +4,7 @@
   "id": "bundle",
   "start_url": "/",
   "dir": "ltr",
+  "author": "Okiki Ojo",
   "display": "standalone",
   "theme_color": "#fdfefe",
   "background_color": "#fdfefe",
