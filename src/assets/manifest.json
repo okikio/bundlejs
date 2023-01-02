@@ -77,9 +77,10 @@
   },
   "orientation": "natural",
   "categories": [
-    "productivity", 
+    "productivity",
     "utility",
-    "text"
+    "text",
+    "development"
   ],
   "scope": "/"
 }
