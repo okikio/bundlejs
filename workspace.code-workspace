@@ -16,5 +16,8 @@
 			"name": "🚀 @bundlejs/website",
 			"path": "packages/website"
 		}
-	]
+	],
+	"settings": {
+		"typescript.tsdk": "✨ root/node_modules/typescript/lib"
+	}
 }
