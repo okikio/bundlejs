@@ -72,6 +72,14 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
         return async (code: Uint8Array) => await compress(code, code.length, quality);
       }
       default: {
+        if (quality === COMPRESS_CONFIG.quality && 'CompressionStream' in globalThis) {
+          return async (code: Uint8Array) => {
+            const cs = new CompressionStream('gzip');
+            const compressedStream = new Blob([encode(code)]).stream().pipeThrough(cs);
+            return new Uint8Array(await new Response(compressedStream).arrayBuffer());
+          };
+        }
+
         const { gzip, getWASM } = await import("./deno/denoflate/mod");
         await getWASM();
 
