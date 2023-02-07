@@ -3,10 +3,10 @@
         "jsx": "preserve",
         "jsxImportSource": "solid-js",
         "moduleResolution": "node",
-        "target": "ES2021",
-        "module": "ES2020",
+        "target": "ES2022",
+        "module": "ES2022",
         "lib": [
-            "ES2021",
+            "ES2022",
             "DOM",
             "DOM.Iterable",
             "WebWorker"

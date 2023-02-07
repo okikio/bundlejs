@@ -1,6 +1,6 @@
 export const config = {
   runtime: 'edge', // this is a pre-requisite
-  regions: ['iad1'], // only execute this function on iad1
+  // regions: ['iad1'], // only execute this function on iad1
 };
 
 export default (req: Request) => {
