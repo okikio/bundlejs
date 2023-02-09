@@ -31,8 +31,8 @@ export const INPUT_EVENTS = {
 export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ESBUILD> {
   try {
     switch (platform) {
-      case "node":
-        return await import("esbuild");
+      // case "node":
+      //   return await import("esbuild");
       case "deno":
         return await import(
           /* @vite-ignore */
@@ -53,7 +53,7 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
       EVENTS.emit("init.start");
 
       STATE.esbuild = await getESBUILD(platform);
-      if (platform !== "node" && platform !== "deno") {
+      if (platform !== "node" && platform !== "deno" && !opts.wasmModule) {
         const { default: ESBUILD_WASM } = await import("./wasm");
         await STATE.esbuild.initialize({
           wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
@@ -76,18 +76,19 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     EVENTS.emit("init.loading");
 
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
-
-  const { build: bundle } = await init(CONFIG.init);
+  
+  const { build: bundle } = await init(CONFIG.init) ?? {};
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental;
+  let result: ESBUILD.BuildResult;
 
   try {
     try {
       const keys = "p.env.NODE_ENV".replace("p.", "process.");
+      // @ts-ignore
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         loader: {
@@ -116,16 +117,18 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
         ...esbuildOpts,
       });
     } catch (e) {
-      if (e.errors) {
-        // Log errors with added color info. to the virtual console
-        const asciMsgs = [...await createNotice(e.errors, "error", false)];
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
+      // if (e.errors) {
+      //   console.log(e)
+      //   // Log errors with added color info. to the virtual console
+      //   const asciMsgs = [...await createNotice(e.errors, "error", false)];
+      //   const htmlMsgs = [...await createNotice(e.errors, "error")];
 
-        EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
+      //   EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
 
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        return EVENTS.emit("logger.error", message);
-      } else throw e;
+      //   const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+      //   return EVENTS.emit("logger.error", message);
+      // } else
+        throw e;
     }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
@@ -136,7 +139,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
 
     contents = await Promise.all(
       outputs
-        ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
+        ?.map(({ path, text, contents }): ESBUILD.OutputFile | null => {
           if (/\.map$/.test(path))
             return null;
 
@@ -154,7 +157,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
         })
 
         // Remove null output files
-        ?.filter(x => ![undefined, null].includes(x))
+        ?.filter(x => x !== undefined && x !== null) as ESBUILD.OutputFile[]
     );
 
     // Ensure a fresh filesystem on every run

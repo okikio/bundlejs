@@ -13,7 +13,7 @@ export const STATE = {
   /**
    * Instance of esbuild being used
    */
-  esbuild: null as typeof ESBUILD
+  esbuild: null as unknown as Awaited<typeof ESBUILD>
 };
 
 export default STATE;

@@ -1271,7 +1271,7 @@ ${s.toString()}`);
       globalName: "BundledCode",
       logLevel: "info",
       sourcemap: !1,
-      incremental: !1,
+      // incremental: !1,
     },
     ascii: "ascii",
     filesystem: {

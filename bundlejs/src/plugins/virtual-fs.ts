@@ -23,6 +23,7 @@ export const VIRTUAL_FS = (events: typeof EVENTS, state: typeof STATE, config: B
       build.onLoad({ filter: /.*/, namespace: VIRTUAL_FILESYSTEM_NAMESPACE }, async (args) => {
         let resolvedPath = await FileSystem.resolve(args.path, args?.pluginData?.importer);
         let content = await FileSystem.get(args.path, "buffer", args?.pluginData?.importer);
+        console.log({ resolvedPath, content })
 
         return {
           contents: content,

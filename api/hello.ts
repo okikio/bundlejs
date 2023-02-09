@@ -4,5 +4,6 @@ export const config = {
 };
 
 export default (req: Request) => {
-  return new Response(`Hello, from ${req.url} I'm now an Edge Function!`);
+  // console.log({ url: req.url, req }) ${ req.url }
+  return new Response(`Hello, from  I'm now an Edge Function!`);
 };

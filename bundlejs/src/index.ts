@@ -1,3 +1,4 @@
+// @ts-nocheck
 export * from "./build";
 
 export * from "./configs/options";

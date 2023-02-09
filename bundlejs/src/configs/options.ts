@@ -140,7 +140,7 @@ export const DefaultConfig: BundleConfigOptions = deepAssign({}, EasyDefaultConf
 
     "logLevel": "info",
     "sourcemap": false,
-    "incremental": false,
+    // "incremental": false,
   },
   
   "ascii": "ascii",
