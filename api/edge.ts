@@ -3,7 +3,6 @@ import { parseSearchQuery, parseConfig } from "../src/ts/util/parse-query";
 
 import ESBUILD_WASM from "../bundlejs/src/wasm";
 import { build, compress, setFile, deepAssign, TheFileSystem, createConfig } from "../bundlejs/src/index";
-import { getWASM } from "../bundlejs/src/deno/denoflate/mod";
 
 import { TextEncoder as Encoder, TextDecoder as Decoder } from 'text-encoding-shim';
 
@@ -29,8 +28,6 @@ export const config = {
 };
 
 let WASM_MODULE: Uint8Array;
-getWASM();
-
 export default async function handler(req: Request) {
   try {
     const fs = await TheFileSystem;
@@ -57,10 +54,33 @@ export default async function handler(req: Request) {
     } as BuildConfig);
 
     const result = await build(configObj);
+
+    if (url.searchParams.get("file")) { 
+      const fileBundle = result.contents[0];
+      return new Response(fileBundle.contents, {
+        status: 200,
+        headers: [
+          ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Content-Type', 'text/javascript']
+        ],
+      })
+    }
+
     const size = await compress(result.contents.map(x => x.contents), configObj);
 
-    const end = performance.now();
+    if (url.searchParams.get("badge")) { 
+      const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
+      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(size.size)}-blue?link=${urlQuery}&link=${urlQuery}`).then(res => res.text());
+      return new Response(imgShield, {
+        status: 200,
+        headers: [
+          ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Content-Type', 'image/svg+xml']
+        ],
+      })
+    }
 
+    const end = performance.now();
     const { init: _init, ...printableConfig } = createConfig("build", configObj);
     return new Response(JSON.stringify({
       query: url.search,
