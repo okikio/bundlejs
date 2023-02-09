@@ -76,8 +76,9 @@ specifiers:
   solid-js: ^1.6.10
   standard-version: ^9.5.0
   tailwindcss: ^3.2.6
+  text-encoding-shim: ^1.0.5
   tiny-glob: ^0.2.9
-  typescript: ^4.9.5
+  typescript: 5.0.0-beta
   ultrafetch: ^0.4.0
   vercel: ^28.15.3
   web-animations-js: ^2.3.2
@@ -92,7 +93,7 @@ dependencies:
   '@okikio/emitter': 2.1.7
   '@okikio/native': 3.0.1
   '@okikio/sharedworker': 1.0.4
-  '@typescript/ata': 0.9.3_typescript@4.9.5
+  '@typescript/ata': 0.9.3_typescript@5.0.0-beta
   bytes: 3.1.2
   countapi-js: 1.0.2
   d3: 7.8.2
@@ -107,7 +108,6 @@ dependencies:
   preact: 10.12.0
   resolve.exports: 2.0.0
   solid-js: 1.6.10
-  typescript: 4.9.5
   web-animations-js: 2.3.2
   webcola: 3.4.0
   workbox-window: 6.5.4
@@ -162,12 +162,14 @@ devDependencies:
   rehype-highlight: 6.0.0
   rehype-slug: 5.1.0
   rollup: 3.14.0
-  rollup-plugin-dts: 5.1.1_2za6rqstu4xegr2hrsgsskkobi
+  rollup-plugin-dts: 5.1.1_rnashid73lbwsla4po3jn57f7u
   sass: 1.58.0
   semantic-release: 20.1.0
   standard-version: 9.5.0
   tailwindcss: 3.2.6_postcss@8.4.21
+  text-encoding-shim: 1.0.5
   tiny-glob: 0.2.9
+  typescript: 5.0.0-beta
   ultrafetch: 0.4.0
   vercel: 28.15.3
   workbox-build: 6.5.4
@@ -2793,12 +2795,12 @@ packages:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
     dev: true
 
-  /@typescript/ata/0.9.3_typescript@4.9.5:
+  /@typescript/ata/0.9.3_typescript@5.0.0-beta:
     resolution: {integrity: sha512-/mETZakA5iOT8j8N8/ZUPLEsvSgMJz+cWt9Le1Q9dEwRXwDzekKXw3tpgrq77gaSxgE/Mn/nvtx8uzS41CmZKQ==}
     peerDependencies:
       typescript: ^4.4.4
     dependencies:
-      typescript: 4.9.5
+      typescript: 5.0.0-beta
     dev: false
 
   /@vercel/build-utils/6.2.1:
@@ -10217,7 +10219,7 @@ packages:
     resolution: {integrity: sha512-ndEIpszUHiG4HtDsQLeIuMvRsDnn8c8rYStabochtUeCvfuvNptb5TUbVD68LRAILPX7p9nqQGh4xJgn3EHS/g==}
     dev: false
 
-  /rollup-plugin-dts/5.1.1_2za6rqstu4xegr2hrsgsskkobi:
+  /rollup-plugin-dts/5.1.1_rnashid73lbwsla4po3jn57f7u:
     resolution: {integrity: sha512-zpgo52XmnLg8w4k3MScinFHZK1+ro6r7uVe34fJ0Ee8AM45FvgvTuvfWWaRgIpA4pQ1BHJuu2ospncZhkcJVeA==}
     engines: {node: '>=v14'}
     peerDependencies:
@@ -10226,7 +10228,7 @@ packages:
     dependencies:
       magic-string: 0.27.0
       rollup: 3.14.0
-      typescript: 4.9.5
+      typescript: 5.0.0-beta
     optionalDependencies:
       '@babel/code-frame': 7.18.6
     dev: true
@@ -11134,6 +11136,10 @@ packages:
       source-map-support: 0.5.21
     dev: true
 
+  /text-encoding-shim/1.0.5:
+    resolution: {integrity: sha512-H7yYW+jRn4yhu60ygZ2f/eMhXPITRt4QSUTKzLm+eCaDsdX8avmgWpmtmHAzesjBVUTAypz9odu5RKUjX5HNYA==}
+    dev: true
+
   /text-extensions/1.9.0:
     resolution: {integrity: sha512-wiBrwC1EhBelW12Zy26JeOUkQ5mRu+5o8rpsJk5+2t+Y5vE7e842qtZDQ2g1NpX/29HdyFeJ4nSIhI47ENSxlQ==}
     engines: {node: '>=0.10'}
@@ -11437,6 +11443,12 @@ packages:
 
   /typescript/4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
+  /typescript/5.0.0-beta:
+    resolution: {integrity: sha512-+SSabbSXG5mtF+QGdV9uXXt9Saq1cSyI6hSG7znhaLoquleJpnmfkwSxFngK9c2fWWi1W/263TuzXQOsIcdjjA==}
     engines: {node: '>=4.2.0'}
     hasBin: true
 

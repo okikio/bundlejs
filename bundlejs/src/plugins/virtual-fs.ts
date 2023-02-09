@@ -1,13 +1,15 @@
 // Based on https://github.com/okikio/bundle/blob/main/src/ts/plugins/virtual-fs.ts
-import type { Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
-import type { EVENTS } from "../configs/events";
-import type { STATE } from '../configs/state';
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 
-import { inferLoader } from "../utils/loader";
-export const VIRTUAL_FILESYSTEM_NAMESPACE = 'virtual-filesystem';
-export const VIRTUAL_FS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
-  const FileSystem = config.filesystem;
+import { inferLoader } from "../utils/loader.ts";
+import { getResolvedPath, getFile } from "../util.ts";
+export const VIRTUAL_FILESYSTEM_NAMESPACE = "virtual-filesystem";
+export const VIRTUAL_FS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
+  const [getState] = state;
+  const FileSystem = getState().filesystem; 
 
   return {
     name: VIRTUAL_FILESYSTEM_NAMESPACE,
@@ -21,9 +23,8 @@ export const VIRTUAL_FS = (events: typeof EVENTS, state: typeof STATE, config: B
       });
 
       build.onLoad({ filter: /.*/, namespace: VIRTUAL_FILESYSTEM_NAMESPACE }, async (args) => {
-        let resolvedPath = await FileSystem.resolve(args.path, args?.pluginData?.importer);
-        let content = await FileSystem.get(args.path, "buffer", args?.pluginData?.importer);
-        console.log({ resolvedPath, content })
+        const resolvedPath = getResolvedPath(args.path, args?.pluginData?.importer);
+        const content = await getFile(FileSystem, args.path, "buffer", args?.pluginData?.importer);
 
         return {
           contents: content,

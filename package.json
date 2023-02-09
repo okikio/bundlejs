@@ -73,7 +73,6 @@
         "preact": "^10.12.0",
         "resolve.exports": "^2.0.0",
         "solid-js": "^1.6.10",
-        "typescript": "^4.9.5",
         "web-animations-js": "^2.3.2",
         "webcola": "^3.4.0",
         "workbox-window": "^6.5.4"
@@ -133,7 +132,9 @@
         "semantic-release": "^20.1.0",
         "standard-version": "^9.5.0",
         "tailwindcss": "^3.2.6",
+        "text-encoding-shim": "^1.0.5",
         "tiny-glob": "^0.2.9",
+        "typescript": "5.0.0-beta",
         "ultrafetch": "^0.4.0",
         "vercel": "^28.15.3",
         "workbox-build": "^6.5.4"

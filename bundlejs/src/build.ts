@@ -1,108 +1,135 @@
-import type { BundleConfigOptions, CompressionOptions } from "./configs/options";
-import type { PLATFORM } from "./configs/platform";
-import type * as ESBUILD from "esbuild-wasm";
+import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 
-export type { ESBUILD };
+import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
+import { EXTERNAL } from "./plugins/external.ts";
+import { ALIAS } from "./plugins/alias.ts";
+import { HTTP } from "./plugins/http.ts";
+import { CDN } from "./plugins/cdn.ts";
 
-// import ESBUILD_WASM from "./wasm";
-import { version } from "esbuild-wasm/package.json";
+import { EVENTS } from "./configs/events.ts";
+import { createConfig } from "./configs/config.ts";
+import { PLATFORM_AUTO } from "./configs/platform.ts";
+import { createState, getState, setState } from "./configs/state.ts";
 
-import { EXTERNAL } from "./plugins/external";
-import { HTTP } from "./plugins/http";
-import { CDN } from "./plugins/cdn";
-import { ALIAS } from "./plugins/alias";
-import { VIRTUAL_FS } from "./plugins/virtual-fs";
+import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem.ts";
+import { createNotice } from "./utils/create-notice.ts";
+import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
+import { init } from "./init.ts";
 
-import { DefaultConfig } from "./configs/options";
-import { EVENTS } from "./configs/events";
-import { STATE } from "./configs/state";
+/**
+ * Local state available to all plugins
+ */
+export type LocalState = {
+  filesystem?: Awaited<ReturnType<typeof useFileSystem>>,
 
-import { bytes } from "./utils/pretty-bytes";
-import { encode } from "./utils/encode-decode";
-import { deepAssign } from "./utils/deep-equal";
+  /**
+   * Assets are files during the build process that esbuild can't handle natively, 
+   * e.g. fetching web workers using the `new URL("...", import.meta.url)`
+   */
+  assets?: ESBUILD.OutputFile[],
 
-import { createNotice } from "./utils/create-notice";
+  /**
+   * Array storing the [getter, setter] of the global state
+   */
+  GLOBAL?: [typeof getState, typeof setState],
 
-export const INPUT_EVENTS = {
-  "build": build,
-  "init": init
+  [key: string]: unknown
+}
+
+export type BuildConfig = CommonConfigOptions & {
+  /** esbuild config options https://esbuild.github.io/api/#build-api */
+  esbuild?: ESBUILD.BuildOptions,
+
+  /** The default CDN to import packages from */
+  cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & object),
+
+  /** Aliases for replacing packages with different ones, e.g. replace "fs" with "memfs", so, it can work on the web, etc... */
+  alias?: Record<string, string>,
+
+  /**
+   * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
+   */
+  ascii?: "html" | "html-and-ascii" | "ascii",
+
+  /**
+   * Documentation: https://esbuild.github.io/api/#entry-points
+   */
+  entryPoints?: ESBUILD.BuildOptions["entryPoints"]
 };
 
-export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ESBUILD> {
-  try {
-    switch (platform) {
-      case "node":
-        return await import("esbuild-wasm");
-      //   return await import("esbuild");
-      case "deno":
-        return await import(
-          /* @vite-ignore */
-          `https://deno.land/x/esbuild@v${version}/mod.js`
-        );
-      default:
-        return await import("esbuild-wasm");
-    }
-  } catch (e) {
-    throw e;
+/**
+ * Default build config
+ */
+export const BUILD_CONFIG: BuildConfig = {
+  "entryPoints": ["/index.tsx"],
+  "cdn": DEFAULT_CDN_HOST,
+
+  "esbuild": {
+    "color": true,
+    "globalName": "BundledCode",
+
+    "logLevel": "info",
+    "sourcemap": false,
+
+    "target": ["esnext"],
+    "format": "esm",
+    "bundle": true,
+    "minify": true,
+
+    "treeShaking": true,
+    "platform": "browser"
+  },
+
+  "ascii": "ascii",
+  init: {
+    platform: PLATFORM_AUTO
   }
-}
+};
 
-export async function init({ platform, ...opts }: BundleConfigOptions["init"] = {}) {
-  try {
-    if (!STATE.initialized) {
-      STATE.initialized = true;
-      EVENTS.emit("init.start");
+export type BuildResult = (ESBUILD.BuildResult) & {
+  outputs: ESBUILD.OutputFile[];
+  contents: ESBUILD.OutputFile[];
+};
 
-      STATE.esbuild = await getESBUILD(platform);
-      const { default: ESBUILD_WASM } = await import("./wasm");
-      await STATE.esbuild.initialize({
-        wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
-        ...opts
-      });
+export const TheFileSystem = useFileSystem(EVENTS);
 
-      EVENTS.emit("init.complete");
-    }
-    return STATE.esbuild;
-  } catch (error) {
-    EVENTS.emit("init.error", error);
-    console.error(error);
-  }
-}
-
-export async function build(opts: BundleConfigOptions = {}): Promise<any> {
-  if (!STATE.initialized)
+export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildResult> {
+  if (!getState("initialized"))
     EVENTS.emit("init.loading");
 
-  const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
-  
-  const esbuild = (await init(CONFIG.init)) ?? {};
-  console.log({ esbuild })
-  const { build: bundle } = esbuild;
-  const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const CONFIG = createConfig("build", opts);
+  const STATE = createState<LocalState>({ 
+    filesystem: await filesystem, 
+    assets: [], 
+    GLOBAL: [getState, setState] 
+  });
+  const [get] = STATE;
+
+  const { platform, ...initOpts } = CONFIG.init ?? {};
+  const { build: bundle } = await init(platform, initOpts);
+  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult;
+  let result: ESBUILD.BuildResult = null;
 
-  // try {
-    // try {
-      const keys = "p.env.NODE_ENV".replace("p.", "process.");
-      // @ts-ignore
+  try {
+    try {
+      const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         loader: {
-          '.png': 'file',
-          '.jpeg': 'file',
-          '.ttf': 'file',
-          '.svg': 'text',
-          '.html': 'text',
-          '.scss': 'css'
+          ".png": "file",
+          ".jpeg": "file",
+          ".ttf": "file",
+          ".svg": "text",
+          ".html": "text",
+          ".scss": "css"
         },
         define: {
-          "__NODE__": `false`,
-          // vite crashes for some reason when it sees "process.env.NODE_ENV"
-          [keys]: `"production"`,
+          "__NODE__": "false",
+          [key]: "\"production\"",
           ...define
         },
         write: false,
@@ -116,30 +143,29 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
         ],
         ...esbuildOpts,
       });
-    // } catch (e) {
-      // if (e.errors) {
-      //   console.log(e)
-      //   // Log errors with added color info. to the virtual console
-      //   const asciMsgs = [...await createNotice(e.errors, "error", false)];
-      //   const htmlMsgs = [...await createNotice(e.errors, "error")];
+    } catch (e) {
+      if (e.errors) {
+        // Log errors with added color info. to the virtual console
+        const asciMsgs = [...await createNotice(e.errors, "error", false)];
+        const htmlMsgs = [...await createNotice(e.errors, "error")];
 
-      //   EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
+        EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
 
-      //   const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-      //   return EVENTS.emit("logger.error", message);
-      // } else
-        // throw e;
-    // }
+        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
+        EVENTS.emit("logger.error", message);
+        return;
+      } else throw e;
+    }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
-      [...STATE.assets]
+      [...get()["assets"]]
         .concat(result?.outputFiles as ESBUILD.OutputFile[])
     );
 
     contents = await Promise.all(
       outputs
-        ?.map(({ path, text, contents }): ESBUILD.OutputFile | null => {
+        ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
           if (/\.map$/.test(path))
             return null;
 
@@ -157,14 +183,12 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
         })
 
         // Remove null output files
-        ?.filter(x => x !== undefined && x !== null) as ESBUILD.OutputFile[]
+        ?.filter(x => ![undefined, null].includes(x))
     );
 
     // Ensure a fresh filesystem on every run
     // FileSystem.clear();
-
-    // Reset assets
-    STATE.assets = [];
+    // dele
 
     return {
       /** 
@@ -179,70 +203,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
 
       ...result
     };
-  // } catch (e) { }
+  } catch (e) { 
+    EVENTS.emit("build.error", e);
+  }
 }
-
-/**
- * 
- * @param contents 
- * @param opts 
- * @returns 
- */
-export async function getSize(contents: ESBUILD.OutputFile[] = [], opts: BundleConfigOptions = {}) {
-  const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
-
-  // Use multiple compression algorithims & pretty-bytes for the total gzip, brotli & lz4 compressed size
-  let { compression = {} } = CONFIG;
-  let { type = "gzip", quality: level = 9 } =
-    (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
-
-  // @ts-ignore
-  let totalByteLength = bytes(
-    contents.reduce((acc, { contents }) => acc + contents.byteLength, 0)
-  ) as string;
-
-  // Choose a different compression function based on the compression type
-  let compressionMap = await (async () => {
-    switch (type) {
-      case "lz4":
-        const { compress: lz4_compress, getWASM: getLZ4 } = await import("./deno/lz4/mod");
-        await getLZ4();
-        return async (code: Uint8Array) => {
-          return await lz4_compress(code);
-        };
-      case "brotli":
-        const { compress, getWASM: getBrotli } = await import("./deno/brotli/mod");
-        await getBrotli();
-        return async (code: Uint8Array) => {
-          return await compress(code, code.length, level);
-        };
-      default:
-        const { gzip, getWASM: getGZIP } = await import("./deno/denoflate/mod");
-        await getGZIP();
-        return async (code: Uint8Array) => {
-          return await gzip(code, level);
-        };
-    }
-  })();
-
-  let compressedContent = await Promise.all(
-    contents.map(({ contents }) => compressionMap(contents))
-  );
-
-  let totalCompressedSize = bytes(
-    compressedContent.reduce((acc, { length }) => acc + length, 0)
-  );
-
-  return {
-    type,
-    content: compressedContent,
-
-    totalByteLength,
-    totalCompressedSize,
-
-    initialSize: `${totalByteLength}`,
-    size: `${totalCompressedSize} (${type})`
-  };
-}
-
-export { };

@@ -9,51 +9,51 @@
  */
 
 export const BYTE_UNITS = [
-  'B',
-  'kB',
-  'MB',
-  'GB',
-  'TB',
-  'PB',
-  'EB',
-  'ZB',
-  'YB',
+  "B",
+  "kB",
+  "MB",
+  "GB",
+  "TB",
+  "PB",
+  "EB",
+  "ZB",
+  "YB",
 ];
 
 export const BIBYTE_UNITS = [
-  'B',
-  'kiB',
-  'MiB',
-  'GiB',
-  'TiB',
-  'PiB',
-  'EiB',
-  'ZiB',
-  'YiB',
+  "B",
+  "kiB",
+  "MiB",
+  "GiB",
+  "TiB",
+  "PiB",
+  "EiB",
+  "ZiB",
+  "YiB",
 ];
 
 export const BIT_UNITS = [
-  'b',
-  'kbit',
-  'Mbit',
-  'Gbit',
-  'Tbit',
-  'Pbit',
-  'Ebit',
-  'Zbit',
-  'Ybit',
+  "b",
+  "kbit",
+  "Mbit",
+  "Gbit",
+  "Tbit",
+  "Pbit",
+  "Ebit",
+  "Zbit",
+  "Ybit",
 ];
 
 export const BIBIT_UNITS = [
-  'b',
-  'kibit',
-  'Mibit',
-  'Gibit',
-  'Tibit',
-  'Pibit',
-  'Eibit',
-  'Zibit',
-  'Yibit',
+  "b",
+  "kibit",
+  "Mibit",
+  "Gibit",
+  "Tibit",
+  "Pibit",
+  "Eibit",
+  "Zibit",
+  "Yibit",
 ];
 
 /** 
@@ -64,7 +64,7 @@ export const BIBIT_UNITS = [
 */
 export const toLocaleString = (number, locale, options) => {
   let result = number;
-  if (typeof locale === 'string' || Array.isArray(locale)) {
+  if (typeof locale === "string" || Array.isArray(locale)) {
     result = number.toLocaleString(locale, options);
   } else if (locale === true || options !== undefined) {
     result = number.toLocaleString(undefined, options);
@@ -118,7 +118,7 @@ export default function bytes(number: number, options?: PrettyByteOptions) {
   }
 
   const isNegative = number < 0;
-  const prefix = isNegative ? '-' : (options.signed ? '+' : '');
+  const prefix = isNegative ? "-" : (options.signed ? "+" : "");
 
   if (isNegative) {
     number = -number;
@@ -136,7 +136,7 @@ export default function bytes(number: number, options?: PrettyByteOptions) {
 
   if (number < 1) {
     const numberString = toLocaleString(number, options.locale, localeOptions);
-    return prefix + numberString + ' ' + UNITS[0];
+    return prefix + numberString + " " + UNITS[0];
   }
 
   const exponent = Math.min(Math.floor(options.binary ? Math.log(number) / Math.log(1024) : Math.log10(number) / 3), UNITS.length - 1);
@@ -150,7 +150,7 @@ export default function bytes(number: number, options?: PrettyByteOptions) {
   const numberString = toLocaleString(Number(number), options.locale, localeOptions);
   const unit = UNITS[exponent];
 
-  return prefix + numberString + ' ' + unit;
+  return prefix + numberString + " " + unit;
 }
 
 export { bytes, bytes as formatBytes, bytes as prettyBytes };

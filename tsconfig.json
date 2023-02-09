@@ -15,10 +15,16 @@
         "outDir": "lib",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        // Allow importing `.ts` files directly
+        "allowImportingTsExtensions": true,
+        // Emit only declaration files
+        "emitDeclarationOnly": true,
+        "declaration": true,
     },
     "include": [
-        "src"
+        "src",
+        "bundlejs/src"
     ],
     "exclude": [
         "node_modules",

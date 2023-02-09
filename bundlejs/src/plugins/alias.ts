@@ -1,17 +1,17 @@
-import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild-wasm';
-import type { BundleConfigOptions } from '../configs/options';
-import type { EVENTS } from '../configs/events';
-import type { STATE } from '../configs/state';
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 
-import { parsePackageName } from "../utils/parse-package-name";
-import { EXTERNALS_NAMESPACE } from './external';
-import { HTTP_RESOLVE } from './http';
+import { EXTERNALS_NAMESPACE } from "./external.ts";
+import { HTTP_RESOLVE } from "./http.ts";
+import { parsePackageName } from "../utils/parse-package-name.ts";
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from '../utils/util-cdn';
-import { isBareImport } from '../utils/path';
+import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { isBareImport } from "../utils/path.ts";
 
 /** Alias Plugin Namespace */
-export const ALIAS_NAMESPACE = 'alias-globals';
+export const ALIAS_NAMESPACE = "alias-globals";
 
 /**
  * Checks if a package has an alias
@@ -22,9 +22,9 @@ export const ALIAS_NAMESPACE = 'alias-globals';
 export const isAlias = (id: string, aliases = {}) => {
   if (!isBareImport(id)) return false;
 
-  let aliasKeys = Object.keys(aliases);
-  let path = id.replace(/^node\:/, "");
-  let pkgDetails = parsePackageName(path);
+  const aliasKeys = Object.keys(aliases);
+  const path = id.replace(/^node\:/, "");
+  const pkgDetails = parsePackageName(path);
 
   return aliasKeys.find((it: string): boolean => {
     return pkgDetails.name === it; // import 'foo' & alias: { 'foo': 'bar@5.0' }
@@ -39,13 +39,13 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param logger Console log
  */
 export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
-  return async (args: OnResolveArgs): Promise<OnResolveResult> => {
-    let path = args.path.replace(/^node\:/, "");
-    let { path: argPath } = getCDNUrl(path);
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
+    const path = args.path.replace(/^node\:/, "");
+    const { path: argPath } = getCDNUrl(path);
 
     if (isAlias(argPath, aliases)) {
-      let pkgDetails = parsePackageName(argPath);
-      let aliasPath = aliases[pkgDetails.name];
+      const pkgDetails = parsePackageName(argPath);
+      const aliasPath = aliases[pkgDetails.name];
       return HTTP_RESOLVE(host, events)({
         ...args,
         path: aliasPath
@@ -61,10 +61,10 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typ
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (events: typeof EVENTS, state: typeof STATE, config: BundleConfigOptions): Plugin => {
+export const ALIAS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   // Convert CDN values to URL origins
-  let { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
-  let aliases = config.alias ?? {};
+  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const aliases = config.alias ?? {};
   return {
     name: ALIAS_NAMESPACE,
     setup(build) {
