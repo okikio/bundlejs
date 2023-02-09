@@ -2,8 +2,7 @@ import type { BuildConfig } from "../bundlejs/src/index";
 import { parseSearchQuery, parseConfig } from "../src/ts/util/parse-query";
 
 import ESBUILD_WASM from "../bundlejs/src/wasm";
-import { build, compress, setFile, deepAssign, TheFileSystem } from "../bundlejs/src/index";
-import { getWASM } from "../bundlejs/src/deno/denoflate/mod";
+import { build, setFile, deepAssign, TheFileSystem } from "../bundlejs/src/index";
 
 import { TextEncoder as Encoder, TextDecoder as Decoder } from 'text-encoding-shim';
 
@@ -24,8 +23,6 @@ export const config = {
 };
 
 let WASM_MODULE: Uint8Array;
-getWASM();
-
 export default async function handler(req: Request) {
   try {
     const fs = await TheFileSystem;
