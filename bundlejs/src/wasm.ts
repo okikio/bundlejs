@@ -8,7 +8,7 @@
       return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
     }
 
-    const { gunzip, getWASM } = await import("./deno/denoflate/mod");
+    const { gunzip, getWASM } = await import("./deno/denoflate/mod.ts");
     await getWASM();
     return await gunzip(uint8arr);
   };

@@ -3,7 +3,7 @@ export const config = {
 };
 
 import { TextEncoder as Encoder, TextDecoder } from 'text-encoding-shim';
-globalThis.TextEncoder = Encoder as unknown as TextEncoder;
+const TextEncoder = Encoder as unknown as TextEncoder;
 
 import { build, compress, setFile, deepAssign, TheFileSystem, lzstring } from "../bundlejs/src/index";
 import type { BuildConfig } from "../bundlejs/src/index";
@@ -23,14 +23,9 @@ import type { BuildConfig } from "../bundlejs/src/index";
 // }
 globalThis.performance = globalThis.performance ?? { now: Date.now }
 
-export const inputModelResetValue = [
+const inputModelResetValue = [
   'export * from "@okikio/animate";'
 ].join("\n");
-
-const timeFormatter = new Intl.RelativeTimeFormat("en", {
-  style: "narrow",
-  numeric: "auto",
-});
 
 const { decompressFromURL } = lzstring;
 
@@ -47,7 +42,7 @@ const { decompressFromURL } = lzstring;
  * where the square brackets represent seperate packages, and everything inside the squarebrackets,
  * are the exported methods, types, etc...
  */
-export const parseTreeshakeExports = (str: string) =>
+const parseTreeshakeExports = (str: string) =>
   (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
 // Inspired by https://github.com/solidjs/solid-playground
@@ -148,6 +143,11 @@ const parseConfig = (shareURL: URL) => {
 export default async function handler(req: Request) {
   try {
     const fs = await TheFileSystem;
+
+    const timeFormatter = new Intl.RelativeTimeFormat("en", {
+      style: "narrow",
+      numeric: "auto",
+    });
 
     const start = Date.now();
 

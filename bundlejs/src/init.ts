@@ -29,16 +29,18 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
         } else if ("wasmURL" in opts) { 
           await esbuild.initialize(opts);
         } else {
-          const { default: ESBUILD_WASM } = await import("./wasm");
-          console.log({ esbuild: getState("esbuild") })
+          const { default: ESBUILD_WASM } = await import("./wasm.ts");
+          const wasmModule = new WebAssembly.Module(await ESBUILD_WASM());
+          console.log({
+            wasmModule
+          })
           await esbuild.initialize({
-            wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
+            // wasmModule: wasmModule,
+            wasmURL: "./esbuild.wasm",
             ...opts
           });
         }
       }
-
-
 
       EVENTS.emit("init.complete");
     }

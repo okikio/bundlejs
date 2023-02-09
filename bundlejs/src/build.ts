@@ -106,7 +106,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
   const [get] = STATE;
 
   const { platform, ...initOpts } = CONFIG.init ?? {};
-  const { build: bundle } = await init(platform, initOpts);
+  const e = await init(platform, initOpts);
+ 
+  const { build: bundle } = e;
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
