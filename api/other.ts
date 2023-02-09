@@ -35,19 +35,34 @@ export default async function handler(req: Request) {
 
     setFile("/index.tsx", initialValue);
 
-    const config = deepAssign({
+    const configObj = deepAssign({
       entryPoints: ["/index.tsx"],
       esbuild: {
         treeShaking: true
       },
       init: {
         platform: PLATFORM_AUTO,
-        wasmModule: ESBUILD_WASM,
+        // wasmModule: await WebAssembly.instantiate(ESBUILD_WASM, {}),
       }
     }, DefaultConfig, initialConfig);
     console.log(initialValue)
 
-    const result = await build(config);
+    // const result = await build(
+    //   deepAssign({
+    //     // entryPoints: ["/index.tsx"],
+    //   entryPoints: {
+    //     "/index.tsx": initialValue
+    //   },
+    //     esbuild: {
+    //       treeShaking: true
+    //     },
+    //     init: {
+    //       platform: "node", // PLATFORM_AUTO,
+    //       wasmModule: ESBUILD_WASM,
+    //     }
+    //   }, DefaultConfig, initialConfig));
+    const result = await build(configObj);
+
     console.log({ result })
     // const size = await getSize(result.contents);
 
@@ -55,7 +70,7 @@ export default async function handler(req: Request) {
 
     return new Response(JSON.stringify({
       query: url.search,
-      config,
+      config: configObj,
       input: initialValue,
       size: {
         // type: size.type,

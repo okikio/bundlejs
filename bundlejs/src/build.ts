@@ -31,7 +31,8 @@ export const INPUT_EVENTS = {
 export async function getESBUILD(platform: PLATFORM = "node"): Promise<typeof ESBUILD> {
   try {
     switch (platform) {
-      // case "node":
+      case "node":
+        return await import("esbuild-wasm");
       //   return await import("esbuild");
       case "deno":
         return await import(
@@ -53,17 +54,14 @@ export async function init({ platform, ...opts }: BundleConfigOptions["init"] = 
       EVENTS.emit("init.start");
 
       STATE.esbuild = await getESBUILD(platform);
-      if (platform !== "node" && platform !== "deno" && !opts.wasmModule) {
-        const { default: ESBUILD_WASM } = await import("./wasm");
-        await STATE.esbuild.initialize({
-          wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
-          ...opts
-        });
-      }
+      const { default: ESBUILD_WASM } = await import("./wasm");
+      await STATE.esbuild.initialize({
+        wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
+        ...opts
+      });
 
       EVENTS.emit("init.complete");
     }
-
     return STATE.esbuild;
   } catch (error) {
     EVENTS.emit("init.error", error);
@@ -77,7 +75,9 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
 
   const CONFIG = deepAssign({}, DefaultConfig, opts) as BundleConfigOptions;
   
-  const { build: bundle } = await init(CONFIG.init) ?? {};
+  const esbuild = (await init(CONFIG.init)) ?? {};
+  console.log({ esbuild })
+  const { build: bundle } = esbuild;
   const { define = {}, loader = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
@@ -85,8 +85,8 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
   let contents: ESBUILD.OutputFile[] = [];
   let result: ESBUILD.BuildResult;
 
-  try {
-    try {
+  // try {
+    // try {
       const keys = "p.env.NODE_ENV".replace("p.", "process.");
       // @ts-ignore
       result = await bundle({
@@ -116,7 +116,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
         ],
         ...esbuildOpts,
       });
-    } catch (e) {
+    // } catch (e) {
       // if (e.errors) {
       //   console.log(e)
       //   // Log errors with added color info. to the virtual console
@@ -128,8 +128,8 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
       //   const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
       //   return EVENTS.emit("logger.error", message);
       // } else
-        throw e;
-    }
+        // throw e;
+    // }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
@@ -164,7 +164,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
     // FileSystem.clear();
 
     // Reset assets
-    // STATE.assets = [];
+    STATE.assets = [];
 
     return {
       /** 
@@ -179,7 +179,7 @@ export async function build(opts: BundleConfigOptions = {}): Promise<any> {
 
       ...result
     };
-  } catch (e) { }
+  // } catch (e) { }
 }
 
 /**
