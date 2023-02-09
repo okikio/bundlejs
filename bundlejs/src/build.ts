@@ -1,20 +1,20 @@
-import type { CommonConfigOptions, ESBUILD } from "./types.ts";
+import type { CommonConfigOptions, ESBUILD } from "./types";
 
-import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
-import { EXTERNAL } from "./plugins/external.ts";
-import { ALIAS } from "./plugins/alias.ts";
-import { HTTP } from "./plugins/http.ts";
-import { CDN } from "./plugins/cdn.ts";
+import { VIRTUAL_FS } from "./plugins/virtual-fs";
+import { EXTERNAL } from "./plugins/external";
+import { ALIAS } from "./plugins/alias";
+import { HTTP } from "./plugins/http";
+import { CDN } from "./plugins/cdn";
 
-import { EVENTS } from "./configs/events.ts";
-import { createConfig } from "./configs/config.ts";
-import { PLATFORM_AUTO } from "./configs/platform.ts";
-import { createState, getState, setState } from "./configs/state.ts";
+import { EVENTS } from "./configs/events";
+import { createConfig } from "./configs/config";
+import { PLATFORM_AUTO } from "./configs/platform";
+import { createState, getState, setState } from "./configs/state";
 
-import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem.ts";
-import { createNotice } from "./utils/create-notice.ts";
-import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
-import { init } from "./init.ts";
+import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem";
+import { createNotice } from "./utils/create-notice";
+import { DEFAULT_CDN_HOST } from "./utils/util-cdn";
+import { init } from "./init";
 
 /**
  * Local state available to all plugins

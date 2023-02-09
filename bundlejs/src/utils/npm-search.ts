@@ -1,6 +1,6 @@
-import { getRequest } from "./fetch-and-cache.ts";
-import { parsePackageName } from "./parse-package-name.ts";
-import { maxSatisfying } from "./semver.ts";
+import { getRequest } from "./fetch-and-cache";
+import { parsePackageName } from "./parse-package-name";
+import { maxSatisfying } from "./semver";
 
 /**
  * Returns registry url for packages which have an input string

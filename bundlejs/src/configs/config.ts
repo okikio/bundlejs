@@ -1,12 +1,12 @@
-import type { BuildConfig } from "../build.ts";
-import type { TransformConfig } from "../transform.ts";
-import type { CompressConfig, CompressionOptions } from "../compress.ts";
+import type { BuildConfig } from "../build";
+import type { TransformConfig } from "../transform";
+import type { CompressConfig, CompressionOptions } from "../compress";
 
-import { BUILD_CONFIG } from "../build.ts";
-import { TRANSFORM_CONFIG } from "../transform.ts";
-import { COMPRESS_CONFIG } from "../compress.ts";
+import { BUILD_CONFIG } from "../build";
+import { TRANSFORM_CONFIG } from "../transform";
+import { COMPRESS_CONFIG } from "../compress";
 
-import { deepAssign } from "../utils/deep-equal.ts";
+import { deepAssign } from "../utils/deep-equal";
 
 /**
  * Creates the config needed for the transform, build, and compress functions

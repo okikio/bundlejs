@@ -1,22 +1,22 @@
-export * from "./utils/get-esbuild.ts";
+export * from "./utils/get-esbuild";
 
-export * from "./utils/ansi.ts";
-export * from "./utils/create-notice.ts";
-export * from "./utils/debounce.ts";
-export * from "./utils/deep-equal.ts";
-export * from "./utils/encode-decode.ts";
-export * from "./utils/fetch-and-cache.ts";
-export * from "./utils/filesystem.ts";
-export * from "./utils/loader.ts";
+export * from "./utils/ansi";
+export * from "./utils/create-notice";
+export * from "./utils/debounce";
+export * from "./utils/deep-equal";
+export * from "./utils/encode-decode";
+export * from "./utils/fetch-and-cache";
+export * from "./utils/filesystem";
+export * from "./utils/loader";
 
-export * as lzstring from "./utils/lz-string.ts";
-export * from "./utils/parse-package-name.ts";
+export * as lzstring from "./utils/lz-string";
+export * from "./utils/parse-package-name";
 
-export * as path from "./utils/path.ts";
-export * from "./utils/pretty-bytes.ts";
-export * from "./utils/resolve-exports.ts";
-export * from "./utils/resolve-imports.ts";
+export * as path from "./utils/path";
+export * from "./utils/pretty-bytes";
+export * from "./utils/resolve-exports";
+export * from "./utils/resolve-imports";
 
-export * as semver from "./utils/semver.ts";
-export * from "./utils/npm-search.ts";
-export * from "./utils/util-cdn.ts";
+export * as semver from "./utils/semver";
+export * from "./utils/npm-search";
+export * from "./utils/util-cdn";

@@ -8,7 +8,7 @@
  * @module
  */
 
-import * as _posix from "./posix.ts";
+import * as _posix from "./posix";
 
 const path = _posix;
 export const posix = _posix;
@@ -30,6 +30,6 @@ export const {
   toNamespacedPath,
 } = path;
 
-export { SEP, SEP_PATTERN } from "./_constants.ts";
-export * from "./_interface.ts";
-export * from "./glob.ts";
+export { SEP, SEP_PATTERN } from "./_constants";
+export * from "./_interface";
+export * from "./glob";

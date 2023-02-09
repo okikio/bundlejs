@@ -3,8 +3,8 @@
 // Ported from https://github.com/browserify/path-browserify/
 // This module is browser compatible.
 
-import type { FormatInputPathObject, ParsedPath } from "./_interface.ts";
-import { CHAR_DOT, CHAR_FORWARD_SLASH } from "./_constants.ts";
+import type { FormatInputPathObject, ParsedPath } from "./_interface";
+import { CHAR_DOT, CHAR_FORWARD_SLASH } from "./_constants";
 
 import {
   _format,
@@ -12,7 +12,7 @@ import {
   encodeWhitespace,
   isPosixPathSeparator,
   normalizeString,
-} from "./_util.ts";
+} from "./_util";
 
 export const sep = "/";
 export const delimiter = ":";
@@ -481,7 +481,7 @@ export function parse(path: string): ParsedPath {
  * Converts a file URL to a path string.
  *
  * ```ts
- *      import { fromFileUrl } from "./posix.ts.ts";
+ *      import { fromFileUrl } from "./posix.ts";
  *      fromFileUrl("file:///home/foo"); // "/home/foo"
  * ```
  * @param url of a file URL
@@ -500,7 +500,7 @@ export function fromFileUrl(url: string | URL): string {
  * Converts a path string to a file URL.
  *
  * ```ts
- *      import { toFileUrl } from "./posix.ts.ts";
+ *      import { toFileUrl } from "./posix.ts";
  *      toFileUrl("/home/foo"); // new URL("file:///home/foo")
  * ```
  * @param path to convert to file URL

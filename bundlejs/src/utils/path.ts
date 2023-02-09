@@ -1,7 +1,7 @@
-import { isAbsolute, join } from "../deno/path/mod.ts";
-import { encodeWhitespace } from "../deno/path/_util.ts";
+import { isAbsolute, join } from "../deno/path/mod";
+import { encodeWhitespace } from "../deno/path/_util";
 
-export * from "../deno/path/mod.ts";
+export * from "../deno/path/mod";
 
 /** 
  * Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/path.ts#L123

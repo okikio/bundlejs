@@ -1,6 +1,6 @@
-import { decode, encode } from "./encode-decode.ts";
-import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
-import type { EVENTS } from "../configs/events.ts";
+import { decode, encode } from "./encode-decode";
+import { dirname, basename, resolve, sep } from "../deno/path/mod";
+import type { EVENTS } from "../configs/events";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
@@ -76,7 +76,7 @@ export async function getFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
     if (type === "string") return decode(file);
     return file;
   } catch (e) {
-    throw new Error(`Error occurred while getting "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while getting "${resolvedPath}": ${e}`);
   }
 };
 
@@ -95,7 +95,7 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
     if (!isValid(content)) await fs.set(resolvedPath, null, 'folder');
     await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content), 'file');
   } catch (e) {
-    throw new Error(`Error occurred while writing to "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while writing to "${resolvedPath}": ${e}`);
   }
 };
 
@@ -116,7 +116,7 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 
     return await fs.delete(resolvedPath);
   } catch (e) {
-    throw new Error(`Error occurred while deleting "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while deleting "${resolvedPath}": ${e}`);
   }
 };
 
@@ -274,7 +274,7 @@ export async function createOPFSFileSystem() {
 
     return fs;
   } catch(e) {
-    throw new Error("Cannot create OPFS Virtual File System.", { cause: e })
+    throw new Error(`Cannot create OPFS Virtual File System: ${e}.`)
   }
 }
 

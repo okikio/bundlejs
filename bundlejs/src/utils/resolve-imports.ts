@@ -1,7 +1,7 @@
 /** 
  * Based on `resolve.exports` (https://npmjs.com/resolve.exports) by @lukeed (https://github.com/lukeed), but tweaked to work for imports
  */
-import { toName, bail, loop } from "./resolve-exports.ts";
+import { toName, bail, loop } from "./resolve-exports";
 
 export interface ResolveImportOptions { 
 	browser?: boolean;

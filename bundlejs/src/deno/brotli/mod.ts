@@ -22,7 +22,7 @@ export const getWASM = async () => {
  * Compress a byte array.
  *
  * ```typescript
- * import { compress } from "https://deno.land/x/brotli/mod.ts.ts";
+ * import { compress } from "https://deno.land/x/brotli/mod.ts";
  * const text = new TextEncoder().encode("X".repeat(64));
  * console.log(text.length);                   // 64 Bytes
  * console.log(compress(text).length);         // 10 Bytes
@@ -48,7 +48,7 @@ export async function compress(
  * Decompress a byte array.
  *
  * ```typescript
- * import { decompress } from "https://deno.land/x/brotli/mod.ts.ts";
+ * import { decompress } from "https://deno.land/x/brotli/mod.ts";
  * const compressed = Uint8Array.from([ 27, 63, 0, 0, 36, 176, 226, 153, 64, 18 ]);
  * console.log(compressed.length);             // 10 Bytes
  * console.log(decompress(compressed).length); // 64 Bytes

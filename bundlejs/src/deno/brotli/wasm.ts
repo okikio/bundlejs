@@ -1,5 +1,5 @@
 //deno-fmt-ignore-file
-// import * as A from "../lz4/mod.ts";
+// import * as A from "../lz4/mod";
 export const source = async () => {
   const lz4 = await import("../lz4/mod");
   return await lz4.decompress(

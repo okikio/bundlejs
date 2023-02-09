@@ -1,6 +1,6 @@
-import { bytes } from "./utils/pretty-bytes.ts";
-import { encode } from "./utils/encode-decode.ts";
-import { createConfig } from "./configs/config.ts";
+import { bytes } from "./utils/pretty-bytes";
+import { encode } from "./utils/encode-decode";
+import { createConfig } from "./configs/config";
 
 /**
  * An API for compressing a stream of data.

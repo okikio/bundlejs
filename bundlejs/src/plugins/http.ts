@@ -1,18 +1,18 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { BuildConfig, LocalState } from "../build.ts";
-import type { StateArray } from "../configs/state.ts";
-import type { EVENTS } from "../configs/events.ts";
-import type { ESBUILD } from "../types.ts";
+import type { BuildConfig, LocalState } from "../build";
+import type { StateArray } from "../configs/state";
+import type { EVENTS } from "../configs/events";
+import type { ESBUILD } from "../types";
 
-import { CDN_RESOLVE } from "./cdn.ts";
-import { getRequest } from "../utils/fetch-and-cache.ts";
-import { decode } from "../utils/encode-decode.ts";
+import { CDN_RESOLVE } from "./cdn";
+import { getRequest } from "../utils/fetch-and-cache";
+import { decode } from "../utils/encode-decode";
 
-import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn.ts";
-import { inferLoader } from "../utils/loader.ts";
+import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn";
+import { inferLoader } from "../utils/loader";
 
-import { urlJoin, extname, isBareImport } from "../utils/path.ts";
-import { setFile } from "../util.ts";
+import { urlJoin, extname, isBareImport } from "../utils/path";
+import { setFile } from "../util";
 
 /** HTTP Plugin Namespace */
 export const HTTP_NAMESPACE = "http-url";
@@ -194,7 +194,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         let content: Uint8Array, url: string;
 
         // Imports have various extentions, fetch each extention to confirm what the user meant
-        const exts = ext.length > 0 ? [""] : ["", ".ts", ".tsx", ".js", ".mjs", ".cjs"];
+        const exts = ext.length > 0 ? [""] : ["", "", ".tsx", ".js", ".mjs", ".cjs"];
         const extLength = exts.length;
         let err: Error;
 
@@ -221,10 +221,6 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         // await FileSystem.set(args.namespace + ":" + args.path, content);
 
         await setFile(FileSystem, args.namespace + ":" + args.path, content)
-
-        console.log({
-          url
-        })
 
         const _assetResults =
           (await fetchAssets(url, content, args.namespace, events, state))

@@ -1,8 +1,8 @@
 // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
 // This module is browser compatible.
-import type { OSType } from "./_constants.ts";
-import * as _posix from "./posix.ts";
-import { SEP, SEP_PATTERN } from "./_constants.ts";
+import type { OSType } from "./_constants";
+import * as _posix from "./posix";
+import { SEP, SEP_PATTERN } from "./_constants";
 
 const path = _posix;
 const { join, normalize } = path;
