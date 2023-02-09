@@ -144,3 +144,6 @@ pnpm-debug.log*
 .DS_Store
 
 core.*
+
+packages/core/lib/
+packages/core/@types/
