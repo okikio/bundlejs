@@ -52,7 +52,7 @@ export const fetchPkg = async (url: string, events: typeof EVENTS) => {
  * @param logger Console log
  */
 export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, state: StateArray<LocalState>) => {
-  const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
+  const rgx = /new URL\((?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*(?:(?!\`.*\$\{)['"`](.*)['"`]),(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*import\.meta\.url(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*\)/g;
   const parentURL = new URL("./", path).toString();
   // const FileSystem = config.filesystem;
 
@@ -161,6 +161,18 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
   const FileSystem = get().filesystem; 
   // const FileSystem = config.filesystem;
 
+  // Imports have various extentions, fetch each extention to confirm what the user meant
+  const fileEndings = ["", "/index"];
+  const exts = ["", "/index.js", ".js", ".mjs", ".ts", ".tsx", ".cjs", ".d.ts"];
+
+  // It's possible to have `./lib/index.d.ts` or `./lib/index.mjs`, and have a user enter use `./lib` as the import
+  // It's very annoying but you have to check all variants
+  const allEndingVariants = Array.from(new Set(fileEndings.map(ending => {
+    return exts.map(extension => ending + extension)
+  }).flat()));
+
+  const endingVariantsLength = allEndingVariants.length;
+
   return {
     name: HTTP_NAMESPACE,
     setup(build) {
@@ -192,16 +204,12 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         const ext = extname(args.path);
         const argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
         let content: Uint8Array, url: string;
-
-        // Imports have various extentions, fetch each extention to confirm what the user meant
-        const exts = ext.length > 0 ? [""] : ["", "", ".tsx", ".js", ".mjs", ".cjs"];
-        const extLength = exts.length;
         let err: Error;
 
-        for (let i = 0; i < extLength; i++) {
-          const extPath = exts[i];
+        for (let i = 0; i < endingVariantsLength; i++) {
+          const endings = allEndingVariants[i];
           try {
-            ({ content, url } = await fetchPkg(argPath(extPath), events));
+            ({ content, url } = await fetchPkg(argPath(endings), events));
             break;
           } catch (e) {
             if (i == 0)
@@ -209,7 +217,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
 
             // If after checking all the different file extensions none of them are valid
             // Throw the first fetch error encountered, as that is generally the most accurate error
-            if (i >= extLength - 1) {
+            if (i >= endingVariantsLength - 1) {
               events.emit("logger.error", e.toString());
               throw err;
             }

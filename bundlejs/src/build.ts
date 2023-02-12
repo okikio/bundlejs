@@ -149,14 +149,11 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       if (e.errors) {
         // Log errors with added color info. to the virtual console
         const asciMsgs = [...await createNotice(e.errors, "error", false)];
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
 
-        EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
+        EVENTS.emit("logger.error", asciMsgs);
+      }
 
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        EVENTS.emit("logger.error", message);
-        return;
-      } else throw e;
+      throw e;
     }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
@@ -206,6 +203,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       ...result
     };
   } catch (e) { 
-    EVENTS.emit("build.error", e);
+    // EVENTS.emit("build.error", e);
+    throw e;
   }
 }
