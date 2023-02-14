@@ -1,4 +1,4 @@
-import type { OSType } from "./_constants";
+import type { OSType } from "./_constants.ts";
 export interface GlobOptions {
     /** Extended glob syntax.
      * See https://www.linuxjournal.com/content/bash-extended-globbing. Defaults

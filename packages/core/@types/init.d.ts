@@ -1,17 +1,5 @@
 import type * as ESBUILD from "esbuild-wasm";
-import type { Platform } from "./configs/platform";
-/**
- * Determines which esbuild skew to use depending on the platform option supplied,
- * by default it will choose the most perfomnant esbuild skew,
- * so on deno and node it will choose the native while on browsers it will choose WASM.
- *
- * You can specifiy which platform skew you would like,
- * for example you can choose "deno-wasm" as a skew, where you can run the esbuild but in WASM
- *
- * @param platform Which platform skew of esbuild should be used
- * @returns Esbuild module
- */
-export declare function getEsbuild(platform?: Platform): Promise<typeof ESBUILD>;
+import type { Platform } from "./configs/platform.ts";
 /**
  * Configures how esbuild running in wasm is initialized
  */

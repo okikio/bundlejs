@@ -1,6 +1,6 @@
 import type { PartialMessage } from "esbuild-wasm";
 
-import { ansi } from "./ansi";
+import { ansi } from "./ansi.ts";
 
 /** 
  * Inspired by https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts

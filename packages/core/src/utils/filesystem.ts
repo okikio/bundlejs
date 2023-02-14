@@ -1,6 +1,6 @@
-import { decode, encode } from "./encode-decode";
-import { dirname, basename, resolve, sep } from "../deno/path/mod";
-import type { EVENTS } from "../configs/events";
+import { decode, encode } from "./encode-decode.ts";
+import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
+import type { EVENTS } from "../configs/events.ts";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
@@ -65,7 +65,7 @@ export function getResolvedPath(path: string, importer?: string) {
  * @returns file from file system storage in either string format or as a Uint8Array buffer
  * 
  */
-export async function getFile<T>(fs: IFileSystem<T>, path: string, type: "string" | "buffer" = "buffer", importer?: string) {
+export async function getFile<T, F extends IFileSystem<T>>(fs: F, path: string, type: "string" | "buffer" = "buffer", importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
 
   try {
@@ -88,12 +88,12 @@ export async function getFile<T>(fs: IFileSystem<T>, path: string, type: "string
  * @param content contents of file to store, you can store buffers and/or strings
  * @param importer an absolute path to use to determine a relative file path
  */
-export async function setFile<T>(fs: IFileSystem<T>, path: string, content?: Uint8Array | string, importer?: string) {
+export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, content?: Uint8Array | string, importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
 
   try {
-    if (!isValid(content)) await fs.set(resolvedPath, null);
-    await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content));
+    if (!isValid(content)) await fs.set(resolvedPath, null, 'folder');
+    await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content), 'file');
   } catch (e) {
     throw new Error(`Error occurred while writing to "${resolvedPath}"`, { cause: e });
   }
@@ -107,7 +107,7 @@ export async function setFile<T>(fs: IFileSystem<T>, path: string, content?: Uin
  * @param importer an absolute path to use to determine a relative file path
  * @returns true if a file or folder existed and has been removed, or false if file/folder doesn't exist.
  */
-export async function deleteFile<T>(fs: IFileSystem<T>, path: string, importer?: string) {
+export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: string, importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
 
   try {
@@ -229,7 +229,7 @@ export async function createOPFSFileSystem() {
       async get(path: string) {
         const fileOrFolderHandle = await INTERNAL_FS.get(path);
         if (fileOrFolderHandle.kind === "file") {
-          return readFile(fileOrFolderHandle as FileSystemFileHandle);
+          return await readFile(fileOrFolderHandle as FileSystemFileHandle);
         } else {
           return null;
         }
@@ -257,8 +257,8 @@ export async function createOPFSFileSystem() {
         }
 
         const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath), { "create": true });
-        writeFile(fileHandle, content);
-        INTERNAL_FS.set(resolvedPath, fileHandle);
+        await writeFile(fileHandle, content);
+        await INTERNAL_FS.set(resolvedPath, fileHandle);
       },
       async delete(path: string) {
         const resolvedPath = resolve(path);
@@ -267,7 +267,7 @@ export async function createOPFSFileSystem() {
         const fileHandle = await INTERNAL_FS.get(resolvedPath) as FileSystemFileHandle; 
         const folderHandle = await INTERNAL_FS.get(dirPath) as FileSystemDirectoryHandle; 
 
-        folderHandle.removeEntry(fileHandle.name);
+        await folderHandle.removeEntry(fileHandle.name);
         return await INTERNAL_FS.delete(resolvedPath)
       }
     }
@@ -297,8 +297,8 @@ export async function useFileSystem(events: typeof EVENTS, type: "OPFS" | "DEFAU
   return createDefaultFileSystem();
 }
 
-type WriterableFileStreamData = BufferSource | Blob | DataView | Uint8Array | String | string;
-type FileSystemWritableFileStreamData =
+export type WriterableFileStreamData = BufferSource | Blob | DataView | Uint8Array | String | string;
+export type FileSystemWritableFileStreamData =
   { type: "write", data: WriterableFileStreamData; position?: number; } |
   { type: "seek", position: number; } |
   { type: "truncate", size: number; } |
@@ -324,25 +324,25 @@ type FileSystemWritableFileStreamData =
     size?: number;
   }
 
-interface FileSystemWritableFileStream extends WritableStream {
+export interface FileSystemWritableFileStream extends WritableStream {
   seek(position: number): Promise<void>;
   truncate(newSize: number): Promise<void>;
   write(buffer: WriterableFileStreamData | FileSystemWritableFileStreamData): Promise<void>;
 }
 
-interface FileSystemCreateWritableOptions {
+export interface FileSystemCreateWritableOptions {
   /**
    *  If false or not specified, the temporary file starts out empty, otherwise the existing file is first copied to this temporary file.
    */
   keepExistingData?: boolean;
 }
 
-interface FileSystemReadWriteOptions {
+export interface FileSystemReadWriteOptions {
   at?: number;
 }
 
 /** Available only in secure contexts. */
-interface FileSystemSyncAccessHandle {
+export interface FileSystemSyncAccessHandle {
   close(): void;
   flush(): void;
   getSize(): number;
@@ -352,7 +352,7 @@ interface FileSystemSyncAccessHandle {
 }
 
 /** Available only in secure contexts. */
-interface FileSystemFileHandle extends FileSystemHandle {
+export interface FileSystemFileHandle extends FileSystemHandle {
   readonly kind: "file";
   createSyncAccessHandle?(): Promise<FileSystemSyncAccessHandle>;
   /**

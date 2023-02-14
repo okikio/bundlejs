@@ -1,8 +1,8 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { BuildConfig, LocalState } from "../build";
-import type { StateArray } from "../configs/state";
-import type { EVENTS } from "../configs/events";
-import type { ESBUILD } from "../types";
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 /** HTTP Plugin Namespace */
 export declare const HTTP_NAMESPACE = "http-url";
 /**
@@ -25,7 +25,7 @@ export declare const fetchPkg: (url: string, events: typeof EVENTS) => Promise<{
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export declare const fetchAssets: (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, config: BuildConfig) => Promise<PromiseSettledResult<{
+export declare const fetchAssets: (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, state: StateArray<LocalState>) => Promise<PromiseSettledResult<{
     path: string;
     contents: Uint8Array;
     readonly text: string;

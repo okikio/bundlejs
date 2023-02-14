@@ -1,12 +1,12 @@
-import type { CommonConfigOptions, ESBUILD } from "./types";
+import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 
-import { getState } from "./configs/state";
-import { PLATFORM_AUTO } from "./configs/platform";
-import { createConfig } from "./configs/config";
-import { EVENTS } from "./configs/events";
+import { getState } from "./configs/state.ts";
+import { PLATFORM_AUTO } from "./configs/platform.ts";
+import { createConfig } from "./configs/config.ts";
+import { EVENTS } from "./configs/events.ts";
 
-import { createNotice } from "./utils/create-notice";
-import { init } from "./init";
+import { createNotice } from "./utils/create-notice.ts";
+import { init } from "./init.ts";
 
 export type TransformConfig = CommonConfigOptions & {
   /* https://esbuild.github.io/api/#transform-api */

@@ -1,4 +1,4 @@
-import type { FormatInputPathObject, ParsedPath } from "./_interface";
+import type { FormatInputPathObject, ParsedPath } from "./_interface.ts";
 export declare const sep = "/";
 export declare const delimiter = ":";
 /**
@@ -62,7 +62,7 @@ export declare function parse(path: string): ParsedPath;
  * Converts a file URL to a path string.
  *
  * ```ts
- *      import { fromFileUrl } from "./posix.ts";
+ *      import { fromFileUrl } from "./posix.ts.ts";
  *      fromFileUrl("file:///home/foo"); // "/home/foo"
  * ```
  * @param url of a file URL
@@ -72,7 +72,7 @@ export declare function fromFileUrl(url: string | URL): string;
  * Converts a path string to a file URL.
  *
  * ```ts
- *      import { toFileUrl } from "./posix.ts";
+ *      import { toFileUrl } from "./posix.ts.ts";
  *      toFileUrl("/home/foo"); // new URL("file:///home/foo")
  * ```
  * @param path to convert to file URL

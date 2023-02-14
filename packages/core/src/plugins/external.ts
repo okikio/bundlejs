@@ -1,10 +1,10 @@
-import type { BuildConfig, LocalState } from "../build";
-import type { StateArray } from "../configs/state";
-import type { EVENTS } from "../configs/events";
-import type { ESBUILD } from "../types";
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 
-import { encode } from "../utils/encode-decode";
-import { getCDNUrl } from "../utils/util-cdn";
+import { encode } from "../utils/encode-decode.ts";
+import { getCDNUrl } from "../utils/util-cdn.ts";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = "external-globals";

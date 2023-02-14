@@ -1,0 +1,30 @@
+{
+  "version": "2",
+  "remote": {
+    "https://deno.land/x/denoflate@1.2.1/mod.ts": "f5628e44b80b3d80ed525afa2ba0f12408e3849db817d47a883b801f9ce69dd6",
+    "https://deno.land/x/denoflate@1.2.1/pkg/denoflate.js": "b9f9ad9457d3f12f28b1fb35c555f57443427f74decb403113d67364e4f2caf4",
+    "https://deno.land/x/denoflate@1.2.1/pkg/denoflate_bg.wasm.js": "d581956245407a2115a3d7e8d85a9641c032940a8e810acbd59ca86afd34d44d",
+    "https://deno.land/x/esbuild@v0.17.6/mod.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
+    "https://deno.land/x/esbuild@v0.17.6/mod.js": "cc7b2385f3367411c5aeaf4e39aefaf56dbdb5b9d4d973bd3d2a3c9304f3c4ef"
+  },
+  "npm": {
+    "specifiers": {
+      "@okikio/emitter": "@okikio/emitter@2.1.7",
+      "esbuild-wasm": "esbuild-wasm@0.17.6"
+    },
+    "packages": {
+      "@okikio/emitter@2.1.7": {
+        "integrity": "sha512-Ta87D0uTN/RclDm3zNwzKaPm2jES58uh3MW3OlRBJ7MNn/c6jIz/I3i01HF3T4qKWjqjNj7OdyT6ndg5P972qw==",
+        "dependencies": { "@okikio/manager": "@okikio/manager@2.1.7" }
+      },
+      "@okikio/manager@2.1.7": {
+        "integrity": "sha512-fle8woS2vX4Im8wPekQOxYT00ITA5lABqEGoE12Tj7Mb6HdMsQBVxujMLVJ7OobMTmZHdT949A4yc35MC/uTEA==",
+        "dependencies": {}
+      },
+      "esbuild-wasm@0.17.6": {
+        "integrity": "sha512-9Ldow2+kulEnGtOTbngHyiFIneIi+g7pJOz8cZQhW1KWKqsu9nCYDba2JlwsH/PJtAGNSTCrKBmaKYf8rJYvgQ==",
+        "dependencies": {}
+      }
+    }
+  }
+}

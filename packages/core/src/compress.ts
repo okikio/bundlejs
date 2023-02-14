@@ -1,6 +1,32 @@
-import { bytes } from "./utils/pretty-bytes";
-import { encode } from "./utils/encode-decode";
-import { createConfig } from "./configs/config";
+import { bytes } from "./utils/pretty-bytes.ts";
+import { encode } from "./utils/encode-decode.ts";
+import { createConfig } from "./configs/config.ts";
+
+/**
+ * An API for compressing a stream of data.
+ *
+ * @example
+ * ```ts
+ * await Deno.stdin.readable
+ *   .pipeThrough(new CompressionStream("gzip"))
+ *   .pipeTo(Deno.stdout.writable);
+ * ```
+ *
+ * @category Compression Streams API
+ */
+declare class CompressionStream {
+  /**
+   * Creates a new `CompressionStream` object which compresses a stream of
+   * data.
+   *
+   * Throws a `TypeError` if the format passed to the constructor is not
+   * supported.
+   */
+  constructor(format: string);
+
+  readonly readable: ReadableStream<Uint8Array>;
+  readonly writable: WritableStream<Uint8Array>;
+}
 
 /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
 export type CompressionType = "gzip" | "brotli" | "lz4";
@@ -75,7 +101,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
         if (quality === COMPRESS_CONFIG.quality && 'CompressionStream' in globalThis) {
           return async (code: Uint8Array) => {
             const cs = new CompressionStream('gzip');
-            const compressedStream = new Blob([encode(code)]).stream().pipeThrough(cs);
+            const compressedStream = new Blob([code]).stream().pipeThrough(cs);
             return new Uint8Array(await new Response(compressedStream).arrayBuffer());
           };
         }

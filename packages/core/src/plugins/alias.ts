@@ -1,14 +1,14 @@
-import type { BuildConfig, LocalState } from "../build";
-import type { StateArray } from "../configs/state";
-import type { EVENTS } from "../configs/events";
-import type { ESBUILD } from "../types";
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 
-import { EXTERNALS_NAMESPACE } from "./external";
-import { HTTP_RESOLVE } from "./http";
-import { parsePackageName } from "../utils/parse-package-name";
+import { EXTERNALS_NAMESPACE } from "./external.ts";
+import { HTTP_RESOLVE } from "./http.ts";
+import { parsePackageName } from "../utils/parse-package-name.ts";
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/util-cdn";
-import { isBareImport } from "../utils/path";
+import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { isBareImport } from "../utils/path.ts";
 
 /** Alias Plugin Namespace */
 export const ALIAS_NAMESPACE = "alias-globals";
