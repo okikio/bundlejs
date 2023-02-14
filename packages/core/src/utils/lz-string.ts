@@ -58,6 +58,17 @@ export function decompressFromURL(input: string): string | null {
   return _decompress(input.length, 32, (index) => getBaseValue(keyStrUriSafe, input.charAt(index)));
 }
 
+export function compressToUTF16(input: string) {
+  if (input == null) return "";
+  return _compress(input, 15, function (a) { return String.fromCharCode(a + 32); }) + " ";
+}
+
+export function decompressFromUTF16 (compressed: string) {
+  if (compressed == null) return "";
+  if (compressed == "") return null;
+  return _decompress(compressed.length, 16384, function (index) { return compressed.charCodeAt(index) - 32; });
+}
+
 export function compress(uncompressed: string): string {
   return _compress(uncompressed, 16, String.fromCharCode);
 }

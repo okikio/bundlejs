@@ -11,11 +11,12 @@
     "isolatedModules": true,
     // Remove CJS module errors
     "allowSyntheticDefaultImports": true,
+    // Allow importing `.ts` files directly
+    "allowImportingTsExtensions": true,
+    // Emit only declaration files
+    "emitDeclarationOnly": true,
+    "declaration": true,
     // Add support for Web Workers
-    "lib": [
-      "ES2021",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   }
 }

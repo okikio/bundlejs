@@ -1,10 +1,11 @@
-import type { CommonConfigOptions, ESBUILD } from "./types";
-import { getState, setState } from "./configs/state";
-import { FileSystem, getFile, setFile, getResolvedPath } from "./utils/filesystem";
+import type { CommonConfigOptions, ESBUILD } from "./types.ts";
+import { getState, setState } from "./configs/state.ts";
+import { useFileSystem } from "./utils/filesystem.ts";
 /**
  * Local state available to all plugins
  */
 export type LocalState = {
+    filesystem?: Awaited<ReturnType<typeof useFileSystem>>;
     /**
      * Assets are files during the build process that esbuild can't handle natively,
      * e.g. fetching web workers using the `new URL("...", import.meta.url)`
@@ -28,42 +29,6 @@ export type BuildConfig = CommonConfigOptions & {
      */
     ascii?: "html" | "html-and-ascii" | "ascii";
     /**
-     * A virtual file system where you can input files, get, set and read files
-     */
-    filesystem?: {
-        /** Virtual Filesystem Storage */
-        files?: typeof FileSystem;
-        /**
-         * Retrevies file from virtual file system storage in either string or uint8array buffer format
-         *
-         * @param path path of file in virtual file system storage
-         * @param type format to retrieve file in, buffer and string are the 2 option available
-         * @param importer an absolute path to use to determine a relative file path
-         * @returns file from file system storage in either string format or as a Uint8Array buffer
-         */
-        get?: typeof getFile;
-        /**
-         * Writes file to filesystem in either string or uint8array buffer format
-         *
-         * @param path path of file in virtual file system storage
-         * @param content contents of file to store, you can store buffers and/or strings
-         * @param importer an absolute path to use to determine a relative file path
-         */
-        set?: typeof setFile;
-        /**
-         * Resolves path to a file in the virtual file system storage
-         *
-         * @param path the relative or absolute path to resolve to
-         * @param importer an absolute path to use to determine relative file paths
-         * @returns resolved final path
-         */
-        resolve?: typeof getResolvedPath;
-        /**
-         * Clear all files from the virtual filesystem storage
-         */
-        clear?: typeof FileSystem.clear;
-    };
-    /**
      * Documentation: https://esbuild.github.io/api/#entry-points
      */
     entryPoints?: ESBUILD.BuildOptions["entryPoints"];
@@ -72,8 +37,9 @@ export type BuildConfig = CommonConfigOptions & {
  * Default build config
  */
 export declare const BUILD_CONFIG: BuildConfig;
-export type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
+export type BuildResult = (ESBUILD.BuildResult) & {
     outputs: ESBUILD.OutputFile[];
     contents: ESBUILD.OutputFile[];
 };
-export declare function build(opts?: BuildConfig): Promise<BuildResult>;
+export declare const TheFileSystem: Promise<import("./utils/filesystem.ts").IFileSystem<import("./utils/filesystem.ts").IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | import("./utils/filesystem.ts").IFileSystem<Map<string, Uint8Array>, Uint8Array>>;
+export declare function build(opts?: BuildConfig, filesystem?: Promise<import("./utils/filesystem.ts").IFileSystem<import("./utils/filesystem.ts").IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | import("./utils/filesystem.ts").IFileSystem<Map<string, Uint8Array>, Uint8Array>>): Promise<BuildResult>;

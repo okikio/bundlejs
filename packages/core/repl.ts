@@ -1,28 +1,27 @@
-import { build, compress, setFile, PLATFORM_AUTO } from "./lib/index.mjs";
-// import { build, compress, setFile, PLATFORM_AUTO } from "./src/index";
+import { build, compress, getFile, setFile, PLATFORM_AUTO, TheFileSystem } from "./src/index.ts";
 
-globalThis.fetch = globalThis.fetch ?? (async function (...args: Parameters<typeof fetch>) {
-  const { fetch } = await import("cross-fetch");
-  return await fetch(...args);
-});
+
+const fs = await TheFileSystem;
 
 console.log("\n");
-setFile("/index.tsx", `\
+setFile(fs, "/index.tsx", `\
 export * as Other from "/new.tsx";
 export * from "@okikio/animate";`);
-setFile("/new.tsx", "export * from \"@okikio/native\";");
-setFile("/other.tsx", `\
+setFile(fs, "/new.tsx", "export * from \"@okikio/native\";");
+setFile(fs, "/other.tsx", `\
 export * as Other from "/index.tsx";
 export * from "@okikio/emitter";`);
 
-const bundle = build; //  as typeof buildType
-const result = await bundle({
+console.log(await getFile(fs, "/index.tsx", "string") )
+console.log(fs)
+
+const result = await build({
   entryPoints: ["/index.tsx", "/new.tsx"],
   esbuild: {
     treeShaking: true,
     splitting: true,
     format: "esm"
-  }
+  },
 });
 
 console.log(
@@ -31,8 +30,12 @@ console.log(
   )
 );
 
+
 if (PLATFORM_AUTO == "deno") {
   globalThis?.Deno?.exit?.();
+} else {
+  // @ts-ignore Only for Node
+  globalThis?.process?.exit?.()
 }
 
 

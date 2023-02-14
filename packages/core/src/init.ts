@@ -1,45 +1,11 @@
 import type * as ESBUILD from "esbuild-wasm";
 
-import type { Platform } from "./configs/platform";
-import { PLATFORM_AUTO } from "./configs/platform";
+import type { Platform } from "./configs/platform.ts";
+import { PLATFORM_AUTO } from "./configs/platform.ts";
 
-import { EVENTS } from "./configs/events";
-import { getState, setState } from "./configs/state";
-import { version } from "esbuild-wasm/package.json";
-
-/**
- * Determines which esbuild skew to use depending on the platform option supplied, 
- * by default it will choose the most perfomnant esbuild skew, 
- * so on deno and node it will choose the native while on browsers it will choose WASM.
- * 
- * You can specifiy which platform skew you would like, 
- * for example you can choose "deno-wasm" as a skew, where you can run the esbuild but in WASM
- * 
- * @param platform Which platform skew of esbuild should be used
- * @returns Esbuild module
- */
-export async function getEsbuild(platform: Platform = PLATFORM_AUTO): Promise<typeof ESBUILD> {
-  try {
-    switch (platform) {
-      case "node":
-        return await import("esbuild");
-      case "deno":
-        return await import(
-          /* @vite-ignore */
-          `https://deno.land/x/esbuild@v${version}/mod.js`
-        );
-      case "deno-wasm":
-        return await import(
-          /* @vite-ignore */
-          `https://deno.land/x/esbuild@v${version}/wasm.js`
-        );
-      default:
-        return await import("esbuild-wasm");
-    }
-  } catch (e) {
-    throw e;
-  }
-}
+import { EVENTS } from "./configs/events.ts";
+import { getState, setState } from "./configs/state.ts";
+import { getEsbuild } from "./utils/get-esbuild.ts";
 
 /**
  * Configures how esbuild running in wasm is initialized 
@@ -63,7 +29,7 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
         } else if ("wasmURL" in opts) { 
           await esbuild.initialize(opts);
         } else {
-          const { default: ESBUILD_WASM } = await import("./wasm");
+          const { default: ESBUILD_WASM } = await import("./wasm.ts");
           await esbuild.initialize({
             wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
             ...opts

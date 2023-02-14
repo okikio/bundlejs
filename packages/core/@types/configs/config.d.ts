@@ -1,6 +1,6 @@
-import type { BuildConfig } from "../build";
-import type { TransformConfig } from "../transform";
-import type { CompressConfig, CompressionOptions } from "../compress";
+import type { BuildConfig } from "../build.ts";
+import type { TransformConfig } from "../transform.ts";
+import type { CompressConfig, CompressionOptions } from "../compress.ts";
 /**
  * Creates the config needed for the transform, build, and compress functions
  * @param type The type of config needed

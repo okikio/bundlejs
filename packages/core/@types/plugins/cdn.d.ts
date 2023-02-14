@@ -1,7 +1,7 @@
-import type { BuildConfig, LocalState } from "../build";
-import type { StateArray } from "../configs/state";
-import type { EVENTS } from "../configs/events";
-import type { ESBUILD } from "../types";
+import type { BuildConfig, LocalState } from "../build.ts";
+import type { StateArray } from "../configs/state.ts";
+import type { EVENTS } from "../configs/events.ts";
+import type { ESBUILD } from "../types.ts";
 /** CDN Plugin Namespace */
 export declare const CDN_NAMESPACE = "cdn-url";
 /**

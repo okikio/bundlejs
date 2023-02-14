@@ -1,4 +1,4 @@
-export * from "../deno/path/mod";
+export * from "../deno/path/mod.ts";
 /**
  * Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/path.ts#L123
  *

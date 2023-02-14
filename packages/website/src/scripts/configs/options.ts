@@ -47,7 +47,6 @@ export const DefaultConfig: ConfigOptions = deepAssign({}, EasyDefaultConfig, {
 
     "logLevel": "info",
     "sourcemap": false,
-    "incremental": false,
   }
 });
 

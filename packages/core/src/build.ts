@@ -1,25 +1,27 @@
-import type { CommonConfigOptions, ESBUILD } from "./types";
+import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 
-import { VIRTUAL_FS } from "./plugins/virtual-fs";
-import { EXTERNAL } from "./plugins/external";
-import { ALIAS } from "./plugins/alias";
-import { HTTP } from "./plugins/http";
-import { CDN } from "./plugins/cdn";
+import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
+import { EXTERNAL } from "./plugins/external.ts";
+import { ALIAS } from "./plugins/alias.ts";
+import { HTTP } from "./plugins/http.ts";
+import { CDN } from "./plugins/cdn.ts";
 
-import { EVENTS } from "./configs/events";
-import { createConfig } from "./configs/config";
-import { PLATFORM_AUTO } from "./configs/platform";
-import { createState, getState, setState } from "./configs/state";
+import { EVENTS } from "./configs/events.ts";
+import { createConfig } from "./configs/config.ts";
+import { PLATFORM_AUTO } from "./configs/platform.ts";
+import { createState, getState, setState } from "./configs/state.ts";
 
-import { FileSystem, getFile, setFile, getResolvedPath } from "./utils/filesystem";
-import { createNotice } from "./utils/create-notice";
-import { DEFAULT_CDN_HOST } from "./utils/util-cdn";
-import { init } from "./init";
+import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem.ts";
+import { createNotice } from "./utils/create-notice.ts";
+import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
+import { init } from "./init.ts";
 
 /**
  * Local state available to all plugins
  */
 export type LocalState = {
+  filesystem?: Awaited<ReturnType<typeof useFileSystem>>,
+
   /**
    * Assets are files during the build process that esbuild can't handle natively, 
    * e.g. fetching web workers using the `new URL("...", import.meta.url)`
@@ -50,47 +52,6 @@ export type BuildConfig = CommonConfigOptions & {
   ascii?: "html" | "html-and-ascii" | "ascii",
 
   /**
-   * A virtual file system where you can input files, get, set and read files
-   */
-  filesystem?: {
-    /** Virtual Filesystem Storage */
-    files?: typeof FileSystem,
-
-    /**
-     * Retrevies file from virtual file system storage in either string or uint8array buffer format
-     * 
-     * @param path path of file in virtual file system storage
-     * @param type format to retrieve file in, buffer and string are the 2 option available
-     * @param importer an absolute path to use to determine a relative file path
-     * @returns file from file system storage in either string format or as a Uint8Array buffer
-     */
-    get?: typeof getFile,
-
-    /**
-     * Writes file to filesystem in either string or uint8array buffer format
-     * 
-     * @param path path of file in virtual file system storage
-     * @param content contents of file to store, you can store buffers and/or strings
-     * @param importer an absolute path to use to determine a relative file path
-     */
-    set?: typeof setFile,
-
-    /**
-     * Resolves path to a file in the virtual file system storage 
-     * 
-     * @param path the relative or absolute path to resolve to
-     * @param importer an absolute path to use to determine relative file paths
-     * @returns resolved final path
-     */
-    resolve?: typeof getResolvedPath,
-
-    /**
-     * Clear all files from the virtual filesystem storage
-     */
-    clear?: typeof FileSystem.clear,
-  },
-
-  /**
    * Documentation: https://esbuild.github.io/api/#entry-points
    */
   entryPoints?: ESBUILD.BuildOptions["entryPoints"]
@@ -109,7 +70,6 @@ export const BUILD_CONFIG: BuildConfig = {
 
     "logLevel": "info",
     "sourcemap": false,
-    "incremental": false,
 
     "target": ["esnext"],
     "format": "esm",
@@ -121,29 +81,28 @@ export const BUILD_CONFIG: BuildConfig = {
   },
 
   "ascii": "ascii",
-  filesystem: {
-    files: FileSystem,
-    get: getFile,
-    set: setFile,
-    resolve: getResolvedPath,
-    clear: () => FileSystem.clear(),
-  },
   init: {
     platform: PLATFORM_AUTO
   }
 };
 
-export type BuildResult = (ESBUILD.BuildResult | ESBUILD.BuildIncremental) & {
+export type BuildResult = (ESBUILD.BuildResult) & {
   outputs: ESBUILD.OutputFile[];
   contents: ESBUILD.OutputFile[];
 };
 
-export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
+export const TheFileSystem = useFileSystem(EVENTS);
+
+export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildResult> {
   if (!getState("initialized"))
     EVENTS.emit("init.loading");
 
   const CONFIG = createConfig("build", opts);
-  const STATE = createState<LocalState>({ assets: [], GLOBAL: [getState, setState] });
+  const STATE = createState<LocalState>({ 
+    filesystem: await filesystem, 
+    assets: [], 
+    GLOBAL: [getState, setState] 
+  });
   const [get] = STATE;
 
   const { platform, ...initOpts } = CONFIG.init ?? {};
@@ -153,7 +112,7 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult | ESBUILD.BuildIncremental = null;
+  let result: ESBUILD.BuildResult = null;
 
   try {
     try {
@@ -228,7 +187,8 @@ export async function build(opts: BuildConfig = {}): Promise<BuildResult> {
     );
 
     // Ensure a fresh filesystem on every run
-    FileSystem.clear();
+    // FileSystem.clear();
+    // dele
 
     return {
       /** 

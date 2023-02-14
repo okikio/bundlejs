@@ -1,4 +1,4 @@
-import type { ESBUILD } from "../types";
+import type { ESBUILD } from "../types.ts";
 /**
  * Holds global state
  */

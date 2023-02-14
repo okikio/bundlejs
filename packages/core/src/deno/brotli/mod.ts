@@ -7,11 +7,11 @@
 // } from "./wasm";
 
 const initialized = false;
-let initWASM: typeof import("./wasm");
+let initWASM: typeof import("./wasm.ts");
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const wasm = await import("./wasm");
+  const wasm = await import("./wasm.ts");
   const { default: init, source } = wasm;
     
   if (!initialized) await init(await source());
@@ -48,7 +48,7 @@ export async function compress(
  * Decompress a byte array.
  *
  * ```typescript
- * import { decompress } from "https://deno.land/x/brotli/mod.ts";
+ * import { decompress } from "https://deno.land/x/brotli/mod.ts.ts";
  * const compressed = Uint8Array.from([ 27, 63, 0, 0, 36, 176, 226, 153, 64, 18 ]);
  * console.log(compressed.length);             // 10 Bytes
  * console.log(decompress(compressed).length); // 64 Bytes

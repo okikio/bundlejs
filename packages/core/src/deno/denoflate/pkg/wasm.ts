@@ -8,7 +8,7 @@ export const source = async () => {
     return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
   }
 
-  const { decompress } = await import("../../lz4/mod");
+  const { decompress } = await import("../../lz4/mod.ts");
     
   return await decompress(uint8arr);
 };
