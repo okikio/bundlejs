@@ -31,7 +31,7 @@ export async function getEsbuild(platform: Platform = PLATFORM_AUTO): Promise<ty
       case "node":
         return await import("esbuild");
       default:
-        return await import("esbuild-wasm");
+        return await import("esbuild-wasm/esm/browser.js");
     }
   } catch (e) {
     throw e;
