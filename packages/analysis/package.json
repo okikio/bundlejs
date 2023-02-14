@@ -79,9 +79,9 @@
     "@bundlejs/core": "workspace:^0.0.0",
     "bytes": "^3.1.2",
     "d3": "^7.8.2",
-    "esbuild-wasm": "^0.17.6",
+    "esbuild-wasm": "^0.17.8",
     "nanoid": "^4.0.1",
-    "solid-js": "^1.6.10",
+    "solid-js": "^1.6.11",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
@@ -96,6 +96,6 @@
     "ultra-runner": "^3.10.5",
     "vite": "^4.1.1",
     "vite-plugin-solid": "^2.5.0",
-    "vitest": "^0.28.4"
+    "vitest": "^0.28.5"
   }
 }
