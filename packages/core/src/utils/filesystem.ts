@@ -284,12 +284,13 @@ export async function createOPFSFileSystem() {
  */
 export async function useFileSystem(events: typeof EVENTS, type: "OPFS" | "DEFAULT" = "OPFS") {
   try {
-    switch (type) {
-      case "DEFAULT":
-        return createDefaultFileSystem();
-      case "OPFS":
-        return await createOPFSFileSystem();
-    }
+    return createDefaultFileSystem();
+    // switch (type) {
+    //   case "DEFAULT":
+    //     return createDefaultFileSystem();
+    //   case "OPFS":
+    //     return await createOPFSFileSystem();
+    // }
   } catch (e) {
     events.emit('logger.warn', e);
   }
