@@ -1,6 +1,6 @@
 import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 import { getState, setState } from "./configs/state.ts";
-import { useFileSystem } from "./utils/filesystem.ts";
+import { useFileSystem, IFileSystem } from "./utils/filesystem.ts";
 /**
  * Local state available to all plugins
  */
@@ -41,5 +41,5 @@ export type BuildResult = (ESBUILD.BuildResult) & {
     outputs: ESBUILD.OutputFile[];
     contents: ESBUILD.OutputFile[];
 };
-export declare const TheFileSystem: Promise<import("./utils/filesystem.ts").IFileSystem<import("./utils/filesystem.ts").IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | import("./utils/filesystem.ts").IFileSystem<Map<string, Uint8Array>, Uint8Array>>;
-export declare function build(opts?: BuildConfig, filesystem?: Promise<import("./utils/filesystem.ts").IFileSystem<import("./utils/filesystem.ts").IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | import("./utils/filesystem.ts").IFileSystem<Map<string, Uint8Array>, Uint8Array>>): Promise<BuildResult>;
+export declare const TheFileSystem: Promise<IFileSystem<IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | IFileSystem<Map<string, Uint8Array>, Uint8Array>>;
+export declare function build(opts?: BuildConfig, filesystem?: Promise<IFileSystem<IFileSystem<Map<string, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, FileSystemDirectoryHandle | FileSystemHandle | import("./utils/filesystem.ts").FileSystemFileHandle>, Uint8Array> | IFileSystem<Map<string, Uint8Array>, Uint8Array>>): Promise<BuildResult>;

@@ -9,6 +9,8 @@ export declare function compressToBase64(input: string): string;
 export declare function decompressFromBase64(input: string): string | null;
 export declare function compressToURL(input: string): string;
 export declare function decompressFromURL(input: string): string | null;
+export declare function compressToUTF16(input: string): string;
+export declare function decompressFromUTF16(compressed: string): string;
 export declare function compress(uncompressed: string): string;
 export declare function decompress(compressed: null | string): string | null;
 /**

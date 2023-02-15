@@ -13,7 +13,7 @@ export async function bundle(fileName: string, content: string, _config = "expor
   const fs = await TheFileSystem;
   const start = performance.now();
 
-  setFile(fs, "/index.tsx", content);
+  await setFile(fs, "/index.tsx", content);
 
   const newConfig = await parseConfig(_config);
   const config = deepAssign({}, DefaultConfig, newConfig) as ConfigOptions;

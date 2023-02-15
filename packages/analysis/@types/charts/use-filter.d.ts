@@ -1,5 +1,5 @@
-export declare type FilterSetter = (value: string) => void;
-export declare type UseFilter = {
+export type FilterSetter = (value: string) => void;
+export type UseFilter = {
     includeFilter: string;
     excludeFilter: string;
     setIncludeFilter: FilterSetter;

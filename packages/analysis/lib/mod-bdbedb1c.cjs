@@ -1,2 +1,0 @@
-"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let r;const c=async()=>{if(r)return r;const e=await Promise.resolve().then(()=>require("./wasm-14fe279f.cjs")),{default:s,source:t}=e;return await s(await t()),r=e};async function a(e,s=4096,t=6,o=22){const{compress:n}=await c();return n(e,s,t,o)}async function i(e,s=4096){const{decompress:t}=await c();return t(e,s)}exports.compress=a;exports.decompress=i;exports.getWASM=c;
-//# sourceMappingURL=mod-bdbedb1c.cjs.map

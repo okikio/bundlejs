@@ -1,6 +1,6 @@
-import type { InitOutput } from "./pkg/denoflate.ts";
+import type { InitOutput } from "./pkg/denoflate.d.ts";
 declare let wasm: InitOutput;
-export declare const getWASM: (src?: Uint8Array) => Promise<typeof import("./pkg/denoflate.ts")>;
+export declare const getWASM: (src?: Uint8Array) => Promise<typeof import("./pkg/denoflate.d.ts")>;
 export declare function deflate(input: Uint8Array, compression?: number): Promise<Uint8Array>;
 export declare function inflate(input: Uint8Array): Promise<Uint8Array>;
 export declare function gzip(input: Uint8Array, compression?: number): Promise<Uint8Array>;

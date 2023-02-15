@@ -20,7 +20,7 @@ export interface ChartData {
     radius: number;
     arc: Arc<any, HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>>;
 }
-export declare type Context = StaticData & ChartData;
+export type Context = StaticData & ChartData;
 export declare const StaticContext: import("solid-js").Context<Context>;
 declare const drawChart: (parentNode: Element, data: VisualizerData, width: number, height: number) => void;
 export default drawChart;

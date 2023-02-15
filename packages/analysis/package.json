@@ -91,6 +91,7 @@
     "@types/node": "^18.13.0",
     "del-cli": "^5.0.0",
     "esno": "^0.16.3",
+    "jsdom": "^21.1.0",
     "pnpm": "^7.27.0",
     "typescript": "5.0.0-beta",
     "ultra-runner": "^3.10.5",

@@ -1,5 +1,3 @@
-import repl_url from "./repl.ts?url";
-
-new Worker(repl_url, {
+new Worker(new URL("./repl.ts", import.meta.url), {
   type: "module"
 });

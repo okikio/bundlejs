@@ -1,9 +1,9 @@
-export declare const getWASM: () => Promise<typeof import("./wasm")>;
+export declare const getWASM: () => Promise<typeof import("./wasm.ts")>;
 /**
  * Compress a byte array.
  *
  * ```typescript
- * import { compress } from "https://deno.land/x/brotli/mod.ts.ts";
+ * import { compress } from "https://deno.land/x/brotli/mod.ts";
  * const text = new TextEncoder().encode("X".repeat(64));
  * console.log(text.length);                   // 64 Bytes
  * console.log(compress(text).length);         // 10 Bytes
