@@ -3,11 +3,11 @@
 
 import "monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution";
 import "monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution";
-import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
-import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
+// import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
+// import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
 
-import 'monaco-editor/esm/vs/language/css/monaco.contribution';
-import 'monaco-editor/esm/vs/language/html/monaco.contribution';
+// import 'monaco-editor/esm/vs/language/css/monaco.contribution';
+// import 'monaco-editor/esm/vs/language/html/monaco.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 

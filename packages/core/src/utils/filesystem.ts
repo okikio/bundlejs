@@ -76,7 +76,7 @@ export async function getFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
     if (type === "string") return decode(file);
     return file;
   } catch (e) {
-    throw new Error(`Error occurred while getting "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while getting "${resolvedPath}": ${e}`, { cause: e });
   }
 };
 
@@ -95,7 +95,7 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
     if (!isValid(content)) await fs.set(resolvedPath, null, 'folder');
     await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content), 'file');
   } catch (e) {
-    throw new Error(`Error occurred while writing to "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while writing to "${resolvedPath}": ${e}`, { cause: e });
   }
 };
 
@@ -116,7 +116,7 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 
     return await fs.delete(resolvedPath);
   } catch (e) {
-    throw new Error(`Error occurred while deleting "${resolvedPath}"`, { cause: e });
+    throw new Error(`Error occurred while deleting "${resolvedPath}": ${e}`, { cause: e });
   }
 };
 
@@ -129,11 +129,11 @@ export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new M
       const resolvedPath = resolve(path);
       const dir = dirname(resolvedPath);
 
-      const parentDirs = dir.split(sep);
+      const parentDirs = dir.split(sep).filter(x => x.length > 0);
       const len = parentDirs.length;
 
       // Generate all the subdirectories in b/w
-      let accPath = "/";
+      let accPath = parentDirs[0] !== sep ? "/" : "";
       for (let i = 0; i < len; i ++) {
         accPath += parentDirs[i];
         if (!FileSystem.has(accPath)) 
@@ -220,14 +220,19 @@ export async function createOPFSFileSystem() {
     const files = await INTERNAL_FS.files();
 
     const root = await navigator.storage.getDirectory();
-    INTERNAL_FS.set(sep, root);
+    files.set(sep, root);
 
     const fs: IFileSystem<typeof INTERNAL_FS> = {
       async files() {
         return INTERNAL_FS;
       },
       async get(path: string) {
-        const fileOrFolderHandle = await INTERNAL_FS.get(path);
+        const resPath = path.replace(/[:,]/g, "_");
+        console.log({
+          resPath,
+          files
+        })
+        const fileOrFolderHandle = await INTERNAL_FS.get(resPath);
         if (fileOrFolderHandle.kind === "file") {
           return await readFile(fileOrFolderHandle as FileSystemFileHandle);
         } else {
@@ -235,14 +240,15 @@ export async function createOPFSFileSystem() {
         }
       },
       async set(path: string, content: Uint8Array | string, importer?: string) {
-        const resolvedPath = resolve(path);
+        const resPath = path.replace(/[:,]/g, "_");
+        const resolvedPath = resolve(resPath);
         const dir = dirname(resolvedPath);
 
-        const parentDirs = dir.split(sep);
+        const parentDirs = dir.split(sep).filter(x => x.length > 0);
         const len = parentDirs.length;
 
         // Generate all the subdirectories in b/w
-        let accPath = sep;
+        let accPath = parentDirs[0] !== sep ? "/" : "";
         let parentDirHandle = root;
         for (let i = 0; i < len; i++) {
           const parentDir = parentDirs[i];
@@ -258,7 +264,7 @@ export async function createOPFSFileSystem() {
 
         const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath), { "create": true });
         await writeFile(fileHandle, content);
-        await INTERNAL_FS.set(resolvedPath, fileHandle);
+        files.set(resolvedPath, fileHandle);
       },
       async delete(path: string) {
         const resolvedPath = resolve(path);
@@ -274,7 +280,7 @@ export async function createOPFSFileSystem() {
 
     return fs;
   } catch(e) {
-    throw new Error("Cannot create OPFS Virtual File System.", { cause: e })
+    throw new Error(`Cannot create OPFS Virtual File System: ${e}`, { cause: e })
   }
 }
 
@@ -284,13 +290,14 @@ export async function createOPFSFileSystem() {
  */
 export async function useFileSystem(events: typeof EVENTS, type: "OPFS" | "DEFAULT" = "OPFS") {
   try {
+    switch (type) {
+      case "DEFAULT":
+        return createDefaultFileSystem();
+      case "OPFS":
+        return await createOPFSFileSystem();
+    }
+
     return createDefaultFileSystem();
-    // switch (type) {
-    //   case "DEFAULT":
-    //     return createDefaultFileSystem();
-    //   case "OPFS":
-    //     return await createOPFSFileSystem();
-    // }
   } catch (e) {
     events.emit('logger.warn', e);
   }

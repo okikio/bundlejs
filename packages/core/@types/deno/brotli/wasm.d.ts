@@ -1,5 +1,7 @@
 export declare const source: () => Promise<Uint8Array>;
-export declare function compress(A: any, Q: any, E: any, w: any): any;
-export declare function decompress(A: any, Q: any): any;
-declare function D(A: any): any;
-export default D;
+export declare function compress($: any, p: any, E: any, r: any): Uint8Array;
+export declare function decompress($: any, p: any): Uint8Array;
+declare function W($: any): any;
+declare function T($: any): any;
+export { W as initSync };
+export default T;

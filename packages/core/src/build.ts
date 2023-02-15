@@ -11,7 +11,7 @@ import { createConfig } from "./configs/config.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createState, getState, setState } from "./configs/state.ts";
 
-import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem.ts";
+import { getFile, setFile, getResolvedPath, useFileSystem, IFileSystem } from "./utils/filesystem.ts";
 import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
 import { init } from "./init.ts";

@@ -1,14 +1,13 @@
 import { build, compress, getFile, setFile, PLATFORM_AUTO, TheFileSystem } from "./src/index.ts";
 
-
 const fs = await TheFileSystem;
 
 console.log("\n");
-setFile(fs, "/index.tsx", `\
+await setFile(fs, "/index.tsx", `\
 export * as Other from "/new.tsx";
 export * from "@okikio/animate";`);
-setFile(fs, "/new.tsx", "export * from \"@okikio/native\";");
-setFile(fs, "/other.tsx", `\
+await setFile(fs, "/new.tsx", "export * from \"@okikio/native\";");
+await setFile(fs, "/other.tsx", `\
 export * as Other from "/index.tsx";
 export * from "@okikio/emitter";`);
 
@@ -35,7 +34,7 @@ if (PLATFORM_AUTO == "deno") {
   globalThis?.Deno?.exit?.();
 } else {
   // @ts-ignore Only for Node
-  globalThis?.process?.exit?.()
+  globalThis?.process?.exit?.();
 }
 
 

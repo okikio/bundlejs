@@ -1,4 +1,4 @@
-export declare const getWASM: () => Promise<typeof import("./wasm")>;
+export declare const getWASM: () => Promise<typeof import("./wasm.ts")>;
 /**
  * Compress a byte array using lz4.
  *
