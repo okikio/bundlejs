@@ -9,18 +9,7 @@ import { DefaultConfig } from "../../configs/options";
 
 import { initOpts, ready } from "./utils/init";
 
-// const timeFormatter = new Intl.RelativeTimeFormat("en", {
-//   style: "narrow",
-//   numeric: "auto",
-// });
-
-// const inputModelResetValue = [
-//   'export * from "@okikio/animate";'
-// ].join("\n");
-
-// let WASM_MODULE: Uint8Array;
 export async function bundle(fileName: string, content: string, _config = "export default {}") {
-
   const fs = await TheFileSystem;
   const start = performance.now();
 
