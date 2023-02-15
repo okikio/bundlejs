@@ -5,7 +5,7 @@ import {
   editor as Editor,
   languages,
   Uri
-} from "monaco-editor";
+} from "./monaco-editor-slim";
 
 import { getResolvedPackage } from "@bundlejs/core/src/util";
 
