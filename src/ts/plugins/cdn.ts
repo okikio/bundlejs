@@ -34,6 +34,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
             let parsed = parsePackageName(argPath);
             let subpath = parsed.path;
             let pkg = args.pluginData?.pkg ?? {};
+            let oldPkg = pkg;
 
             // Resolving imports from the package.json, if said import starts with "#" 
             // If an import starts with "#" then it's a subpath-import
@@ -68,7 +69,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
                     peerDependencies = {} 
                 } = pkg;
                 
-                let deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
+                let deps = Object.assign({}, peerDependencies, devDependencies, dependencies);
                 let keys = Object.keys(deps);
 
                 if (keys.includes(argPath)) 
@@ -101,10 +102,21 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
             // e.g. https://unpkg.com/spring-easing@v1.0.0/
             let version = NPM_CDN ? "@" + parsed.version : "";
             let { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
+
+            let deps = Object.assign({}, oldPkg.peerDependencies, oldPkg.devDependencies, oldPkg.dependencies);
+            let peerDeps = pkg.peerDependencies ?? {};
+            let peerDepsKeys = Object.keys(peerDeps);
+            for (let depKey of peerDepsKeys) {
+                peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
+            }
+            let newPkg = {
+                ...pkg,
+                peerDependencies: peerDeps
+            }
             return {
                 namespace: HTTP_NAMESPACE,
                 path: url.toString(),
-                pluginData: { pkg }
+                pluginData: { pkg: newPkg }
             };
         }
     };

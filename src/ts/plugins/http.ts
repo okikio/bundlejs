@@ -48,7 +48,10 @@ export const fetchPkg = async (url: string, logger = console.log) => {
  * @param logger Console log
  */
 export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, logger = console.log) => {
-    const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
+    // Regex for `new URL("./path.js", import.meta.url)`, 
+    // I added support for comments so you can add comments and the regex
+    // will ignore the comments
+    const rgx = /new URL\((?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*(?:(?!\`.*\$\{)['"`](.*)['"`]),(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*import\.meta\.url(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*\)/g;
     const parentURL = new URL("./", path).toString();
 
     const code = decode(content);
