@@ -60,7 +60,7 @@ BundleWorker?.start?.(); // Only SharedWorkers support the start method, so opti
 
 export const channel = new MessageChannel();
 export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
-export const SANDBOX_WORKER = USE_SHAREDWORKER ? new WebWorker(...SandboxWorkerConfig) : new Worker(...SandboxWorkerConfig) as WebWorker;
+export const SANDBOX_WORKER = new Worker(...SandboxWorkerConfig) as WebWorker;
 
 try {
   SANDBOX_WORKER?.start?.();
@@ -615,7 +615,7 @@ export const build = async (app: App) => {
       configModel.setValue([
         '// Configure Bundle',
         `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
-        `export default (async function() {\n return ${oldConfigFromURL} as BundleConfigOptions;\n})()`
+        `export default (async function(): BundleConfigOptions {\n return ${oldConfigFromURL};\n})()`
       ].join("\n"));
 
       await formatDocument(configModel);

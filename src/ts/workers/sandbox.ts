@@ -40,6 +40,10 @@ export const start = async (port: MessagePort) => {
             treeShaking: true
           })
         ).code;
+        
+        console.log({
+          config
+        })
 
         configs.set(data, config);
 

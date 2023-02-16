@@ -68,7 +68,7 @@ export const inputModelResetValue = [
 export const configModelResetValue = [
     '// Configure Bundle',
     `import type { BundleConfigOptions } from "@bundlejs/core/config"`,
-    `export default (async function() {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")} as BundleConfigOptions;\n})()`
+    `export default (async function(): BundleConfigOptions {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")};\n})()`
 ].join("\n"); // Indented with tab
 
 export { languages, Editor, Uri };
