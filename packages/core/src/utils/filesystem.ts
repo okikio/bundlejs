@@ -1,6 +1,7 @@
 import { decode, encode } from "./encode-decode.ts";
 import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
-import type { EVENTS } from "../configs/events.ts";
+
+import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
@@ -112,6 +113,7 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 
   try {
     const file = await fs.get(resolvedPath);
+    console.log({ file })
     if (file === undefined) return false;
 
     return await fs.delete(resolvedPath);
@@ -288,7 +290,7 @@ export async function createOPFSFileSystem() {
  * Selects the OPFS File System if possible, otherwise fallback to the default Map based Virtual File System
  * @param type Virtual File System to use
  */
-export async function useFileSystem(events: typeof EVENTS, type: "OPFS" | "DEFAULT" = "OPFS") {
+export async function useFileSystem(type: "OPFS" | "DEFAULT" = "OPFS") {
   try {
     switch (type) {
       case "DEFAULT":
@@ -299,7 +301,7 @@ export async function useFileSystem(events: typeof EVENTS, type: "OPFS" | "DEFAU
 
     return createDefaultFileSystem();
   } catch (e) {
-    events.emit('logger.warn', e);
+    dispatchEvent(LOGGER_WARN, e);
   }
 
   return createDefaultFileSystem();

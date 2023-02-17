@@ -82,7 +82,6 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "@okikio/emitter": "^2.1.7",
     "esbuild": "0.17.8",
     "esbuild-wasm": "0.17.8"
   },

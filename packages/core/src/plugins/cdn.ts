@@ -1,12 +1,12 @@
 import type { BuildConfig, LocalState } from "../build.ts";
 import type { StateArray } from "../configs/state.ts";
-import type { EVENTS } from "../configs/events.ts";
 import type { ESBUILD } from "../types.ts";
+
+import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { HTTP_NAMESPACE } from "./http.ts";
 import { resolveExports, legacy } from "../utils/resolve-exports.ts";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
-
 
 import { isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
@@ -23,7 +23,7 @@ export const CDN_NAMESPACE = "cdn-url";
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
@@ -36,6 +36,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
       const parsed = parsePackageName(argPath);
       let subpath = parsed.path;
       let pkg = args.pluginData?.pkg ?? {};
+      let oldPkg = pkg;
 
       // Resolving imports from the package.json, if said import starts with "#" 
       // If an import starts with "#" then it's a subpath-import
@@ -94,12 +95,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
           if (subpath && subpath[0] !== "/")
             subpath = `/${subpath}`;
         } catch (e) {
-          events
-            .emit(
-              "logger.warn",
-              `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`
-            )
-            .emit("logger.warn", e);
+          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
+          dispatchEvent(LOGGER_WARN, e);
         }
       }
 
@@ -107,10 +104,21 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
       // e.g. https://unpkg.com/spring-easing@v1.0.0/
       const version = NPM_CDN ? "@" + parsed.version : "";
       const { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
+
+      let deps = Object.assign({}, oldPkg.peerDependencies, oldPkg.devDependencies, oldPkg.dependencies);
+      let peerDeps = pkg.peerDependencies ?? {};
+      let peerDepsKeys = Object.keys(peerDeps);
+      for (let depKey of peerDepsKeys) {
+        peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
+      }
+      let newPkg = {
+        ...pkg,
+        peerDependencies: peerDeps
+      }
       return {
         namespace: HTTP_NAMESPACE,
         path: url.toString(),
-        pluginData: { pkg }
+        pluginData: { pkg: newPkg }
       };
     }
   };
@@ -122,15 +130,15 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export function CDN (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function CDN (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, events));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, events));
+      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn));
     },
   };
 }

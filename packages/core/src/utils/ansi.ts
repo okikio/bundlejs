@@ -104,7 +104,15 @@ export function render(ansi: string) {
   if (i < ansi.length) {
     buffer.text(ansi.slice(i));
   }
-  return buffer.done();
+  
+  /** 
+   * Based on https://stackoverflow.com/questions/6038061/regular-expression-to-find-urls-within-a-string
+   * Based on http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
+   */
+  return buffer.done().replace(
+    /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi, 
+    (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
+  );
 }
 
 export { render as ansi };

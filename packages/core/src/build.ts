@@ -6,15 +6,16 @@ import { ALIAS } from "./plugins/alias.ts";
 import { HTTP } from "./plugins/http.ts";
 import { CDN } from "./plugins/cdn.ts";
 
-import { EVENTS } from "./configs/events.ts";
 import { createConfig } from "./configs/config.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createState, getState, setState } from "./configs/state.ts";
 
-import { getFile, setFile, getResolvedPath, useFileSystem, IFileSystem } from "./utils/filesystem.ts";
+import { useFileSystem } from "./utils/filesystem.ts";
 import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
 import { init } from "./init.ts";
+
+import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, dispatchEvent } from "./configs/events.ts";
 
 /**
  * Local state available to all plugins
@@ -91,11 +92,11 @@ export type BuildResult = (ESBUILD.BuildResult) & {
   contents: ESBUILD.OutputFile[];
 };
 
-export const TheFileSystem = useFileSystem(EVENTS);
+export const TheFileSystem = useFileSystem();
 
 export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildResult> {
   if (!getState("initialized"))
-    EVENTS.emit("init.loading");
+    dispatchEvent(INIT_LOADING);
 
   const CONFIG = createConfig("build", opts);
   const STATE = createState<LocalState>({ 
@@ -135,11 +136,11 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         write: false,
         outdir: "/",
         plugins: [
-          ALIAS(EVENTS, STATE, CONFIG),
-          EXTERNAL(EVENTS, STATE, CONFIG),
-          HTTP(EVENTS, STATE, CONFIG),
-          CDN(EVENTS, STATE, CONFIG),
-          VIRTUAL_FS(EVENTS, STATE, CONFIG),
+          ALIAS(STATE, CONFIG),
+          EXTERNAL(STATE, CONFIG),
+          HTTP(STATE, CONFIG),
+          CDN(STATE, CONFIG),
+          VIRTUAL_FS(STATE, CONFIG),
         ],
         ...esbuildOpts,
       });
@@ -148,11 +149,10 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         // Log errors with added color info. to the virtual console
         const asciMsgs = [...await createNotice(e.errors, "error", false)];
         const htmlMsgs = [...await createNotice(e.errors, "error")];
+        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ asciMsgs, htmlMsgs })));
 
-        EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
-
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        EVENTS.emit("logger.error", message);
+        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
         return;
       } else throw e;
     }
@@ -173,9 +173,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
           if (esbuildOpts?.logLevel == "verbose") {
             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
             if (ignoreFile) {
-              EVENTS.emit("logger.log", "Output File: " + path);
+              dispatchEvent(LOGGER_LOG, "Output File: " + path);
             } else {
-              EVENTS.emit("logger.log", "Output File: " + path + "\n" + text);
+              dispatchEvent(LOGGER_LOG, "Output File: " + path + "\n" + text);
             }
           }
 
@@ -204,6 +204,6 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       ...result
     };
   } catch (e) { 
-    EVENTS.emit("build.error", e);
+    dispatchEvent(BUILD_ERROR, e);
   }
 }
