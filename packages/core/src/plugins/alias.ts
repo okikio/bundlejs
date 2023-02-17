@@ -1,6 +1,5 @@
 import type { BuildConfig, LocalState } from "../build.ts";
 import type { StateArray } from "../configs/state.ts";
-import type { EVENTS } from "../configs/events.ts";
 import type { ESBUILD } from "../types.ts";
 
 import { EXTERNALS_NAMESPACE } from "./external.ts";
@@ -38,7 +37,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
+export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     const path = args.path.replace(/^node\:/, "");
     const { path: argPath } = getCDNUrl(path);
@@ -46,7 +45,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typ
     if (isAlias(argPath, aliases)) {
       const pkgDetails = parsePackageName(argPath);
       const aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, events)({
+      return HTTP_RESOLVE(host)({
         ...args,
         path: aliasPath
       });
@@ -61,7 +60,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, events: typ
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
+export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   // Convert CDN values to URL origins
   const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const aliases = config.alias ?? {};
@@ -74,7 +73,7 @@ export const ALIAS = (events: typeof EVENTS, state: StateArray<LocalState>, conf
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host, events)(args);
+          return ALIAS_RESOLVE(aliases, host)(args);
 
         return {
           path: args.path,
@@ -88,8 +87,8 @@ export const ALIAS = (events: typeof EVENTS, state: StateArray<LocalState>, conf
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, events));
-      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, events));
+      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host));
+      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host));
     },
   };
 };

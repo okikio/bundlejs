@@ -37,6 +37,8 @@
     "@astrojs/solid-js": "^2.0.2",
     "@astrojs/tailwind": "^3.0.1",
     "@babel/core": "^7.20.12",
+    "@iconify-json/fluent": "^1.1.18",
+    "@iconify-json/mdi": "^1.1.47",
     "@iconify/json": "^2.2.21",
     "@types/offscreencanvas": "^2019.7.0",
     "astro": "2.0.9",

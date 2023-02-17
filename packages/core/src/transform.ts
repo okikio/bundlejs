@@ -3,10 +3,10 @@ import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 import { getState } from "./configs/state.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createConfig } from "./configs/config.ts";
-import { EVENTS } from "./configs/events.ts";
 
 import { createNotice } from "./utils/create-notice.ts";
 import { init } from "./init.ts";
+import { INIT_LOADING, LOGGER_ERROR, dispatchEvent } from "./configs/events.ts";
 
 export type TransformConfig = CommonConfigOptions & {
   /* https://esbuild.github.io/api/#transform-api */
@@ -32,7 +32,7 @@ export const TRANSFORM_CONFIG: TransformConfig = {
 
 export async function transform(input: string | Uint8Array, opts: TransformConfig = {}) {
   if (!getState("initialized"))
-    EVENTS.emit("init.loading");
+    dispatchEvent(INIT_LOADING);
 
   const CONFIG = createConfig("transform", opts);
 
@@ -60,10 +60,10 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
         const asciMsgs = [...await createNotice(e.errors, "error", false)];
         const htmlMsgs = [...await createNotice(e.errors, "error")];
 
-        EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
+        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ asciMsgs, htmlMsgs })));
 
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-        EVENTS.emit("logger.error", message);
+        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
         return;
       } else throw e;
     }

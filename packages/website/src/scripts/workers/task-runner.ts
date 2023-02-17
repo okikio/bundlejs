@@ -7,7 +7,7 @@ import { createShareURL } from "./tasks/create-share-url";
 import { bundle } from "./tasks/build";
 import { parseConfig } from "./tasks/parse-config";
 
-import { EVENTS } from "@bundlejs/core/src/index";
+import { addEventListener, INIT_COMPLETE, LOGGER_INFO } from "@bundlejs/core/src/index";
 import * as Comlink from "comlink";
 
 import "../utils/transferhandle";
@@ -24,13 +24,13 @@ export const connect = async (port: MessagePort | typeof globalThis) => {
   Comlink.expose(TaskRunner, port);
 
   const addLog = Comlink.wrap<typeof addLogs>(port);
-  EVENTS.on("init.complete", (data) => {
-    addLog({ type: "info", data: "Initialized 🚀✨" });
-  });
+  addEventListener(INIT_COMPLETE, () => {
+    addLog({ type: "info", detail: "Initialized 🚀✨" });
+  })
 
-  EVENTS.on("logger.info", (data) => {
-    addLog({ type: "log", data });
-  });
+  addEventListener(LOGGER_INFO, (e) => {
+    addLog({ type: "log", detail: e.detail });
+  })
 };
 
 (self as unknown as SharedWorkerGlobalScope).onconnect = (e) => {

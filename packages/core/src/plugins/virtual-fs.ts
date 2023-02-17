@@ -1,13 +1,12 @@
 // Based on https://github.com/okikio/bundle/blob/main/src/ts/plugins/virtual-fs.ts
 import type { BuildConfig, LocalState } from "../build.ts";
 import type { StateArray } from "../configs/state.ts";
-import type { EVENTS } from "../configs/events.ts";
 import type { ESBUILD } from "../types.ts";
 
 import { inferLoader } from "../utils/loader.ts";
 import { getResolvedPath, getFile } from "../util.ts";
 export const VIRTUAL_FILESYSTEM_NAMESPACE = "virtual-filesystem";
-export const VIRTUAL_FS = (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
+export const VIRTUAL_FS = (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   const [getState] = state;
   const FileSystem = getState().filesystem; 
 

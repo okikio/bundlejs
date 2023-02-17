@@ -1,8 +1,9 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
 import type { BuildConfig, LocalState } from "../build.ts";
 import type { StateArray } from "../configs/state.ts";
-import type { EVENTS } from "../configs/events.ts";
 import type { ESBUILD } from "../types.ts";
+
+import { dispatchEvent, LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN } from "../configs/events.ts";
 
 import { CDN_RESOLVE } from "./cdn.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
@@ -23,13 +24,13 @@ export const HTTP_NAMESPACE = "http-url";
  * @param url package url to fetch
  * @param logger Console log
  */
-export const fetchPkg = async (url: string, events: typeof EVENTS) => {
+export const fetchPkg = async (url: string) => {
   try {
     const response = await getRequest(url);
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url} (${response.status} code)`);
 
-    events.emit("logger.info", `Fetch ${url}`);
+    dispatchEvent(LOGGER_INFO, `Fetch ${url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
@@ -51,8 +52,11 @@ export const fetchPkg = async (url: string, events: typeof EVENTS) => {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, events: typeof EVENTS, state: StateArray<LocalState>) => {
-  const rgx = /new URL\(['"`](.*)['"`],(?:\s+)?import\.meta\.url(?:\s+)?\)/g;
+export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, state: StateArray<LocalState>) => {
+  // Regex for `new URL("./path.js", import.meta.url)`, 
+  // I added support for comments so you can add comments and the regex
+  // will ignore the comments
+  const rgx = /new(?:\s|\n?)+URL\((?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*(?:(?!\`.*\$\{)['"`](.*)['"`]),(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*import\.meta\.url(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*\)/g;
   const parentURL = new URL("./", path).toString();
   // const FileSystem = config.filesystem;
 
@@ -63,7 +67,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
   const matches = Array.from(code.matchAll(rgx)) as RegExpMatchArray[];
 
   const promises = matches.map(async ([, assetURL]) => {
-    const { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL), events);
+    const { content: asset, url } = await fetchPkg(urlJoin(parentURL, assetURL));
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
@@ -84,7 +88,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => {
+export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path.replace(/\/$/, "/index");
@@ -111,7 +115,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return CDN_RESOLVE(origin, events)(args);
+        return CDN_RESOLVE(origin)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -152,7 +156,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, events: typeof EVENTS) => 
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
 
@@ -180,7 +184,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, events));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to
@@ -201,7 +205,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         for (let i = 0; i < extLength; i++) {
           const extPath = exts[i];
           try {
-            ({ content, url } = await fetchPkg(argPath(extPath), events));
+            ({ content, url } = await fetchPkg(argPath(extPath)));
             break;
           } catch (e) {
             if (i == 0)
@@ -210,7 +214,7 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
             // If after checking all the different file extensions none of them are valid
             // Throw the first fetch error encountered, as that is generally the most accurate error
             if (i >= extLength - 1) {
-              events.emit("logger.error", e.toString());
+              dispatchEvent(LOGGER_ERROR, e);
               throw err;
             }
           }
@@ -223,10 +227,10 @@ export function HTTP (events: typeof EVENTS, state: StateArray<LocalState>, conf
         await setFile(FileSystem, args.namespace + ":" + args.path, content)
 
         const _assetResults =
-          (await fetchAssets(url, content, args.namespace, events, state))
+          (await fetchAssets(url, content, args.namespace, state))
             .filter((result) => {
               if (result.status == "rejected") {
-                events.emit("logger:warn", "Asset fetch failed.\n" + result?.reason?.toString());
+                dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())
                 return false;
               } else return true;
             })

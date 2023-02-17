@@ -3,9 +3,9 @@ import type * as ESBUILD from "esbuild-wasm";
 import type { Platform } from "./configs/platform.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 
-import { EVENTS } from "./configs/events.ts";
 import { getState, setState } from "./configs/state.ts";
 import { getEsbuild } from "./utils/get-esbuild.ts";
+import { INIT_COMPLETE, INIT_ERROR, INIT_START, dispatchEvent } from "./configs/events.ts";
 
 /**
  * Configures how esbuild running in wasm is initialized 
@@ -16,7 +16,7 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
   try {
     if (!getState("initialized")) {
       setState("initialized", true);
-      EVENTS.emit("init.start");
+      dispatchEvent(INIT_START);
 
       const esbuild = await getEsbuild(platform);
       setState("esbuild", esbuild);
@@ -37,12 +37,12 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
         }
       }
 
-      EVENTS.emit("init.complete");
+      dispatchEvent(INIT_COMPLETE);
     }
 
     return getState("esbuild");
   } catch (error) {
-    EVENTS.emit("init.error", error);
+    dispatchEvent(INIT_ERROR, error);
     console.error(error);
   }
 }

@@ -1,4 +1,4 @@
-
+import type { ESBUILD } from "@bundlejs/core";
 import toast from "../../components/SolidToast";
 
 import { setState, state } from "./store";
@@ -51,8 +51,13 @@ export async function build() {
         })(),
         {
           loading: "Building...",
-          success: () => <>Build Done with a size of {result.size} {timeFormatter.format(elapsed, "seconds")}</>,
-          error: "Build Error"
+          success: () => (
+            <>
+              Build Done with a size of {result.size}{" "}
+              {timeFormatter.format(elapsed, "seconds")}
+            </>
+          ),
+          error: "Build Error",
         }
       );
 
@@ -64,7 +69,12 @@ export async function build() {
         setState("bundleSize", result.size);
       }
 
-      addLogs({ type: "info", data: `Build Done with a size of ${result.size} ${timeFormatter.format(elapsed, "seconds")}` })
+      addLogs({
+        type: "info",
+        detail: `Build Done with a size of ${
+          result.size
+        } ${timeFormatter.format(elapsed, "seconds")}`,
+      });
 
       // Signifier to no longer hold results in memory
       result = null;
@@ -72,7 +82,7 @@ export async function build() {
       console.warn(e);
       setState("bundleSize", "ERROR!");
       throw e;
-    } finally { 
+    } finally {
       setState("bundling", false);
     }
   }

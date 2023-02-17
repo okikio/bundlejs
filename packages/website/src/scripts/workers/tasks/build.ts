@@ -2,7 +2,7 @@
 import type { ConfigOptions } from "../../configs/options";
 import type { BuildConfig, ESBUILD } from "@bundlejs/core";
 
-import { build, compress, setFile, deepAssign, TheFileSystem } from "@bundlejs/core/src/index";
+import { build, compress, setFile, deepAssign, TheFileSystem, deleteFile } from "@bundlejs/core/src/index";
 
 import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";
@@ -13,6 +13,14 @@ export async function bundle(fileName: string, content: string, _config = "expor
   const fs = await TheFileSystem;
   const start = performance.now();
 
+  try {
+  // await deleteFile(fs, "/index.tsx");
+  } catch (e) {
+    console.log({ e })
+  }
+  console.log({
+    content
+  })
   await setFile(fs, "/index.tsx", content);
 
   const newConfig = await parseConfig(_config);
