@@ -197,7 +197,10 @@ BundleEvents.on({
     // Add logs to the virtual console
     let logs = message.map((msg = "") => {
       msg = (msg ?? "")
-        .replace(/(https?:\/\/[^\s\)\:]+)((?:\:\d+){0,})/g, `<a href="$1" target="_blank" rel="noopener">$1</a>$2`);
+        .replace(
+          /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi,
+          (match) => `<a href="${match}" target="_blank" rel="noopener">${decodeURIComponent(match)}</a>`
+        );;
       let [title, ...message] = msg.split(/\n/);
       return ({ type, title, message: (message ?? []).join("<br>") });
     });
