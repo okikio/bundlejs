@@ -99,7 +99,7 @@ function W($) {
   return l(new WebAssembly.Instance($, p), $);
 }
 async function T($) {
-  void 0 === $ && ($ = new URL("deno_brotli_bg.wasm", import.meta.url));
+  // void 0 === $ && ($ = new URL("deno_brotli_bg.wasm", import.meta.url));
   const p = C();
   ("string" == typeof $ ||
     ("function" == typeof Request && $ instanceof Request) ||

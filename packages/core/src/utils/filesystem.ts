@@ -170,8 +170,7 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
     accessHandle.flush();
 
     // Always close FileSystemSyncAccessHandle if done.
-    accessHandle.close();
-    return;
+    return accessHandle.close();
   }
   
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable
@@ -182,7 +181,7 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
   await writable.write(contents);
 
   // Close the file and write the contents to disk.
-  await writable.close();
+  return await writable.close();
 }
 
 /**
@@ -206,9 +205,10 @@ async function readFile(fileHandle: FileSystemFileHandle) {
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/getFile
   // Get file contents
   const fileData = await fileHandle.getFile();
+  const arrbuf = await fileData.arrayBuffer();
 
   // Return file contents as ArrayBuffer.
-  return new Uint8Array(await fileData.arrayBuffer());
+  return new Uint8Array(arrbuf);
 }
 
 /** Origin Private File System - Virtual Filesystem Storage */
