@@ -1,10 +1,10 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import copy from 'vite-plugin-cp';
 
 export default defineConfig({
   test: {},
   build: {
-    target: ["chrome99"],
+    target: ["chrome110"],
     sourcemap: true,
     outDir: "lib",
     assetsInlineLimit: 0,
