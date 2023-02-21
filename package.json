@@ -8,10 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "typedoc": "rm -r -f website/dists/docs/ && node ./.typedoc/build.js && typedoc && node ./rehype.js",
+    "typedoc": "rm -r -f website/dists/docs/ && node ./.typedoc/build.js && typedoc --options ./.typedoc/typedoc.jsonc && node ./.typedoc/rehype.js",
     "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
-    "semantic-release": "semantic-release",
-    "repl": "esno repl.ts"
+    "semantic-release": "semantic-release"
   },
   "release": {
     "branches": [
@@ -50,23 +49,23 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.4.3",
-    "@commitlint/config-conventional": "^17.4.3",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
     "commitizen": "^4.3.0",
-    "esbuild": "^0.17.8",
+    "esbuild": "^0.17.10",
     "esno": "^0.16.3",
     "hastscript": "^7.2.0",
     "husky": "^8.0.3",
-    "pnpm": "^7.27.0",
+    "pnpm": "^7.27.1",
     "postcss": "^8.4.21",
     "postcss-font-grabber": "^3.1.0",
     "rehype": "^12.0.1",
     "rehype-external-links": "^2.0.1",
     "rehype-slug": "^5.1.0",
     "rehype-urls": "^1.1.1",
-    "sass": "^1.58.1",
+    "sass": "^1.58.3",
     "semantic-release": "^20.1.0",
     "tiny-glob": "^0.2.9",
     "typedoc": "^0.23.25",
