@@ -25,7 +25,8 @@ const result = await build({
 
 console.log(
   await compress(
-    result.contents.map((x: any) => x?.contents)
+    result.contents.map((x: any) => x?.contents),
+    { type: "gzip" }
   )
 );
 
