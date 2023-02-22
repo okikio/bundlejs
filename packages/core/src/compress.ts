@@ -28,14 +28,14 @@ declare class CompressionStream {
   readonly writable: WritableStream<Uint8Array>;
 }
 
-/** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
-export type CompressionType = "gzip" | "brotli" | "lz4";
+/** The compression algorithim to use, there are currently 4 options "gzip", "brotli", "zstd", and "lz4" */
+export type CompressionType = "gzip" | "brotli" | "zstd" | "lz4";
 export type CompressionOptions = {
   /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
-  type: CompressionType,
+  type?: CompressionType,
 
   /** Compression quality ranging from 1 to 11 */
-  quality: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+  quality?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 };
 
 export type CompressConfig = CompressionOptions | CompressionType;
@@ -85,18 +85,25 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   // Choose a different compression function based on the compression type
   const compressionMap = await (async () => {
     switch (type) {
-      case "lz4": {
-        const { compress: lz4_compress, getWASM } = await import("./deno/lz4/mod");
-        await getWASM();
-
-        return async (code: Uint8Array) => await lz4_compress(code);
-      }
       case "brotli": {
         const { compress, getWASM } = await import("./deno/brotli/mod");
         await getWASM();
 
         return async (code: Uint8Array) => await compress(code, code.length, quality);
       }
+      case "zstd": {
+        const { compress, getWASM } = await import("./deno/zstd/mod");
+        await getWASM();
+
+        return async (code: Uint8Array) => await compress(code, quality);
+      }
+      case "lz4": {
+        const { compress, getWASM } = await import("./deno/lz4/mod");
+        await getWASM();
+
+        return async (code: Uint8Array) => await compress(code);
+      }
+      case "gzip":
       default: {
         if (quality === COMPRESS_CONFIG.quality && 'CompressionStream' in globalThis) {
           return async (code: Uint8Array) => {
