@@ -1,9 +1,9 @@
 /// <reference lib="webworker" />
 import type { BundleConfigOptions, CompressionOptions } from "../configs/bundle-options";
-import type { BuildResult, OutputFile, BuildIncremental, PartialMessage, TransformOptions } from "esbuild-wasm";
+import type { BuildResult, OutputFile, PartialMessage } from "esbuild-wasm";
 
 import { FileSystem, setFile } from "../util/filesystem";
-import { initialize, build, transform, transformSync, formatMessages } from "esbuild-wasm";
+import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
 import bytes from "bytes";
@@ -125,9 +125,9 @@ export const start = async (port: MessagePort) => {
   if (_initialized)
     initEvent.emit("init");
 
-  const getConfig = async (config: string) => {
+  const getConfig = async (config: string, analysis: boolean) => {
     return new Promise(resolve => {
-      $port.postMessage(config);
+      $port.postMessage([config, analysis]);
       $port.onmessage = async function ({ data }: MessageEvent<string>) {
         resolve(
           typeof data === "object" &&
@@ -139,8 +139,8 @@ export const start = async (port: MessagePort) => {
   }
 
   BuildEvents.on("build", async (details) => {
-    let { config: _config, value: input } = details;
-    let newConfig = await getConfig(_config ? _config : "export default {}");
+    let { config: _config, value: input, analysis } = details;
+    let newConfig = await getConfig(_config ? _config : "export default {}", analysis);
     let config = deepAssign({}, DefaultConfig, newConfig) as BundleConfigOptions;
 
     // Exclude certain esbuild config properties
@@ -162,7 +162,7 @@ export const start = async (port: MessagePort) => {
     let content: Uint8Array[] = [];
     let result: BuildResult & {
       outputFiles: OutputFile[];
-    } | BuildIncremental;
+    };
 
     // Ensure a fresh filesystem on every run
     FileSystem.clear();

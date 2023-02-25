@@ -28,10 +28,11 @@ export const start = async (port: MessagePort) => {
   let $port: MessagePort;
 
   const onmessage = (_port: MessagePort) => {
-    return async function ({ data }: MessageEvent<string>) {
+    return async function ({ data: arr }: MessageEvent<[string, boolean]>) {
       try {
         await initPromise;
 
+        const [data, analysis] = arr; 
         const config = configs.has(data) ? configs.get(data) : (
           await transform(data, {
             loader: 'ts',
@@ -44,12 +45,14 @@ export const start = async (port: MessagePort) => {
         console.log({
           config
         })
-
         configs.set(data, config);
 
-        console.log({ config })
         const result = await Function('"use strict";return (async function () { "use strict";' + config + 'return (await std_global?.default); })()')();
         // const result = (0, eval)(config + ' std_global');
+        result.analysis = result.analysis || analysis;
+
+        console.log({ result })
+
         _port.postMessage(result);
       } catch (e) {
         console.warn(e);
@@ -66,7 +69,7 @@ export const start = async (port: MessagePort) => {
       $port.start();
       $port.onmessage = onmessage($port);
     } else {
-      msg({ data } as MessageEvent<string>);
+      msg({ data } as MessageEvent<[string, boolean]>);
     }
   };
 }

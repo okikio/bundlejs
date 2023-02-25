@@ -173,13 +173,14 @@ BundleEvents.on({
       let query = searchParams.get("query") || searchParams.get("q");
       let share = searchParams.get("share");
       let bundle = searchParams.get("bundle");
+      let analysis = searchParams.get("analysis");
       let config = searchParams.get("config") ?? "{}";
-      if (query || share || plaintext || config) {
+      if (query || share || plaintext || config || analysis) {
         if (bundle != null) {
           // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
 
           let initialConfig = `export default ${config}`;
-          BundleEvents.emit("bundle", initialConfig);
+          BundleEvents.emit("bundle", initialConfig, searchParams.has("analysis"));
         }
 
         isInitial = false;
@@ -265,9 +266,9 @@ export const pushState = (url: string | URL, historyManager: HistoryManager) => 
   }
 }
 
-export const getConfig = async (config: string) => {
+export const getConfig = async (config: string, analysis: boolean) => {
   return new Promise(resolve => {
-    SANDBOX_WORKER.postMessage(config);
+    SANDBOX_WORKER.postMessage([config, analysis]);
     SANDBOX_WORKER.onmessage = ({ data }: MessageEvent<string>) => {
       resolve(
         typeof data === "object" &&
@@ -305,19 +306,19 @@ export const build = async (app: App) => {
 
   // bundles using esbuild and returns the result
   BundleEvents.on({
-    bundle(config: string) {
+    bundle(config: string, analysis: boolean) {
       if (!initialized) return;
       value = `` + inputModel?.getValue();
 
       fileSizeEl.forEach(el => (el.innerHTML = `<div class="loading"></div>`));
 
       start = Date.now();
-      postMessage({ event: "build", details: { config, value } });
+      postMessage({ event: "build", details: { config, value, analysis } });
 
       (async () => {
         let configObj: BundleConfigOptions = {};
         try {
-          configObj = await getConfig(config);
+          configObj = await getConfig(config, analysis);
         } catch (e) {
           console.warn(e);
         }
@@ -388,7 +389,7 @@ export const build = async (app: App) => {
       const worker = await languages.typescript.getTypeScriptWorker();
       const thisWorker = await worker(model.uri);
 
-      const config: Record<any, any> = await getConfig(configModel.getValue()) ?? {};
+      const config: Record<any, any> = await getConfig(configModel.getValue(), new URL(globalThis.location.href).searchParams.has("analysis")) ?? {};
 
       // @ts-ignore
       return await thisWorker.getShareableURL(
@@ -607,7 +608,7 @@ export const build = async (app: App) => {
       try {
         const searchParams = oldShareURL.searchParams;
         const config = searchParams.get("config") ?? "{}";
-        newConfig = await getConfig(`export default ${config}`);
+        newConfig = await getConfig(`export default ${config}`, searchParams.has("analysis"));
       } catch (e) { }
 
       const oldConfigFromURL = serialize(
@@ -724,7 +725,7 @@ export const build = async (app: App) => {
           if (!initialized)
             fileSizeEl.forEach(el => (el.textContent = `Wait!`));
 
-          BundleEvents.emit("bundle", configModel?.getValue());
+          BundleEvents.emit("bundle", configModel?.getValue(), new URL(globalThis.location.href).searchParams.has("analysis"));
           outputModel.setValue(outputModelResetValue);
           pushState(await getShareableURL(inputModel), historyManager);
         })();
