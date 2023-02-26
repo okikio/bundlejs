@@ -6,26 +6,39 @@ import { CACHE_NAME, CACHE } from "./util/fetch-and-cache";
 
 export default () => {
     // Check that service workers are supported
-    (async () => {      
+    (async () => {
+        let wb: Workbox;
+
         // Force Referesh Cache
         let resetCache = document.querySelector(".btn#reset-cache") as HTMLElement;
         resetCache?.addEventListener?.("click", (e) => {
-            (async () => { 
+            (async () => {
+                // @ts-ignore
+                if ('serviceWorker' in navigator) wb?.unregister?.();
+                
                 // Clear Cache
                 if ("caches" in globalThis) {
                     let cache_names = await caches.keys();
-                    await Promise.all(cache_names.map(cache_name => {
-                        return caches.delete(cache_name);
-                    }));
-                } else 
-                    CACHE.clear();
-                
+                    await Promise.allSettled(
+                        cache_names.map(cache_name => caches.delete(cache_name))
+                    );
+                } else CACHE.clear();
+
+                if ('serviceWorker' in navigator) wb?.register?.();
+
                 console.log("Clear Cache");
-                window.location.reload();
+
+                setTimeout(function () { 
+                    window.location.replace(""); 
+                    window.location.reload(); 
+                }, 300)
             })()
         })
 
         if ("serviceWorker" in navigator && ENABLE_SW) {
+            // Use the window load event to keep the page load performant
+            wb = new Workbox("/sw.js");
+
             let reloadDialog = document.querySelector(
                 ".info-prompt.reload"
             ) as HTMLElement;
@@ -86,51 +99,46 @@ export default () => {
                 });
             };
 
-            window?.addEventListener("load", () => {
-                // Use the window load event to keep the page load performant
-                const wb = new Workbox("/sw.js");
+            // Add an event listener to detect when the registered
+            // service worker has installed but is waiting to activate.
+            wb?.addEventListener("waiting", (event) => {
+                // `event.wasWaitingBeforeRegister` will be false if this is
+                // the first time the updated service worker is waiting.
+                // When `event.wasWaitingBeforeRegister` is true, a previously
+                // updated service worker is still waiting.
+                // You may want to customize the UI prompt accordingly.
 
-                // Add an event listener to detect when the registered
-                // service worker has installed but is waiting to activate.
-                wb?.addEventListener("waiting", (event) => {
-                    // `event.wasWaitingBeforeRegister` will be false if this is
-                    // the first time the updated service worker is waiting.
-                    // When `event.wasWaitingBeforeRegister` is true, a previously
-                    // updated service worker is still waiting.
-                    // You may want to customize the UI prompt accordingly.
-
-                    // Assumes your app has some sort of prompt UI element
-                    // that a user can either accept or reject.
-                    dialog("confirm")
-                        .then(() => {
-                            wb.messageSkipWaiting();
-                        })
-                        .catch(() => { });
-                });
-
-
-                // Assuming the user accepted the update, set up a listener
-                // that will reload the page as soon as the previously waiting
-                // service worker has taken control.
-                wb?.addEventListener("controlling", async (event) => {
-                    caches.delete(CACHE_NAME);
-                    window.location.reload();
-                });
-
-                wb?.addEventListener("activated", (event) => {
-                    // `event.isUpdate` will be true if another version of the service
-                    // worker was controlling the page when this version was registered.
-                    if (!event.isUpdate) {
-                        console.log("Service worker activated for the first time!");
-
-                        // If your service worker is configured to precache assets, those
-                        // assets should all be available now.
-                        dialog("alert").catch(() => { });
-                    }
-                });
-
-                wb?.register();
+                // Assumes your app has some sort of prompt UI element
+                // that a user can either accept or reject.
+                dialog("confirm")
+                    .then(() => {
+                        wb.messageSkipWaiting();
+                    })
+                    .catch(() => { });
             });
+
+
+            // Assuming the user accepted the update, set up a listener
+            // that will reload the page as soon as the previously waiting
+            // service worker has taken control.
+            wb?.addEventListener("controlling", async (event) => {
+                caches.delete(CACHE_NAME);
+                setTimeout(() => window.location.reload(), 30);
+            });
+
+            wb?.addEventListener("activated", (event) => {
+                // `event.isUpdate` will be true if another version of the service
+                // worker was controlling the page when this version was registered.
+                if (!event.isUpdate) {
+                    console.log("Service worker activated for the first time!");
+
+                    // If your service worker is configured to precache assets, those
+                    // assets should all be available now.
+                    dialog("alert").catch(() => { });
+                }
+            });
+
+            wb?.register();
         }
     })();
 };
