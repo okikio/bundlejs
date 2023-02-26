@@ -1,4 +1,5 @@
 {
+  "framework": null,
   "outputDirectory": "packages/website/dist",
   "buildCommand": "pnpm --filter=astro build",
   "devCommand": "pnpm --filter=astro dev",
