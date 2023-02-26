@@ -1,4 +1,8 @@
 {
+  "framework": "astro",
+  "outputDirectory": "packages/website/dist",
+  "buildCommand": "pnpm --filter=astro build",
+  "devCommand": "pnpm --filter=astro dev",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
