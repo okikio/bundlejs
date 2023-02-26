@@ -30,22 +30,16 @@
   ],
   "scripts": {
     "build:wasm": "esno ./scripts/build-wasm.ts",
-    "build:all": "ultra build:wasm && pnpm build",
+    "build:all": "pnpm build:wasm; pnpm build",
     "build": "vite build",
     "dev": "vite",
-    "test:run": "vitest run && pnpm repl && pnpm deno",
+    "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
     "repl": "esno repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "verify": "pnpm dts && pnpm test:run",
-    "pre-release": "ultra build:all && ultra verify"
-  },
-  "ultra": {
-    "concurrent": [
-      "verify",
-      "test:run"
-    ]
+    "verify": "pnpm dts; pnpm test:run",
+    "pre-release": "pnpm build:all; ultra verify"
   },
   "repository": {
     "type": "git",
@@ -86,13 +80,12 @@
     "esbuild-wasm": "0.17.8"
   },
   "devDependencies": {
-    "@types/node": "^18.14.0",
+    "@types/node": "^18.14.1",
     "del-cli": "^5.0.0",
     "esno": "^0.16.3",
-    "pnpm": "^7.27.1",
+    "pnpm": "^7.28.0",
     "typescript": "5.0.0-beta",
-    "ultra-runner": "^3.10.5",
-    "vite": "^4.1.3",
+    "vite": "^4.1.4",
     "vite-plugin-cp": "^1.0.0",
     "vitest": "^0.28.5"
   }

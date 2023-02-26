@@ -10,7 +10,7 @@ import { wasm as WASM } from "../src/deno/denoflate/pkg/denoflate_bg.wasm.js";
 import { compress as brotli, decompress as unbrotli } from "../src/deno/brotli/mod";
 import { init, compress as zstdCompress, decompress as zstdDecompress } from "../src/deno/zstd/mod.ts"; 
 
-import { resolve, relative } from 'node:path';
+import { dirname, relative } from 'node:path';
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 
@@ -60,10 +60,13 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
     `- Encoded WASM using base64, (increase: ${bytes(encoded.length -
       compressed.length)}, size: ${bytes(encoded.length)})`,
   );
+  
+  const targetDir = dirname(target);
   console.log({
     target,
+    targetDir,
     to: "src/deno/zstd/mod.ts",
-    path: relative(target, "src/deno/zstd/mod.ts")
+    path: relative(targetDir, "src/deno/zstd/mod.ts")
   })
 
   console.log("- Inlining wasm code in js");
@@ -74,10 +77,10 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
     ${
       mode == "base64" ? `return uint8arr;` :
       mode == "zstd" ? `
-    const { decompress } = await import(\"${relative(target, "src/deno/zstd/mod.ts")}\");
+    const { decompress } = await import(\"./${relative(targetDir, "src/deno/zstd/mod.ts")}\");
     return await decompress(uint8arr);
   ` : mode == "brotli" ? `
-    const { decompress } = await import(\"${relative(target, "src/deno/brotli/mod.ts")}\");
+    const { decompress } = await import(\"./${relative(targetDir, "src/deno/brotli/mod.ts")}\");
     return await decompress(uint8arr);
   ` : (`
     const mode: "zstd" | "lz4" | "gzip" | "base64" = "${mode}";
@@ -87,7 +90,7 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
       return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
     }
 
-    const { ${mode == "gzip" ? "gunzip, getWASM" : "decompress"} } = await import(\"${relative(target, mode == "gzip" ? "src/deno/denoflate/mod.ts" : "src/deno/lz4/mod.ts")}\");
+    const { ${mode == "gzip" ? "gunzip, getWASM" : "decompress"} } = await import(\"./${relative(targetDir, mode == "gzip" ? "src/deno/denoflate/mod.ts" : "src/deno/lz4/mod.ts")}\");
     ${mode == "gzip" ? "await getWASM();" : ""}
     return await ${mode == "gzip" ? "gunzip" : "decompress"}(uint8arr);
   `)

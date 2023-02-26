@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import copy from 'vite-plugin-cp';
 
 export default defineConfig({
