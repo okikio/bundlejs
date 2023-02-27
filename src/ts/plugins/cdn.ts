@@ -5,9 +5,8 @@ import { isBareImport } from '../util/path';
 import { getRequest } from '../util/fetch-and-cache';
 
 import { getCDNUrl, getCDNStyle } from '../util/util-cdn';
-import { resolveImports } from '../util/resolve-imports';
 
-import { resolve, legacy } from "resolve.exports";
+import { resolve, legacy, imports } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 
 import { DEFAULT_CDN_HOST } from '../util/util-cdn';
@@ -40,12 +39,12 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
             // If an import starts with "#" then it's a subpath-import
             // https://nodejs.org/api/packages.html#subpath-imports
             if (argPath[0] == "#") {
-                let path = resolveImports({ ...pkg, exports: pkg.imports }, argPath, {
+                let path = imports({ ...pkg, exports: pkg.imports }, argPath, {
                     require: args.kind === "require-call" || args.kind === "require-resolve"
                 });
 
-                if (typeof path === "string") {
-                    subpath = path.replace(/^\.?\/?/, "/");
+                if (Array.isArray(path) || typeof path === "string") {
+                    subpath = (Array.isArray(path) ? path.join("") : path).replace(/^\.?\/?/, "/");
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
@@ -113,6 +112,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
                 ...pkg,
                 peerDependencies: peerDeps
             }
+
+            // logger(`Verbose log pkg.json (${pkg.name}@${pkg.version}):\n` + JSON.stringify({ pkg, newPkg }, null, 2), "warning");
             return {
                 namespace: HTTP_NAMESPACE,
                 path: url.toString(),

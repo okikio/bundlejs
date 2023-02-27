@@ -170,7 +170,8 @@ export const start = async (port: MessagePort) => {
     try {
       // Catch esbuild errors 
       setFile("/input.tsx", `${input}`);
-
+      console.log({ esbuildOpts })
+      
       try {
         // Convert CDN values to URL origins
         let { origin } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
