@@ -1,8 +1,7 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import copy from 'vite-plugin-cp';
 
 export default defineConfig({
-  test: {},
   build: {
     target: ["chrome110"],
     sourcemap: true,
@@ -38,12 +37,12 @@ export default defineConfig({
           entryFileNames: "[name].cjs",
           chunkFileNames: "[name]-[hash].cjs",
         },
-        {
-          format: "umd",
-          entryFileNames: "[name].js",
-          inlineDynamicImports: true,
-          name: "bundlejs"
-        }
+        // {
+        //   format: "umd",
+        //   entryFileNames: "[name].js",
+        //   inlineDynamicImports: true,
+        //   name: "bundlejs"
+        // }
       ],
       plugins: [
         copy({
