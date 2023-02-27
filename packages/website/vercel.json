@@ -44,24 +44,11 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com data:; script-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://cdn.polyfill.io 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com; frame-ancestors 'self' https:;"
+          "value": "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com data:; script-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://cdn.polyfill.io data: 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com; frame-ancestors 'self' https:;"
         },
         {
           "key": "Permissions-Policy",
           "value": "geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=()"
-        },
-        {
-          "key": "Link",
-          "value": "</js/main.min.js>; rel=modulepreload; fetchpriority=high"
-        }
-      ]
-    },
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Link",
-          "value": "</js/main.min.js>; rel=modulepreload; fetchpriority=high"
         }
       ]
     },
@@ -70,7 +57,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         },
         {
           "key": "Content-Type",
@@ -83,7 +70,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         },
         {
           "key": "Content-Type",
@@ -92,11 +79,11 @@
       ]
     },
     {
-      "source": "/js/(.*).js",
+      "source": "/(.*).js",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         }
       ]
     },
@@ -105,7 +92,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         }
       ]
     },
@@ -114,7 +101,11 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/svg+xml"
         }
       ]
     },
@@ -123,7 +114,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=60, stale-while-revalidate=480"
         }
       ]
     },
@@ -132,7 +123,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         }
       ]
     },
@@ -141,7 +132,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1209600, must-revalidate"
+          "value": "public, max-age=4800, stale-while-revalidate=480"
         }
       ]
     }
