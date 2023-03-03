@@ -188,7 +188,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
 
     // Ensure a fresh filesystem on every run
     // FileSystem.clear();
-    // dele
+    // delete
 
     return {
       /** 

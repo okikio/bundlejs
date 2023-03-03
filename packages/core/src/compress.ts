@@ -131,6 +131,8 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
     compressedContent.reduce((acc, { length }) => acc + length, 0)
   );
 
+
+  console.log(compressedContent.map((v) => bytes(v.length)))
   return {
     type,
     content: compressedContent,
