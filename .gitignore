@@ -147,3 +147,9 @@ core.*
 
 packages/core/lib/
 packages/core/@types/
+
+packages/analysis/lib/
+packages/analysis/@types/
+
+packages/edge/lib/
+packages/edge/@types/

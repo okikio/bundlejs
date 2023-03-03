@@ -128,17 +128,36 @@ importers:
       vite-plugin-cp: 1.0.0
       vitest: 0.29.2
 
-  packages/core/hello:
+  packages/edge:
     specifiers:
+      '@bundlejs/core': workspace:^0.0.0
       '@cloudflare/workers-types': ^4.20230228.0
+      '@types/node': ^18.14.5
+      del-cli: ^5.0.0
+      esbuild: ^0.17.10
+      esbuild-wasm: ^0.17.10
+      esno: ^0.16.3
+      pnpm: ^7.28.0
+      text-encoding-shim: ^1.0.5
       typescript: 5.0.1-rc
       vite: ^4.1.4
+      vite-plugin-cp: ^1.0.0
       vitest: ^0.29.2
       wrangler: 2.12.0
+    dependencies:
+      '@bundlejs/core': link:../core
+      esbuild: 0.17.10
+      esbuild-wasm: 0.17.10
+      text-encoding-shim: 1.0.5
     devDependencies:
       '@cloudflare/workers-types': 4.20230228.0
+      '@types/node': 18.14.5
+      del-cli: 5.0.0
+      esno: 0.16.3
+      pnpm: 7.28.0
       typescript: 5.0.1-rc
-      vite: 4.1.4
+      vite: 4.1.4_@types+node@18.14.5
+      vite-plugin-cp: 1.0.0
       vitest: 0.29.2
       wrangler: 2.12.0
 
@@ -3499,7 +3518,7 @@ packages:
   /@types/sax/1.2.4:
     resolution: {integrity: sha512-pSAff4IAxJjfAXUG6tFkO7dsSbTmf8CtUpfhhZ5VhkRpC4628tJhh3+V6H1E+/Gs9piSzYKT5yzHO5M4GG9jkw==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 18.14.5
     dev: true
 
   /@types/stack-trace/0.0.29:
@@ -9844,6 +9863,10 @@ packages:
       source-map-support: 0.5.21
     dev: true
 
+  /text-encoding-shim/1.0.5:
+    resolution: {integrity: sha512-H7yYW+jRn4yhu60ygZ2f/eMhXPITRt4QSUTKzLm+eCaDsdX8avmgWpmtmHAzesjBVUTAypz9odu5RKUjX5HNYA==}
+    dev: false
+
   /text-extensions/1.9.0:
     resolution: {integrity: sha512-wiBrwC1EhBelW12Zy26JeOUkQ5mRu+5o8rpsJk5+2t+Y5vE7e842qtZDQ2g1NpX/29HdyFeJ4nSIhI47ENSxlQ==}
     engines: {node: '>=0.10'}
@@ -10537,39 +10560,6 @@ packages:
       vitefu: 0.2.4_vite@4.1.4
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /vite/4.1.4:
-    resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      esbuild: 0.16.17
-      postcss: 8.4.21
-      resolve: 1.22.1
-      rollup: 3.18.0
-    optionalDependencies:
-      fsevents: 2.3.2
     dev: true
 
   /vite/4.1.4_52uvnhaycl4a477g5zbklhttxy:
