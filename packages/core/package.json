@@ -76,17 +76,17 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "0.16.17",
-    "esbuild-wasm": "0.16.17"
+    "esbuild": "^0.17.10",
+    "esbuild-wasm": "^0.17.10"
   },
   "devDependencies": {
-    "@types/node": "^18.14.1",
+    "@types/node": "^18.14.5",
     "del-cli": "^5.0.0",
     "esno": "^0.16.3",
     "pnpm": "^7.28.0",
-    "typescript": "5.0.0-beta",
+    "typescript": "5.0.1-rc",
     "vite": "^4.1.4",
     "vite-plugin-cp": "^1.0.0",
-    "vitest": "^0.28.5"
+    "vitest": "^0.29.2"
   }
 }
