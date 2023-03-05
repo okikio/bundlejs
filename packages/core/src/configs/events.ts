@@ -83,10 +83,7 @@ addEventListener(INIT_START, (e) => {
   console.time(INIT_COMPLETE); 
   console.log(INIT_START, e.detail);
 });
-addEventListener(INIT_COMPLETE, (e) => {
-  if (e.detail) console.info(INIT_COMPLETE, e.detail); 
-  console.timeEnd(INIT_COMPLETE);
-});
+addEventListener(INIT_COMPLETE, (e) => console.timeEnd(INIT_COMPLETE));
 addEventListener(INIT_LOADING, (e) => console.log(INIT_LOADING, e.detail));
 addEventListener(INIT_ERROR, (e) => console.error(INIT_ERROR, e.detail));
 addEventListener(LOGGER_LOG, (e) => { 
