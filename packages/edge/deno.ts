@@ -1,8 +1,14 @@
 #!/usr/bin/env -S deno run --unstable -A --config deno.jsonc
 import { serve } from "https://deno.land/std/http/server.ts";
 
+const worker = globalThis?.Worker;
+globalThis.Worker = worker ?? class {
+  constructor() {}
+};
+
 import type { BuildConfig, CompressConfig } from "@bundlejs/core";
 import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundlejs/core/src/index.ts";
+import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
 import { parseShareURLQuery, parseConfig } from "./src/_parse-query.ts";
 
@@ -16,6 +22,7 @@ const inputModelResetValue = [
   'export * from "@okikio/animate";'
 ].join("\n");
 
+let WASM_MODULE: Uint8Array;
 serve(async (req: Request) => {
   try {
     const fs = await FileSystem;
@@ -27,6 +34,8 @@ serve(async (req: Request) => {
 
     setFile(fs, "/index.tsx", initialValue);
 
+    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
+    const wasmModule = new WebAssembly.Module(WASM_MODULE);
     const configObj: BuildConfig & CompressConfig = deepAssign({}, initialConfig, {
       entryPoints: ["/index.tsx"],
       esbuild: {
@@ -36,7 +45,9 @@ serve(async (req: Request) => {
           Boolean(initialConfig?.analysis)
       },
       init: {
-        platform: "deno"
+        platform: "deno-wasm",
+        worker: false,
+        wasmModule
       },
     } as BuildConfig);
     console.log({ configObj })

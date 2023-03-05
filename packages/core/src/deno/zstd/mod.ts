@@ -9,10 +9,11 @@ const initialized = (() =>
 
 
 let initWASM: Uint8Array;
+import { wasm } from "./encoded.wasm.ts";
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const { wasm } = await import("./encoded.wasm.ts");
+  // const { wasm } = await import("./encoded.wasm.ts");
   return (initWASM = decode(wasm));
 };
 
