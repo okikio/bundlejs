@@ -53,6 +53,16 @@ serve(async (req: Request) => {
     console.log({ configObj })
     const result = await build(configObj, FileSystem);
 
+    if (url.searchParams.has("metafile") && result?.metafile) {
+      return new Response(JSON.stringify(result.metafile), {
+        status: 200,
+        headers: [
+          ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Content-Type', 'application/json']
+        ],
+      })
+    }
+
     if (url.searchParams.has("file")) {
       const fileBundle = result.contents[0];
       return new Response(fileBundle.contents, {
@@ -77,22 +87,12 @@ serve(async (req: Request) => {
 
     if (url.searchParams.has("badge")) {
       const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
-      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(`${uncompressedSize} -> ${compressedSize} (gzip)`)}-blue?link=${urlQuery}&link=${urlQuery}`).then(res => res.text());
+      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(uncompressedSize)}-->${encodeURIComponent(`${compressedSize} (gzip)`)}-blue?link=${urlQuery}`).then(res => res.text());
       return new Response(imgShield, {
         status: 200,
         headers: [
           ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
           ['Content-Type', 'image/svg+xml']
-        ],
-      })
-    }
-
-    if (url.searchParams.has("metafile") && result?.metafile) {
-      return new Response(JSON.stringify(result.metafile), {
-        status: 200,
-        headers: [
-          ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
-          ['Content-Type', 'application/json']
         ],
       })
     }
