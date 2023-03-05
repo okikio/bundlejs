@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@bundlejs/core/": "../core/",
+    "@bundlejs/core": "../core/src/index.ts"
+  }
+}

@@ -22,9 +22,8 @@
     }
   ],
 	"settings": {
-		"typescript.tsdk": "✨ root/node_modules/typescript/lib",
-		"deno.enablePaths": [
-			"./packages/core/repl.ts"
-		]
-	}
+    "typescript.tsdk": "✨ root/node_modules/typescript/lib",
+    "deno.enablePaths": ["./packages/core/repl.ts", "./packages/edge/deno.ts"],
+    "deno.config": "./packages/edge/deno.jsonc"
+  }
 }

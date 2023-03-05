@@ -2,15 +2,16 @@
 import type { ConfigOptions } from "../../configs/options";
 import type { BuildConfig, ESBUILD } from "@bundlejs/core";
 
-import { build, compress, setFile, deepAssign, TheFileSystem, deleteFile } from "@bundlejs/core/src/index";
+import { build, compress, setFile, deepAssign, deleteFile, useFileSystem } from "@bundlejs/core/src/index";
 
 import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";
 
 import { initOpts, ready } from "./utils/init";
 
+const FileSystem = useFileSystem("OPFS");
 export async function bundle(fileName: string, content: string, _config = "export default {}") {
-  const fs = await TheFileSystem;
+  const fs = await FileSystem;
   const start = performance.now();
 
   try {
@@ -33,7 +34,7 @@ export async function bundle(fileName: string, content: string, _config = "expor
     entryPoints: ["/index.tsx"],
     ...buildConfig,
     init: initOpts,
-  });
+  }, FileSystem);
 
   console.log({ result })
 

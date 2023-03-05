@@ -24,7 +24,7 @@ export const HTTP_NAMESPACE = "http-url";
  * @param url package url to fetch
  * @param logger Console log
  */
-export const fetchPkg = async (url: string) => {
+export async function fetchPkg (url: string) {
   try {
     const response = await getRequest(url);
     if (!response.ok)
@@ -40,7 +40,7 @@ export const fetchPkg = async (url: string) => {
   } catch (err) {
     throw new Error(`[getRequest] Failed at request (${url})\n${err.toString()}`);
   }
-};
+}
 
 /**
  * Fetches assets from a js file, e.g. assets like WASM, Workers, etc... 
@@ -52,7 +52,7 @@ export const fetchPkg = async (url: string) => {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export const fetchAssets = async (path: string, content: Uint8Array, namespace: string, state: StateArray<LocalState>) => {
+export async function fetchAssets(path: string, content: Uint8Array, namespace: string, state: StateArray<LocalState>) {
   // Regex for `new URL("./path.js", import.meta.url)`, 
   // I added support for comments so you can add comments and the regex
   // will ignore the comments
@@ -80,7 +80,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
   });
 
   return await Promise.allSettled(promises);
-};
+}
 
 /**
  * Resolution algorithm for the esbuild HTTP plugin
@@ -88,7 +88,7 @@ export const fetchAssets = async (path: string, content: Uint8Array, namespace: 
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST) => {
+export function HTTP_RESOLVE (host = DEFAULT_CDN_HOST) {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path.replace(/\/$/, "/index");
@@ -147,7 +147,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST) => {
       pluginData: { pkg: args.pluginData?.pkg },
     };
   };
-};
+}
 
 /**
  * Esbuild HTTP plugin 

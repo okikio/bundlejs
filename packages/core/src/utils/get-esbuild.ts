@@ -2,7 +2,9 @@ import type * as ESBUILD from "esbuild-wasm";
 
 import type { Platform } from "../configs/platform.ts";
 import { PLATFORM_AUTO } from "../configs/platform.ts";
-import { version } from "esbuild-wasm/package.json";
+import pkg from "../../node_modules/esbuild-wasm/package.json" assert { type: "json" };
+
+const { version } = pkg;
 
 /**
  * Determines which esbuild skew to use depending on the platform option supplied, 
@@ -13,7 +15,7 @@ import { version } from "esbuild-wasm/package.json";
  * for example you can choose "deno-wasm" as a skew, where you can run the esbuild but in WASM
  * 
  * @param platform Which platform skew of esbuild should be used
- * @returns Esbuild module
+ * @returns esbuild module
  */
 export async function getEsbuild(platform: Platform = PLATFORM_AUTO): Promise<typeof ESBUILD> {
   try {
@@ -30,6 +32,8 @@ export async function getEsbuild(platform: Platform = PLATFORM_AUTO): Promise<ty
         );
       case "node":
         return await import("esbuild");
+      case "browser":
+      case "edge":
       default:
         return await import("esbuild-wasm");
     }

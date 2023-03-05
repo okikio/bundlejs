@@ -290,7 +290,7 @@ export async function createOPFSFileSystem() {
  * Selects the OPFS File System if possible, otherwise fallback to the default Map based Virtual File System
  * @param type Virtual File System to use
  */
-export async function useFileSystem(type: "OPFS" | "DEFAULT" = "OPFS") {
+export async function useFileSystem(type: "OPFS" | "DEFAULT" = "DEFAULT") {
   try {
     switch (type) {
       case "DEFAULT":
@@ -298,8 +298,6 @@ export async function useFileSystem(type: "OPFS" | "DEFAULT" = "OPFS") {
       case "OPFS":
         return await createOPFSFileSystem();
     }
-
-    return createDefaultFileSystem();
   } catch (e) {
     dispatchEvent(LOGGER_WARN, e);
   }
