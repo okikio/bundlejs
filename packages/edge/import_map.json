@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@bundlejs/core": "../core",
+    "esbuild-wasm": "npm:esbuild-wasm",
+    "esbuild": "npm:esbuild"
+  }
+}

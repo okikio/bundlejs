@@ -79,11 +79,21 @@ export function dispatchEvent<K extends keyof IEVENT_MAP, A extends IEVENT_MAP[K
   );
 }
 
-addEventListener(INIT_START, (e) => console.log(e.detail));
-addEventListener(INIT_COMPLETE, (e) => console.info(e.detail));
-addEventListener(INIT_ERROR, (e) => console.error(e.detail));
-addEventListener(LOGGER_LOG, (e) => console.log(e.detail));
-addEventListener(LOGGER_ERROR, (e) => console.error(e.detail));
-addEventListener(LOGGER_WARN, (e) => console.warn(e.detail));
-addEventListener(LOGGER_INFO, (e) => console.info(e.detail));
-addEventListener(BUILD_ERROR, (e) => console.error(e.detail));
+addEventListener(INIT_START, (e) => { 
+  console.time(INIT_COMPLETE); 
+  console.log(INIT_START, e.detail);
+});
+addEventListener(INIT_COMPLETE, (e) => {
+  if (e.detail) console.info(INIT_COMPLETE, e.detail); 
+  console.timeEnd(INIT_COMPLETE);
+});
+addEventListener(INIT_LOADING, (e) => console.log(INIT_LOADING, e.detail));
+addEventListener(INIT_ERROR, (e) => console.error(INIT_ERROR, e.detail));
+addEventListener(LOGGER_LOG, (e) => { 
+  if (!e.detail) console.log(LOGGER_LOG, e.detail);
+  console.log(e.detail);
+});
+addEventListener(LOGGER_ERROR, (e) => console.error(LOGGER_ERROR, e.detail));
+addEventListener(LOGGER_WARN, (e) => console.warn(LOGGER_WARN, e.detail));
+addEventListener(LOGGER_INFO, (e) => console.info(LOGGER_INFO, e.detail));
+addEventListener(BUILD_ERROR, (e) => console.error(BUILD_ERROR, e.detail));

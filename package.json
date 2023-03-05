@@ -54,7 +54,7 @@
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
     "commitizen": "^4.3.0",
-    "esbuild": "^0.17.10",
+    "esbuild": "^0.17.11",
     "esno": "^0.16.3",
     "hastscript": "^7.2.0",
     "husky": "^8.0.3",

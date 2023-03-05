@@ -189,6 +189,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     // Ensure a fresh filesystem on every run
     // FileSystem.clear();
     // delete
+    // console.log({ contentsLen: contents.length })
 
     return {
       /** 
