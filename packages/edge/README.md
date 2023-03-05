@@ -1,0 +1,1 @@
+deployctl deploy --project=bundlejs --exclude=node_modules --import-map=packages/edge/import_map.json --token=... packages/edge/deno.ts
