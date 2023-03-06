@@ -22,7 +22,9 @@ const inputModelResetValue = [
   'export * from "@okikio/animate";'
 ].join("\n");
 
-let WASM_MODULE: Uint8Array;
+let WASM_MODULE: Uint8Array = await ESBUILD_WASM();
+let wasmModule = new WebAssembly.Module(WASM_MODULE);
+
 serve(async (req: Request) => {
   try {
     const fs = await FileSystem;
@@ -34,14 +36,17 @@ serve(async (req: Request) => {
 
     setFile(fs, "/index.tsx", initialValue);
 
-    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
-    const wasmModule = new WebAssembly.Module(WASM_MODULE);
+    const metafileQuery = url.searchParams.has("metafile");
+    const analysisQuery = url.searchParams.has("analysis");
+
+    const fileQuery = url.searchParams.has("file");
+    const badgeQuery = url.searchParams.has("badge");
     const configObj: BuildConfig & CompressConfig = deepAssign({}, initialConfig, {
       entryPoints: ["/index.tsx"],
       esbuild: {
         treeShaking: true,
-        metafile: url.searchParams.has("analysis") ||
-          url.searchParams.has("metafile") ||
+        metafile: analysisQuery ||
+          metafileQuery ||
           Boolean(initialConfig?.analysis)
       },
       init: {
@@ -51,24 +56,28 @@ serve(async (req: Request) => {
       },
     } as BuildConfig);
     console.log({ configObj })
-    const result = await build(configObj, FileSystem);
 
-    if (url.searchParams.has("metafile") && result?.metafile) {
+    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
+    if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
+    const result = await build(configObj, FileSystem);
+    const end = performance.now();
+
+    if (metafileQuery && result?.metafile) {
       return new Response(JSON.stringify(result.metafile), {
         status: 200,
         headers: [
-          // ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
           ['Content-Type', 'application/json']
         ],
       })
     }
 
-    if (url.searchParams.has("file")) {
+    if (fileQuery) {
       const fileBundle = result.contents[0];
       return new Response(fileBundle.contents, {
         status: 200,
         headers: [
-          ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
           ['Content-Type', 'text/javascript']
         ],
       })
@@ -85,19 +94,19 @@ serve(async (req: Request) => {
     const compressedStream = new Blob(result.contents.map(x => x.contents.buffer)).stream().pipeThrough(cs);
     const compressedSize = bytes(new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength);
 
-    if (url.searchParams.has("badge")) {
+    if (badgeQuery) {
       const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
       const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(`${uncompressedSize} `)}-->${encodeURIComponent(` ${compressedSize} (gzip)`)}-blue?link=${urlQuery}`).then(res => res.text());
       return new Response(imgShield, {
         status: 200,
         headers: [
-          // ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
           ['Content-Type', 'image/svg+xml']
         ],
       })
     }
 
-    const end = performance.now();
+    const duration = (end - start) / 1000;
     const { init: _init, ...printableConfig } = createConfig("build", configObj);
     return new Response(JSON.stringify({
       query: url.search,
@@ -109,12 +118,12 @@ serve(async (req: Request) => {
         uncompressedSize,
         compressedSize,
       },
-      time: timeFormatter.format((end - start) / 1000, "seconds"),
-      rawTime: (end - start) / 1000,
+      time: timeFormatter.format(duration, "seconds"),
+      rawTime: duration,
     }), {
       status: 200,
       headers: [
-        // ['Cache-Control', 'max-age=8640, s-maxage=86400, public'],
+        ['Cache-Control', 'max-age=180, s-maxage=180, public'],
         ['Content-Type', 'application/json']
       ],
     })
