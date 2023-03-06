@@ -66,7 +66,7 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify(result.metafile), {
         status: 200,
         headers: [
-          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
+          ['Cache-Control', 'max-age=30, s-maxage=30, public'],
           ['Content-Type', 'application/json']
         ],
       })
@@ -77,7 +77,7 @@ serve(async (req: Request) => {
       return new Response(fileBundle.contents, {
         status: 200,
         headers: [
-          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
+          ['Cache-Control', 'max-age=30, s-maxage=30, public'],
           ['Content-Type', 'text/javascript']
         ],
       })
@@ -100,7 +100,7 @@ serve(async (req: Request) => {
       return new Response(imgShield, {
         status: 200,
         headers: [
-          ['Cache-Control', 'max-age=180, s-maxage=180, public'],
+          ['Cache-Control', 'max-age=30, s-maxage=30, public'],
           ['Content-Type', 'image/svg+xml']
         ],
       })
@@ -123,7 +123,7 @@ serve(async (req: Request) => {
     }), {
       status: 200,
       headers: [
-        ['Cache-Control', 'max-age=180, s-maxage=180, public'],
+        ['Cache-Control', 'max-age=30, s-maxage=30, public'],
         ['Content-Type', 'application/json']
       ],
     })
