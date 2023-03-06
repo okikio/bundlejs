@@ -48,6 +48,11 @@ export const COMPRESS_CONFIG: CompressionOptions = {
   quality: 9
 };
 
+import { compress as brotli, getWASM as brotliWASM } from "./deno/brotli/mod.ts";
+import { compress as zstd, getWASM as zstdWASM } from "./deno/zstd/mod.ts";
+import { compress as lz4, getWASM as lz4WASM } from "./deno/lz4/mod.ts";
+import { gzip, getWASM as gzipWASM } from "./deno/denoflate/mod.ts";
+
 /**
  * Use multiple compression algorithims & pretty-bytes for the total gzip, brotli and/or lz4 compressed size
  * 
@@ -77,31 +82,23 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
     return input instanceof Uint8Array ? input : encode(input);
   });
 
-  // Total uncompressed size
-  const totalByteLength = bytes(
-    contents.reduce((acc, content) => acc + content.byteLength, 0)
-  ) as string;
+  const rawUncompressedSize = contents.reduce((acc, content) => acc + content.byteLength, 0);
+  const uncompressedSize = bytes(rawUncompressedSize) as string;
 
   // Choose a different compression function based on the compression type
   const compressionMap = await (async () => {
     switch (type) {
       case "brotli": {
-        const { compress, getWASM } = await import("./deno/brotli/mod");
-        await getWASM();
-
-        return async (code: Uint8Array) => await compress(code, code.length, quality);
+        await brotliWASM();
+        return async (code: Uint8Array) => await brotli(code, code.length, quality);
       }
       case "zstd": {
-        const { compress, getWASM } = await import("./deno/zstd/mod");
-        await getWASM();
-
-        return async (code: Uint8Array) => await compress(code, quality);
+        await zstdWASM();
+        return async (code: Uint8Array) => await zstd(code, quality);
       }
       case "lz4": {
-        const { compress, getWASM } = await import("./deno/lz4/mod");
-        await getWASM();
-
-        return async (code: Uint8Array) => await compress(code);
+        await lz4WASM();
+        return async (code: Uint8Array) => await lz4(code);
       }
       case "gzip":
       default: {
@@ -113,9 +110,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
           };
         }
 
-        const { gzip, getWASM } = await import("./deno/denoflate/mod");
-        await getWASM();
-
+        await gzipWASM();
         return async (code: Uint8Array) => await gzip(code, quality);
       }
     }
@@ -127,21 +122,20 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   );
 
   // Convert sizes to human readable formats, e.g. 10000 bytes to 10MB
-  const totalCompressedSize = bytes(
-    compressedContent.reduce((acc, { length }) => acc + length, 0)
-  );
-
-
-  console.log(compressedContent.map((v) => bytes(v.length)))
+  const rawCompressedSize = compressedContent.reduce((acc, { length }) => acc + length, 0);
+  const compressedSize = bytes(rawCompressedSize);
+  
   return {
     type,
     content: compressedContent,
 
-    totalByteLength,
-    totalCompressedSize,
+    rawUncompressedSize,
+    uncompressedSize,
 
-    initialSize: `${totalByteLength}`,
-    size: `${totalCompressedSize} (${type})`
+    rawCompressedSize,
+    compressedSize,
+
+    size: `${compressedSize} (${type})`
   };
 }
 

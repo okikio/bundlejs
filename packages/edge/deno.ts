@@ -1,15 +1,18 @@
 #!/usr/bin/env -S deno run --unstable -A --config deno.jsonc
 import { serve } from "https://deno.land/std/http/server.ts";
 
+// @ts-ignore Workers are undefined
 const worker = globalThis?.Worker;
+// @ts-ignore Workers are undefined
 globalThis.Worker = worker ?? class {
   constructor() {}
 };
 
 import type { BuildConfig, CompressConfig } from "@bundlejs/core";
-import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundlejs/core/src/index.ts";
+import { build, setFile, deepAssign, useFileSystem, createConfig, compress, COMPRESS_CONFIG } from "@bundlejs/core/src/index.ts";
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
+import { createNotice } from "@bundlejs/core/src/utils/create-notice.ts";
 import { parseShareURLQuery, parseConfig } from "./src/_parse-query.ts";
 
 const FileSystem = useFileSystem();
@@ -53,7 +56,10 @@ serve(async (req: Request) => {
 
     const polyfillQuery = url.searchParams.has("polyfill");
 
-    const configObj: BuildConfig & CompressConfig = deepAssign({ polyfill: polyfillQuery }, initialConfig, {
+    const configObj: BuildConfig & { compression?: CompressConfig } = deepAssign({ 
+      polyfill: polyfillQuery,
+      compression: createConfig("compress", initialConfig.compression)
+    }, initialConfig, {
       entryPoints: ["/index.tsx"],
       esbuild: enableMetafile ? {
         metafile: enableMetafile
@@ -98,15 +104,7 @@ serve(async (req: Request) => {
       })
     }
 
-    // @ts-ignore
-    const rawUncompressedSize = result.contents.reduce((acc, content) => acc + content.contents.byteLength, 0);
-    const uncompressedSize = bytes(rawUncompressedSize) as string;
-
-    const cs = new CompressionStream('gzip');
-    // @ts-ignore
-    const compressedStream = new Blob(result.contents.map(x => x.contents.buffer)).stream().pipeThrough(cs);
-    const rawCompressedSize = new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength;
-    const compressedSize = bytes(rawCompressedSize);
+    const { content: _content, ...size } = await compress(result.contents.map((x: { contents: ArrayBuffer; }) => x.contents), configObj.compression);
 
     if (badgeQuery) {
       const detailedBadge = url.searchParams.get("badge")?.includes("detail");
@@ -116,14 +114,14 @@ serve(async (req: Request) => {
         q: query
       })
       const detailBadgeText = detailedBadge ?
-        encodeURIComponent(`${uncompressedSize} `) + "-->" + encodeURIComponent(` `) :
+        encodeURIComponent(`${size.uncompressedSize} `) + "-->" + encodeURIComponent(` `) :
         "";
       const detailBadgeName = `bundlejs${
         detailedBadge ?encodeURIComponent(` (${query})`) : ""
       }`;
       const imgUrl = new URL(
       `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${
-          encodeURIComponent(`${compressedSize} (gzip)`)
+          encodeURIComponent(`${size.compressedSize} (gzip)`)
         }-blue?link=${urlQuery}`
       );
       const badgeStyle = url.searchParams.get("badge-style");
@@ -144,18 +142,11 @@ serve(async (req: Request) => {
     const duration = (end - start) / 1000;
     const { init: _init, ...printableConfig } = createConfig("build", configObj);
     return new Response(JSON.stringify({
-      query: url.search,
+      query: decodeURIComponent(url.search),
+      rawQuery: encodeURIComponent(url.search),
       config: printableConfig,
       input: initialValue,
-      size: {
-        type: "gzip",
-
-        rawUncompressedSize,
-        uncompressedSize,
-        
-        rawCompressedSize,
-        compressedSize,
-      },
+      size,
       time: timeFormatter.format(duration, "seconds"),
       rawTime: duration * 1000,
       examples: [
@@ -181,7 +172,8 @@ serve(async (req: Request) => {
         `/?text - Represents the input code as a string (it's meant for short strings, we recommend using \`/?share\` for longer strings)`,
         `/?share - Represents \`compressed\` string version of the input code (it's used for large input code)`,
         `/?config - Represents the configurations to use when building the bundle (the docs cover the config in detail https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration)`,
-      ]
+      ],
+      ...(result?.warnings?.length > 0 ? { warnings: [...await createNotice(result.warnings, "warning", false)] } : {})
     }), {
       status: 200,
       headers: [

@@ -107,7 +107,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 
       // If the CDN is npm based then it should add the parsed version to the URL
       // e.g. https://unpkg.com/spring-easing@v1.0.0/
-      const version = NPM_CDN ? "@" + pkg.version : "";
+      const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
       const { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
 
       let deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);

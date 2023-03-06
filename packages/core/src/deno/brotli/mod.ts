@@ -6,12 +6,15 @@
 //     decompress as wasm_decompress,
 // } from "./wasm";
 
+
+import * as wasm from "./wasm.ts";
+
 const initialized = false;
 let initWASM: typeof import("./wasm.ts");
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const wasm = await import("./wasm.ts");
+  // const wasm = await import("./wasm.ts");
   const { default: init, source } = wasm;
     
   if (!initialized) await init(await source());
