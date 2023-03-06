@@ -32,11 +32,6 @@ export async function fetchPkg (url: string) {
 
     dispatchEvent(LOGGER_INFO, `Fetch ${url}`);
 
-    console.log({
-      href: response.redirected,
-      url: response.url,
-      headers: response.headers
-    })
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
       url: response.url || url,
