@@ -126,7 +126,7 @@ serve(async (req: Request) => {
             encodeURIComponent(`${compressedSize} (gzip)`)
           }-blue?link=${urlQuery}`
       );
-      const badgeStyle = imgUrl.searchParams.get("badge-style");
+      const badgeStyle = url.searchParams.get("badge-style");
       if (badgeStyle) {
         imgUrl.searchParams.append("style", badgeStyle);
       }
