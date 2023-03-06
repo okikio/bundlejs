@@ -98,33 +98,39 @@ serve(async (req: Request) => {
       })
     }
 
-    // const size = await compress(result.contents.map(x => x.contents), configObj);
-    const uncompressedSize = bytes(
-      // @ts-ignore
-      result.contents.reduce((acc, content) => acc + content.contents.byteLength, 0)
-    ) as string;
+    // @ts-ignore
+    const rawUncompressedSize = result.contents.reduce((acc, content) => acc + content.contents.byteLength, 0);
+    const uncompressedSize = bytes(rawUncompressedSize) as string;
 
     const cs = new CompressionStream('gzip');
     // @ts-ignore
     const compressedStream = new Blob(result.contents.map(x => x.contents.buffer)).stream().pipeThrough(cs);
-    const compressedSize = bytes(new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength);
+    const rawCompressedSize = new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength;
+    const compressedSize = bytes(rawCompressedSize);
 
     if (badgeQuery) {
       const detailedBadge = url.searchParams.get("badge")?.includes("detail");
       const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
+      const query = url.searchParams.get("q") ?? "@okikio/animate";
       console.log({
-        q: url.searchParams.get("q")
+        q: query
       })
-      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs${
-        detailedBadge ? encodeURIComponent(
-          ` (${url.searchParams.get("q") ?? "@okikio/animate"})`)
-           : ""}-${detailedBadge ? encodeURIComponent(
-            `${uncompressedSize} `
-            ) + "-->" + encodeURIComponent(` `) : ""
-          }${
-              encodeURIComponent(`${compressedSize} (gzip)`)
-            }-blue?link=${urlQuery}`
-        ).then(res => res.text());
+      const detailBadgeText = detailedBadge ?
+        encodeURIComponent(`${uncompressedSize} `) + "-->" + encodeURIComponent(` `) :
+        "";
+      const detailBadgeName = `bundlejs${
+        detailedBadge ?encodeURIComponent(` (${query})`) : ""
+      }`;
+      const imgUrl = new URL(
+        `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${
+            encodeURIComponent(`${compressedSize} (gzip)`)
+          }-blue?link=${urlQuery}`
+      );
+      const badgeStyle = imgUrl.searchParams.get("badge-style");
+      if (badgeStyle) {
+        imgUrl.searchParams.append("style", badgeStyle);
+      }
+      const imgShield = await fetch(imgUrl).then(res => res.text());
       return new Response(imgShield, {
         status: 200,
         headers: [
@@ -144,11 +150,14 @@ serve(async (req: Request) => {
       size: {
         type: "gzip",
 
+        rawUncompressedSize,
         uncompressedSize,
+        
+        rawCompressedSize,
         compressedSize,
       },
       time: timeFormatter.format(duration, "seconds"),
-      rawTime: duration,
+      rawTime: duration * 1000,
     }), {
       status: 200,
       headers: [
