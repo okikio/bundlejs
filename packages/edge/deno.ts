@@ -68,10 +68,16 @@ serve(async (req: Request) => {
     const result = await build(configObj, FileSystem);
     const end = performance.now();
 
+    const headers = Object.entries({
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET"
+    })
+
     if (metafileQuery && result?.metafile) {
       return new Response(JSON.stringify(result.metafile), {
         status: 200,
         headers: [
+          ...headers,
           ['Cache-Control', 'max-age=30, s-maxage=30, public'],
           ['Content-Type', 'application/json']
         ],
@@ -119,6 +125,7 @@ serve(async (req: Request) => {
       return new Response(imgShield, {
         status: 200,
         headers: [
+          ...headers,
           ['Cache-Control', 'max-age=30, s-maxage=30, public'],
           ['Content-Type', 'image/svg+xml']
         ],
@@ -142,6 +149,7 @@ serve(async (req: Request) => {
     }), {
       status: 200,
       headers: [
+        ...headers,
         ['Cache-Control', 'max-age=30, s-maxage=30, public'],
         ['Content-Type', 'application/json']
       ],
