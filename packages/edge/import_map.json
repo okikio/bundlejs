@@ -4,6 +4,6 @@
     "@bundlejs/core": "../core/src/index.ts",
     "esbuild-wasm": "npm:esbuild-wasm",
     "esbuild": "npm:esbuild",
-    "resolve.exports": "npm:resolve.exports"
+    "resolve.exports": "https://esm.sh/resolve.exports"
   }
 }

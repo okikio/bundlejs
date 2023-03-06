@@ -19,6 +19,9 @@
     "https://deno.land/x/esbuild@v0.17.11/mod.js": "4f4e61964a551d9c0baf5bb19e973cf631cf8c66ddaf01e70070f8a100fc938c",
     "https://deno.land/x/esbuild@v0.17.11/wasm.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
     "https://deno.land/x/esbuild@v0.17.11/wasm.js": "4030e7b50941ec6e06704c6b5f1f6416cc0f7f35f63daf63f184b728bea79a30",
+    "https://esm.sh/resolve.exports@2.0.0": "3e724ab7d354595d2f64840b1ea7e959f1ee77e9e246306e36a3e32097bed330",
+    "https://esm.sh/v111/resolve.exports@2.0.0/deno/resolve.exports.js": "4879578a7a0bfc3aa102f7e064cb05f8517e94da71ec5cb90af61ac15c003b65",
+    "https://esm.sh/v111/resolve.exports@2.0.0/index.d.ts": "10230a955a3fd41688645b2abb92b596bd0c1eae62e05a92c3825c3b34ad5234",
     "https://unpkg.com/entities@4.4.0/lib/esm/encode.js": "14d077beb4e43e94580b56f57a866381ae2b9a1ec879f196c1b7aeffcfd8cb56",
     "https://unpkg.com/entities@4.4.0/lib/esm/escape.js": "e10008f4981a8bec592cf9d6948f90dcb55948c905cc2c7725718a358c59cb64",
     "https://unpkg.com/entities@4.4.0/lib/esm/generated/encode-html.js": "45150e9a9796346d068dafeee1be8a26eb338456b662da5f3a4dd906816e3112"
