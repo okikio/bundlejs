@@ -18,13 +18,19 @@
     "https://deno.land/x/esbuild@v0.17.11/mod.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
     "https://deno.land/x/esbuild@v0.17.11/mod.js": "4f4e61964a551d9c0baf5bb19e973cf631cf8c66ddaf01e70070f8a100fc938c",
     "https://deno.land/x/esbuild@v0.17.11/wasm.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
-    "https://deno.land/x/esbuild@v0.17.11/wasm.js": "4030e7b50941ec6e06704c6b5f1f6416cc0f7f35f63daf63f184b728bea79a30"
+    "https://deno.land/x/esbuild@v0.17.11/wasm.js": "4030e7b50941ec6e06704c6b5f1f6416cc0f7f35f63daf63f184b728bea79a30",
+    "https://unpkg.com/entities@4.4.0/lib/esm/encode.js": "14d077beb4e43e94580b56f57a866381ae2b9a1ec879f196c1b7aeffcfd8cb56",
+    "https://unpkg.com/entities@4.4.0/lib/esm/escape.js": "e10008f4981a8bec592cf9d6948f90dcb55948c905cc2c7725718a358c59cb64",
+    "https://unpkg.com/entities@4.4.0/lib/esm/generated/encode-html.js": "45150e9a9796346d068dafeee1be8a26eb338456b662da5f3a4dd906816e3112"
   },
   "npm": {
     "specifiers": {
       "@cloudflare/workers-types@^4.20230228.0": "@cloudflare/workers-types@4.20230228.0",
       "@types/node@^18.14.6": "@types/node@18.14.6",
+      "ansi-to-html": "ansi-to-html@0.7.2",
       "del-cli@^5.0.0": "del-cli@5.0.0",
+      "entities": "entities@2.2.0",
+      "entities@4.4.0": "entities@4.4.0",
       "esbuild": "esbuild@0.17.11",
       "esbuild-wasm": "esbuild-wasm@0.17.11",
       "esbuild-wasm@^0.17.11": "esbuild-wasm@0.17.11",
@@ -526,6 +532,10 @@
         "integrity": "sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==",
         "dependencies": { "color-convert": "color-convert@1.9.3" }
       },
+      "ansi-to-html@0.7.2": {
+        "integrity": "sha512-v6MqmEpNlxF+POuyhKkidusCHWWkaLcGRURzivcU3I9tv7k4JVhFcnukrM5Rlk2rUywdZuzYAZ+kbZqWCnfN3g==",
+        "dependencies": { "entities": "entities@2.2.0" }
+      },
       "anymatch@3.1.3": {
         "integrity": "sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==",
         "dependencies": {
@@ -680,6 +690,14 @@
       },
       "dotenv@10.0.0": {
         "integrity": "sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==",
+        "dependencies": {}
+      },
+      "entities@2.2.0": {
+        "integrity": "sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==",
+        "dependencies": {}
+      },
+      "entities@4.4.0": {
+        "integrity": "sha512-oYp7156SP8LkeGD0GF85ad1X9Ai79WtRsZ2gxJqtBuzH+98YUV6jkHEKlZkMbcrjJjIVJNIDP/3WL9wQkoPbWA==",
         "dependencies": {}
       },
       "error-ex@1.3.2": {

@@ -153,7 +153,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
 
         const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
-        return;
+        throw { msgs: htmlMsgs };
       } else throw e;
     }
 
@@ -206,5 +206,6 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     };
   } catch (e) { 
     dispatchEvent(BUILD_ERROR, e);
+    throw e;
   }
 }

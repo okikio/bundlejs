@@ -95,8 +95,21 @@ serve(async (req: Request) => {
     const compressedSize = bytes(new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength);
 
     if (badgeQuery) {
+      const detailedBadge = url.searchParams.get("badge")?.includes("detail");
       const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
-      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(`${uncompressedSize} `)}-->${encodeURIComponent(` ${compressedSize} (gzip)`)}-blue?link=${urlQuery}`).then(res => res.text());
+      console.log({
+        q: url.searchParams.get("q")
+      })
+      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs${
+        detailedBadge ? encodeURIComponent(
+          ` (${url.searchParams.get("q") ?? "@okikio/animate"})`)
+           : ""}-${detailedBadge ? encodeURIComponent(
+            `${uncompressedSize} `
+            ) + "-->" + encodeURIComponent(` `) : ""
+          }${
+              encodeURIComponent(`${compressedSize} (gzip)`)
+            }-blue?link=${urlQuery}`
+        ).then(res => res.text());
       return new Response(imgShield, {
         status: 200,
         headers: [
@@ -129,6 +142,23 @@ serve(async (req: Request) => {
     })
   } catch (e) {
     console.error(e)
+
+    if ("msgs" in e) {
+      try {
+        const styleValue = await Deno.readFile("./style.css");
+        return new Response([
+          `<style>${new TextDecoder().decode(styleValue)}</style>`,
+          `<pre>${e.msgs.join("\n")}</pre>`
+        ].join(""),
+          { 
+            status: 400, 
+            headers: [
+              ['Content-Type', 'text/html']
+            ]
+          }
+        )
+      } catch (e) {}
+    }
 
     return new Response(
       JSON.stringify({ error: e.toString() }),

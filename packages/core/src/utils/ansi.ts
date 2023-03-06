@@ -25,6 +25,8 @@ export const ESCAPE_TO_COLOR = {
 export type Escape = "0" | "1" | "4" | keyof typeof ESCAPE_TO_COLOR;
 export type Color = typeof ESCAPE_TO_COLOR[keyof typeof ESCAPE_TO_COLOR];
 
+import { encodeHTML } from "https://unpkg.com/entities@4.4.0/lib/esm/encode.js";
+
 // https://github.com/sindresorhus/escape-goat
 export function htmlEscape(string: string) {
   return string
@@ -43,7 +45,7 @@ export class AnsiBuffer {
   _underline = false;
   _link = false;
   text(text: string) {
-    this.result += htmlEscape(text);
+    this.result += encodeHTML(text);
   }
   reset() {
     let close: string | undefined;
@@ -85,6 +87,7 @@ export class AnsiBuffer {
 
 export function render(ansi: string) {
   ansi = ansi.trimEnd();
+  
   let i = 0;
   const buffer = new AnsiBuffer();
   for (const m of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
@@ -109,7 +112,8 @@ export function render(ansi: string) {
    * Based on https://stackoverflow.com/questions/6038061/regular-expression-to-find-urls-within-a-string
    * Based on http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
    */
-  return buffer.done().replace(
+  const str = buffer.done();
+  return str.replace(
     /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi, 
     (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
   );
