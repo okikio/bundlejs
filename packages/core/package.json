@@ -78,7 +78,7 @@
   "dependencies": {
     "esbuild": "^0.17.11",
     "esbuild-wasm": "^0.17.11",
-    "resolve.exports": "^2.0.0"
+    "resolve.exports": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
