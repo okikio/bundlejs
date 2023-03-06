@@ -50,7 +50,10 @@ serve(async (req: Request) => {
     const enableMetafile = analysisQuery ||
       metafileQuery ||
       Boolean(initialConfig?.analysis);
-    const configObj: BuildConfig & CompressConfig = deepAssign({}, initialConfig, {
+
+    const polyfillQuery = url.searchParams.has("polyfill");
+
+    const configObj: BuildConfig & CompressConfig = deepAssign({ polyfill: polyfillQuery }, initialConfig, {
       entryPoints: ["/index.tsx"],
       esbuild: enableMetafile ? {
         metafile: enableMetafile

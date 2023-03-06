@@ -1,9 +1,13 @@
 import type { BuildConfig, LocalState } from "../build.ts";
 import type { StateArray } from "../configs/state.ts";
 import type { ESBUILD } from "../types.ts";
+import { parsePackageName } from "../util.ts";
 
 import { encode } from "../utils/encode-decode.ts";
 import { getCDNUrl } from "../utils/util-cdn.ts";
+import { ALIAS_RESOLVE, isAlias } from "./alias.ts";
+import { CDN_RESOLVE } from "./cdn.ts";
+import { HTTP_RESOLVE } from "./http.ts";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = "external-globals";
@@ -80,7 +84,9 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+  // Convert CDN values to URL origins
+  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const { external = [] } = config?.esbuild ?? {}; 
   return {
     name: EXTERNALS_NAMESPACE,
@@ -94,6 +100,15 @@ export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): E
         const { path: argPath } = getCDNUrl(path);
 
         if (isExternal(argPath, external)) {
+          if (config.polyfill && isAlias(argPath, PolyfillMap)) {
+            const pkgDetails = parsePackageName(argPath);
+            const aliasPath = PolyfillMap[pkgDetails.name];
+            return CDN_RESOLVE(host)({
+              ...args,
+              path: aliasPath
+            });
+          }
+
           return {
             path: argPath,
             namespace: EXTERNALS_NAMESPACE,

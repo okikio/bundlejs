@@ -41,6 +41,11 @@ export type BuildConfig = CommonConfigOptions & {
   /** esbuild config options https://esbuild.github.io/api/#build-api */
   esbuild?: ESBUILD.BuildOptions,
 
+  /**
+   * Enables or disables polyfill
+   */
+  polyfill?: boolean;
+
   /** The default CDN to import packages from */
   cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & object),
 
@@ -64,6 +69,7 @@ export type BuildConfig = CommonConfigOptions & {
 export const BUILD_CONFIG: BuildConfig = {
   "entryPoints": ["/index.tsx"],
   "cdn": DEFAULT_CDN_HOST,
+  "polyfill": false,
 
   "esbuild": {
     "color": true,

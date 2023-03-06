@@ -75,11 +75,13 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
         if (isAlias(args.path, aliases))
           return ALIAS_RESOLVE(aliases, host)(args);
 
-        return {
-          path: args.path,
-          namespace: EXTERNALS_NAMESPACE,
-          external: true
-        };
+        if (!config.polyfill) {
+          return {
+            path: args.path,
+            namespace: EXTERNALS_NAMESPACE,
+            external: true
+          };
+        }
       });
 
       // We also want to intercept all import paths inside downloaded
