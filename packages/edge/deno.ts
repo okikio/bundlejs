@@ -87,7 +87,7 @@ serve(async (req: Request) => {
 
     if (url.searchParams.has("badge")) {
       const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
-      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(uncompressedSize)}-->${encodeURIComponent(`${compressedSize} (gzip)`)}-blue?link=${urlQuery}`).then(res => res.text());
+      const imgShield = await fetch(`https://img.shields.io/badge/bundlejs-${encodeURIComponent(`${uncompressedSize} `)}-->${encodeURIComponent(` ${compressedSize} (gzip)`)}-blue?link=${urlQuery}`).then(res => res.text());
       return new Response(imgShield, {
         status: 200,
         headers: [
