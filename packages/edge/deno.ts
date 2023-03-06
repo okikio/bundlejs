@@ -158,7 +158,7 @@ serve(async (req: Request) => {
           }
         )
       } catch (e) {
-        console.log(e)
+        console.log({ msgsError: e })
       }
     }
 
