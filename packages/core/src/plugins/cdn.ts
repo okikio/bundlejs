@@ -11,7 +11,7 @@ import { parsePackageName as parsePackageName } from "../utils/parse-package-nam
 import { isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 
-import { getCDNUrl, getCDNStyle , DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
 import { resolveImports } from "../utils/resolve-imports.ts";
 
 /** CDN Plugin Namespace */
@@ -55,7 +55,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 
           const version = NPM_CDN ? "@" + pkg.version : "";
           const { url } = getCDNUrl(`${pkg.name}${version}`);
-          if (subpath) url.pathname = subpath; 
+          if (subpath) url.pathname = subpath;
           return {
             namespace: HTTP_NAMESPACE,
             path: url.toString(),
@@ -73,7 +73,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           peerDependencies = {}
         } = pkg;
 
-        const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
+        const deps = Object.assign({}, devDependencies, dependencies, peerDependencies);
         const keys = Object.keys(deps);
 
         if (keys.includes(argPath))
@@ -87,17 +87,14 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 
           // Strongly cache package.json files
           pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-          let newRes = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+          let path = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
             // require: args.kind === "require-call" || args.kind === "require-resolve",
             browser: true,
             conditions: ["production", "module"]
-          });
-          let path = newRes || legacy(pkg, {
-            browser: true
-          });
+          }) || legacy(pkg);
 
           if (Array.isArray(path)) path = path[0];
-          if (typeof path === "string") 
+          if (typeof path === "string")
             subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
           if (subpath && subpath[0] !== "/")
@@ -113,7 +110,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       const version = NPM_CDN ? "@" + pkg.version : "";
       const { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
 
-      let deps = Object.assign({}, oldPkg.peerDependencies, oldPkg.devDependencies, oldPkg.dependencies);
+      let deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
       let peerDeps = pkg.peerDependencies ?? {};
       let peerDepsKeys = Object.keys(peerDeps);
       for (let depKey of peerDepsKeys) {
@@ -138,7 +135,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export function CDN (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   return {
