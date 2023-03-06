@@ -35,6 +35,7 @@
       "esbuild-wasm": "esbuild-wasm@0.17.11",
       "esbuild-wasm@^0.17.11": "esbuild-wasm@0.17.11",
       "pnpm@^7.28.0": "pnpm@7.28.0",
+      "resolve.exports": "resolve.exports@2.0.0",
       "text-encoding-shim@^1.0.5": "text-encoding-shim@1.0.5",
       "typescript@5.0.1-rc": "typescript@5.0.1-rc",
       "vite-plugin-cp@^1.0.0": "vite-plugin-cp@1.0.0",
@@ -1279,6 +1280,10 @@
           "indent-string": "indent-string@5.0.0",
           "strip-indent": "strip-indent@4.0.0"
         }
+      },
+      "resolve.exports@2.0.0": {
+        "integrity": "sha512-6K/gDlqgQscOlg9fSRpWstA8sYe8rbELsSTNpx+3kTrsVCzvSl0zIvRErM7fdl9ERWDsKnrLnwB+Ne89918XOg==",
+        "dependencies": {}
       },
       "resolve@1.22.1": {
         "integrity": "sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==",

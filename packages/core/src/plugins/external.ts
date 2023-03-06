@@ -118,7 +118,7 @@ export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): E
           contents: EMPTY_EXPORT,
           warnings: [{
             text: `${args.path} is marked as an external module and will be ignored.`,
-            details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com, sorry about that.`
+            details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com (technically it can be supported but...it's currently disabled. If you'd like this functionallity, please reach out at https://github.com/okikio/bundlejs), sorry about that.`
           }]
         };
       });

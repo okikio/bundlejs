@@ -31,6 +31,11 @@ serve(async (req: Request) => {
     const start = performance.now();
 
     const url = new URL(req.url);
+    console.log(url.href)
+
+    if (url.pathname === "/favicon.ico")
+      return Response.redirect("https://bundlejs.com/favicon/favicon.ico");
+
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = parseConfig(url) || {};
 
@@ -41,14 +46,15 @@ serve(async (req: Request) => {
 
     const fileQuery = url.searchParams.has("file");
     const badgeQuery = url.searchParams.has("badge");
+
+    const enableMetafile = analysisQuery ||
+      metafileQuery ||
+      Boolean(initialConfig?.analysis);
     const configObj: BuildConfig & CompressConfig = deepAssign({}, initialConfig, {
       entryPoints: ["/index.tsx"],
-      esbuild: {
-        treeShaking: true,
-        metafile: analysisQuery ||
-          metafileQuery ||
-          Boolean(initialConfig?.analysis)
-      },
+      esbuild: enableMetafile ? {
+        metafile: enableMetafile
+      } : {},
       init: {
         platform: "deno-wasm",
         worker: false,

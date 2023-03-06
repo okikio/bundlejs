@@ -5,7 +5,7 @@ import type { ESBUILD } from "../types.ts";
 import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { HTTP_NAMESPACE } from "./http.ts";
-import { resolveExports, legacy } from "../utils/resolve-exports.ts";
+import { resolve as resolveExports, legacy } from "resolve.exports";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
 
 import { isBareImport } from "../utils/path.ts";
@@ -43,7 +43,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       // https://nodejs.org/api/packages.html#subpath-imports
       if (argPath[0] == "#") {
         const path = resolveImports({ ...pkg, exports: pkg.imports }, argPath, {
-          require: args.kind === "require-call" || args.kind === "require-resolve"
+          require: args.kind === "require-call" || args.kind === "require-resolve",
+          browser: true
         });
 
         if (typeof path === "string") {
@@ -53,10 +54,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
             subpath = `/${subpath}`;
 
           const version = NPM_CDN ? "@" + pkg.version : "";
-          const { url: { href } } = getCDNUrl(`${pkg.name}${version}${subpath}`);
+          const { url } = getCDNUrl(`${pkg.name}${version}`);
+          if (subpath) url.pathname = subpath; 
           return {
             namespace: HTTP_NAMESPACE,
-            path: href,
+            path: url.toString(),
             pluginData: { pkg }
           };
         }
@@ -85,11 +87,13 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 
           // Strongly cache package.json files
           pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-          const path = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+          let path = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
             require: args.kind === "require-call" || args.kind === "require-resolve",
+            browser: true
           }) || legacy(pkg);
 
-          if (typeof path === "string")
+          if (Array.isArray(path)) path = path[0];
+          if (typeof path === "string") 
             subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
           if (subpath && subpath[0] !== "/")

@@ -15,7 +15,7 @@ import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
 import { init } from "./init.ts";
 
-import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, dispatchEvent } from "./configs/events.ts";
+import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, LOGGER_WARN, dispatchEvent } from "./configs/events.ts";
 
 /**
  * Local state available to all plugins
@@ -147,14 +147,22 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     } catch (e) {
       if (e.errors) {
         // Log errors with added color info. to the virtual console
-        const asciMsgs = [...await createNotice(e.errors, "error", false)];
         const htmlMsgs = [...await createNotice(e.errors, "error")];
-        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ asciMsgs, htmlMsgs })));
+        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ htmlMsgs })));
 
         const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
         throw { msgs: htmlMsgs };
       } else throw e;
+    }
+
+    if (result.warnings) {
+      // Log errors with added color info. to the virtual console
+      const ansiMsgs = [...await createNotice(result.warnings, "warning", false)];
+      dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
+
+      const message =  `${ansiMsgs.length} warning(s) `;
+      dispatchEvent(LOGGER_WARN, message);
     }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
