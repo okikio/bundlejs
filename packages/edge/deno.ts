@@ -24,7 +24,7 @@ const inputModelResetValue = [
 
 let WASM_MODULE: Uint8Array = await ESBUILD_WASM();
 let wasmModule = new WebAssembly.Module(WASM_MODULE);
-
+import styleText from "./style.ts";
 serve(async (req: Request) => {
   try {
     const fs = await FileSystem;
@@ -145,13 +145,13 @@ serve(async (req: Request) => {
 
     if ("msgs" in e) {
       try {
-        const styleValue = await Deno.readFile("./style.css");
+        // console.log("Reached error", styleText)
         return new Response([
-          `<style>${new TextDecoder().decode(styleValue)}</style>`,
+          `<style>${styleText}</style>`,
           `<pre>${e.msgs.join("\n")}</pre>`
         ].join(""),
           { 
-            status: 400, 
+            status: 404, 
             headers: [
               ['Content-Type', 'text/html']
             ]

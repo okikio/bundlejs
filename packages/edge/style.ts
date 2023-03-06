@@ -1,3 +1,4 @@
+export default `
 :root {
     --black: #222;
     --highlight: #ffcf00;
@@ -81,4 +82,4 @@
 .color-yellow-bg-black {
     color: var(--black);
     background-color: var(--yellow);
-}
+}`
