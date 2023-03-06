@@ -87,10 +87,14 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 
           // Strongly cache package.json files
           pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-          let path = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
-            require: args.kind === "require-call" || args.kind === "require-resolve",
+          let newRes = resolveExports(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
+            // require: args.kind === "require-call" || args.kind === "require-resolve",
+            browser: true,
+            conditions: ["production", "module"]
+          });
+          let path = newRes || legacy(pkg, {
             browser: true
-          }) || legacy(pkg);
+          });
 
           if (Array.isArray(path)) path = path[0];
           if (typeof path === "string") 
