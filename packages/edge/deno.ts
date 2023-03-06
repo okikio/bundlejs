@@ -122,9 +122,9 @@ serve(async (req: Request) => {
         detailedBadge ?encodeURIComponent(` (${query})`) : ""
       }`;
       const imgUrl = new URL(
-        `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${
-            encodeURIComponent(`${compressedSize} (gzip)`)
-          }-blue?link=${urlQuery}`
+      `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${
+          encodeURIComponent(`${compressedSize} (gzip)`)
+        }-blue?link=${urlQuery}`
       );
       const badgeStyle = url.searchParams.get("badge-style");
       if (badgeStyle) {
@@ -158,6 +158,30 @@ serve(async (req: Request) => {
       },
       time: timeFormatter.format(duration, "seconds"),
       rawTime: duration * 1000,
+      examples: [
+        "(new) /?badge or /?badge=detailed",
+        "(new) /?badge-style=for-the-badge",
+        "(new) /?file",
+        "(new) /?metafile",
+        "(new) /?polyfill",
+        `/?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,typescript@beta,vue,react`,
+        `/?treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[*],[*],[*]`,
+        `/?text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"`,
+        `/?share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA`,
+        `/?config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}`,
+      ],
+      docs: [
+        `(new) /?badge - Generates a badge (if you want more details, set \`?badge=detailed\` you will get the uncompressed size and the mobules being bundled listed)`,
+        `(new) /?badge-style - Various badge styles supported by http://shields.io (https://shields.io/#:~:text=PREFIX%3E%26suffix%3D%3CSUFFIX%3E-,Styles,-The%20following%20styles)`,
+        `(new) /?file - Resulting bundled code(you can actually import this into your javascript file and start using it https://stackblitz.com/edit/vitejs-vite-iquaht?file=src%2Fmain.ts&terminal=dev)`,
+        `(new) /?metafile - Esbuild bundle metafile which can be used w / https://esbuild.github.io/analyze/ (hoping to have this built-in in the future)`,
+        `(new) /?polyfill - Polyfill Node built-ins`,
+        `/?q or /?query - Represents the module, e.g. react, vue, etc... You can add (import) in-front of a specific module to make it an import instead of an export`,
+        `/?treeshake - Represents the export/imports to treeshake. The treeshake syntax allows for specifying multiple exports per package (check the example above). The square brackets represent seperate packages, and everything inside the square brackets, are the exported methods, types, etc...`,
+        `/?text - Represents the input code as a string (it's meant for short strings, we recommend using \`/?share\` for longer strings)`,
+        `/?share - Represents \`compressed\` string version of the input code (it's used for large input code)`,
+        `/?config - Represents the configurations to use when building the bundle (the docs cover the config in detail https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration)`,
+      ]
     }), {
       status: 200,
       headers: [
