@@ -157,7 +157,9 @@ serve(async (req: Request) => {
             ]
           }
         )
-      } catch (e) {}
+      } catch (e) {
+        console.log(e)
+      }
     }
 
     return new Response(
