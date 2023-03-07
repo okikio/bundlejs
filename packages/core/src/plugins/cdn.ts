@@ -8,7 +8,7 @@ import { HTTP_NAMESPACE } from "./http.ts";
 import { resolve as resolveExports, imports as resolveImports, legacy } from "resolve.exports";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
 
-import { isBareImport } from "../utils/path.ts";
+import { extname, isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
@@ -56,8 +56,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           subpath = `/${subpath}`;
 
         const version = NPM_CDN ? "@" + pkg.version : "";
-        const { url } = getCDNUrl(`${pkg.name}${version}`);
-        if (subpath) url.pathname = subpath;
+        const { url } = getCDNUrl(`${pkg.name}${version}${subpath}`);
         return {
           namespace: HTTP_NAMESPACE,
           path: url.toString(),
@@ -84,24 +83,45 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       // If the CDN supports package.json and some other npm stuff, it counts as an npm CDN
       if (NPM_CDN) {
         try {
-          const { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
+          const ext = extname(subpath);
+          const dir = ext.length === 0 ? subpath : "";
+          const { url: SUBPATH_PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}${dir}/package.json`, origin);
+
+          let subpathPkgJson = false;
 
           // Strongly cache package.json files
-          pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
+          try {
+            const res = await getRequest(SUBPATH_PACKAGE_JSON_URL, true);
+            pkg = await res.json();
+            subpathPkgJson = true;
+          } catch (e) {
+            if (ext.length === 0) {
+              dispatchEvent(LOGGER_WARN, e);
+
+              const { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
+              pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
+            } else throw e;
+          }
 
           let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
-          let path = resolveExports(pkg, relativePath, {
-            // require: args.kind === "require-call" || args.kind === "require-resolve",
-            browser: true,
-            conditions: ["production", "module"]
-          }) || (subpath ? relativePath : legacy(pkg));
+          let resExp = null;
+          try {
+            resExp = resolveExports(pkg, relativePath, {
+              browser: true,
+              conditions: ["deno", "worker", "production", "module", "import", "browser"]
+            });
+          } catch (e) {}
 
+          let path = resExp || (subpath && !subpathPkgJson ? relativePath : legacy(pkg));
           if (Array.isArray(path)) path = path[0];
           if (typeof path === "string")
             subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
           if (subpath && subpath[0] !== "/")
             subpath = `/${subpath}`;
+
+          if (dir && subpathPkgJson)
+            subpath = `${dir}${subpath}`;
         } catch (e) {
           dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
           dispatchEvent(LOGGER_WARN, e);

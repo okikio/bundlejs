@@ -5,9 +5,8 @@ import { parsePackageName } from "../util.ts";
 
 import { encode } from "../utils/encode-decode.ts";
 import { getCDNUrl } from "../utils/util-cdn.ts";
-import { ALIAS_RESOLVE, isAlias } from "./alias.ts";
+import { isAlias } from "./alias.ts";
 import { CDN_RESOLVE } from "./cdn.ts";
-import { HTTP_RESOLVE } from "./http.ts";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = "external-globals";
