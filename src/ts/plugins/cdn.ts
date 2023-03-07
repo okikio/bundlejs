@@ -81,24 +81,46 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
             // If the CDN supports package.json and some other npm stuff, it counts as an npm CDN
             if (NPM_CDN) {
                 try {
-                    let { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
+                    const ext = extname(subpath);
+                    const dir = ext.length === 0 ? subpath : "";
+                    const { url: SUBPATH_PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}${dir}/package.json`, origin);
+
+                    let subpathPkgJson = false;
 
                     // Strongly cache package.json files
-                    pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
+                    try {
+                        const res = await getRequest(SUBPATH_PACKAGE_JSON_URL, true);
+                        pkg = await res.json();
+                        subpathPkgJson = true;
+                    } catch (e) {
+                        if (ext.length === 0) {
+                            // console.warn(e);
+                            logger(e, "warning");
+
+                            const { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
+                            pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
+                        } else throw e;
+                    }
 
                     let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
-                    let path = exports(pkg, relativePath, {
-                        // require: args.kind === "require-call" || args.kind === "require-resolve",
-                        browser: true,
-                        conditions: ["production", "module"]
-                    }) || (subpath ? relativePath : legacy(pkg));
+                    let resExp = null;
+                    try {
+                        resExp = exports(pkg, relativePath, {
+                            browser: true,
+                            conditions: ["deno", "worker", "production", "module", "import", "browser"]
+                        });
+                    } catch (e) { }
 
+                    let path = resExp || (subpath && !subpathPkgJson ? relativePath : legacy(pkg));
                     if (Array.isArray(path)) path = path[0];
                     if (typeof path === "string")
                         subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
                     if (subpath && subpath[0] !== "/")
                         subpath = `/${subpath}`;
+
+                    if (dir && subpathPkgJson)
+                        subpath = `${dir}${subpath}`;
                 } catch (e) {
                     logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
                     console.warn(e);
@@ -121,7 +143,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
                 ...pkg,
                 peerDependencies: peerDeps
             }
-
+            
             // logger(`Verbose log pkg.json (${pkg.name}@${pkg.version}):\n` + JSON.stringify({ pkg, newPkg }, null, 2), "warning");
             return {
                 namespace: HTTP_NAMESPACE,
