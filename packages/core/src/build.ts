@@ -153,11 +153,13 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     } catch (e) {
       if (e.errors) {
         // Log errors with added color info. to the virtual console
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
-        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ htmlMsgs })));
+        const ansiMsgs = [...await createNotice(e.errors, "error", false)];
+        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ ansiMsgs })));
 
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
+
+        const htmlMsgs = [...await createNotice(e.errors, "error")];
         throw { msgs: htmlMsgs };
       } else throw e;
     }
