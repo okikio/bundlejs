@@ -36,6 +36,9 @@ export type BundleConfigOptions = {
     /** esbuild config options https://esbuild.github.io/api/#build-api */
     esbuild?: BuildOptions,
 
+    /** Polyfill Node Built-ins */
+    polyfill?: boolean,
+
     /** The default CDN to import packages from */
     cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & {}),
 
@@ -69,6 +72,7 @@ export const EasyDefaultConfig: BundleConfigOptions = {
     "cdn": DEFAULT_CDN_HOST,
     "compression": "gzip",
     "analysis": false,
+    "polyfill": false,
     "esbuild": {
         "target": ["esnext"],
         "format": "esm",

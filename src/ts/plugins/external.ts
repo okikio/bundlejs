@@ -1,7 +1,10 @@
 import type { Plugin } from 'esbuild';
 
+import { isAlias } from "./alias";
 import { encode } from "../util/encode-decode";
-import { getCDNUrl } from '../util/util-cdn';
+import { DEFAULT_CDN_HOST, getCDNUrl } from '../util/util-cdn';
+import { CDN_RESOLVE } from './cdn';
+import { parse as parsePackageName } from "parse-package-name";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = 'external-globals';
@@ -11,47 +14,47 @@ export const EMPTY_EXPORT = encode(`export default {}`);
 
 /** List of polyfillable native node modules, you should now use aliases to polyfill features */
 export const PolyfillMap = {
-    "console": 'console-browserify',
-    "constants": 'constants-browserify',
-    "crypto": 'crypto-browserify',
-    "http": 'http-browserify',
-    "buffer": 'buffer',
+    "console": "console-browserify",
+    "constants": "constants-browserify",
+    "crypto": "crypto-browserify",
+    "buffer": "buffer",
     "Dirent": "dirent",
-    "vm": 'vm-browserify',
-    "zlib": 'zlib-browserify',
-    "assert": 'assert',
-    "child_process": 'child_process',
-    "cluster": 'child_process',
-    "dgram": 'dgram',
-    "dns": 'dns',
-    "domain": 'domain-browser',
-    "events": 'events',
-    "https": 'https',
-    "module": 'module',
-    "net": 'net',
-    "path": 'path-browserify',
-    "punycode": 'punycode',
-    "querystring": 'querystring',
-    "readline": 'readline',
-    "repl": 'repl',
-    "stream": 'stream',
-    "string_decoder": 'string_decoder',
-    "sys": 'sys',
-    "timers": 'timers',
-    "tls": 'tls',
-    "tty": 'tty-browserify',
-    "url": 'url',
-    "util": 'util',
-    "_shims": '_shims',
-    "_stream_duplex": '_stream_duplex',
-    "_stream_readable": '_stream_readable',
-    "_stream_writable": '_stream_writable',
-    "_stream_transform": '_stream_transform',
-    "_stream_passthrough": '_stream_passthrough',
-    process: 'process/browser',
-    fs: 'memfs',
-    os: 'os-browserify/browser',
-    'v8': "v8",
+    "vm": "vm-browserify",
+    "zlib": "browserify-zlib",
+    "assert": "assert",
+    "child_process": "child_process",
+    "cluster": "child_process",
+    "dgram": "browser-node-dgram",
+    "dns": "dns",
+    "domain": "domain-browser",
+    "events": "events",
+    "http": "http-browserify",
+    "https": "https-browserify",
+    "module": "module",
+    "net": "net-browserify",
+    "path": "path-browserify",
+    "punycode": "punycode",
+    "querystring": "querystring",
+    "readline": "readline-browser",
+    "repl": "repl",
+    "stream": "stream-browserify",
+    "string_decoder": "string_decoder",
+    "sys": "sys",
+    "timers": "timers-browserify",
+    "tls": "browserify-tls",
+    "tty": "tty-browserify",
+    "url": "browserify-url",
+    "util": "util/util.js",
+    "_shims": "_shims",
+    "_stream_duplex": "readable-stream/duplex.js",
+    "_stream_readable": "readable-stream/readable.js",
+    "_stream_writable": "readable-stream/writable.js",
+    "_stream_transform": "readable-stream/transform.js",
+    "_stream_passthrough": "readable-stream/passthrough.js",
+    process: "process/browser",
+    fs: "memfs",
+    os: "os-browserify/browser",
+    "v8": "v8",
     "node-inspect": "node-inspect",
     "_linklist": "_linklist",
     "_stream_wrap": "_stream_wrap"
@@ -78,7 +81,7 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export const EXTERNAL = (external: string[] = []): Plugin => {
+export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyfill = false): Plugin => {
     return {
         name: EXTERNALS_NAMESPACE,
         setup(build) {
@@ -91,6 +94,15 @@ export const EXTERNAL = (external: string[] = []): Plugin => {
                 let { path: argPath } = getCDNUrl(path);
 
                 if (isExternal(argPath, external)) {
+                    if (polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
+                        const pkgDetails = parsePackageName(argPath);
+                        const aliasPath = PolyfillMap[pkgDetails.name];
+                        return CDN_RESOLVE(host)({
+                            ...args,
+                            path: aliasPath
+                        });
+                    }
+                    
                     return {
                         path: argPath,
                         namespace: EXTERNALS_NAMESPACE,

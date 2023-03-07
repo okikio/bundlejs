@@ -174,13 +174,15 @@ BundleEvents.on({
       let share = searchParams.get("share");
       let bundle = searchParams.get("bundle");
       let analysis = searchParams.get("analysis");
+      let polyfill = searchParams.get("polyfill");
+      let metafile = searchParams.get("metafile");
       let config = searchParams.get("config") ?? "{}";
-      if (query || share || plaintext || config || analysis) {
+      if (query || share || plaintext || config || analysis || polyfill || metafile) {
         if (bundle != null) {
           // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
 
           let initialConfig = `export default ${config}`;
-          BundleEvents.emit("bundle", initialConfig, searchParams.has("analysis"));
+          BundleEvents.emit("bundle", initialConfig, searchParams.has("analysis") || searchParams.has("metafile"), searchParams.has("polyfill"));
         }
 
         isInitial = false;
@@ -197,11 +199,18 @@ BundleEvents.on({
 
     // Add logs to the virtual console
     let logs = message.map((msg = "") => {
-      msg = (msg ?? "")
-        .replace(
+      /**
+       * Based on https://stackoverflow.com/questions/6038061/regular-expression-to-find-urls-within-a-string
+       * Based on http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
+       */
+      msg = (msg ?? "");
+      
+      if (typeof msg == "string" && msg.length > 0) { 
+        msg = msg.replace(
           /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi,
-          (match) => `<a href="${match}" target="_blank" rel="noopener">${decodeURIComponent(match)}</a>`
-        );;
+          (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
+        );
+      }
       let [title, ...message] = msg.split(/\n/);
       return ({ type, title, message: (message ?? []).join("<br>") });
     });
@@ -266,9 +275,9 @@ export const pushState = (url: string | URL, historyManager: HistoryManager) => 
   }
 }
 
-export const getConfig = async (config: string, analysis: boolean) => {
+export const getConfig = async (config: string, analysis: boolean, polyfill: boolean) => {
   return new Promise(resolve => {
-    SANDBOX_WORKER.postMessage([config, analysis]);
+    SANDBOX_WORKER.postMessage([config, analysis, polyfill]);
     SANDBOX_WORKER.onmessage = ({ data }: MessageEvent<string>) => {
       resolve(
         typeof data === "object" &&
@@ -306,19 +315,19 @@ export const build = async (app: App) => {
 
   // bundles using esbuild and returns the result
   BundleEvents.on({
-    bundle(config: string, analysis: boolean) {
+    bundle(config: string, analysis: boolean, polyfill: boolean) {
       if (!initialized) return;
       value = `` + inputModel?.getValue();
 
       fileSizeEl.forEach(el => (el.innerHTML = `<div class="loading"></div>`));
 
       start = Date.now();
-      postMessage({ event: "build", details: { config, value, analysis } });
+      postMessage({ event: "build", details: { config, value, analysis, polyfill } });
 
       (async () => {
         let configObj: BundleConfigOptions = {};
         try {
-          configObj = await getConfig(config, analysis);
+          configObj = await getConfig(config, analysis, polyfill);
         } catch (e) {
           console.warn(e);
         }
@@ -389,7 +398,8 @@ export const build = async (app: App) => {
       const worker = await languages.typescript.getTypeScriptWorker();
       const thisWorker = await worker(model.uri);
 
-      const config: Record<any, any> = await getConfig(configModel.getValue(), new URL(globalThis.location.href).searchParams.has("analysis")) ?? {};
+      const url = new URL(globalThis.location.href);
+      const config: Record<any, any> = await getConfig(configModel.getValue(), url.searchParams.has("analysis") || url.searchParams.has("metafile"), url.searchParams.has("polyfill")) ?? {};
 
       // @ts-ignore
       return await thisWorker.getShareableURL(
@@ -608,7 +618,7 @@ export const build = async (app: App) => {
       try {
         const searchParams = oldShareURL.searchParams;
         const config = searchParams.get("config") ?? "{}";
-        newConfig = await getConfig(`export default ${config}`, searchParams.has("analysis"));
+        newConfig = await getConfig(`export default ${config}`, searchParams.has("analysis") || searchParams.has("metafile"), searchParams.has("polyfill"));
       } catch (e) { }
 
       const oldConfigFromURL = serialize(

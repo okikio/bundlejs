@@ -142,6 +142,20 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
     };
 };
 
+// Imports have various extentions, fetch each extention to confirm what the user meant
+export const fileEndings = ["", "/index"];
+export const exts = ["", ".js", ".mjs", ".ts", ".tsx", ".cjs", ".d.ts"];
+
+// It's possible to have `./lib/index.d.ts` or `./lib/index.mjs`, and have a user enter use `./lib` as the import
+// It's very annoying but you have to check all variants
+export const allEndingVariants = [
+    ...Array.from(new Set(fileEndings.map(ending => {
+        return exts.map(extension => ending + extension)
+    }).flat())),
+];
+
+export const endingVariantsLength = allEndingVariants.length;
+
 /**
  * Esbuild HTTP plugin 
  * 
@@ -178,18 +192,15 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
             build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
                 // Some typescript files don't have file extensions but you can't fetch a file without their file extension
                 // so bundle tries to solve for that
-                let ext = extname(args.path);
-                let argPath = (suffix = "") => ext.length > 0 ? args.path : args.path + suffix;
+                const ext = extname(args.path);
+                const argPath = (suffix = "", path = args.path) => path + suffix;
                 let content: Uint8Array, url: string;
 
-                // Imports have various extentions, fetch each extention to confirm what the user meant
-                const exts = ext.length > 0 ? [''] : ['', ".ts", ".tsx", ".js", ".mjs", ".cjs"];
-                const extLength = exts.length;
                 let err: Error;
-                for (let i = 0; i < extLength; i++) {
-                    const extPath = exts[i];
+                for (let i = 0; i < endingVariantsLength; i++) {
+                    const endings = allEndingVariants[i];
                     try { 
-                        ({ content, url } = await fetchPkg(argPath(extPath), logger));
+                        ({ content, url } = await fetchPkg(argPath(endings), logger));
                         break;
                     } catch (e) {
                         if (i == 0)
@@ -197,7 +208,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
 
                         // If after checking all the different file extensions none of them are valid
                         // Throw the first fetch error encountered, as that is generally the most accurate error
-                        if (i >= extLength - 1) {
+                        if (i >= endingVariantsLength - 1) {
                             logger(e.toString(), "error");
                             throw err;
                         }

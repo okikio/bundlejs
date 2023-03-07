@@ -1,15 +1,16 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
-import { HTTP_NAMESPACE } from './http';
-import { isBareImport } from '../util/path';
+import { fetchPkg, HTTP_NAMESPACE } from './http';
+import { extname, isBareImport } from '../util/path';
 import { getRequest } from '../util/fetch-and-cache';
 
 import { getCDNUrl, getCDNStyle } from '../util/util-cdn';
 
-import { resolve, legacy, imports } from "resolve.exports";
+import { exports, legacy, imports } from "resolve.exports";
 import { parse as parsePackageName } from "parse-package-name";
 
 import { DEFAULT_CDN_HOST } from '../util/util-cdn';
+import { deepAssign } from '../util/deep-equal';
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = 'cdn-url';
@@ -39,24 +40,26 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
             // If an import starts with "#" then it's a subpath-import
             // https://nodejs.org/api/packages.html#subpath-imports
             if (argPath[0] == "#") {
-                let path = imports({ ...pkg, exports: pkg.imports }, argPath, {
-                    require: args.kind === "require-call" || args.kind === "require-resolve"
-                });
+                let path = imports(pkg, argPath, {
+                    // require: args.kind === "require-call" || args.kind === "require-resolve",
+                    browser: true,
+                    conditions: ["production", "module"]
+                }) as string | string[] | null;
 
-                if (Array.isArray(path) || typeof path === "string") {
-                    subpath = (Array.isArray(path) ? path.join("") : path).replace(/^\.?\/?/, "/");
+                if (Array.isArray(path)) path = path[0];
+                if (typeof path === "string")
+                    subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
-                    if (subpath && subpath[0] !== "/")
-                        subpath = `/${subpath}`;
+                if (subpath && subpath[0] !== "/")
+                    subpath = `/${subpath}`;
 
-                    let version = NPM_CDN ? "@" + pkg.version : "";
-                    let { url: { href } } = getCDNUrl(`${pkg.name}${version}${subpath}`);
-                    return {
-                        namespace: HTTP_NAMESPACE,
-                        path: href,
-                        pluginData: { pkg }
-                    };
-                }
+                const version = NPM_CDN ? "@" + pkg.version : "";
+                const { url } = getCDNUrl(`${pkg.name}${version}${subpath}`);
+                return {
+                    namespace: HTTP_NAMESPACE,
+                    path: url.toString(),
+                    pluginData: { pkg }
+                };
             }
 
             // Are there an dependecies???? Well Goood.
@@ -68,7 +71,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
                     peerDependencies = {} 
                 } = pkg;
                 
-                let deps = Object.assign({}, peerDependencies, devDependencies, dependencies);
+                let deps = Object.assign({}, devDependencies, dependencies, peerDependencies);
                 let keys = Object.keys(deps);
 
                 if (keys.includes(argPath)) 
@@ -82,10 +85,15 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
 
                     // Strongly cache package.json files
                     pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-                    let path = resolve(pkg, subpath ? "." + subpath.replace(/^\.?\/?/, "/") : ".", {
-                        require: args.kind === "require-call" || args.kind === "require-resolve",
-                    }) || legacy(pkg);
 
+                    let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
+                    let path = exports(pkg, relativePath, {
+                        // require: args.kind === "require-call" || args.kind === "require-resolve",
+                        browser: true,
+                        conditions: ["production", "module"]
+                    }) || (subpath ? relativePath : legacy(pkg));
+
+                    if (Array.isArray(path)) path = path[0];
                     if (typeof path === "string")
                         subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
@@ -99,10 +107,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log) => {
 
             // If the CDN is npm based then it should add the parsed version to the URL
             // e.g. https://unpkg.com/spring-easing@v1.0.0/
-            let version = NPM_CDN ? "@" + parsed.version : "";
-            let { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
+            const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
+            const urlPath = `${parsed.name}${version}${subpath}`;
+            let { url } = getCDNUrl(urlPath, origin);
 
-            let deps = Object.assign({}, oldPkg.peerDependencies, oldPkg.devDependencies, oldPkg.dependencies);
+            let deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
             let peerDeps = pkg.peerDependencies ?? {};
             let peerDepsKeys = Object.keys(peerDeps);
             for (let depKey of peerDepsKeys) {

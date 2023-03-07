@@ -125,9 +125,9 @@ export const start = async (port: MessagePort) => {
   if (_initialized)
     initEvent.emit("init");
 
-  const getConfig = async (config: string, analysis: boolean) => {
+  const getConfig = async (config: string, analysis: boolean, polyfill: boolean) => {
     return new Promise(resolve => {
-      $port.postMessage([config, analysis]);
+      $port.postMessage([config, analysis, polyfill]);
       $port.onmessage = async function ({ data }: MessageEvent<string>) {
         resolve(
           typeof data === "object" &&
@@ -139,8 +139,8 @@ export const start = async (port: MessagePort) => {
   }
 
   BuildEvents.on("build", async (details) => {
-    let { config: _config, value: input, analysis } = details;
-    let newConfig = await getConfig(_config ? _config : "export default {}", analysis);
+    let { config: _config, value: input, analysis, polyfill } = details;
+    let newConfig = await getConfig(_config ? _config : "export default {}", analysis, polyfill);
     let config = deepAssign({}, DefaultConfig, newConfig) as BundleConfigOptions;
 
     // Exclude certain esbuild config properties
@@ -203,7 +203,7 @@ export const start = async (port: MessagePort) => {
           },
           plugins: [
             ALIAS(config?.alias, origin, logger),
-            EXTERNAL(esbuildOpts?.external),
+            EXTERNAL(esbuildOpts?.external, origin, config?.polyfill),
             HTTP(assets, origin, logger),
             CDN(origin, logger),
           ],
@@ -228,6 +228,27 @@ export const start = async (port: MessagePort) => {
           let message = (msgs.length > 1 ? `${msgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
           return logger(message, "error");
         } else throw e;
+      }
+
+      // Print warning
+      if (result?.warnings.length > 0) {
+        let msgs = [...await createNotice(result.warnings, "warning", false)];
+
+        // Post warning to the real console
+        postMessage({
+          event: "warning",
+          details: {
+            type: `warning`,
+            message: msgs
+          }
+        });
+
+        // Log warning with added color info. to the virtual console
+        logger([...await createNotice(result.warnings, "warning")], "warning", false);
+
+        let message = (msgs.length > 1 ? `${msgs.length} warning(s) ` : "");
+        if (message.length > 0)
+          logger(message, "warning");
       }
 
       // Create an array of assets and actual output files, this will later be used to calculate total file size
@@ -257,27 +278,6 @@ export const start = async (port: MessagePort) => {
             return contents;
           })
       );
-
-      // Print warning
-      if (result?.warnings.length > 0) {
-        let msgs = [...await createNotice(result.warnings, "warning", false)];
-
-        // Post warning to the real console
-        postMessage({
-          event: "warning",
-          details: {
-            type: `warning`,
-            message: msgs
-          }
-        });
-
-        // Log warning with added color info. to the virtual console
-        logger([...await createNotice(result.warnings, "warning")], "warning", false);
-
-        let message = (msgs.length > 1 ? `${msgs.length} warning(s) ` : "");
-        if (message.length > 0)
-          logger(message, "warning");
-      }
 
       logger("Done ✨", "info");
 
