@@ -34,6 +34,12 @@ export type LocalState = {
    */
   GLOBAL?: [typeof getState, typeof setState],
 
+  /**
+   * Failed checks
+   */
+  FAILED_EXTENSION_CHECKS?: Set<string>,
+  FAILED_PKGJSON_FETCHES?: Set<string>,
+
   [key: string]: unknown
 }
 
@@ -108,7 +114,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
   const STATE = createState<LocalState>({ 
     filesystem: await filesystem, 
     assets: [], 
-    GLOBAL: [getState, setState] 
+    GLOBAL: [getState, setState],
+    FAILED_EXTENSION_CHECKS: new Set<string>(),
+    FAILED_PKGJSON_FETCHES: new Set<string>()
   });
   const [get] = STATE;
 

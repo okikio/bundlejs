@@ -37,7 +37,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST) => {
+export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Set<string>) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     const path = args.path.replace(/^node\:/, "");
     const { path: argPath } = getCDNUrl(path);
@@ -45,7 +45,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST) => {
     if (isAlias(argPath, aliases)) {
       const pkgDetails = parsePackageName(argPath);
       const aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host)({
+      return HTTP_RESOLVE(host, FAILED_EXTENSION_CHECKS)({
         ...args,
         path: aliasPath
       });
@@ -64,6 +64,9 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
   // Convert CDN values to URL origins
   const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const aliases = config.alias ?? {};
+  const [get] = state;
+
+  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
   return {
     name: ALIAS_NAMESPACE,
     setup(build) {
@@ -73,7 +76,7 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host)(args);
+          return ALIAS_RESOLVE(aliases, host, FAILED_EXTENSION_CHECKS)(args);
 
         if (!config.polyfill) {
           return {
@@ -89,8 +92,8 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host));
-      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host));
+      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, FAILED_EXTENSION_CHECKS));
+      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, FAILED_EXTENSION_CHECKS));
     },
   };
 };

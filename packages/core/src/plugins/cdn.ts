@@ -4,7 +4,7 @@ import type { ESBUILD } from "../types.ts";
 
 import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
-import { HTTP_NAMESPACE } from "./http.ts";
+import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
 import { resolve as resolveExports, imports as resolveImports, legacy } from "resolve.exports";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
 
@@ -23,7 +23,7 @@ export const CDN_NAMESPACE = "cdn-url";
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Set<string>, FAILED_PKGJSON_FETCHES?: Set<string>) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
@@ -59,7 +59,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
         const { url } = getCDNUrl(`${pkg.name}${version}${subpath}`);
         return {
           namespace: HTTP_NAMESPACE,
-          path: url.toString(),
+          path: await determineExtension(url.toString(), FAILED_EXTENSION_CHECKS),
           pluginData: { pkg }
         };
       }
@@ -84,47 +84,82 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       if (NPM_CDN) {
         try {
           const ext = extname(subpath);
-          const dir = ext.length === 0 ? subpath : "";
-          const { url: SUBPATH_PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}${dir}/package.json`, origin);
+          const isDir = ext.length === 0;
+          const dir = isDir ? subpath : "";
 
-          let subpathPkgJson = false;
+          const pkgVariants = [
+            isDir ? { 
+              path: `${parsed.name}@${parsed.version}${subpath}/package.json`, 
+              isDir: true
+            } : null,
+            { path: `${parsed.name}@${parsed.version}/package.json` }
+          ].filter(x => x !== null);
 
-          // Strongly cache package.json files
-          try {
-            const res = await getRequest(SUBPATH_PACKAGE_JSON_URL, true);
-            pkg = await res.json();
-            subpathPkgJson = true;
-          } catch (e) {
-            if (ext.length === 0) {
-              dispatchEvent(LOGGER_WARN, e);
+          let isDirPkgJSON = false;
+          const pkgVariantsLen = pkgVariants.length;
+          for (let i = 0; i < pkgVariantsLen; i ++) {
+            const pkgMetadata = pkgVariants[i]
+            const { url } = getCDNUrl(pkgMetadata.path, origin);
+            const { href } = url;
 
-              const { url: PACKAGE_JSON_URL } = getCDNUrl(`${parsed.name}@${parsed.version}/package.json`, origin);
-              pkg = await getRequest(PACKAGE_JSON_URL, true).then((res) => res.json());
-            } else throw e;
+            try {
+              if (FAILED_PKGJSON_FETCHES.has(href)) {
+                if (i < pkgVariantsLen - 1) continue;
+                else throw 'SKIP_LOG';
+              }
+              
+              // Strongly cache package.json files
+              const res = await getRequest(url, true);
+              if (!res.ok) throw new Error(await res.text());
+
+              pkg = await res.json();
+              isDirPkgJSON = pkgMetadata.isDir ?? false;
+              break;
+            } catch (e) {
+              // dispatchEvent(LOGGER_WARN, e);
+              FAILED_PKGJSON_FETCHES.add(href);
+
+              // If after checking all the different file extensions none of them are valid
+              // Throw the first fetch error encountered, as that is generally the most accurate error
+              if (i >= pkgVariantsLen - 1) 
+                throw e;
+            }
           }
 
           let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
           let resExp = null;
+
           try {
             resExp = resolveExports(pkg, relativePath, {
               browser: true,
               conditions: ["deno", "worker", "production", "module", "import", "browser"]
             });
-          } catch (e) {}
+          } catch (e) { }
 
-          let path = resExp || (subpath && !subpathPkgJson ? relativePath : legacy(pkg));
+          let path = resExp || (subpath && !isDirPkgJSON ? relativePath : legacy(pkg));
           if (Array.isArray(path)) path = path[0];
           if (typeof path === "string")
             subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
+          if (argPath.includes("tasks"))
+          console.log({
+            argPath,
+            relativePath,
+            resExp,
+            subpath,
+            isDirPkgJSON
+          })
+
           if (subpath && subpath[0] !== "/")
             subpath = `/${subpath}`;
 
-          if (dir && subpathPkgJson)
+          if (dir && isDirPkgJSON)
             subpath = `${dir}${subpath}`;
         } catch (e) {
-          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
-          dispatchEvent(LOGGER_WARN, e);
+          if (e !== 'SKIP_LOG') {
+            dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
+            dispatchEvent(LOGGER_WARN, e);
+          }
         }
       }
 
@@ -145,7 +180,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       }
       return {
         namespace: HTTP_NAMESPACE,
-        path: url.toString(),
+        path: await determineExtension(url.toString(), FAILED_EXTENSION_CHECKS),
         pluginData: { pkg: newPkg }
       };
     }
@@ -161,12 +196,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
 export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const [get] = state;
+
+  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
+  const FAILED_PKGJSON_FETCHES = get().FAILED_PKGJSON_FETCHES;
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn));
+      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, FAILED_EXTENSION_CHECKS, FAILED_PKGJSON_FETCHES));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, FAILED_EXTENSION_CHECKS, FAILED_PKGJSON_FETCHES));
     },
   };
 }
