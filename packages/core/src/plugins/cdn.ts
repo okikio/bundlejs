@@ -141,13 +141,15 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
           if (typeof path === "string")
             subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
 
-          if (argPath.includes("tasks"))
+          if (argPath.includes("lodash"))
           console.log({
+            isDirPkgJSON,
+            isDir,
             argPath,
             relativePath,
             resExp,
             subpath,
-            isDirPkgJSON
+            path,
           })
 
           if (subpath && subpath[0] !== "/")
