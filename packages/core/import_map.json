@@ -1,8 +1,9 @@
 {
   "imports": {
     "@okikio/emitter": "npm:@okikio/emitter",
-    "esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
-    "esbuild-wasm": "npm:esbuild-wasm",
-    "resolve.exports": "https://unpkg.com/resolve.exports"
+    "esbuild-wasm/package.json": "https://unpkg.com/package.json",
+    "esbuild-wasm": "https://esm.sh/esbuild-wasm",
+    "esbuild": "https://esm.sh/esbuild",
+    "resolve.exports": "https://esm.sh/resolve.exports"
   }
 }

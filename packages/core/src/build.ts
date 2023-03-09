@@ -34,12 +34,6 @@ export type LocalState = {
    */
   GLOBAL?: [typeof getState, typeof setState],
 
-  /**
-   * Failed checks
-   */
-  FAILED_EXTENSION_CHECKS?: Set<string>,
-  FAILED_PKGJSON_FETCHES?: Set<string>,
-
   [key: string]: unknown
 }
 
@@ -115,8 +109,6 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     filesystem: await filesystem, 
     assets: [], 
     GLOBAL: [getState, setState],
-    FAILED_EXTENSION_CHECKS: new Set<string>(),
-    FAILED_PKGJSON_FETCHES: new Set<string>()
   });
   const [get] = STATE;
 
@@ -152,9 +144,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         plugins: [
           ALIAS(STATE, CONFIG),
           EXTERNAL(STATE, CONFIG),
+          VIRTUAL_FS(STATE, CONFIG),
           HTTP(STATE, CONFIG),
           CDN(STATE, CONFIG),
-          VIRTUAL_FS(STATE, CONFIG),
         ],
         ...esbuildOpts,
       });
@@ -162,7 +154,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       if (e.errors) {
         // Log errors with added color info. to the virtual console
         const ansiMsgs = [...await createNotice(e.errors, "error", false)];
-        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ ansiMsgs })));
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
         const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
@@ -229,7 +221,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       ...result
     };
   } catch (e) { 
-    dispatchEvent(BUILD_ERROR, e);
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
     throw e;
   }
 }

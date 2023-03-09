@@ -2,8 +2,9 @@
   "imports": {
     "@bundlejs/core/": "../core/",
     "@bundlejs/core": "../core/src/index.ts",
-    "esbuild-wasm": "npm:esbuild-wasm",
-    "esbuild": "npm:esbuild",
+    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm/esm/browser.d.ts",
+    "esbuild-wasm": "https://esm.sh/esbuild-wasm",
+    "esbuild": "https://esm.sh/esbuild",
     "resolve.exports": "https://esm.sh/resolve.exports"
   }
 }

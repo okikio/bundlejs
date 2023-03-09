@@ -28,9 +28,9 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
   try {
     const response = await getRequest(url, undefined, fetchOpts);
     if (!response.ok)
-      throw new Error(`Couldn't load ${response.url} (${response.status} code)`);
+      throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
-    // dispatchEvent(LOGGER_INFO, `Fetch ${url}`);
+    dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
@@ -52,7 +52,7 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export async function fetchAssets(path: string, content: Uint8Array, namespace: string, state: StateArray<LocalState>) {
+export async function fetchAssets(path: string, content: Uint8Array, state: StateArray<LocalState>) {
   // Regex for `new URL("./path.js", import.meta.url)`, 
   // I added support for comments so you can add comments and the regex
   // will ignore the comments
@@ -71,7 +71,7 @@ export async function fetchAssets(path: string, content: Uint8Array, namespace: 
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
-    await setFile(FileSystem, namespace + ":" + url, content)
+    await setFile(FileSystem, url, content)
 
     return {
       path: assetURL, contents: asset,
@@ -84,7 +84,7 @@ export async function fetchAssets(path: string, content: Uint8Array, namespace: 
 
 // Imports have various extentions, fetch each extention to confirm what the user meant
 const fileEndings = ["", "/index"];
-const exts = ["", ".js", ".mjs", ".ts", ".tsx", ".cjs", ".d.ts"];
+const exts = ["", ".js", ".mjs", "/index.js", ".ts", ".tsx", ".cjs", ".d.ts"];
 
 // It's possible to have `./lib/index.d.ts` or `./lib/index.mjs`, and have a user enter use `./lib` as the import
 // It's very annoying but you have to check all variants
@@ -93,17 +93,17 @@ const allEndingVariants = Array.from(new Set(fileEndings.map(ending => {
 }).flat()));
 
 const endingVariantsLength = allEndingVariants.length;
+const FAILED_EXT_URLS = new Set<string>();
 
 /**
  * Test the waters, what extension are we talking about here
  * @param path 
  * @returns 
  */
-export async function determineExtension(path: string, FAILED_EXTENSION_CHECKS = new Set<string>()) {
+export async function determineExtension(path: string) {
   // Some typescript files don't have file extensions but you can't fetch a file without their file extension
   // so bundle tries to solve for that
-  const ext = extname(path);
-  const argPath = (suffix = "", _path = path) => _path + suffix;
+  const argPath = (suffix = "") => path + suffix;
   let url = path;
 
   let err: Error;
@@ -112,26 +112,23 @@ export async function determineExtension(path: string, FAILED_EXTENSION_CHECKS =
     const testingUrl = argPath(endings);
 
     try {
-      if (FAILED_EXTENSION_CHECKS.has(testingUrl)) {
-        if (i < endingVariantsLength - 1) continue;
-        else throw 'SKIP_LOG';
+      if (FAILED_EXT_URLS.has(testingUrl)) { 
+        continue;
       }
 
       ({ url } = await fetchPkg(testingUrl, { method: "HEAD" }));
       break;
     } catch (e) {
-      FAILED_EXTENSION_CHECKS.add(testingUrl);
+      FAILED_EXT_URLS.add(testingUrl);
 
-      if (e !== 'SKIP_LOG') {
-        if (i === 0)
-          err = e as Error;
+      if (i === 0)
+        err = e as Error;
 
-        // If after checking all the different file extensions none of them are valid
-        // Throw the first fetch error encountered, as that is generally the most accurate error
-        if (i >= endingVariantsLength - 1) {
-          dispatchEvent(LOGGER_ERROR, err);
-          throw err;
-        }
+      // If after checking all the different file extensions none of them are valid
+      // Throw the first fetch error encountered, as that is generally the most accurate error
+      if (i >= endingVariantsLength - 1) {
+        dispatchEvent(LOGGER_ERROR, err);
+        throw err;
       }
     }
   }
@@ -145,7 +142,7 @@ export async function determineExtension(path: string, FAILED_EXTENSION_CHECKS =
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Set<string>) {
+export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path; //.replace(/\/$/, "/index");
@@ -155,7 +152,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: 
       // If the import is an http import load the content via the http plugins loader
       if (/^https?:\/\//.test(argPath)) {
         return {
-          path: await determineExtension(argPath, FAILED_EXTENSION_CHECKS),
+          path: await determineExtension(argPath),
           namespace: HTTP_NAMESPACE,
           pluginData: { pkg: args.pluginData?.pkg },
         };
@@ -189,7 +186,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: 
          * So, we treat the path as a CDN and force all URLs to use CDN origins as the root domain
         */
         return {
-          path: await determineExtension(getCDNUrl(argPath, origin).url.toString(), FAILED_EXTENSION_CHECKS),
+          path: await determineExtension(getCDNUrl(argPath, origin).url.toString()),
           namespace: HTTP_NAMESPACE,
           pluginData: { pkg: args.pluginData?.pkg },
         };
@@ -197,7 +194,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: 
     }
 
     // For relative imports
-    const path = await determineExtension(urlJoin(args.pluginData?.url, "../", argPath), FAILED_EXTENSION_CHECKS);
+    const path = await determineExtension(urlJoin(args.pluginData?.url, "../", argPath));
     return {
       path,
       namespace: HTTP_NAMESPACE,
@@ -221,8 +218,6 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
   const assets = get()["assets"] ?? [];
   const FileSystem = get().filesystem; 
 
-  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
-
   return {
     name: HTTP_NAMESPACE,
     setup(build) {
@@ -242,7 +237,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, FAILED_EXTENSION_CHECKS));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to
@@ -251,7 +246,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
-        const path = await determineExtension(args.path, FAILED_EXTENSION_CHECKS);
+        const path = await determineExtension(args.path);
         let content: Uint8Array, url: string;
 
         ({ content, url } = await fetchPkg(path));
@@ -260,10 +255,10 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
         // This is for building a package bundle analyzer 
         // await FileSystem.set(args.namespace + ":" + args.path, content);
 
-        await setFile(FileSystem, args.namespace + ":" + args.path, content)
+        await setFile(FileSystem, url, content)
 
         const _assetResults =
-          (await fetchAssets(url, content, args.namespace, state))
+          (await fetchAssets(url, content, state))
             .filter((result) => {
               if (result.status == "rejected") {
                 dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())

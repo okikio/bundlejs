@@ -5,17 +5,18 @@ import type { ESBUILD } from "../types.ts";
 import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
-import { resolve as resolveExports, imports as resolveImports, legacy } from "resolve.exports";
+import { resolve, legacy } from "resolve.exports";
 import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
 
 import { extname, isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
-// import { resolveImports } from "../utils/resolve-imports.ts";
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = "cdn-url";
+
+const FAILED_PKGJSON_URLS = new Set<string>();
 
 /**
  * Resolution algorithm for the esbuild CDN plugin 
@@ -23,7 +24,7 @@ export const CDN_NAMESPACE = "cdn-url";
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Set<string>, FAILED_PKGJSON_FETCHES?: Set<string>) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
@@ -37,32 +38,6 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
       let subpath = parsed.path;
       let pkg = args.pluginData?.pkg ?? {};
       let oldPkg = pkg;
-
-      // Resolving imports from the package.json, if said import starts with "#" 
-      // If an import starts with "#" then it's a subpath-import
-      // https://nodejs.org/api/packages.html#subpath-imports
-      if (argPath[0] == "#") {
-        let path = resolveImports(pkg, argPath, {
-          // require: args.kind === "require-call" || args.kind === "require-resolve",
-          browser: true,
-          conditions: ["production", "module"]
-        }) as string | string[] | null;
-
-        if (Array.isArray(path)) path = path[0];
-        if (typeof path === "string")
-          subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
-
-        if (subpath && subpath[0] !== "/")
-          subpath = `/${subpath}`;
-
-        const version = NPM_CDN ? "@" + pkg.version : "";
-        const { url } = getCDNUrl(`${pkg.name}${version}${subpath}`);
-        return {
-          namespace: HTTP_NAMESPACE,
-          path: await determineExtension(url.toString(), FAILED_EXTENSION_CHECKS),
-          pluginData: { pkg }
-        };
-      }
 
       // Are there an dependecies???? Well Goood.
       const depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
@@ -79,6 +54,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
         if (keys.includes(argPath))
           parsed.version = deps[argPath];
       }
+
+      let finalSubpath = subpath;
 
       // If the CDN supports package.json and some other npm stuff, it counts as an npm CDN
       if (NPM_CDN) {
@@ -103,11 +80,10 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
             const { href } = url;
 
             try {
-              if (FAILED_PKGJSON_FETCHES.has(href)) {
-                if (i < pkgVariantsLen - 1) continue;
-                else throw 'SKIP_LOG';
+              if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) { 
+                continue;
               }
-              
+
               // Strongly cache package.json files
               const res = await getRequest(url, true);
               if (!res.ok) throw new Error(await res.text());
@@ -116,8 +92,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
               isDirPkgJSON = pkgMetadata.isDir ?? false;
               break;
             } catch (e) {
-              // dispatchEvent(LOGGER_WARN, e);
-              FAILED_PKGJSON_FETCHES.add(href);
+              FAILED_PKGJSON_URLS.add(href);
 
               // If after checking all the different file extensions none of them are valid
               // Throw the first fetch error encountered, as that is generally the most accurate error
@@ -127,48 +102,60 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
           }
 
           let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
-          let resExp = null;
+          let modernResolve: ReturnType<typeof resolve> | void;
+          let legacyResolve: ReturnType<typeof legacy> | void;
+
+          let resolvedPath: string | void;
 
           try {
-            resExp = resolveExports(pkg, relativePath, {
+            // Resolving imports & exports from the package.json
+            // If an import starts with "#" then it's a subpath-import, and should be treated as so
+            modernResolve = resolve(pkg, relativePath, {
               browser: true,
               conditions: ["deno", "worker", "production", "module", "import", "browser"]
             });
+
+            if (modernResolve) {
+              resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
+            }
           } catch (e) { }
 
-          let path = resExp || (subpath && !isDirPkgJSON ? relativePath : legacy(pkg));
-          if (Array.isArray(path)) path = path[0];
-          if (typeof path === "string")
-            subpath = path.replace(/^\.?\/?/, "/").replace(/\.js\.js$/, ".js");
+          if (!modernResolve) {
+            // If the subpath has a package.json, and the modern resolve didn't work for it
+            // we can safely use legacy resolve, 
+            // else, if the subpath doesn't have a package.json, then the subpath is literal, 
+            // and we should just use the subpath as it is
+            if (isDirPkgJSON) {
+              try {
+                // Resolving using main, module, etc... from package.json
+                legacyResolve = legacy(pkg, {
+                  browser: true
+                });
 
-          if (argPath.includes("lodash"))
-          console.log({
-            isDirPkgJSON,
-            isDir,
-            argPath,
-            relativePath,
-            resExp,
-            subpath,
-            path,
-          })
-
-          if (subpath && subpath[0] !== "/")
-            subpath = `/${subpath}`;
-
-          if (dir && isDirPkgJSON)
-            subpath = `${dir}${subpath}`;
-        } catch (e) {
-          if (e !== 'SKIP_LOG') {
-            dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
-            dispatchEvent(LOGGER_WARN, e);
+                if (legacyResolve) {
+                  resolvedPath = Array.isArray(legacyResolve) ? legacyResolve[0] : legacyResolve as string;
+                }
+              } catch (e) { }
+            } else resolvedPath = relativePath;
           }
+
+          if (resolvedPath) {
+            finalSubpath = resolvedPath.replace(/^(\.\/|\/)/, "/");
+          }
+
+          if (dir && isDirPkgJSON) {
+            finalSubpath = `${dir}${finalSubpath}`;
+          }
+        } catch (e) {
+          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
+          dispatchEvent(LOGGER_WARN, e);
         }
       }
 
       // If the CDN is npm based then it should add the parsed version to the URL
       // e.g. https://unpkg.com/spring-easing@v1.0.0/
       const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
-      const { url } = getCDNUrl(`${parsed.name}${version}${subpath}`, origin);
+      const { url } = getCDNUrl(`${parsed.name}${version}${finalSubpath}`, origin);
 
       let deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
       let peerDeps = pkg.peerDependencies ?? {};
@@ -182,7 +169,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, FAILED_EXTENSION_CHECKS?: Se
       }
       return {
         namespace: HTTP_NAMESPACE,
-        path: await determineExtension(url.toString(), FAILED_EXTENSION_CHECKS),
+        path: await determineExtension(url.toString()),
         pluginData: { pkg: newPkg }
       };
     }
@@ -200,14 +187,12 @@ export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD
   const { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
   const [get] = state;
 
-  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
-  const FAILED_PKGJSON_FETCHES = get().FAILED_PKGJSON_FETCHES;
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, FAILED_EXTENSION_CHECKS, FAILED_PKGJSON_FETCHES));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, FAILED_EXTENSION_CHECKS, FAILED_PKGJSON_FETCHES));
+      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn));
     },
   };
 }

@@ -13,12 +13,15 @@ export const VIRTUAL_FS = (state: StateArray<LocalState>, config: BuildConfig): 
   return {
     name: VIRTUAL_FILESYSTEM_NAMESPACE,
     setup(build) {
-      build.onResolve({ filter: /.*/ }, (args) => {
-        return {
-          path: args.path,
-          pluginData: args.pluginData ?? {},
-          namespace: VIRTUAL_FILESYSTEM_NAMESPACE
-        };
+      build.onResolve({ filter: /.*/ }, async (args) => {
+        const content = await getFile(FileSystem, args.path, "buffer", args?.pluginData?.importer);
+        if (content && content.length > 0) {
+          return {
+            path: args.path,
+            pluginData: args.pluginData ?? {},
+            namespace: VIRTUAL_FILESYSTEM_NAMESPACE
+          };
+        }
       });
 
       build.onLoad({ filter: /.*/, namespace: VIRTUAL_FILESYSTEM_NAMESPACE }, async (args) => {
