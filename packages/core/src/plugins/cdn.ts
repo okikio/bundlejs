@@ -105,7 +105,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           let modernResolve: ReturnType<typeof resolve> | void;
           let legacyResolve: ReturnType<typeof legacy> | void;
 
-          let resolvedPath: string | void;
+          let resolvedPath: string | void = relativePath;
 
           try {
             // Resolving imports & exports from the package.json
@@ -133,13 +133,24 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
                 });
 
                 if (legacyResolve) {
-                  resolvedPath = Array.isArray(legacyResolve) ? legacyResolve[0] : legacyResolve as string;
+                  if (Array.isArray(legacyResolve)) {
+                    resolvedPath = legacyResolve[0];
+                  } else if (typeof legacyResolve === "object") {
+                    const allKeys = Object.keys(legacyResolve);
+                    const nonCJSKeys = allKeys.filter(key => {
+                      return !/\.cjs$/.exec(key) && legacyResolve[key];
+                    });
+                    const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
+                    resolvedPath = legacyResolve[keysToUse[0]] as string;
+                  } else {
+                    resolvedPath = legacyResolve;
+                  }
                 }
               } catch (e) { }
             } else resolvedPath = relativePath;
           }
 
-          if (resolvedPath) {
+          if (resolvedPath && typeof resolvedPath === "string") {
             finalSubpath = resolvedPath.replace(/^(\.\/|\/)/, "/");
           }
 
@@ -163,14 +174,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       for (let depKey of peerDepsKeys) {
         peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
       }
-      let newPkg = {
-        ...pkg,
-        peerDependencies: peerDeps
-      }
+      
       return {
         namespace: HTTP_NAMESPACE,
         path: await determineExtension(url.toString()),
-        pluginData: { pkg: newPkg }
+        pluginData: { 
+          pkg: {
+            ...pkg,
+            peerDependencies: peerDeps
+          } 
+        }
       };
     }
   };
