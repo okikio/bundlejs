@@ -1,6 +1,0 @@
-bundle js
-bundle size checker
-bundle npm packages
-online bundler
-treeshake bundles
-alternative

@@ -1,8 +1,0 @@
-name = "edge"
-main = "src/index.ts"
-compatibility_date = "2023-02-22"
-node_compat = true
-
-# [build]
-# command = "npm run build"
-# cwd = "dist"

@@ -1,3 +1,0 @@
-Sitemap: https://bundlejs.com/sitemap-index.xml
-User-agent: *
-Allow: /

@@ -1,6 +1,6 @@
 {
   "editor.tabSize": 2,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "deno.enablePaths": ["./packages/core/repl.ts", "./packages/edge/deno.ts"],
-  "deno.config": "./packages/edge/deno.jsonc"
+  "deno.config": "./packages/edge/deno.jsonc",
+  "deno.enable": true
 }

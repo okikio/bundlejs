@@ -5,25 +5,17 @@
       "path": "."
     },
     {
-      "name": "📦 @bundlejs/analysis",
-      "path": "packages/analysis"
-    },
-    {
       "name": "📦 @bundlejs/core",
       "path": "packages/core"
     },
     {
       "name": "📦 @bundlejs/edge",
       "path": "packages/edge"
-    },
-    {
-      "name": "🚀 @bundlejs/website",
-      "path": "packages/website"
     }
   ],
 	"settings": {
     "typescript.tsdk": "✨ root/node_modules/typescript/lib",
-    "deno.enablePaths": ["./packages/core/repl.ts", "./packages/edge/deno.ts"],
-    "deno.config": "./packages/edge/deno.jsonc"
+    "deno.config": "./packages/edge/deno.jsonc",
+    "deno.enable": true
   }
 }

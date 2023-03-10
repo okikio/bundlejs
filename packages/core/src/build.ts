@@ -119,7 +119,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult = null;
+  let result: ESBUILD.BuildResult;
 
   try {
     try {
@@ -172,16 +172,16 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       const message =  `${ansiMsgs.length} warning(s) `;
       dispatchEvent(LOGGER_WARN, message);
     }
-
+    
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
-      [...get()["assets"]]
+      [...(get()["assets"] ?? [])]
         .concat(result?.outputFiles as ESBUILD.OutputFile[])
     );
 
     contents = await Promise.all(
       outputs
-        ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
+        .map(({ path, text, contents }): ESBUILD.OutputFile | null => {
           if (/\.map$/.test(path))
             return null;
 
@@ -199,7 +199,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         })
 
         // Remove null output files
-        ?.filter(x => ![undefined, null].includes(x))
+        .filter(x => x !== null && x !== undefined) as ESBUILD.OutputFile[]
     );
 
     // Ensure a fresh filesystem on every run
@@ -224,6 +224,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     if (!("msgs" in e)) {
       dispatchEvent(BUILD_ERROR, e);
     }
+    
     throw e;
   }
 }

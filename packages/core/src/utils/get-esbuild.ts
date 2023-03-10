@@ -1,11 +1,11 @@
-import type * as ESBUILD from "esbuild-wasm";
+// import type * as ESBUILD from "https://esm.sh/esbuild-wasm@0.17.11";
 
 import type { Platform } from "../configs/platform.ts";
 import { PLATFORM_AUTO } from "../configs/platform.ts";
-import pkg from "../../package.json" assert { type: "json" };
+// import pkg from "../../package.json" assert { type: "json" };
 
-const { dependencies } = pkg;
-const version = dependencies["esbuild-wasm"].replaceAll(/[^0-9.-]/g, "");
+// const { dependencies } = pkg;
+// const version = dependencies["esbuild-wasm"].replaceAll(/[^0-9.-]/g, "");
 
 /**
  * Determines which esbuild skew to use depending on the platform option supplied, 
@@ -19,7 +19,7 @@ const version = dependencies["esbuild-wasm"].replaceAll(/[^0-9.-]/g, "");
  * @returns esbuild module
  */
 import * as DenoEsbuild from "https://deno.land/x/esbuild@v0.17.11/wasm.js";
-export async function getEsbuild(platform: Platform = PLATFORM_AUTO): Promise<typeof ESBUILD> {
+export async function getEsbuild(platform: Platform = PLATFORM_AUTO) {
   try {
     return DenoEsbuild;
     // switch (platform) {
