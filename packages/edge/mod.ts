@@ -12,9 +12,11 @@ globalThis.Worker = worker ?? class {
   constructor() {}
 };
 
-import { deepAssign, createConfig, lzstring } from "@bundlejs/core/src/index.ts";
+import { deepAssign, createConfig, lzstring, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
+import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
+
 import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
-import { generateResult, } from "./generate-result.ts";
+import { generateResult } from "./generate-result.ts";
 import styleText from "./style.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
@@ -30,6 +32,9 @@ export type Config = BuildConfig & {
   compression?: CompressConfig,
   analysis?: boolean | string
 };
+
+let WASM_MODULE: Uint8Array = await ESBUILD_WASM();
+let wasmModule: WebAssembly.Module = new WebAssembly.Module(WASM_MODULE);
 
 serve(async (req: Request) => {
   try {
@@ -53,25 +58,27 @@ serve(async (req: Request) => {
 
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
-    
-    console.log({
-      paht: url.pathname
-    })
 
     const metafileQuery = url.searchParams.has("metafile");
     const analysisQuery = url.searchParams.has("analysis");
 
     const badgeQuery = url.searchParams.has("badge");
     const polyfill = url.searchParams.has("polyfill");
+
     const enableMetafile = analysisQuery ||
       metafileQuery ||
       Boolean(initialConfig?.analysis);
 
+    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
+    if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
+
     const configObj: Config = deepAssign(
+      {},
+      BUILD_CONFIG,
       {
         polyfill,
-        compression: createConfig("compress", initialConfig.compression)
-      } as Config, 
+        compression: createConfig("compress", initialConfig.compression),
+      } as Config,
       initialConfig, 
       {
         entryPoints: ["/index.tsx"],
@@ -80,7 +87,8 @@ serve(async (req: Request) => {
         } : {},
         init: {
           platform: "deno-wasm",
-          worker: false
+          worker: false,
+          wasmModule
         },
       } as Config
     );
@@ -92,7 +100,7 @@ serve(async (req: Request) => {
           ...configObj,
           initialValue: initialValue.trim(),
         }).trim()
-      ).slice(0, 512 - 1)
+      ) // .slice(0, 512 - 1)
     }`;
 
     const badgeResult = url.searchParams.get("badge");
@@ -101,10 +109,11 @@ serve(async (req: Request) => {
       compressToBase64(
         JSON.stringify({
           jsonKey,
+          badge: badgeQuery,
           badgeResult,
           badgeStyle
         }).trim()
-      ).slice(0, 512 - 1)
+      ) // .slice(0, 512 - 1)
     }`;
 
     if (url.pathname === "/delete-cache") {
@@ -124,12 +133,13 @@ serve(async (req: Request) => {
     if (url.pathname !== "/no-cache") {
       const BADGEResult = await redis.get<string>(badgeKey);
       if (badgeQuery && BADGEResult) {
+        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, BADGEResult })
         return new Response(BADGEResult, {
           status: 200,
           headers: [
             ...headers,
             ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
-            ['Content-Type', 'application/json']
+            ['Content-Type', 'image/svg+xml']
           ],
         })
       }
@@ -137,12 +147,12 @@ serve(async (req: Request) => {
       const start = Date.now();
       const JSONResult = await redis.get<BundleResult>(jsonKey);
       if (JSONResult) {
-        return await generateResult(jsonKey, badgeKey, JSONResult, url, redis, true, Date.now() - start);
+        return await generateResult(badgeKey, JSONResult, url, redis, true, Date.now() - start);
       }
     }
 
     const start = Date.now();
-    const response = await bundle(url, initialValue, initialConfig);
+    const response = await bundle(url, initialValue, configObj);
 
     if (!response.ok) {
       const headers = response.headers;
@@ -155,7 +165,7 @@ serve(async (req: Request) => {
 
     const value: BundleResult = await response.json();
     const prevValue = await redis.set(jsonKey, JSON.stringify(value), { ex: 86400, get: true });
-    await redis.del(badgeKey);
+    if (!badgeQuery) await redis.del(badgeKey);
 
     if (prevValue) {
       const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
@@ -164,7 +174,7 @@ serve(async (req: Request) => {
       }
     }
 
-    return await generateResult(jsonKey, badgeKey, value, url, redis, false, Date.now() - start);
+    return await generateResult(badgeKey, value, url, redis, false, Date.now() - start);
   } catch (e) {
     if ("msgs" in e) {
       try {

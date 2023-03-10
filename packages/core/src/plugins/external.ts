@@ -4,7 +4,7 @@ import type { ESBUILD } from "../types.ts";
 import { parsePackageName } from "../util.ts";
 
 import { encode } from "../utils/encode-decode.ts";
-import { getCDNUrl } from "../utils/util-cdn.ts";
+import { DEFAULT_CDN_HOST, getCDNUrl } from "../utils/util-cdn.ts";
 import { isAlias } from "./alias.ts";
 import { CDN_RESOLVE } from "./cdn.ts";
 
@@ -48,6 +48,12 @@ export const PolyfillMap = {
   "url": "browserify-url",
   "util": "util/util.js",
   "_shims": "_shims",
+  "readable-stream/": "readable-stream/lib",
+  "readable-stream/duplex": "readable-stream/lib/duplex.js",
+  "readable-stream/readable": "readable-stream/lib/readable.js",
+  "readable-stream/writable": "readable-stream/lib/writable.js",
+  "readable-stream/transform": "readable-stream/lib/transform.js",
+  "readable-stream/passthrough": "readable-stream/lib/passthrough.js",
   "_stream_duplex": "readable-stream/lib/duplex.js",
   "_stream_readable": "readable-stream/lib/readable.js",
   "_stream_writable": "readable-stream/lib/writable.js",
@@ -67,7 +73,7 @@ export const PolyfillKeys = Object.keys(PolyfillMap);
 /** API's & Packages that were later removed from nodejs */
 export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"];
 /** Packages `bundle` should ignore, including deprecated apis, and polyfillable API's */
-export const ExternalPackages = ["v8", "node-inspect", "sys", "repl", "dns", "child_process", "cluster", "chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
+export const ExternalPackages = ["pnpapi", "v8", "node-inspect", "sys", "repl", "dns", "child_process", "cluster", "chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 /** Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51 */
 export const isExternal = (id: string, external: string[] = []) => {
@@ -85,12 +91,10 @@ export const isExternal = (id: string, external: string[] = []) => {
  */
 export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const { external = [] } = config?.esbuild ?? {};
   const [get] = state;
 
-  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
-  const FAILED_PKGJSON_FETCHES = get().FAILED_PKGJSON_FETCHES;
   return {
     name: EXTERNALS_NAMESPACE,
     setup(build) {
@@ -105,8 +109,8 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
         if (isExternal(argPath, external)) {
           if (config.polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
             const pkgDetails = parsePackageName(argPath);
-            const aliasPath = PolyfillMap[pkgDetails.name];
-            return CDN_RESOLVE(host, FAILED_EXTENSION_CHECKS, FAILED_EXTENSION_CHECKS)({
+            const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
+            return CDN_RESOLVE(host)({
               ...args,
               path: aliasPath
             });

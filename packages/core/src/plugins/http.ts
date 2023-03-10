@@ -12,7 +12,7 @@ import { decode } from "../utils/encode-decode.ts";
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn.ts";
 import { inferLoader } from "../utils/loader.ts";
 
-import { urlJoin, extname, isBareImport } from "../utils/path.ts";
+import { urlJoin, isBareImport } from "../utils/path.ts";
 import { setFile } from "../util.ts";
 
 /** HTTP Plugin Namespace */
@@ -71,7 +71,8 @@ export async function fetchAssets(path: string, content: Uint8Array, state: Stat
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
-    await setFile(FileSystem, url, content)
+    if (FileSystem)
+      await setFile(FileSystem, url, content)
 
     return {
       path: assetURL, contents: asset,
@@ -106,7 +107,7 @@ export async function determineExtension(path: string) {
   const argPath = (suffix = "") => path + suffix;
   let url = path;
 
-  let err: Error;
+  let err: Error | undefined;
   for (let i = 0; i < endingVariantsLength; i++) {
     const endings = allEndingVariants[i];
     const testingUrl = argPath(endings);
@@ -121,14 +122,15 @@ export async function determineExtension(path: string) {
     } catch (e) {
       FAILED_EXT_URLS.add(testingUrl);
 
-      if (i === 0)
+      if (i === 0) {
         err = e as Error;
+      }
 
       // If after checking all the different file extensions none of them are valid
       // Throw the first fetch error encountered, as that is generally the most accurate error
       if (i >= endingVariantsLength - 1) {
-        dispatchEvent(LOGGER_ERROR, err);
-        throw err;
+        dispatchEvent(LOGGER_ERROR, err ?? e);
+        throw err ?? e;
       }
     }
   }
@@ -143,7 +145,7 @@ export async function determineExtension(path: string) {
  * @param logger Console log
  */
 export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path; //.replace(/\/$/, "/index");
 
@@ -152,7 +154,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
       // If the import is an http import load the content via the http plugins loader
       if (/^https?:\/\//.test(argPath)) {
         return {
-          path: await determineExtension(argPath),
+          path: argPath,
           namespace: HTTP_NAMESPACE,
           pluginData: { pkg: args.pluginData?.pkg },
         };
@@ -169,7 +171,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return CDN_RESOLVE(origin)(args);
+        return await CDN_RESOLVE(origin)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -186,7 +188,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
          * So, we treat the path as a CDN and force all URLs to use CDN origins as the root domain
         */
         return {
-          path: await determineExtension(getCDNUrl(argPath, origin).url.toString()),
+          path: getCDNUrl(argPath, origin).url.toString(),
           namespace: HTTP_NAMESPACE,
           pluginData: { pkg: args.pluginData?.pkg },
         };
@@ -194,7 +196,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
     }
 
     // For relative imports
-    const path = await determineExtension(urlJoin(args.pluginData?.url, "../", argPath));
+    const path = urlJoin(args.pluginData?.url, "../", argPath);
     return {
       path,
       namespace: HTTP_NAMESPACE,
@@ -212,7 +214,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
  */
 export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
 
   const [get, set] = state;
   const assets = get()["assets"] ?? [];
@@ -254,8 +256,8 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
         // await FileSystem.set(args.namespace + ":" + args.path, content);
-
-        await setFile(FileSystem, url, content)
+        if (FileSystem)
+          await setFile(FileSystem, url, content)
 
         const _assetResults =
           (await fetchAssets(url, content, state))
@@ -268,7 +270,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
             .map((result) => {
               if (result.status == "fulfilled")
                 return result.value;
-            });
+            }) as ESBUILD.OutputFile[];
 
         set({ assets: assets.concat(_assetResults) });
         return {

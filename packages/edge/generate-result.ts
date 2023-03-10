@@ -1,5 +1,7 @@
 import type { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
 import type { BundleResult } from "./bundle.ts";
+
+import { LOGGER_INFO, dispatchEvent } from "@bundlejs/core/src/index.ts";
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
 
@@ -35,31 +37,28 @@ export const docs = {
   ],
 }
 
-export async function generateResult(jsonKey: string, badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
+export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
   const metafileQuery = url.searchParams.has("metafile");
   const fileQuery = url.searchParams.has("file");
   const badgeQuery = url.searchParams.has("badge");
+
   const badgeResult = url.searchParams.get("badge");
   const badgeStyle = url.searchParams.get("badge-style");
 
   if (badgeQuery) {
-    const { size } = value as {
-      size: {
-        "type": string,
-        "rawUncompressedSize": number,
-        "uncompressedSize": string,
-        "rawCompressedSize": number,
-        "compressedSize": string,
-        "size": string
-      }
-    };
+    const { size } = value;
     const detailedBadge = badgeResult?.includes("detail");
+    console.log({
+      detailedBadge
+    })
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
     const query = url.searchParams.get("q") ?? "@okikio/animate";
-    const detailBadgeText = detailedBadge ?
-      `${encodeURIComponent(`${size.uncompressedSize} `)}-->${encodeURIComponent(` `)}` :
-      "";
-    const detailBadgeName = `bundlejs${detailedBadge ? encodeURIComponent(` (${query})`) : ""}`;
+    const detailBadgeText = (
+      detailedBadge ?
+        `${encodeURIComponent(`${size.uncompressedSize} `)}->${encodeURIComponent(` `)}` :
+        ""
+    ).replace(/\-/g, "--");
+    const detailBadgeName = `bundlejs${detailedBadge ? encodeURIComponent(` (${query})`) : ""}`.replace(/\-/g, "--");
     const imgUrl = new URL(
       `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${encodeURIComponent(`${size.compressedSize} (gzip)`)
       }-blue?link=${urlQuery}`
@@ -67,8 +66,12 @@ export async function generateResult(jsonKey: string, badgeKey: string, value: B
     if (badgeStyle) {
       imgUrl.searchParams.append("style", badgeStyle);
     }
+    dispatchEvent(LOGGER_INFO, imgUrl.href)
 
-    const imgShield = await fetch(imgUrl).then(res => res.text());
+    const imgFetch = await fetch(imgUrl);
+    if (!imgFetch.ok) return imgFetch;
+
+    const imgShield = await imgFetch.text();
     await redis.set<string>(badgeKey, imgShield, { ex: 7200 })
 
     return new Response(imgShield, {

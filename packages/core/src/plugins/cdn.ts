@@ -25,7 +25,7 @@ const FAILED_PKGJSON_URLS = new Set<string>();
  * @param logger Console log
  */
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
       const { path: argPath, origin } = getCDNUrl(args.path, cdn);
@@ -75,7 +75,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           let isDirPkgJSON = false;
           const pkgVariantsLen = pkgVariants.length;
           for (let i = 0; i < pkgVariantsLen; i ++) {
-            const pkgMetadata = pkgVariants[i]
+            const pkgMetadata = pkgVariants[i]!;
             const { url } = getCDNUrl(pkgMetadata.path, origin);
             const { href } = url;
 
@@ -101,23 +101,25 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
             }
           }
 
-          let relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
+          const relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
+
           let modernResolve: ReturnType<typeof resolve> | void;
           let legacyResolve: ReturnType<typeof legacy> | void;
 
-          let resolvedPath: string | void = relativePath;
+          let resolvedPath: string | void = subpath;
 
           try {
             // Resolving imports & exports from the package.json
             // If an import starts with "#" then it's a subpath-import, and should be treated as so
             modernResolve = resolve(pkg, relativePath, {
               browser: true,
-              conditions: ["deno", "worker", "production", "module", "import", "browser"]
+              conditions: ["node", "require", "deno", "worker", "production", "module", "import", "browser"]
             });
 
             if (modernResolve) {
               resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
             }
+          // deno-lint-ignore no-empty
           } catch (e) { }
 
           if (!modernResolve) {
@@ -129,16 +131,28 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
               try {
                 // Resolving using main, module, etc... from package.json
                 legacyResolve = legacy(pkg, {
-                  browser: true
+                  browser: true,
+                  fields: ["unpkg", "browser", 'module', 'main']
                 });
 
                 if (legacyResolve) {
+                  // Some packages have `browser` fields in their package.json which have some values set to false
+                  // e.g. typescript - > https://unpkg.com/browse/typescript@4.9.5/package.json
+                  if (typeof legacyResolve === "object") {
+                    const values = Object.values(legacyResolve);
+                    const validValues = values.filter(x => x);
+                    if (validValues.length <= 0) {
+                      legacyResolve = legacy(pkg);
+                    }
+                  }
+
                   if (Array.isArray(legacyResolve)) {
                     resolvedPath = legacyResolve[0];
                   } else if (typeof legacyResolve === "object") {
+                    const legacyResults = legacyResolve;
                     const allKeys = Object.keys(legacyResolve);
                     const nonCJSKeys = allKeys.filter(key => {
-                      return !/\.cjs$/.exec(key) && legacyResolve[key];
+                      return !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key];
                     });
                     const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
                     resolvedPath = legacyResolve[keysToUse[0]] as string;
@@ -147,7 +161,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
                   }
                 }
               } catch (e) { }
-            } else resolvedPath = relativePath;
+            } else resolvedPath = subpath;
           }
 
           if (resolvedPath && typeof resolvedPath === "string") {
@@ -168,16 +182,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
       const { url } = getCDNUrl(`${parsed.name}${version}${finalSubpath}`, origin);
 
-      let deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
-      let peerDeps = pkg.peerDependencies ?? {};
-      let peerDepsKeys = Object.keys(peerDeps);
-      for (let depKey of peerDepsKeys) {
+      const deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
+      const peerDeps = pkg.peerDependencies ?? {};
+      const peerDepsKeys = Object.keys(peerDeps);
+      for (const depKey of peerDepsKeys) {
         peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
       }
       
       return {
         namespace: HTTP_NAMESPACE,
-        path: await determineExtension(url.toString()),
+        path: NPM_CDN ? await determineExtension(url.toString()) : url.toString(),
         pluginData: { 
           pkg: {
             ...pkg,
@@ -197,7 +211,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
  */
 export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: cdn } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const { origin: cdn } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const [get] = state;
 
   return {
