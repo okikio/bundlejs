@@ -1,6 +1,6 @@
 # [bundlejs](https://bundlejs.com)
 
-> ✨ WOOOOOOH!! ✨ The bundlejs api is now out at [deno.bundlejs.com](https://deno.bundlejs.com) and/or [edge.bundlejs.com](https://edge.bundlejs.com), bundle you code and get a badge. 
+> ✨ WOOOOOOH!! ✨ The bundlejs api is now out at [deno.bundlejs.com](https://deno.bundlejs.com) and/or [edge.bundlejs.com](https://edge.bundlejs.com), bundle your code and get a badge. 
 > 
 > Check out the [announcement tweet](https://twitter.com/jsbundle/status/1634455567321255936?s=20)
 
