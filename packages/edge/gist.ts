@@ -1,4 +1,5 @@
-import { Octokit } from "npm:octokit";
+// @deno-types=npm:octokit
+import { Octokit } from "octokit";
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "https://deno.land/x/velo/mod.ts";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
