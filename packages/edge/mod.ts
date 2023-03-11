@@ -32,8 +32,8 @@ export type Config = BuildConfig & {
   analysis?: boolean | string
 };
 
-let WASM_MODULE: Uint8Array = await ESBUILD_WASM();
-let wasmModule: WebAssembly.Module = new WebAssembly.Module(WASM_MODULE);
+let WASM_MODULE: Uint8Array;
+let wasmModule: WebAssembly.Module;
 
 serve(async (req: Request) => {
   try {
@@ -55,6 +55,11 @@ serve(async (req: Request) => {
       return new Response("Cleared entire cache...careful now.")
     }
 
+    const docsQuery = url.searchParams.has("docs");
+    if (docsQuery) {
+      return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
+    }
+
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
@@ -67,9 +72,6 @@ serve(async (req: Request) => {
     const enableMetafile = analysisQuery ||
       metafileQuery ||
       Boolean(initialConfig?.analysis);
-
-    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
-    if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
 
     const configObj: Config = deepAssign(
       {},
@@ -151,6 +153,8 @@ serve(async (req: Request) => {
     }
 
     const start = Date.now();
+    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
+    if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
     const response = await bundle(url, initialValue, configObj);
 
     if (!response.ok) {

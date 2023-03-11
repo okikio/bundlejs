@@ -52,7 +52,6 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
   const fileQuery = url.searchParams.has("file");
   const badgeQuery = url.searchParams.has("badge");
   const warningsQuery = url.searchParams.has("warnings") || url.searchParams.has("warning");
-  const docsQuery = url.searchParams.has("docs");
   const rawQuery = url.searchParams.has("raw");
 
   const badgeResult = url.searchParams.get("badge");
@@ -131,10 +130,6 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
         ]
       }
     )
-  }
-
-  if (docsQuery) {
-    return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
   }
 
   if (rawQuery) {
