@@ -67,7 +67,8 @@ function sanitizeShieldsIO(str: string) {
 export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
 
-  const analysisQuery = url.searchParams.has("analysis");
+  const analysisQuery = url.searchParams.has("analysis") ||
+    url.searchParams.has("analyze");
   const metafileQuery = url.searchParams.has("metafile");
   const fileQuery = url.searchParams.has("file");
   const badgeQuery = url.searchParams.has("badge");

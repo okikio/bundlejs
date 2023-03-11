@@ -6,6 +6,12 @@ import { PLATFORM_AUTO } from "../configs/platform.ts";
 
 // const { dependencies } = pkg;
 // const version = dependencies["esbuild-wasm"].replaceAll(/[^0-9.-]/g, "");
+// @ts-ignore Workers are undefined
+const worker = globalThis?.Worker;
+// @ts-ignore Workers are undefined
+globalThis.Worker = worker ?? class {
+  constructor() { }
+};
 
 /**
  * Determines which esbuild skew to use depending on the platform option supplied, 

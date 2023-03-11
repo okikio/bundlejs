@@ -72,7 +72,8 @@ serve(async (req: Request) => {
     const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
     const metafileQuery = url.searchParams.has("metafile");
-    const analysisQuery = url.searchParams.has("analysis") || url.searchParams.has("analyze");
+    const analysisQuery = url.searchParams.has("analysis") || 
+      url.searchParams.has("analyze");
 
     const badgeQuery = url.searchParams.has("badge");
     const polyfill = url.searchParams.has("polyfill");
@@ -90,7 +91,6 @@ serve(async (req: Request) => {
         (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) 
         : initialConfig?.esbuild?.minify
     );
-    console.log({ minify: minify  })
 
     const sourcemapResult = url.searchParams.get("sourcemap");
     const sourcemap = initialConfig?.esbuild?.sourcemap ?? (

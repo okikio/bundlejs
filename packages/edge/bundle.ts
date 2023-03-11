@@ -48,7 +48,8 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   setFile(fs, "/index.tsx", initialValue);
 
   const metafileQuery = url.searchParams.has("metafile");
-  const analysisQuery = url.searchParams.has("analysis");
+  const analysisQuery = url.searchParams.has("analysis") ||
+    url.searchParams.has("analyze");
 
   const enableMetafile = analysisQuery ||
     metafileQuery ||
