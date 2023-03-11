@@ -68,7 +68,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
 
 export async function listFiles(page = 0) {
   return ( 
-    await octokit.request('GET /gists/public', {
+    await octokit.request('GET /gists', {
       page,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28'
@@ -107,22 +107,31 @@ export function deleteFile(id: string) {
 }
 
 export async function clearFiles() {
-  let page = 0;
-  while (true) {
+  let page = 1;
+  while (page <= 20) {
     try {
       const files = await listFiles(page);
-      if (files.length <= 0) break;
-      
-      console.log()
+      if (!files || files.length <= 0) break;
 
-      for (const file of files) {
-        await deleteFile(file.id)
-      }
+      const results = await Promise.allSettled(
+        files.map((file: { id: string; }) => deleteFile(file.id))
+      );
+      
+      const resultsLen = results.length;
+      results.forEach((result, i) => {
+        if (result.status === "rejected") {
+          dispatchEvent(LOGGER_WARN, result.reason);
+
+          if (i >= resultsLen - 1) {
+            throw result.reason;
+          }
+        }
+      })
 
       page ++;
     } catch (e) {
       dispatchEvent(LOGGER_WARN, e);
-
+      page = 100_000;
       break;
     }
   }
