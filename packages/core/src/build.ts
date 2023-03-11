@@ -30,6 +30,11 @@ export type LocalState = {
   assets?: ESBUILD.OutputFile[],
 
   /**
+   * Versions
+   */
+  versions?: Map<string, string>,
+
+  /**
    * Array storing the [getter, setter] of the global state
    */
   GLOBAL?: [typeof getState, typeof setState],
@@ -153,20 +158,20 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     } catch (e) {
       if (e.errors) {
         // Log errors with added color info. to the virtual console
-        const ansiMsgs = [...await createNotice(e.errors, "error", false)];
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
         dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
         const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
 
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
         throw { msgs: htmlMsgs };
       } else throw e;
     }
 
     if (result.warnings) {
       // Log errors with added color info. to the virtual console
-      const ansiMsgs = [...await createNotice(result.warnings, "warning", false)];
+      const ansiMsgs = await createNotice(result.warnings, "warning", false) ?? [];
       dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
 
       const message =  `${ansiMsgs.length} warning(s) `;

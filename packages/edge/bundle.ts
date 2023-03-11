@@ -10,7 +10,7 @@ import type { Config } from "./mod.ts";
 import { headers } from "./mod.ts";
 import { setFile as setGist } from "./gist.ts";
 
-import { build, setFile, useFileSystem, createConfig, compress } from "@bundlejs/core/src/index.ts";
+import { build, setFile, useFileSystem, createConfig, compress, resolveVersion } from "@bundlejs/core/src/index.ts";
 
 import { createNotice } from "@bundlejs/core/src/utils/create-notice.ts";
 
@@ -25,6 +25,8 @@ export type BundleResult = {
   rawQuery: string,
   config: Config
   input: string,
+  version?: string,
+  versions?: string[],
   size: Omit<Awaited<ReturnType<typeof compress>>, "content">,
   time: string,
   rawTime: number,
@@ -35,7 +37,7 @@ export type BundleResult = {
 }
 
 export const inputModelResetValue = [
-  'export * from "@okikio/animate";'
+  'export * from "spring-easing";'
 ].join("\n");
 
 export async function bundle(url: URL, initialValue: string, configObj: Config) {
@@ -68,13 +70,31 @@ export async function bundle(url: URL, initialValue: string, configObj: Config) 
 
   const { init: _init, ...printableConfig } = createConfig("build", configObj);
   const duration = (end - start);
-  
-  if (!resultText) { resultText = result.contents[0].text; }
 
-  const fileId = await setGist(url.href, resultText);
+  const fileId = await setGist(url.href, result.outputs);
+  const allPkgs = (
+    (
+      url.searchParams.get("q") || 
+      url.searchParams.get("query")
+    ) ?? "spring-easing"
+  ).split(",");
+  const versionsList = await Promise.allSettled(
+    allPkgs
+    .filter(x => !/^https?\:\/\//.exec(x))
+    .map(x => resolveVersion(x))
+  );
+
+  const versions = [];
+  for (const version of versionsList) {
+    if (version.status === "fulfilled" && version.value) {
+      versions.push(version.value);
+    }
+  }
+
   const finalResult: BundleResult = {
     query: decodeURIComponent(url.search),
     rawQuery: encodeURIComponent(url.search),
+    ...(versions.length === 1 ? { version: versions[0] } : versions),
     config: printableConfig,
     input: initialValue,
     size,

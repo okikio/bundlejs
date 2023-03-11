@@ -6,7 +6,7 @@ import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
 import { resolve, legacy } from "resolve.exports";
-import { parsePackageName as parsePackageName } from "../utils/parse-package-name.ts";
+import { parsePackageName } from "../utils/parse-package-name.ts";
 
 import { extname, isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";

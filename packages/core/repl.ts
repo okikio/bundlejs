@@ -5,7 +5,7 @@ const fs = await TheFileSystem;
 console.log("\n");
 await setFile(fs, "/index.tsx", `\
 export * as Other from "/new.tsx";
-export * from "@okikio/animate";`);
+export * from "spring-easing";`);
 await setFile(fs, "/new.tsx", "export * from \"@okikio/native\";");
 await setFile(fs, "/other.tsx", `\
 export * as Other from "/index.tsx";

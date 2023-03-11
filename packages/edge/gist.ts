@@ -1,6 +1,7 @@
 import { Octokit } from "npm:octokit";
 import { dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "https://deno.land/x/velo/mod.ts";
+import { ESBUILD } from "../core/src/types.ts";
 
 export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(120_000).build();
 export const octokit = new Octokit({
@@ -8,19 +9,26 @@ export const octokit = new Octokit({
 })
 
 export const BUNDLE_FILE_PATH = "index.js";
-export async function setFile(url: string, text: string) {
+export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
   const newUrl = new URL(url);
   newUrl.hostname = "deno.bundlejs.dev";
 
   try {
-    const fileId = (
+    const filesObj = Object.fromEntries(
+      files.map(x => [
+        x.path.replace(/^\.|\//g, "").replace(/[^\w-_.]/g, ""), 
+        { content: x.text ?? "[bundlejs] Empty file..." } 
+      ])
+    );
+    const result = (
       await octokit.request('POST /gists', {
         description: `Result of ${newUrl.href}`,
         'public': true,
         files: {
-          [BUNDLE_FILE_PATH]: {
-            content: text
-          },
+          ...filesObj,
+          // [BUNDLE_FILE_PATH]: {
+          //   content: text
+          // },
           'README.md': {
             content: `Hey 👋, this is a gist which stores the final bundle results of the bundlejs api, learn more on the website https://bundlejs.com. This is the result of ${newUrl.href}.`
           }
@@ -29,8 +37,10 @@ export async function setFile(url: string, text: string) {
           'X-GitHub-Api-Version': '2022-11-28'
         },
       })
-    ).data.id;
-    if (fileId) GIST_CACHE.set(fileId, text);
+    ).data;
+    console.log({ gistURl: result.html_url })
+    const fileId = result.id;
+    if (fileId) GIST_CACHE.set(fileId, filesObj[BUNDLE_FILE_PATH].content);
     return fileId;
   } catch(e) {
     dispatchEvent(LOGGER_ERROR, e);
@@ -68,8 +78,7 @@ export async function getFile(id: string) {
 }
 
 export function deleteFile(id: string) {
-  const rawFile = GIST_CACHE.has(id);
-  if (rawFile) GIST_CACHE.remove(id);
+  if (GIST_CACHE.has(id)) GIST_CACHE.remove(id);
   return octokit.request('DELETE /gists/{gist_id}', {
     gist_id: id,
     headers: {

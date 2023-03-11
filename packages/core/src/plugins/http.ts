@@ -8,6 +8,7 @@ import { dispatchEvent, LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN } from "../config
 import { CDN_RESOLVE } from "./cdn.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 import { decode } from "../utils/encode-decode.ts";
+import { parsePackageName } from "../utils/parse-package-name.ts";
 
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn.ts";
 import { inferLoader } from "../utils/loader.ts";

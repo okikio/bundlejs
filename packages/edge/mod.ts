@@ -16,8 +16,7 @@ import { deepAssign, createConfig, lzstring, dispatchEvent, LOGGER_INFO, BUILD_C
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
 import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
-import { generateResult } from "./generate-result.ts";
-import styleText from "./style.ts";
+import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
 import { clearFiles as clearGists, deleteFile as deleteGist } from "./gist.ts";
@@ -176,13 +175,10 @@ serve(async (req: Request) => {
 
     return await generateResult(badgeKey, value, url, redis, false, Date.now() - start);
   } catch (e) {
-    if ("msgs" in e) {
+    if ("msgs" in e && e.msgs) {
       try {
         return new Response(
-          [
-            `<style>${styleText}</style>`,
-            `<pre>${e.msgs.join("\n")}</pre>`
-          ].join(""),
+          generateHTMLMessages(e.msgs as string[]),
           { 
             status: 404, 
             headers: [
