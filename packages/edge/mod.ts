@@ -4,6 +4,9 @@ import type { BundleResult } from "./bundle.ts";
 import { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
 import { serve } from "https://deno.land/std/http/server.ts";
 
+// @deno-type=npm:byte-base64
+import { base64ToBytes } from "byte-base64";
+
 // @ts-ignore Workers are undefined
 const worker = globalThis?.Worker;
 // @ts-ignore Workers are undefined
@@ -11,7 +14,7 @@ globalThis.Worker = worker ?? class {
   constructor() {}
 };
 
-import { deepAssign, createConfig, resolveVersion, lzstring, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
+import { deepAssign, createConfig, resolveVersion, lzstring, parsePackageName, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
 import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
@@ -104,7 +107,10 @@ serve(async (req: Request) => {
       query
         .split(",")
         .filter(x => !/^https?\:\/\//.exec(x))
-        .map(async x => [x, await resolveVersion(x)])
+        .map(async x => {
+          const { name = x, version } = parsePackageName(x, true)
+          return [name, await resolveVersion(x) ?? version]
+        })
     );
 
     const versions: string[] = [];
@@ -127,11 +133,13 @@ serve(async (req: Request) => {
 
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
+    const badgeRasterQuery = url.searchParams.has("badge-raster");
     const badgeKey = `badge-${
       compressToBase64(
         JSON.stringify({
           jsonKey,
           badge: badgeQuery,
+          badgeRasterQuery,
           badgeResult,
           badgeStyle
         }).trim()
@@ -155,13 +163,13 @@ serve(async (req: Request) => {
     if (url.pathname !== "/no-cache") {
       const BADGEResult = await redis.get<string>(badgeKey);
       if (badgeQuery && BADGEResult) {
-        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, BADGEResult })
-        return new Response(BADGEResult, {
+        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery, BADGEResult })
+        return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
           status: 200,
           headers: [
             ...headers,
             ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
-            ['Content-Type', 'image/svg+xml']
+            ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
           ],
         })
       }

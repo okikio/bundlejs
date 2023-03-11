@@ -20,17 +20,17 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
 
   try {
     const filesObj = Object.fromEntries(
-      files.map(x => { 
+      files.map(x => {
         const path = x.path.replace(/^\.|\//g, "").replace(/[^\w-_.]/g, "");
         return [
-          path, 
-          { 
+          path,
+          {
             content: (
-              /\.(wasm|png|jpg|jpeg)/.exec(extname(path)) ? 
-                bytesToBase64(x.contents) : 
+              /\.(wasm|png|jpg|jpeg)/.exec(extname(path)) ?
+                bytesToBase64(x.contents) :
                 x.text
-            ) ?? "[bundlejs] Empty file..." 
-          } 
+            ) ?? "[bundlejs] Empty file..."
+          }
         ]
       })
     );
@@ -49,23 +49,23 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
         },
       })
     ).data;
-    
+
     const fileId = result.id;
     const fileUrl = result.url;
     const fileHTMLUrl = result.html_url;
     if (fileId) GIST_CACHE.set(fileId, filesObj[BUNDLE_FILE_PATH].content);
     return {
-      fileId, 
-      fileUrl, 
-      fileHTMLUrl 
+      fileId,
+      fileUrl,
+      fileHTMLUrl
     };
-  } catch(e) {
-    dispatchEvent(LOGGER_ERROR, e);
+  } catch (e) {
+    console.warn('gist set: ', e);
   }
 }
 
 export async function listFiles(page = 0) {
-  return ( 
+  return (
     await octokit.request('GET /gists', {
       page,
       headers: {
@@ -78,30 +78,43 @@ export async function listFiles(page = 0) {
 export async function getFile(id: string) {
   const rawFile = GIST_CACHE.get(id);
   if (rawFile) return rawFile;
-  const req = await octokit.request('GET /gists/{gist_id}', {
-    gist_id: id,
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28'
+
+  try {
+    const req = await octokit.request('GET /gists/{gist_id}', {
+      gist_id: id,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+
+    const data = req.data;
+    const result = data.files![BUNDLE_FILE_PATH]!;
+    if (result.truncated && result.raw_url) {
+      return await fetch(result.raw_url).then(res => res.text());
     }
-  });
 
-  const data = req.data;
-  const result = data.files![BUNDLE_FILE_PATH]!;
-  if (result.truncated && result.raw_url) {
-    return await fetch(result.raw_url).then(res => res.text());
+    return result?.content;
+  } catch (e) {
+    console.warn(`gist get: `, e)
   }
-
-  return result?.content;
 }
 
-export function deleteFile(id: string) {
-  if (GIST_CACHE.has(id)) GIST_CACHE.remove(id);
-  return octokit.request('DELETE /gists/{gist_id}', {
-    gist_id: id,
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28'
-    }
-  });
+export async function deleteFile(id: string) {
+  try {
+    console.log("Deleting")
+    if (GIST_CACHE.has(id)) GIST_CACHE.remove(id);
+    const result = await octokit.request('DELETE /gists/{gist_id}', {
+      gist_id: id,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+
+    console.log("Deleted")
+    return result
+  } catch (e) {
+    console.warn(`gist delete: `, e);
+  }
 }
 
 export async function clearFiles() {
@@ -114,11 +127,11 @@ export async function clearFiles() {
       const results = await Promise.allSettled(
         files.map((file: { id: string; }) => deleteFile(file.id))
       );
-      
+
       const resultsLen = results.length;
       results.forEach((result, i) => {
         if (result.status === "rejected") {
-          dispatchEvent(LOGGER_WARN, result.reason);
+          console.warn(`gist clear: `, result.reason);
 
           if (i >= resultsLen - 1) {
             throw result.reason;
@@ -126,9 +139,9 @@ export async function clearFiles() {
         }
       })
 
-      page ++;
+      page++;
     } catch (e) {
-      dispatchEvent(LOGGER_WARN, e);
+      console.warn(`gist clear: `, e);
       page = 100_000;
       break;
     }

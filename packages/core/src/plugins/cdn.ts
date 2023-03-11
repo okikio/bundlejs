@@ -132,7 +132,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
                 // Resolving using main, module, etc... from package.json
                 legacyResolve = legacy(pkg, {
                   browser: true,
-                  fields: ["unpkg", "browser", 'module', 'main']
+                  fields: ["unpkg", "browser", 'module', "main", "bin"]
                 });
 
                 if (legacyResolve) {

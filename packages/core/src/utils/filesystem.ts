@@ -126,9 +126,9 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 /** Virtual Filesystem Storage */
 export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = Velo
   .builder<string, Content | undefined | null>()
-  .capacity(10_000)
+  .capacity(100)
   .lru()
-  .ttl(120_000)
+  .ttl(30_000)
   .build() 
 ) {
   const fs: IFileSystem<typeof FileSystem, Content> = {

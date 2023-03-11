@@ -1,6 +1,8 @@
 import type { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
 import type { BundleResult } from "./bundle.ts";
 
+import { bytesToBase64 } from "byte-base64";
+
 import { LOGGER_INFO, dispatchEvent } from "@bundlejs/core/src/index.ts";
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
@@ -16,6 +18,7 @@ export const docs = {
   examples: [
     "(new) /?badge or /?badge=detailed",
     "(new) /?badge-style=for-the-badge",
+    "(new) /?badge-raster",
     "(new) /?file",
     "(new) /?metafile",
     "(new) /?polyfill",
@@ -31,6 +34,7 @@ export const docs = {
   basics: [
     `(new) /?badge - Generates a badge (if you want more details, set \`?badge=detailed\` you will get the uncompressed size and the mobules being bundled listed)`,
     `(new) /?badge-style - Various badge styles supported by http://shields.io (https://shields.io/#:~:text=PREFIX%3E%26suffix%3D%3CSUFFIX%3E-,Styles,-The%20following%20styles)`,
+    `(new) /?badge-raster - The badge but as a png image`,
     `(new) /?file - Resulting bundled code(you can actually import this into your javascript file and start using it https://stackblitz.com/edit/vitejs-vite-iquaht?file=src%2Fmain.ts&terminal=dev)`,
     `(new) /?metafile - Esbuild bundle metafile which can be used w / https://esbuild.github.io/analyze/ (hoping to have this built-in in the future)`,
     `(new) /?polyfill - Polyfill Node built-ins`,
@@ -45,6 +49,13 @@ export const docs = {
   ],
 }
 
+function sanitizeShieldsIO(str: string) {
+  return str
+    .replace(/\-/g, "--")
+    .replace(/\_/g, "__")
+    .replace(/\s/g, "_")
+}
+
 export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
 
@@ -57,20 +68,22 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
   const badgeResult = url.searchParams.get("badge");
   const badgeStyle = url.searchParams.get("badge-style");
 
+  const badgeRasterQuery = url.searchParams.has("badge-raster");
+
   if (badgeQuery) {
     const { size } = value;
     const detailedBadge = badgeResult?.includes("detail");
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
     const query = url.searchParams.get("q") ?? "spring-easing";
-    const detailBadgeText = (
-      detailedBadge ?
-        `${encodeURIComponent(`${size.uncompressedSize} `)}->${encodeURIComponent(` `)}` :
-        ""
-    ).replace(/\-/g, "--");
-    const detailBadgeName = `bundlejs${detailedBadge ? encodeURIComponent(` (${query})`) : ""}`.replace(/\-/g, "--");
+    const detailBadgeText = sanitizeShieldsIO(
+      detailedBadge ? `${size.uncompressedSize} -> ` : ""
+    );
+    const detailBadgeName = sanitizeShieldsIO(
+      `bundlejs${detailedBadge ? ` (${value.version ? value.version : value.versions?.join(", ") ?? query})` : ""}`
+    );
     const imgUrl = new URL(
-      `https://img.shields.io/badge/${detailBadgeName}-${detailBadgeText}${encodeURIComponent(`${size.compressedSize} (gzip)`)
-      }-blue?link=${urlQuery}`
+      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeName}-${detailBadgeText}${encodeURIComponent(`${size.compressedSize} (gzip)`)
+      }-blue?cacheSeconds=60&link=${urlQuery}`
     );
 
     if (badgeStyle) { imgUrl.searchParams.append("style", badgeStyle); }
@@ -79,15 +92,15 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     const imgFetch = await fetch(imgUrl);
     if (!imgFetch.ok) return imgFetch;
 
-    const imgShield = await imgFetch.text();
-    await redis.set<string>(badgeKey, imgShield, { ex: 7200 })
+    const imgShield = badgeRasterQuery ? new Uint8Array(await imgFetch.arrayBuffer()) : await imgFetch.text();
+    await redis.set<string>(badgeKey, typeof imgShield === "string" ? imgShield : bytesToBase64(imgShield), { ex: 7200 })
 
     return new Response(imgShield, {
       status: 200,
       headers: [
         ...headers,
         ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
-        ['Content-Type', 'image/svg+xml']
+        ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
       ],
     })
   }
