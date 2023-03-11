@@ -64,7 +64,6 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
 }
 
 export async function listFiles(page = 0) {
-  // octokit.paginate
   return ( 
     await octokit.request('GET /gists', {
       page,
@@ -106,7 +105,7 @@ export function deleteFile(id: string) {
 
 export async function clearFiles() {
   let page = 1;
-  while (page <= 20) {
+  while (page <= 100) {
     try {
       const files = await listFiles(page);
       if (!files || files.length <= 0) break;
