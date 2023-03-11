@@ -13,6 +13,7 @@ import { setFile as setGist } from "./gist.ts";
 import { build, setFile, useFileSystem, createConfig, compress, resolveVersion } from "@bundlejs/core/src/index.ts";
 
 import { createNotice } from "@bundlejs/core/src/utils/create-notice.ts";
+import { extname } from "../core/src/deno/path/posix.ts";
 
 const FileSystem = useFileSystem();
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
@@ -31,7 +32,8 @@ export type BundleResult = {
   time: string,
   rawTime: number,
   fileId?: string,
-  rawFile?: string,
+  fileUrl?: string,
+  fileHTMLUrl?: string,
   warnings?: string[],
   metafile?: ESBUILD.Metafile
 }
@@ -56,22 +58,15 @@ export async function bundle(url: URL, initialValue: string, configObj: Config) 
   const result = await build(configObj, FileSystem);
   const end = performance.now();
 
-  let resultText = "";
   const { content: _content, ...size } = await compress(
-    result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => {
-      if (x.path === "/index.js") {
-        resultText = x.text;
-      }
-
-      return x.contents;
-    }),
+    result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => x.contents),
     configObj.compression
   );
 
   const { init: _init, ...printableConfig } = createConfig("build", configObj);
   const duration = (end - start);
-
-  const fileId = await setGist(url.href, result.outputs);
+  
+  const { fileId, fileUrl, fileHTMLUrl } = await setGist(url.href, result.outputs) ?? {};
   const allPkgs = (
     (
       url.searchParams.get("q") || 
@@ -91,9 +86,10 @@ export async function bundle(url: URL, initialValue: string, configObj: Config) 
     }
   }
 
+  const searchQueries = url.search ?? `?q=${allPkgs.join(",")}`;
   const finalResult: BundleResult = {
-    query: decodeURIComponent(url.search),
-    rawQuery: encodeURIComponent(url.search),
+    query: decodeURIComponent(searchQueries),
+    rawQuery: encodeURIComponent(searchQueries),
     ...(versions.length === 1 ? { version: versions[0] } : versions),
     config: printableConfig,
     input: initialValue,
@@ -101,12 +97,13 @@ export async function bundle(url: URL, initialValue: string, configObj: Config) 
     time: timeFormatter.format(duration / 1000, "seconds"),
     rawTime: duration,
     fileId,
-    ...(!fileId ? { rawFile: resultText } : {}),
+    fileUrl, 
+    fileHTMLUrl,
     ...(result?.warnings?.length > 0 ? { warnings: await createNotice(result.warnings, "warning", false) } : {}),
     ...(enableMetafile && result?.metafile ? { metafile: result?.metafile } : {})
   };
 
-  (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).clear();
+  (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
 
   return new Response(JSON.stringify(finalResult), {
     status: 200,

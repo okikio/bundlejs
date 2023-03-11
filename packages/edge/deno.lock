@@ -428,6 +428,7 @@
       "@cloudflare/workers-types@^4.20230228.0": "@cloudflare/workers-types@4.20230228.0",
       "@types/node@^18.14.6": "@types/node@18.14.6",
       "ansi-to-html": "ansi-to-html@0.7.2",
+      "byte-base64": "byte-base64@1.1.0",
       "del-cli@^5.0.0": "del-cli@5.0.0",
       "entities": "entities@2.2.0",
       "entities@4.4.0": "entities@4.4.0",
@@ -1229,6 +1230,10 @@
       "busboy@1.6.0": {
         "integrity": "sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==",
         "dependencies": { "streamsearch": "streamsearch@1.1.0" }
+      },
+      "byte-base64@1.1.0": {
+        "integrity": "sha512-56cXelkJrVMdCY9V/3RfDxTh4VfMFCQ5km7B7GkIGfo4bcPL9aACyJLB0Ms3Ezu5rsHmLB2suis96z4fLM03DA==",
+        "dependencies": {}
       },
       "camelcase-keys@7.0.2": {
         "integrity": "sha512-Rjs1H+A9R+Ig+4E/9oyB66UC5Mj9Xq3N//vcLf2WzgdTi/3gUu3Z9KoqmlrEG4VuuLK8wJHofxzdQXz/knhiYg==",

@@ -163,7 +163,9 @@ serve(async (req: Request) => {
     }
 
     const value: BundleResult = await response.json();
-    const prevValue = await redis.set(jsonKey, JSON.stringify(value), { ex: 86400, get: true });
+
+    const prevValue = await redis.get<BundleResult>(jsonKey);
+    await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
     if (!badgeQuery) await redis.del(badgeKey);
 
     if (prevValue) {

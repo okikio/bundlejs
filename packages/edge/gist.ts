@@ -1,7 +1,11 @@
 import { Octokit } from "npm:octokit";
-import { dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
+import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "https://deno.land/x/velo/mod.ts";
 import { ESBUILD } from "../core/src/types.ts";
+
+import { bytesToBase64 } from "npm:byte-base64";
+
+const { extname } = path;
 
 export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(120_000).build();
 export const octokit = new Octokit({
@@ -15,10 +19,19 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
 
   try {
     const filesObj = Object.fromEntries(
-      files.map(x => [
-        x.path.replace(/^\.|\//g, "").replace(/[^\w-_.]/g, ""), 
-        { content: x.text ?? "[bundlejs] Empty file..." } 
-      ])
+      files.map(x => { 
+        const path = x.path.replace(/^\.|\//g, "").replace(/[^\w-_.]/g, "");
+        return [
+          path, 
+          { 
+            content: (
+              /\.(wasm|png|jpg|jpeg)/.exec(extname(path)) ? 
+                bytesToBase64(x.contents) : 
+                x.text
+            ) ?? "[bundlejs] Empty file..." 
+          } 
+        ]
+      })
     );
     const result = (
       await octokit.request('POST /gists', {
@@ -38,10 +51,16 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
         },
       })
     ).data;
-    console.log({ gistURl: result.html_url })
+    
     const fileId = result.id;
+    const fileUrl = result.url;
+    const fileHTMLUrl = result.html_url;
     if (fileId) GIST_CACHE.set(fileId, filesObj[BUNDLE_FILE_PATH].content);
-    return fileId;
+    return {
+      fileId, 
+      fileUrl, 
+      fileHTMLUrl 
+    };
   } catch(e) {
     dispatchEvent(LOGGER_ERROR, e);
   }
@@ -93,6 +112,8 @@ export async function clearFiles() {
     try {
       const files = await listFiles(page);
       if (files.length <= 0) break;
+      
+      console.log()
 
       for (const file of files) {
         await deleteFile(file.id)

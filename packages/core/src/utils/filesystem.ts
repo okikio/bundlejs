@@ -2,6 +2,7 @@ import { decode, encode } from "./encode-decode.ts";
 import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
 
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
+import { Velo } from "https://deno.land/x/velo/mod.ts";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
@@ -13,7 +14,7 @@ export interface IFileSystem<T, Content = Uint8Array> {
    * @param path path of file in virtual file system storage
    * @returns file from file system storage as a Uint8Array buffer
    */
-  get: (path: string) => Promise<Content>,
+  get: (path: string) => Promise<Content | null | undefined>,
 
   /**
    * Writes file to filesystem in either string or uint8array buffer format
@@ -21,7 +22,7 @@ export interface IFileSystem<T, Content = Uint8Array> {
    * @param path path of file in virtual file system storage
    * @param content contents of file to store as a Uint8Array buffer, if no Uint8Array is given, a new folder is created
    */
-  set: (path: string, content?: Content, type?: "file" | "folder") => Promise<void>,
+  set: (path: string, content?: Content | null, type?: "file" | "folder") => Promise<void>,
 
   /**
    * Deletes files and directories at specific paths in the virtual file system storage 
@@ -29,7 +30,7 @@ export interface IFileSystem<T, Content = Uint8Array> {
    * @param path the relative or absolute path to resolve to
    * @returns promise indicating delete was successful
    */
-  delete: (path: string) => Promise<boolean>,
+  delete: (path: string) => Promise<boolean | void>,
 }
 
 export function isValid(file: unknown) {
@@ -74,7 +75,7 @@ export async function getFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
     if (file === undefined) return undefined;
     if (!isValid(file)) return null;
 
-    if (type === "string") return decode(file);
+    if (type === "string") return decode(file!);
     return file;
   } catch (e) {
     throw new Error(`Error occurred while getting "${resolvedPath}": ${e}`, { cause: e });
@@ -94,7 +95,7 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
 
   try {
     if (!isValid(content)) await fs.set(resolvedPath, null, 'folder');
-    await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content), 'file');
+    await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content!), 'file');
   } catch (e) {
     throw new Error(`Error occurred while writing to "${resolvedPath}": ${e}`, { cause: e });
   }
@@ -123,11 +124,17 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 };
 
 /** Virtual Filesystem Storage */
-export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new Map<string, Content | null>()) {
+export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = Velo
+  .builder<string, Content | undefined | null>()
+  .capacity(10_000)
+  .lru()
+  .ttl(120_000)
+  .build() 
+) {
   const fs: IFileSystem<typeof FileSystem, Content> = {
     files: async () => FileSystem,
     get: async (path: string) => FileSystem.get(resolve(path)),
-    async set(path: string, content?: Content) {
+    async set(path: string, content?: Content | null) {
       const resolvedPath = resolve(path);
       const dir = dirname(resolvedPath);
 
@@ -146,7 +153,7 @@ export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new M
       FileSystem.set(resolvedPath, content);
     },
     async delete(path: string) {
-      return FileSystem.delete(resolve(path))
+      return FileSystem.remove(resolve(path))
     }
   };
 
@@ -158,7 +165,7 @@ export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new M
  */
 async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array | string) {
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle
-  if ("createSyncAccessHandle" in fileHandle) {
+  if ("createSyncAccessHandle" in fileHandle && fileHandle.createSyncAccessHandle) {
     // Get sync access handle
     const accessHandle = await fileHandle.createSyncAccessHandle();
 
@@ -175,7 +182,7 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
   
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable
   // Create a FileSystemWritableFileStream to write to.
-  const writable = await fileHandle.createWritable();
+  const writable = await fileHandle.createWritable!();
 
   // Write the contents of the file to the stream.
   await writable.write(contents);
@@ -189,7 +196,7 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
  */
 async function readFile(fileHandle: FileSystemFileHandle) {
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle
-  if ("createSyncAccessHandle" in fileHandle) {
+  if ("createSyncAccessHandle" in fileHandle && fileHandle.createSyncAccessHandle) {
     // Get sync access handle
     const accessHandle = await fileHandle.createSyncAccessHandle();
 

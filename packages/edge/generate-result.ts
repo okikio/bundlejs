@@ -46,6 +46,8 @@ export const docs = {
 }
 
 export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
+  const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
+
   const metafileQuery = url.searchParams.has("metafile");
   const fileQuery = url.searchParams.has("file");
   const badgeQuery = url.searchParams.has("badge");
@@ -85,20 +87,23 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', 'max-age=7200, s-maxage=30, public'],
+        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
         ['Content-Type', 'image/svg+xml']
       ],
     })
   }
 
   if (fileQuery) {
-    const { fileId, rawFile } = value;
-    const fileResult = fileId ? await getFile(fileId) ?? "" : rawFile
+    const { fileId } = value;
+    const fileResult = fileId ? await getFile(fileId) ?? "" : "";
+    if (!fileId) {
+      throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+    }
     return new Response(fileResult, {
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
         ['Content-Type', 'text/javascript']
       ],
     })
@@ -109,7 +114,7 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+        ['Cache-Control', `max-age=${noCache ? 30 : 1800}, s-maxage=30, public`],
         ['Content-Type', 'application/json']
       ],
     })
@@ -121,7 +126,7 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
         status: 200,
         headers: [
           ...headers,
-          ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+          ['Cache-Control', `max-age=30, s-maxage=30, public`],
           ['Content-Type', 'text/html']
         ]
       }
@@ -137,13 +142,13 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', 'max-age=30, s-maxage=30, public'],
+        ['Cache-Control', `max-age=30, s-maxage=30, public`],
         ['Content-Type', 'application/json']
       ],
     });
   }
 
-  const { rawFile: _rawFile, metafile: _metafile, warnings: _warnings, ...usefulInfo } = value;
+  const { metafile: _metafile, warnings: _warnings, ...usefulInfo } = value;
   const finalResult = {
     ...usefulInfo,
     ...(url.search === "" ? docs : ""),
@@ -159,7 +164,7 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     status: 200,
     headers: [
       ...headers,
-      ['Cache-Control', 'max-age=30, s-maxage=30, public'],
+      ['Cache-Control', 'max-age=7200, s-maxage=30, public'],
       ['Content-Type', 'application/json']
     ],
   })
