@@ -30,7 +30,12 @@ block content
           i.icon clear
 
       .search-results-container
-     
+
+  .container
+    blockquote(class="mb-2") ✨ WOOOH! ✨ The official #[a(href="https://twitter.com/jsbundle/status/1634455567321255936?s=20") bundlejs API] is out, you can access it via #[a(href="https://deno.bundlejs.com") deno.bundlejs.com] and/or #[a(href="https://edge.bundlejs.com") edge.bundlejs.com].
+    blockquote.mb-1 
+      | The new API also comes with proper badges #[img(src="https://deno.bundlejs.com/?q=spring-easing&badge" class="inline-block" alt="spring-easing'a badge")]
+
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
 
   .container.editor-section(class="!max-w-screen-lg relative !pt-0 pb-12")
@@ -126,7 +131,6 @@ block content
               .content
                 p.px-4.hljs-literal No logs...
     
-      
     .drag-section.vertical#handle-2
       .drag-handle.umami--pointermove--code-height-drag-handle
 
@@ -166,7 +170,15 @@ block content
 
   .container 
     blockquote.mb-2 📑 Official #[a(href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs") Docs] for #[code bundlejs] are now available.
-    blockquote ✨ Update ✨ #[a(href="https://bundlejs.com") bundlejs.com] is the new official domain for #[code bundlejs].
+    blockquote  Special thanks to #[a(href="https://sheetjs.com") @sheetjs] and #[a(href="https://daniguardio.la/" ) @daniguardio_la] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
+
+    div.flex.items-center.justify-center.flex-wrap.gap-2
+      +product-hunt.place-content-center
+      div
+        a(href='https://opencollective.com/bundle/donate' target='_blank' rel="noopener")
+          img(src='https://opencollective.com/bundle/donate/button@2x.png?color=blue' width='300' height='54')
+
+    br
     details#usage.accordian.umami--toggle--usage-docs-accordian
       summary
         h3 Usage
@@ -331,6 +343,14 @@ block content
             # Dark Mode Badge 
             [![Open Bundle](https://bundlejs.com/badge-dark.svg)](https://bundlejs.com/)
             ```
+          | Another options is to use the API, e.g.
+
+          :markdown-it(linkify langPrefix='language-')
+            [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
+
+            ```md
+            [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
+            ```
           br
           | You can use the #[a(href="#sharing") Sharing] section above, to create unique bundles, when users clicks on the badge.
   
@@ -383,14 +403,11 @@ block content
 
     br
     blockquote #[strong Note] You can also use #[a(href="https://bundlesize.com") bundlesize.com] to access #[code bundlejs].
-    blockquote  Special thanks to #[a(href="https://sheetjs.com") @sheetjs] and #[a(href="https://daniguardio.la/" ) @daniguardio_la] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
     br
     .text-center
       p(class="bg-white border border-gray-300 dark:bg-elevated dark:border-gray-700").inline-block.px-4.py-2.rounded-md
         a(href="https://analytics.bundlejs.com/share/jWI51PxZ/bundle").umami--click--public-analytics-link
           span#visit-counter.inline-block 👋 00000 visits
-    br
-    +product-hunt.place-content-center
 
 block script 
   //- script(src='/js/index.min.js' type='module' async)
