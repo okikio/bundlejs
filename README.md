@@ -4,12 +4,12 @@
 > 
 > Check out the [announcement tweet](https://twitter.com/jsbundle/status/1634455567321255936?s=20)
 
-> I see badge you see a badge we all see badges...
+> I see a badge, you see a badge, we all see badges!!!
 > 
 > [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
 > 
 
-> To create a badge just replace the domain with `deno.bundlejs.com` and add `/?badge`, yeah, that simple
+> To create a badge just replace the domain `bundlejs.com` domain with `deno.bundlejs.com` and add `/?badge`, yeah, that simple
 
 <a href="https://www.producthunt.com/posts/bundle-6?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-bundle-6" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=300568&theme=dark" alt="bundle - An online npm package bundle size checker | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a> [![Open In Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/okikio/bundle/blob/main/README.md)
 
