@@ -8,7 +8,7 @@ import { bytesToBase64 } from "byte-base64";
 
 const { extname } = path;
 
-export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(120_000).build();
+export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(30_000).build();
 export const octokit = new Octokit({
   auth: Deno.env.get('GITHUB_AUTH_TOKEN')
 })

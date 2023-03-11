@@ -48,7 +48,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           peerDependencies = {}
         } = pkg;
 
-        const deps = Object.assign({}, devDependencies, dependencies, peerDependencies);
+        const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
         const keys = Object.keys(deps);
 
         if (keys.includes(argPath))
@@ -132,7 +132,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
                 // Resolving using main, module, etc... from package.json
                 legacyResolve = legacy(pkg, {
                   browser: true,
-                  fields: ["unpkg", "browser", 'module', "main", "bin"]
+                  fields: ["unpkg", "browser", "module", "main", "bin"]
                 });
 
                 if (legacyResolve) {
@@ -167,6 +167,15 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           if (resolvedPath && typeof resolvedPath === "string") {
             finalSubpath = resolvedPath.replace(/^(\.\/|\/)/, "/");
           }
+
+          // if (argPath.includes("micromark")) {
+          //   console.log({
+          //     pkg,
+          //     finalSubpath,
+          //     modernResolve,
+          //     legacyResolve
+          //   })
+          // }
 
           if (dir && isDirPkgJSON) {
             finalSubpath = `${dir}${finalSubpath}`;

@@ -89,7 +89,9 @@ export const BUILD_CONFIG: BuildConfig = {
     "minify": true,
 
     "treeShaking": true,
-    "platform": "browser"
+    "platform": "browser",
+
+    "jsx": "transform"
   },
 
   "ascii": "ascii",

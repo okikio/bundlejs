@@ -3,7 +3,7 @@ import type { BundleResult } from "./bundle.ts";
 
 import { bytesToBase64 } from "byte-base64";
 
-import { LOGGER_INFO, dispatchEvent } from "@bundlejs/core/src/index.ts";
+import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundlejs/core/src/index.ts";
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
 import styleText from "./style.ts";
@@ -20,8 +20,12 @@ export const docs = {
     "(new) /?badge-style=for-the-badge",
     "(new) /?badge-raster",
     "(new) /?file",
-    "(new) /?metafile",
     "(new) /?polyfill",
+    `(new) /?analysis or /?analyze=verbose`,
+    "(new) /?metafile",
+    `(new) /?minify=false`,
+    `(new) /?sourcemap=inline`,
+    `(new) /?format=iife`,
     `(new) /?warnings`,
     `(new) /?raw`,
     "~~~",
@@ -36,8 +40,12 @@ export const docs = {
     `(new) /?badge-style - Various badge styles supported by http://shields.io (https://shields.io/#:~:text=PREFIX%3E%26suffix%3D%3CSUFFIX%3E-,Styles,-The%20following%20styles)`,
     `(new) /?badge-raster - The badge but as a png image`,
     `(new) /?file - Resulting bundled code(you can actually import this into your javascript file and start using it https://stackblitz.com/edit/vitejs-vite-iquaht?file=src%2Fmain.ts&terminal=dev)`,
-    `(new) /?metafile - Esbuild bundle metafile which can be used w / https://esbuild.github.io/analyze/ (hoping to have this built-in in the future)`,
     `(new) /?polyfill - Polyfill Node built-ins`,
+    `(new) /?analysis or /?analyze - Esbuild generate visual analysis https://esbuild.github.io/api/#analyze`,
+    `(new) /?metafile - Esbuild bundle metafile which can be used w / https://esbuild.github.io/analyze/ (hoping to have this built-in in the future)`,
+    `(new) /?minify - Esbuild minify https://esbuild.github.io/api/#minify`,
+    `(new) /?sourcemap - Esbuild sourcemap https://esbuild.github.io/api/#source-maps`,
+    `(new) /?format - Esbuild format https://esbuild.github.io/api/#format`,
     `(new) /?warnings - Lists warning for a particular bundle`,
     `(new) /?raw - The raw result of the bundle (meant for experiments and/or testing)`,
     "~~~",
@@ -59,6 +67,7 @@ function sanitizeShieldsIO(str: string) {
 export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
 
+  const analysisQuery = url.searchParams.has("analysis");
   const metafileQuery = url.searchParams.has("metafile");
   const fileQuery = url.searchParams.has("file");
   const badgeQuery = url.searchParams.has("badge");
@@ -74,7 +83,7 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     const { size } = value;
     const detailedBadge = badgeResult?.includes("detail");
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
-    const query = url.searchParams.get("q") ?? "spring-easing";
+    const query = (url.searchParams.get("q") || url.searchParams.get("query")) ?? "spring-easing";
     const detailBadgeText = sanitizeShieldsIO(
       detailedBadge ? `${size.uncompressedSize} -> ` : ""
     );
@@ -82,7 +91,7 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
       `bundlejs${detailedBadge ? ` (${value.version ? value.version : value.versions?.join(", ") ?? query})` : ""}`
     );
     const imgUrl = new URL(
-      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeName}-${detailBadgeText}${encodeURIComponent(`${size.compressedSize} (gzip)`)
+      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeName}-${detailBadgeText}${sanitizeShieldsIO(`${size.compressedSize} (gzip)`)
       }-blue?cacheSeconds=60&link=${urlQuery}`
     );
 
@@ -119,6 +128,32 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
         ['Content-Type', 'text/javascript']
       ],
     })
+  }
+
+  if (analysisQuery && value.metafile) {
+    const { analyzeMetafile } = await getEsbuild();
+
+    const verboseAnlysis = (url.searchParams.get("analysis") || url.searchParams.get("analyze")) === "verbose";
+    return new Response(
+      generateHTMLMessages([
+        ansi(
+          (
+            await analyzeMetafile(value.metafile, {
+              color: true,
+              verbose: verboseAnlysis
+            })
+          ) 
+        )
+      ]), 
+      {
+        status: 200,
+        headers: [
+          ...headers,
+          ['Cache-Control', `max-age=${noCache ? 30 : 1800}, s-maxage=30, public`],
+          ['Content-Type', 'text/html']
+        ],
+      }
+    )
   }
 
   if (metafileQuery && value.metafile) {

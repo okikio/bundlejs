@@ -37,6 +37,12 @@ export type Config = BuildConfig & {
 let WASM_MODULE: Uint8Array;
 let wasmModule: WebAssembly.Module;
 
+function convertQueryValue(str?: string | null) {
+  if (str === "false") return false;
+  if (str === "true") return true;
+  return str;
+} 
+
 serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
@@ -66,14 +72,35 @@ serve(async (req: Request) => {
     const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
     const metafileQuery = url.searchParams.has("metafile");
-    const analysisQuery = url.searchParams.has("analysis");
+    const analysisQuery = url.searchParams.has("analysis") || url.searchParams.has("analyze");
 
     const badgeQuery = url.searchParams.has("badge");
     const polyfill = url.searchParams.has("polyfill");
 
+    const minifyQuery = url.searchParams.has("minify");
+    const sourcemapQuery = url.searchParams.has("sourcemap");
+
     const enableMetafile = analysisQuery ||
       metafileQuery ||
       Boolean(initialConfig?.analysis);
+
+    const minifyResult = url.searchParams.get("minify");
+    const minify = initialConfig?.esbuild?.minify ?? (
+      minifyQuery ? 
+        (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) 
+        : initialConfig?.esbuild?.minify
+    );
+    console.log({ minify: minify  })
+
+    const sourcemapResult = url.searchParams.get("sourcemap");
+    const sourcemap = initialConfig?.esbuild?.sourcemap ?? (
+      sourcemapQuery ? 
+        (convertQueryValue(sourcemapResult)) 
+        : initialConfig?.esbuild?.sourcemap
+    );
+    
+    const formatQuery = url.searchParams.has("format");
+    const format = initialConfig?.esbuild?.format || url.searchParams.get("format");
 
     const configObj: Config = deepAssign(
       {},
@@ -85,9 +112,13 @@ serve(async (req: Request) => {
       initialConfig, 
       {
         entryPoints: ["/index.tsx"],
-        esbuild: enableMetafile ? {
-          metafile: enableMetafile
-        } : {},
+        esbuild: deepAssign(
+          {}, 
+          enableMetafile ? { metafile: enableMetafile } : {},
+          minifyQuery ? { minify } : {},
+          sourcemapQuery ? { sourcemap } : {},
+          formatQuery ? { format } : {},
+        ),
         init: {
           platform: "deno-wasm",
           worker: false,
