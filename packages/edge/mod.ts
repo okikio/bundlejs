@@ -1,4 +1,3 @@
-#!/usr/bin/env -S deno run --unstable -A --config deno.jsonc
 import type { BuildConfig, CompressConfig } from "@bundlejs/core";
 import type { BundleResult } from "./bundle.ts";
 
@@ -12,7 +11,7 @@ globalThis.Worker = worker ?? class {
   constructor() {}
 };
 
-import { deepAssign, createConfig, lzstring, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
+import { deepAssign, createConfig, resolveVersion, lzstring, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
 import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
@@ -95,10 +94,32 @@ serve(async (req: Request) => {
     );
     console.log(configObj)
 
+    const query = (
+      (
+        url.searchParams.get("q") ||
+        url.searchParams.get("query")
+      ) ?? "spring-easing"
+    );
+    const versionsList = await Promise.allSettled(
+      query
+        .split(",")
+        .filter(x => !/^https?\:\/\//.exec(x))
+        .map(async x => [x, await resolveVersion(x)])
+    );
+
+    const versions: string[] = [];
+    for (const version of versionsList) {
+      if (version.status === "fulfilled" && version.value) {
+        const [name, ver] = version.value;
+        versions.push(`${name}@${ver}`);
+      }
+    }
+
     const jsonKey = `json-${
       compressToBase64(
         JSON.stringify({
           ...configObj,
+          versions,
           initialValue: initialValue.trim(),
         }).trim()
       ) // .slice(0, 512 - 1)
@@ -155,7 +176,7 @@ serve(async (req: Request) => {
     const start = Date.now();
     if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
     if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
-    const response = await bundle(url, initialValue, configObj);
+    const response = await bundle(url, initialValue, configObj, versions, query);
 
     if (!response.ok) {
       const headers = response.headers;

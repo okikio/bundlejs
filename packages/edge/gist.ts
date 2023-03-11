@@ -1,4 +1,4 @@
-import { Octokit } from "octokit";
+import { Octokit } from "npm:octokit";
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "https://deno.land/x/velo/mod.ts";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
@@ -39,9 +39,6 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
         'public': true,
         files: {
           ...filesObj,
-          // [BUNDLE_FILE_PATH]: {
-          //   content: text
-          // },
           'README.md': {
             content: `Hey 👋, this is a gist which stores the final bundle results of the bundlejs api, learn more on the website https://bundlejs.com. This is the result of ${newUrl.href}.`
           }
@@ -67,6 +64,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
 }
 
 export async function listFiles(page = 0) {
+  // octokit.paginate
   return ( 
     await octokit.request('GET /gists', {
       page,
