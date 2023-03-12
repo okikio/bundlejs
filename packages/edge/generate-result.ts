@@ -115,21 +115,21 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     })
   }
 
-  if (fileQuery) {
-    const { fileId } = value;
-    const fileResult = fileId ? await getFile(fileId) ?? "" : "";
-    if (!fileId) {
-      throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
-    }
-    return new Response(fileResult, {
-      status: 200,
-      headers: [
-        ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
-        ['Content-Type', 'text/javascript']
-      ],
-    })
-  }
+  // if (fileQuery) {
+  //   const { fileId } = value;
+  //   const fileResult = fileId ? await getFile(fileId) ?? "" : "";
+  //   if (!fileId) {
+  //     throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+  //   }
+  //   return new Response(fileResult, {
+  //     status: 200,
+  //     headers: [
+  //       ...headers,
+  //       ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
+  //       ['Content-Type', 'text/javascript']
+  //     ],
+  //   })
+  // }
 
   if (analysisQuery && value.metafile) {
     const { analyzeMetafile } = await getEsbuild();

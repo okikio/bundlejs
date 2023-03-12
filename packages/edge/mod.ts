@@ -58,7 +58,7 @@ serve(async (req: Request) => {
 
     if (url.pathname === "/clear-all-cache-123") {
       await redis.flushall()
-      await clearGists();
+      // await clearGists();
 
       return new Response("Cleared entire cache...careful now.")
     }
@@ -181,9 +181,9 @@ serve(async (req: Request) => {
       try {
         const JSONResult = await redis.get<BundleResult>(jsonKey);
         await redis.del(jsonKey, badgeKey);
-        if (JSONResult && JSONResult.fileId) { 
-          await deleteGist(JSONResult.fileId); 
-        }
+        // if (JSONResult && JSONResult.fileId) { 
+        //   await deleteGist(JSONResult.fileId); 
+        // }
         return new Response("Deleted from cache!");
       } catch (e) {
         console.warn(e);
@@ -232,12 +232,12 @@ serve(async (req: Request) => {
     await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
     if (!badgeQuery) await redis.del(badgeKey);
 
-    if (prevValue) {
-      const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
-      if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
-        await deleteGist(jsonPrevValue.fileId)
-      }
-    }
+    // if (prevValue) {
+    //   const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
+    //   if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
+    //     await deleteGist(jsonPrevValue.fileId)
+    //   }
+    // }
 
     return await generateResult(badgeKey, value, url, redis, false, Date.now() - start);
   } catch (e) {

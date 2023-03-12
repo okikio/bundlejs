@@ -66,7 +66,7 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const { init: _init, ...printableConfig } = createConfig("build", configObj);
   const duration = (end - start);
 
-  const { fileId, fileUrl, fileHTMLUrl } = await setGist(url.href, result.outputs) ?? {};
+  // const { fileId, fileUrl, fileHTMLUrl } = await setGist(url.href, result.outputs) ?? {};
   const searchQueries = url.search || `?q=${query}`;
   const finalResult: BundleResult = {
     query: decodeURIComponent(searchQueries),
@@ -77,9 +77,9 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
     size,
     time: timeFormatter.format(duration / 1000, "seconds"),
     rawTime: duration,
-    fileId,
-    fileUrl, 
-    fileHTMLUrl,
+    // fileId,
+    // fileUrl, 
+    // fileHTMLUrl,
     ...(result?.warnings?.length > 0 ? { warnings: await createNotice(result.warnings, "warning", false) } : {}),
     ...(enableMetafile && result?.metafile ? { metafile: result?.metafile } : {})
   };
