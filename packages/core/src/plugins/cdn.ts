@@ -101,7 +101,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
             }
           }
 
-          const relativePath = subpath ? "." + subpath.replace(/^(\.\/|\/)/, "/") : ".";
+          const relativePath = subpath.replace(/^\//, "./");
 
           let modernResolve: ReturnType<typeof resolve> | void;
           let legacyResolve: ReturnType<typeof legacy> | void;
@@ -111,10 +111,9 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           try {
             // Resolving imports & exports from the package.json
             // If an import starts with "#" then it's a subpath-import, and should be treated as so
-            modernResolve = resolve(pkg, relativePath, {
-              browser: true,
-              conditions: ["node", "require", "deno", "worker", "production", "module", "import", "browser"]
-            });
+            modernResolve = resolve(pkg, relativePath, { browser: true }) || 
+              resolve(pkg, relativePath, { require: true }) || 
+              resolve(pkg, relativePath, { unsafe: true, conditions: ["production", "deno", "module"] });
 
             if (modernResolve) {
               resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
@@ -130,10 +129,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
             if (isDirPkgJSON) {
               try {
                 // Resolving using main, module, etc... from package.json
-                legacyResolve = legacy(pkg, {
-                  browser: true,
-                  fields: ["unpkg", "browser", "module", "main", "bin"]
-                });
+                legacyResolve = legacy(pkg, { browser: true }) ||
+                  legacy(pkg, { fields: ["unpkg", "bin"] });
 
                 if (legacyResolve) {
                   // Some packages have `browser` fields in their package.json which have some values set to false
@@ -161,21 +158,12 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
                   }
                 }
               } catch (e) { }
-            } else resolvedPath = subpath;
+            } else resolvedPath = relativePath;
           }
 
           if (resolvedPath && typeof resolvedPath === "string") {
-            finalSubpath = resolvedPath.replace(/^(\.\/|\/)/, "/");
+            finalSubpath = resolvedPath.replace(/^(\.\/)/, "/");
           }
-
-          // if (argPath.includes("micromark")) {
-          //   console.log({
-          //     pkg,
-          //     finalSubpath,
-          //     modernResolve,
-          //     legacyResolve
-          //   })
-          // }
 
           if (dir && isDirPkgJSON) {
             finalSubpath = `${dir}${finalSubpath}`;
