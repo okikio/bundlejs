@@ -91,9 +91,9 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     const detailBadgeName = sanitizeShieldsIO(
       `bundlejs${detailedBadge ? ` (${value.version ? value.version : value.versions?.join(", ") ?? query})` : ""}`
     );
+    const badgeType = size.type !== "gzip" || detailedBadge ? ` (${size.type})` : "";
     const imgUrl = new URL(
-      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeName}-${detailBadgeText}${sanitizeShieldsIO(`${size.compressedSize} (gzip)`)
-      }-blue?cacheSeconds=60&link=${urlQuery}`
+      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeText}${sanitizeShieldsIO(`${size.compressedSize}${badgeType}`)}-${detailBadgeName}-blue?cacheSeconds=60&link=${urlQuery}`
     );
 
     if (badgeStyle) { imgUrl.searchParams.append("style", badgeStyle); }
