@@ -64,7 +64,7 @@ function sanitizeShieldsIO(str: string) {
     .replace(/\s/g, "_")
 }
 
-export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis: Redis, cached: boolean, duration: number) {
+export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis?: Redis | null, cached: boolean, duration: number) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
 
   const analysisQuery = url.searchParams.has("analysis") ||
@@ -103,7 +103,13 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     if (!imgFetch.ok) return imgFetch;
 
     const imgShield = badgeRasterQuery ? new Uint8Array(await imgFetch.arrayBuffer()) : await imgFetch.text();
-    await redis.set<string>(badgeKey, typeof imgShield === "string" ? imgShield : bytesToBase64(imgShield), { ex: 7200 })
+
+    try {
+      if (!redis) throw new Error("Redis not available");
+      await redis.set<string>(badgeKey, typeof imgShield === "string" ? imgShield : bytesToBase64(imgShield), { ex: 7200 })
+    } catch (e) {
+      console.warn(e);
+    }
 
     return new Response(imgShield, {
       status: 200,

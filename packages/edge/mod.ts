@@ -50,22 +50,28 @@ serve(async (req: Request) => {
 
     if (url.pathname === "/favicon.ico")
       return Response.redirect("https://bundlejs.com/favicon/favicon.ico");
-      
-    const redis = new Redis({
-      url: Deno.env.get('UPSTASH_URL') ?? "",
-      token: Deno.env.get('UPSTASH_TOKEN') ?? "",
-    })
+
+
+    const docsQuery = url.searchParams.has("docs");
+    if (docsQuery) {
+      return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
+    }
+
+    let redis: Redis | undefined | null;
+    try {
+      redis = new Redis({
+        url: Deno.env.get('UPSTASH_URL') ?? "",
+        token: Deno.env.get('UPSTASH_TOKEN') ?? "",
+      })
+    } catch (e) {
+      console.warn(e)
+    }
 
     if (url.pathname === "/clear-all-cache-123") {
       await redis.flushall()
       // await clearGists();
 
       return new Response("Cleared entire cache...careful now.")
-    }
-
-    const docsQuery = url.searchParams.has("docs");
-    if (docsQuery) {
-      return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
     }
 
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
@@ -177,40 +183,46 @@ serve(async (req: Request) => {
       ) // .slice(0, 512 - 1)
     }`;
 
-    if (url.pathname === "/delete-cache") {
-      try {
+    try {
+      if (!redis) throw new Error("Redis not available");
+
+      if (url.pathname === "/delete-cache") {
+        try {
+          const JSONResult = await redis.get<BundleResult>(jsonKey);
+          await redis.del(jsonKey, badgeKey);
+          // if (JSONResult && JSONResult.fileId) { 
+          //   await deleteGist(JSONResult.fileId); 
+          // }
+          return new Response("Deleted from cache!");
+        } catch (e) {
+          console.warn(e);
+          return new Response("Error, deleting from cache");
+        }
+      }
+
+      if (url.pathname !== "/no-cache") {
+        const BADGEResult = await redis.get<string>(badgeKey);
+        if (badgeQuery && BADGEResult) {
+          dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery, BADGEResult })
+          return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
+            status: 200,
+            headers: [
+              ...headers,
+              ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+              ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
+            ],
+          })
+        }
+
+        const start = Date.now();
         const JSONResult = await redis.get<BundleResult>(jsonKey);
-        await redis.del(jsonKey, badgeKey);
-        // if (JSONResult && JSONResult.fileId) { 
-        //   await deleteGist(JSONResult.fileId); 
-        // }
-        return new Response("Deleted from cache!");
-      } catch (e) {
-        console.warn(e);
-        return new Response("Error, deleting from cache");
+        if (JSONResult) {
+          return await generateResult(badgeKey, JSONResult, url, redis, true, Date.now() - start);
+        }
       }
-    }
-
-    if (url.pathname !== "/no-cache") {
-      const BADGEResult = await redis.get<string>(badgeKey);
-      if (badgeQuery && BADGEResult) {
-        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery, BADGEResult })
-        return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
-          status: 200,
-          headers: [
-            ...headers,
-            ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
-            ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
-          ],
-        })
-      }
-
-      const start = Date.now();
-      const JSONResult = await redis.get<BundleResult>(jsonKey);
-      if (JSONResult) {
-        return await generateResult(badgeKey, JSONResult, url, redis, true, Date.now() - start);
-      }
-    }
+    } catch (e) {
+      console.warn(e)
+     }
 
     const start = Date.now();
     if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
@@ -228,9 +240,15 @@ serve(async (req: Request) => {
 
     const value: BundleResult = await response.json();
 
-    const prevValue = await redis.get<BundleResult>(jsonKey);
-    await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
-    if (!badgeQuery) await redis.del(badgeKey);
+    try {
+      if (!redis) throw new Error("Redis not available");
+      
+      const prevValue = await redis.get<BundleResult>(jsonKey);
+      await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
+      if (!badgeQuery) await redis.del(badgeKey);
+    } catch (e) {
+      console.warn(e)
+    }
 
     // if (prevValue) {
     //   const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
