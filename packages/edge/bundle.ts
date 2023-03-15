@@ -58,8 +58,12 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const result = await build(configObj, FileSystem);
   const end = performance.now();
 
+  let resultValue: string = result.contents[0].text;
   const { content: _content, ...size } = await compress(
-    result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => x.contents),
+    result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => { 
+      if (x.path === "/index.js") resultValue = x.text;
+      return x.contents
+    }),
     configObj.compression
   );
 
@@ -86,12 +90,15 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
 
   (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
 
-  return new Response(JSON.stringify(finalResult), {
-    status: 200,
-    headers: [
-      ...headers,
-      ['Cache-Control', 'max-age=30, s-maxage=30, public'],
-      ['Content-Type', 'application/json']
-    ],
-  })
+  return [
+    new Response(JSON.stringify(finalResult), {
+      status: 200,
+      headers: [
+        ...headers,
+        ['Cache-Control', 'max-age=30, s-maxage=30, public'],
+        ['Content-Type', 'application/json']
+      ],
+    }),
+    resultValue
+  ] as const
 }

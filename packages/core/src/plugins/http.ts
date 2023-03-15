@@ -31,7 +31,7 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
-    dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
+    // dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
@@ -102,11 +102,12 @@ const FAILED_EXT_URLS = new Set<string>();
  * @param path 
  * @returns 
  */
-export async function determineExtension(path: string) {
+export async function determineExtension(path: string, headersOnly: true | false = true) {
   // Some typescript files don't have file extensions but you can't fetch a file without their file extension
   // so bundle tries to solve for that
   const argPath = (suffix = "") => path + suffix;
   let url = path;
+  let content: Uint8Array | undefined;
 
   let err: Error | undefined;
   for (let i = 0; i < endingVariantsLength; i++) {
@@ -118,7 +119,7 @@ export async function determineExtension(path: string) {
         continue;
       }
 
-      ({ url } = await fetchPkg(testingUrl, { method: "HEAD" }));
+      ({ url, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
       break;
     } catch (e) {
       FAILED_EXT_URLS.add(testingUrl);
@@ -136,7 +137,7 @@ export async function determineExtension(path: string) {
     }
   }
 
-  return url;
+  return headersOnly ? { url } : { url, content };
 }
 
 /**
@@ -249,36 +250,37 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       build.onLoad({ filter: /.*/, namespace: HTTP_NAMESPACE }, async (args) => {
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
-        const path = await determineExtension(args.path);
-        let content: Uint8Array, url: string;
-
-        ({ content, url } = await fetchPkg(path));
+        let content: Uint8Array | undefined, url: string;
+        ({ content, url } = await determineExtension(args.path, false));
 
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
         // await FileSystem.set(args.namespace + ":" + args.path, content);
-        if (FileSystem)
-          await setFile(FileSystem, url, content)
 
-        const _assetResults =
-          (await fetchAssets(url, content, state))
-            .filter((result) => {
-              if (result.status == "rejected") {
-                dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())
-                return false;
-              } else return true;
-            })
-            .map((result) => {
-              if (result.status == "fulfilled")
-                return result.value;
-            }) as ESBUILD.OutputFile[];
+        if (content) {
+          // if (FileSystem)
+          //   await setFile(FileSystem, url, content)
 
-        set({ assets: assets.concat(_assetResults) });
-        return {
-          contents: content,
-          loader: inferLoader(url),
-          pluginData: { url, pkg: args.pluginData?.pkg },
-        };
+          const _assetResults =
+            (await fetchAssets(url, content, state))
+              .filter((result) => {
+                if (result.status == "rejected") {
+                  dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())
+                  return false;
+                } else return true;
+              })
+              .map((result) => {
+                if (result.status == "fulfilled")
+                  return result.value;
+              }) as ESBUILD.OutputFile[];
+
+          set({ assets: assets.concat(_assetResults) });
+          return {
+            contents: content,
+            loader: inferLoader(url),
+            pluginData: { url, pkg: args.pluginData?.pkg },
+          };
+        }
       });
     },
   };

@@ -1,4 +1,5 @@
 import type { CommonConfigOptions, ESBUILD } from "./types.ts";
+import type { PackageJson } from "./plugins/cdn.ts";
 
 import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
 import { EXTERNAL } from "./plugins/external.ts";
@@ -45,6 +46,11 @@ export type LocalState = {
 export type BuildConfig = CommonConfigOptions & {
   /** esbuild config options https://esbuild.github.io/api/#build-api */
   esbuild?: ESBUILD.BuildOptions,
+
+  /**
+   * The package.json to use when trying to bundle files
+   */
+  "package.json"?: PackageJson;
 
   /**
    * Enables or disables polyfill

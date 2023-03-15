@@ -18,13 +18,49 @@ export const CDN_NAMESPACE = "cdn-url";
 
 const FAILED_PKGJSON_URLS = new Set<string>();
 
+export type PackageJson = {
+  // The name of the package.
+  name: string;
+  // The version of the package.
+  version: string;
+  // A short description of the package.
+  description?: string;
+  // An array of keywords that describe the package.
+  keywords?: string[];
+  // The URL to the homepage of the package.
+  homepage?: string;
+  // The URL to the issue tracker and/or the email address to which issues should be reported.
+  bugs?: { url: string; email?: string } | { url?: string; email: string };
+  // The license identifier or a path/url to a license file for the package.
+  license?: string;
+  // The person or persons who authored the package. Can be a name, an email address, or an object with name, email and url properties.
+  author?: string | { name: string; email?: string; url?: string };
+  // An array of people who contributed to the package. Each element can be a name, an email address, or an object with name, email and url properties.
+  contributors?: Array<string | {
+    name: string; email?: string; url?:
+    string
+  }>;
+  // An array of files included in the package. Each element can be a file path or an object with include and exclude arrays of file paths. If this field is omitted, all files in the package root are included (except those listed in .npmignore or .gitignore).
+  files?: Array<string | { include: Array<string>; exclude: Array<string> }>;
+
+  // An object that maps package names to version ranges that the package depends on at runtime.
+  dependencies?: { [packageName: string]: string };
+  // An object that maps package names to version ranges that the package depends on for development purposes only.
+  devDependencies?: { [packageName: string]: string };
+  // An object that maps package names to version ranges that the package depends on optionally. If a dependency cannot be installed, npm will skip it and continue with the installation process.
+  optionalDependencies?: { [packageName: string]: string };
+  // An object that maps package names to version ranges that the package depends on if they are available in the same environment as the package. If a peer dependency is not met, npm will warn but not fail.
+  peerDependencies?: { [packageName: string]: string };
+}
+
+
 /**
  * Resolution algorithm for the esbuild CDN plugin 
  * 
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
@@ -36,7 +72,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
       const parsed = parsePackageName(argPath);
       let subpath = parsed.path;
-      let pkg = args.pluginData?.pkg ?? {};
+
+      let pkg: PackageJson = args.pluginData?.pkg ?? { ...rootPkg };
       let oldPkg = pkg;
 
       // Are there an dependecies???? Well Goood.
@@ -111,9 +148,9 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
           try {
             // Resolving imports & exports from the package.json
             // If an import starts with "#" then it's a subpath-import, and should be treated as so
-            modernResolve = resolve(pkg, relativePath, { browser: true }) || 
-              resolve(pkg, relativePath, { require: true }) || 
-              resolve(pkg, relativePath, { unsafe: true, conditions: ["production", "deno", "module"] });
+            modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
+              resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) || 
+              resolve(pkg, relativePath, { require: true });
 
             if (modernResolve) {
               resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
@@ -188,12 +225,12 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST) => {
       
       return {
         namespace: HTTP_NAMESPACE,
-        path: NPM_CDN ? await determineExtension(url.toString()) : url.toString(),
+        path: (await determineExtension(url.toString())).url,
         pluginData: { 
           pkg: {
             ...pkg,
             peerDependencies: peerDeps
-          } 
+          }
         }
       };
     }

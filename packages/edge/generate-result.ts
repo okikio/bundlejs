@@ -1,5 +1,7 @@
 import type { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
+import type { CompressionType } from "@bundlejs/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
+import type { Config } from "./mod.ts";
 
 import { bytesToBase64 } from "byte-base64";
 
@@ -16,7 +18,7 @@ export const timeFormatter = new Intl.RelativeTimeFormat("en", {
 export const docs = {
   docs: `/?docs - Takes you to some docs for the API`,
   examples: [
-    "(new) /?badge or /?badge=detailed",
+    "(new) /?badge or /?badge=detailed or /?badge=minified",
     "(new) /?badge-style=for-the-badge",
     "(new) /?badge-raster",
     "(new) /?file",
@@ -36,7 +38,7 @@ export const docs = {
     `/?config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}`,
   ],
   basics: [
-    `(new) /?badge - Generates a badge (if you want more details, set \`?badge=detailed\` you will get the uncompressed size and the mobules being bundled listed)`,
+    `(new) /?badge - Generates a badge (if you want more details, set \`?badge=detailed\` (to list the modules being bundled in the badge) or \`?badge=minified\` for the minified bundle size)`,
     `(new) /?badge-style - Various badge styles supported by http://shields.io (https://shields.io/#:~:text=PREFIX%3E%26suffix%3D%3CSUFFIX%3E-,Styles,-The%20following%20styles)`,
     `(new) /?badge-raster - The badge but as a png image`,
     `(new) /?file - Resulting bundled code(you can actually import this into your javascript file and start using it https://stackblitz.com/edit/vitejs-vite-iquaht?file=src%2Fmain.ts&terminal=dev)`,
@@ -64,15 +66,19 @@ function sanitizeShieldsIO(str: string) {
     .replace(/\s/g, "_")
 }
 
-export async function generateResult(badgeKey: string, value: BundleResult, url: URL, redis?: Redis | null, cached: boolean, duration: number) {
+export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
 
   const analysisQuery = url.searchParams.has("analysis") ||
     url.searchParams.has("analyze");
+
   const metafileQuery = url.searchParams.has("metafile");
   const fileQuery = url.searchParams.has("file");
+
   const badgeQuery = url.searchParams.has("badge");
-  const warningsQuery = url.searchParams.has("warnings") || url.searchParams.has("warning");
+  const warningsQuery = url.searchParams.has("warnings") || 
+    url.searchParams.has("warning");
+
   const rawQuery = url.searchParams.has("raw");
 
   const badgeResult = url.searchParams.get("badge");
@@ -82,7 +88,10 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
 
   if (badgeQuery) {
     const { size } = value;
-    const detailedBadge = badgeResult?.includes("detail");
+    const uncompressedBadge = /uncompress/.exec(badgeResult ?? "");
+    const minifiedBadge = /minify|minified/.exec(badgeResult ?? "");
+    const detailedBadge = /detail/.exec(badgeResult ?? "");
+
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
     const query = (url.searchParams.get("q") || url.searchParams.get("query")) ?? "spring-easing";
     const detailBadgeText = sanitizeShieldsIO(
@@ -91,9 +100,20 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     const detailBadgeName = sanitizeShieldsIO(
       `bundlejs${detailedBadge ? ` (${value.version ? value.version : value.versions?.join(", ") ?? query})` : ""}`
     );
-    const badgeType = size.type !== "gzip" || detailedBadge ? ` (${size.type})` : "";
+    
+    let badgeType: CompressionType | "minified" | "uncompressed" | undefined = size.type;
+    let badgeBundleSize: string = size.compressedSize;
+
+    if (minifiedBadge) {
+      badgeType = "minified";
+      badgeBundleSize = size.uncompressedSize;
+    } else if (uncompressedBadge) {
+      badgeType = "uncompressed";
+      badgeBundleSize = size.uncompressedSize;
+    }
+
     const imgUrl = new URL(
-      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeText}${sanitizeShieldsIO(`${size.compressedSize}${badgeType}`)}-${detailBadgeName}-blue?cacheSeconds=60&link=${urlQuery}`
+      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeText}${sanitizeShieldsIO(`${badgeBundleSize} (${badgeType})`)}-${detailBadgeName}-blue?cacheSeconds=3600&link=${urlQuery}`
     );
 
     if (badgeStyle) { imgUrl.searchParams.append("style", badgeStyle); }
@@ -121,21 +141,21 @@ export async function generateResult(badgeKey: string, value: BundleResult, url:
     })
   }
 
-  // if (fileQuery) {
-  //   const { fileId } = value;
-  //   const fileResult = fileId ? await getFile(fileId) ?? "" : "";
-  //   if (!fileId) {
-  //     throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
-  //   }
-  //   return new Response(fileResult, {
-  //     status: 200,
-  //     headers: [
-  //       ...headers,
-  //       ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
-  //       ['Content-Type', 'text/javascript']
-  //     ],
-  //   })
-  // }
+  if (fileQuery) {
+    // const { fileId } = value;
+    // const fileResult = fileId ? await getFile(fileId) ?? "" : "";
+    // if (!fileId) {
+    //   throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+    // }
+    return new Response(resultText, {
+      status: 200,
+      headers: [
+        ...headers,
+        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
+        ['Content-Type', 'text/javascript']
+      ],
+    })
+  }
 
   if (analysisQuery && value.metafile) {
     const { analyzeMetafile } = await getEsbuild();

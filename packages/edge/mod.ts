@@ -68,7 +68,7 @@ serve(async (req: Request) => {
     }
 
     if (url.pathname === "/clear-all-cache-123") {
-      await redis.flushall()
+      await redis?.flushall()
       // await clearGists();
 
       return new Response("Cleared entire cache...careful now.")
@@ -170,12 +170,14 @@ serve(async (req: Request) => {
 
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
+
     const badgeRasterQuery = url.searchParams.has("badge-raster");
     const badgeKey = `badge-${
       compressToBase64(
         JSON.stringify({
           jsonKey,
           badge: badgeQuery,
+
           badgeRasterQuery,
           badgeResult,
           badgeStyle
@@ -203,7 +205,7 @@ serve(async (req: Request) => {
       if (url.pathname !== "/no-cache") {
         const BADGEResult = await redis.get<string>(badgeKey);
         if (badgeQuery && BADGEResult) {
-          dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery, BADGEResult })
+          dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
           return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
             status: 200,
             headers: [
@@ -216,18 +218,19 @@ serve(async (req: Request) => {
 
         const start = Date.now();
         const JSONResult = await redis.get<BundleResult>(jsonKey);
-        if (JSONResult) {
-          return await generateResult(badgeKey, JSONResult, url, redis, true, Date.now() - start);
+        const fileQuery = url.searchParams.has("file");
+        if (JSONResult && !fileQuery) {
+          return await generateResult(badgeKey, [JSONResult, "null"], url, true, Date.now() - start, redis);
         }
       }
     } catch (e) {
       console.warn(e)
-     }
+    }
 
     const start = Date.now();
     if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
     if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
-    const response = await bundle(url, initialValue, configObj, versions, query);
+    const [response, resultText] = await bundle(url, initialValue, configObj, versions, query);
 
     if (!response.ok) {
       const headers = response.headers;
@@ -257,7 +260,7 @@ serve(async (req: Request) => {
     //   }
     // }
 
-    return await generateResult(badgeKey, value, url, redis, false, Date.now() - start);
+    return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
     if ("msgs" in e && e.msgs) {
       try {
