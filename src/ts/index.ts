@@ -212,7 +212,7 @@ BundleEvents.on({
           (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
         );
       }
-      let [title, ...message] = msg.split(/\n/);
+      let [title, ...message] = Array.isArray(msg) ? msg : msg?.toString?.()?.split?.(/\n/) ?? "";
       return ({ type, title, message: (message ?? []).join("<br>") });
     });
 
