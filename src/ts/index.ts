@@ -104,7 +104,7 @@ let fileSizeEl: HTMLElement[];
 let consoleLog = (type: TypeLog["type"], log = "") => {
   // Ignore empty log messages
   if (log && log?.length > 0) {
-    let [title, ...message] = log
+    let [title, ...message] = Array.isArray(log) ? log : log
       .replace(/\n/g, "\n")
       .split(/\n/);
 
