@@ -61,6 +61,7 @@ BundleWorker?.start?.(); // Only SharedWorkers support the start method, so opti
 export const channel = new MessageChannel();
 export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
 export const SANDBOX_WORKER = new Worker(...SandboxWorkerConfig) as WebWorker;
+const img = new Image();
 
 try {
   SANDBOX_WORKER?.start?.();
@@ -321,6 +322,13 @@ export const build = async (app: App) => {
 
       fileSizeEl.forEach(el => (el.innerHTML = `<div class="loading"></div>`));
 
+      const shareUrl = new URL(location.href);
+      shareUrl.hostname = "deno.bundlejs.com";
+      shareUrl.searchParams.append("badge", "");
+
+      // Preload badge
+      img.src = shareUrl.href;
+
       start = Date.now();
       postMessage({ event: "build", details: { config, value, analysis, polyfill } });
 
@@ -363,9 +371,14 @@ export const build = async (app: App) => {
       const bundleTime = `⌛ Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
       console.log(bundleTime);
       console.log(`Bundled size is`, initialSize + " -> ", size);
+
+      const shareUrl = new URL(location.href);
+      shareUrl.hostname = "deno.bundlejs.com"; 
+      shareUrl.searchParams.append("badge","");
       addLogs([
         { title: bundleTime, type: "info" },
-        { title: `Bundle size is ${initialSize} -> ${size}`, type: "info" }
+        { title: `Bundle size is ${initialSize} -> ${size}`, type: "info" },
+        { title: `Badge `, type: "info", badge: shareUrl.href }
       ]);
       fileSizeEl.forEach(el => (el.textContent = `` + size));
     },

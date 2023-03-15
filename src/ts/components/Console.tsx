@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { Show, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { For, render } from "solid-js/web";
 import { DetailsComponent, detailsEls } from "../modules/details";
 import { debounce } from "../util/debounce";
@@ -8,6 +8,7 @@ export type TypeLog = {
   title: string | any;
   message?: string | any;
   type?: "error" | "warning" | "info";
+  badge?: string;
 };
 
 export const [MAX_LOGS, SET_MAX_LOGS] = createSignal(250);
@@ -53,7 +54,7 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
         </div>
       </div>
     }>
-      {({ title, message = "", type }, index) => {
+      {({ title, message = "", type, badge }, index) => {
         let styleType = {
           "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
           "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md",
@@ -77,21 +78,30 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
             detailsEls.delete(detailsEl);
           }
         });
-        return (
-          message.length > 0 ?
-            <details class={getClassName()} ref={detailsEl}>
-              <summary class="console-summary" tabindex="0">
-                <p class="px-4 py-3" innerHTML={title} />
-              </summary>
-              <div class="content">
-                <p class="px-4 pt-2 pb-3" innerHTML={message} />
-              </div>
-            </details> :
-            <div class={"py-3 " + getClassName()}>
-              <div class="content">
-                <p class="px-4" innerHTML={title} />
-              </div>
+        return message.length > 0 ? (
+          <details class={getClassName()} ref={detailsEl}>
+            <summary class="console-summary" tabindex="0">
+              <p class="px-4 py-3" innerHTML={title} />
+              <Show when={badge}>
+                <img id="build-badge" src={badge} alt="Build badge" />
+              </Show>
+            </summary>
+            <div class="content">
+              <p class="px-4 pt-2 pb-3" innerHTML={message} />
             </div>
+          </details>
+        ) : (
+          <div class={"py-3 " + getClassName()}>
+            <div class="content inline-flex flex-wrap">
+              <p class="px-4" innerHTML={title} />
+              <Show when={badge}>
+                <a class="px-4" href={decodeURIComponent(badge)} rel="noopener" target="_blank">
+                  <span>{decodeURIComponent(badge.replace("https://", ""))}</span>
+                  <img id="build-badge" src={badge} alt="Build badge" />
+                </a>
+              </Show>
+            </div>
+          </div>
         );
       }}
     </For>
