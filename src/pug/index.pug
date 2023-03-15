@@ -32,9 +32,9 @@ block content
       .search-results-container
 
   .container
-    blockquote(class="mb-2") ✨ WOOOH! ✨ The official #[a(href="https://twitter.com/jsbundle/status/1634455567321255936?s=20") bundlejs API] is out, you can access it via #[a(href="https://deno.bundlejs.com") deno.bundlejs.com] and/or #[a(href="https://edge.bundlejs.com") edge.bundlejs.com].
+    blockquote(class="mb-2") ✨ WOOOH! ✨ The official #[a(href="https://twitter.com/jsbundle/status/1634455567321255936?s=20" rel="noopener") bundlejs API] is out, you can access it via #[a(href="https://deno.bundlejs.com") deno.bundlejs.com] and/or #[a(href="https://edge.bundlejs.com") edge.bundlejs.com].
     blockquote.mb-1 
-      | The new API also comes with proper badges #[img(src="https://deno.bundlejs.com/?q=spring-easing&badge" class="inline-block" alt="spring-easing'a badge")]
+      | The new API also comes with proper badges #[a(href="#badges" rel="noopener") #[img(src="https://deno.bundlejs.com/?q=spring-easing&badge" class="inline-block" alt="spring-easing'a badge")]]
 
   input(type="text" id="copy-input" tabindex="-1" aria-hidden="true")
 
@@ -170,7 +170,7 @@ block content
 
   .container 
     blockquote.mb-2 📑 Official #[a(href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs") Docs] for #[code bundlejs] are now available.
-    blockquote  Special thanks to #[a(href="https://sheetjs.com") @sheetjs] and #[a(href="https://daniguardio.la/" ) @daniguardio_la] for donating to #[code bundle] on #[a(href="https://opencollective.com/bundle") OpenCollective].
+    blockquote  Special thanks to #[a(href="https://upstash.com") @upstash] for sponsoring the #[code bundlejs] API.
 
     div.flex.items-center.justify-center.flex-wrap.gap-2
       +product-hunt.place-content-center
@@ -343,39 +343,21 @@ block content
             # Dark Mode Badge 
             [![Open Bundle](https://bundlejs.com/badge-dark.svg)](https://bundlejs.com/)
             ```
-          | Another options is to use the API, e.g.
+          br
+          div.inline-flex.flex-wrap(class="gap-1")
+            span Another options is to use the API, e.g.
+            :markdown-it(linkify langPrefix='language-')
+              [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
+            
+          br
 
           :markdown-it(linkify langPrefix='language-')
-            [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
-
             ```md
             [![spring-easing's badge](https://deno.bundlejs.com/?q=spring-easing&badge=detailed&badge-style=for-the-badge)](https://bundlejs.com/?q=spring-easing)
             ```
           br
-          | You can use the #[a(href="#sharing") Sharing] section above, to create unique bundles, when users clicks on the badge.
+          | You can use the #[a(href="#sharing") Sharing] section above and the 📑 Official #[a(href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs") Docs] to learn how to create unique bundles via badges.
   
-    +divider
-    
-    details.accordian#community.umami--toggle--community-docs-accordian
-      summary
-        h3 Community
-      div.content.py-4
-        blockquote Tweet at me on #[a(href="https://twitter.com/@okikio_dev") @okikio_dev] with what you love and what you think needs improvement in #[code bundle] to get added to the list users.
-        ul(class="list-inside list-disc")
-          li
-            a(class="inline-flex" href="https://opencollective.com/bundle/organization/0/website")
-              div(class="flex gap-2")
-                img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs Logo" class="inline-block" width="24" height="24")
-                span @sheetjs
-          li
-            a(class="inline-flex" href="https://opencollective.com/bundle/individual/0/website")
-              div(class="flex gap-2")
-                img(src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128" alt="Dani Guardiola Logo" class="inline-block" width="24" height="24")
-                span @daniguardio_la
-          li And more, etc...
-
-        //- script(src=`https://opencollective.com/bundle/banner.js` async fetchpriority="low")
-
     +divider
     
     details.accordian#discus.umami--toggle--discus-docs-accordian
@@ -400,6 +382,39 @@ block content
           fetchpriority="low"
         )
       //- br  
+
+    +divider
+    
+    details.accordian#community.umami--toggle--community-docs-accordian(open)
+      summary
+        h3 Community, Backers & Sponsors
+      div.content.py-4
+        blockquote Tweet at me on #[a(href="https://twitter.com/@jsbundle") @jsbundle] with what you love and what you think needs improvement in #[code bundlejs] to get added to the list users.
+        ul(class="list-inside list-disc")
+          li
+            a(class="inline-flex" href="https://upstash.com/?utm_source=bundlejs&utm_medium=bundlejs&utm_campaign=bundlejs")
+              div(class="flex gap-2")
+                img(src="/sponsors/upstash.svg" alt="Vercel's Logo" class="inline-block" width="24" height="24")
+                span @upstash
+          li
+            a(class="inline-flex" href="https://vercel.com/?utm_source=bundlejs&utm_medium=bundlejs&utm_campaign=bundlejs")
+              div(class="flex gap-2")
+                img(src="/sponsors/vercel.svg" alt="Vercel's Logo" class="inline-block" width="24" height="24" class="dark:invert")
+                span @vercel
+          li
+            a(class="inline-flex" href="https://sheetjs.com/?utm_source=bundlejs&utm_medium=bundlejs&utm_campaign=bundlejs")
+              div(class="flex gap-2")
+                img(src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128" alt="Sheetjs's Logo" class="inline-block" width="24" height="24")
+                span @sheetjs
+          li
+            a(class="inline-flex" href="https://opencollective.com/bundle/individual/0/website")
+              div(class="flex gap-2")
+                img(src="https://opencollective.com/bundle/individual/0/avatar.svg?avatarHeight=128" alt="Dani Guardiola's Logo" class="inline-block" width="24" height="24")
+                span @daniguardio_la
+          li And more, etc...
+
+        //- script(src=`https://opencollective.com/bundle/banner.js` async fetchpriority="low")
+
 
     br
     blockquote #[strong Note] You can also use #[a(href="https://bundlesize.com") bundlesize.com] to access #[code bundlejs].
