@@ -87,11 +87,11 @@ Backers & Sponsors are awesome people and organizations who use, enjoy, and dona
 -->
 
 <a href="https://upstash.com?utm_source=github&utm_medium=github&utm_campaign=bundlejs">
-  <img src="./src/assets/sponsors/upstash-long.svg" height="128" />
+  <img src="./src/assets/sponsors/upstash-long.svg" height="64" />
 </a>
 
 <a href="https://vercel.com?utm_source=github&utm_medium=github&utm_campaign=bundlejs">
-  <img src="./src/assets/sponsors/vercel-long.svg" height="128" />
+  <img src="./src/assets/sponsors/vercel-long.svg" height="64" />
 </a>
 
 <a href="https://sheetjs.com/?utm_source=opencollective&utm_medium=github&utm_campaign=bundle"><img src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128"></a>

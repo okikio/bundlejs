@@ -30,7 +30,7 @@ export default () => {
 
                 setTimeout(function () { 
                     window.location.replace(""); 
-                    window.location.reload(); 
+                    // window.location.reload(); 
                 }, 300)
             })()
         })
