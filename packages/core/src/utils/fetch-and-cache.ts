@@ -1,6 +1,6 @@
 import { Velo } from "https://deno.land/x/velo/mod.ts";
 
-export const CACHE = Velo.builder<string, Response>().capacity(100).lru().ttl(30_000).build();
+export const CACHE = Velo.builder<string, Response>().capacity(300).lru().ttl(30_000).build();
 
 export const CACHE_NAME = "EXTERNAL_FETCHES";
 export const SUPPORTS_CACHE_API = "caches" in globalThis;

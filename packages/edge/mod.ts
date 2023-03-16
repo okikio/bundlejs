@@ -22,6 +22,7 @@ import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
 import { clearFiles as clearGists, deleteFile as deleteGist } from "./gist.ts";
+import { currentRef, trackEvent, trackView } from "./measure.ts";
 const { compressToBase64 } = lzstring;
 
 export const headers = Object.entries({
@@ -45,15 +46,18 @@ function convertQueryValue(str?: string | null) {
 
 serve(async (req: Request) => {
   try {
+    const referer = req.headers.get("Referer") || req.headers.get("Referrer");
     const url = new URL(req.url);
     console.log(url.href)
 
     if (url.pathname === "/favicon.ico")
       return Response.redirect("https://bundlejs.com/favicon/favicon.ico");
 
+    trackView(url.href, referer ?? "");
 
     const docsQuery = url.searchParams.has("docs");
     if (docsQuery) {
+      trackEvent("redirect_to_docs", "docs", url.href)
       return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
     }
 
@@ -67,7 +71,10 @@ serve(async (req: Request) => {
       console.warn(e)
     }
 
+    trackEvent({ redisAvailable: redis !== null && redis !== undefined }, "redis-check", url.href)
+
     if (url.pathname === "/clear-all-cache-123") {
+      trackEvent({ type: "clear-cache" }, "clear-cache", url.href)
       await redis?.flushall()
       // await clearGists();
 
@@ -158,13 +165,17 @@ serve(async (req: Request) => {
       }
     }
 
+    const { init, ..._configObj } = configObj;
+    const { wasmModule: _wasmModule, ..._init } = init;
+    const jsonKeyObj = {
+      ..._init,
+      ..._configObj,
+      versions,
+      initialValue: initialValue.trim(),
+    };
     const jsonKey = `json-${
       compressToBase64(
-        JSON.stringify({
-          ...configObj,
-          versions,
-          initialValue: initialValue.trim(),
-        }).trim()
+        JSON.stringify(jsonKeyObj).trim()
       ) // .slice(0, 512 - 1)
     }`;
 
@@ -172,16 +183,17 @@ serve(async (req: Request) => {
     const badgeStyle = url.searchParams.get("badge-style");
 
     const badgeRasterQuery = url.searchParams.has("badge-raster");
+    const badgeKeyObj = {
+      jsonKey,
+      badge: badgeQuery,
+
+      badgeRasterQuery,
+      badgeResult,
+      badgeStyle
+    };
     const badgeKey = `badge-${
       compressToBase64(
-        JSON.stringify({
-          jsonKey,
-          badge: badgeQuery,
-
-          badgeRasterQuery,
-          badgeResult,
-          badgeStyle
-        }).trim()
+        JSON.stringify(badgeKeyObj).trim()
       ) // .slice(0, 512 - 1)
     }`;
 
@@ -189,6 +201,12 @@ serve(async (req: Request) => {
       if (!redis) throw new Error("Redis not available");
 
       if (url.pathname === "/delete-cache") {
+        trackEvent({
+          type: "delete-cache",
+          badgeKey,
+          jsonKey
+        }, "delete-cache", url.href)
+
         try {
           const JSONResult = await redis.get<BundleResult>(jsonKey);
           await redis.del(jsonKey, badgeKey);
@@ -198,6 +216,13 @@ serve(async (req: Request) => {
           return new Response("Deleted from cache!");
         } catch (e) {
           console.warn(e);
+          trackEvent({
+            type: "error-deleting-cache",
+            jsonKeyObj,
+            badgeKeyObj,
+            badgeKey,
+            jsonKey
+          }, "error-delete-cache", url.href)
           return new Response("Error, deleting from cache");
         }
       }
@@ -206,6 +231,12 @@ serve(async (req: Request) => {
         const BADGEResult = await redis.get<string>(badgeKey);
         if (badgeQuery && BADGEResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
+          trackEvent({
+            type: "use-cached-badge",
+            jsonKeyObj,
+            badgeKeyObj,
+          }, "cached-badge", url.href)
+
           return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
             status: 200,
             headers: [
@@ -220,16 +251,34 @@ serve(async (req: Request) => {
         const JSONResult = await redis.get<BundleResult>(jsonKey);
         const fileQuery = url.searchParams.has("file");
         if (JSONResult && !fileQuery) {
+          trackEvent({
+            type: "generate-from-cache-json",
+            jsonKeyObj
+          }, "cached-json", url.href)
           return await generateResult(badgeKey, [JSONResult, "null"], url, true, Date.now() - start, redis);
         }
       }
     } catch (e) {
+      trackEvent({
+        type: "error-using-cache",
+        jsonKey,
+        jsonKeyObj,
+        badgeKey,
+        badgeKeyObj,
+      }, "error-using-cache", url.href)
       console.warn(e)
     }
 
     const start = Date.now();
-    if (!WASM_MODULE) WASM_MODULE = await ESBUILD_WASM();
-    if (!wasmModule) wasmModule = new WebAssembly.Module(WASM_MODULE);
+    if (!WASM_MODULE) { 
+      WASM_MODULE = await ESBUILD_WASM();
+      trackEvent({ type: "flushed-wasm-source", }, "flushed-wasm-source", url.href)
+    }
+    if (!wasmModule) { 
+      wasmModule = new WebAssembly.Module(WASM_MODULE);
+      trackEvent({ type: "flushed-wasm-module", }, "flushed-wasm-module", url.href)
+    }
+
     const [response, resultText] = await bundle(url, initialValue, configObj, versions, query);
 
     if (!response.ok) {
@@ -262,6 +311,12 @@ serve(async (req: Request) => {
 
     return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
+
+    trackEvent({
+      type: "full-error",
+      message: e.toString()
+    }, "full-error")
+
     if ("msgs" in e && e.msgs) {
       try {
         return new Response(
