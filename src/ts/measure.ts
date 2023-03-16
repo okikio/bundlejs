@@ -42,7 +42,7 @@ export function removeTrailingSlash(url) {
   const script = document.querySelector('script[data-website-id]') as HTMLScriptElement;
 
   if (!script) return;
-
+  
   const attr = script.getAttribute.bind(script);
   const website = attr('data-website-id');
   const hostUrl = attr('data-host-url');
@@ -102,6 +102,7 @@ export function removeTrailingSlash(url) {
     url: currentUrl,
   });
 
+  const endpoint = `${root}${apiRoute}`;
   const collect = (type, payload) => {
     if (trackingDisabled()) return;
 
