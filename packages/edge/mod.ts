@@ -166,9 +166,9 @@ serve(async (req: Request) => {
     }
 
     const { init, ..._configObj } = configObj;
-    const { wasmModule: _wasmModule, ..._init } = init;
+    const { wasmModule: _wasmModule, ..._init } = init || {};
     const jsonKeyObj = {
-      ..._init,
+      init: _init,
       ..._configObj,
       versions,
       initialValue: initialValue.trim(),
@@ -311,7 +311,6 @@ serve(async (req: Request) => {
 
     return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
-
     trackEvent("error", {
       type: "full-error",
       message: e.toString()

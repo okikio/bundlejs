@@ -159,7 +159,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
           EXTERNAL(STATE, CONFIG),
           VIRTUAL_FS(STATE, CONFIG),
           HTTP(STATE, CONFIG),
-          CDN(STATE, CONFIG),
+          CDN(STATE, CONFIG, ),
         ],
         ...esbuildOpts,
       });
