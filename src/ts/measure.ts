@@ -86,6 +86,14 @@ export function removeTrailingSlash(url) {
     req.send(JSON.stringify(data));
   };
 
+  const assign = (a, b) => {
+    Object.keys(b).forEach(key => {
+      a[key] = b[key];
+    });
+    return a;
+  };
+  
+  
   const getPayload = () => ({
     website,
     hostname,
@@ -94,67 +102,40 @@ export function removeTrailingSlash(url) {
     url: currentUrl,
   });
 
-  const assign = (a, b) => {
-    Object.keys(b).forEach(key => {
-      a[key] = b[key];
-    });
-    return a;
-  };
-
   const collect = (type, payload) => {
     if (trackingDisabled()) return;
 
-    post(
-      `${root}${apiRoute}`,
-      {
-        type,
-        payload,
-      },
-      res => (cache = res),
-    );
+    return fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ type, payload }),
+      headers: assign({ 'Content-Type': 'application/json' }, { ['x-umami-cache']: cache }),
+    })
+      .then(res => res.text())
+      .then(text => (cache = text));
   };
 
-  const trackView = (url = currentUrl, referrer = currentRef, uuid = website) => {
+  const trackView = (url = currentUrl, referrer = currentRef, websiteUuid = website) =>
     collect(
       'pageview',
       assign(getPayload(), {
-        website: uuid,
+        website: websiteUuid,
         url,
         referrer,
       }),
     );
-  };
 
-  const trackEvent = (event_value, event_type = 'custom', url = currentUrl, uuid = website) => {
+  const trackEvent = (eventName, eventData, url = currentUrl, websiteUuid = website) =>
     collect(
       'event',
       assign(getPayload(), {
-        website: uuid,
+        website: websiteUuid,
         url,
-        event_type,
-        event_value,
+        event_name: eventName,
+        event_data: eventData,
       }),
     );
-  };
 
   /* Handle events */
-
-  const sendEvent = (value, type) => {
-    const payload = getPayload();
-
-    // @ts-ignore
-    payload.event_type = type;
-
-    // @ts-ignore
-    payload.event_value = value;
-
-    const data = JSON.stringify({
-      type: 'event',
-      payload,
-    });
-
-    navigator.sendBeacon(`${root}${apiRoute}`, data);
-  };
 
   const addEvents = node => {
     const elements = node.querySelectorAll(eventSelect);
@@ -162,21 +143,39 @@ export function removeTrailingSlash(url) {
   };
 
   const addEvent = element => {
-    (element.getAttribute('class') || '').split(' ').forEach(className => {
+    const get = element.getAttribute.bind(element);
+    (get('class') || '').split(' ').forEach(className => {
       if (!eventClass.test(className)) return;
 
-      const [, type, value] = className.split('--');
+      const [, event, name] = className.split('--');
+
       const listener = listeners[className]
         ? listeners[className]
-        : (listeners[className] = () => {
-          if (element.tagName === 'A') {
-            sendEvent(value, type);
-          } else {
-            trackEvent(value, type);
-          }
-        });
+        : (listeners[className] = e => {
+            if (
+              event === 'click' &&
+              element.tagName === 'A' &&
+              !(
+                e.ctrlKey ||
+                e.shiftKey ||
+                e.metaKey ||
+                (e.button && e.button === 1) ||
+                get('target')
+              )
+            ) {
+              e.preventDefault();
+              trackEvent(name).then(() => {
+                const href = get('href');
+                if (href) {
+                  location.href = href;
+                }
+              });
+            } else {
+              trackEvent(name);
+            }
+          });
 
-      element.addEventListener(type, listener, true);
+      element.addEventListener(event, listener, true);
     });
   };
 
@@ -214,12 +213,11 @@ export function removeTrailingSlash(url) {
 
   /* Global */
 
-  // @ts-ignore
   if (!window.umami) {
     const umami = eventValue => trackEvent(eventValue);
     umami.trackView = trackView;
     umami.trackEvent = trackEvent;
-
+    
     // @ts-ignore
     window.umami = umami;
   }
