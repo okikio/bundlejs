@@ -57,7 +57,7 @@ serve(async (req: Request) => {
 
     const docsQuery = url.searchParams.has("docs");
     if (docsQuery) {
-      trackEvent("redirect_to_docs", "docs", url.href)
+      trackEvent("redirect_to_docs",  { type: "docs" }, url.href)
       return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
     }
 
@@ -71,10 +71,10 @@ serve(async (req: Request) => {
       console.warn(e)
     }
 
-    trackEvent({ redisAvailable: redis !== null && redis !== undefined }, "redis-check", url.href)
+    trackEvent("redis-check", { redisAvailable: redis !== null && redis !== undefined }, url.href)
 
     if (url.pathname === "/clear-all-cache-123") {
-      trackEvent({ type: "clear-cache" }, "clear-cache", url.href)
+      trackEvent("clear-cache", { type: "clear-cache" }, url.href)
       await redis?.flushall()
       // await clearGists();
 
@@ -201,11 +201,11 @@ serve(async (req: Request) => {
       if (!redis) throw new Error("Redis not available");
 
       if (url.pathname === "/delete-cache") {
-        trackEvent({
+        trackEvent("delete-cache", {
           type: "delete-cache",
           badgeKey,
           jsonKey
-        }, "delete-cache", url.href)
+        }, url.href)
 
         try {
           const JSONResult = await redis.get<BundleResult>(jsonKey);
@@ -216,13 +216,13 @@ serve(async (req: Request) => {
           return new Response("Deleted from cache!");
         } catch (e) {
           console.warn(e);
-          trackEvent({
+          trackEvent("error", {
             type: "error-deleting-cache",
             jsonKeyObj,
             badgeKeyObj,
             badgeKey,
             jsonKey
-          }, "error-delete-cache", url.href)
+          }, url.href)
           return new Response("Error, deleting from cache");
         }
       }
@@ -231,11 +231,11 @@ serve(async (req: Request) => {
         const BADGEResult = await redis.get<string>(badgeKey);
         if (badgeQuery && BADGEResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
-          trackEvent({
+          trackEvent("cached", {
             type: "use-cached-badge",
             jsonKeyObj,
             badgeKeyObj,
-          }, "cached-badge", url.href)
+          }, url.href)
 
           return new Response(badgeRasterQuery ? base64ToBytes(BADGEResult) : BADGEResult, {
             status: 200,
@@ -251,32 +251,32 @@ serve(async (req: Request) => {
         const JSONResult = await redis.get<BundleResult>(jsonKey);
         const fileQuery = url.searchParams.has("file");
         if (JSONResult && !fileQuery) {
-          trackEvent({
+          trackEvent("cached", {
             type: "generate-from-cache-json",
             jsonKeyObj
-          }, "cached-json", url.href)
+          }, url.href)
           return await generateResult(badgeKey, [JSONResult, "null"], url, true, Date.now() - start, redis);
         }
       }
     } catch (e) {
-      trackEvent({
+      trackEvent("error", {
         type: "error-using-cache",
         jsonKey,
         jsonKeyObj,
         badgeKey,
         badgeKeyObj,
-      }, "error-using-cache", url.href)
+      }, url.href)
       console.warn(e)
     }
 
     const start = Date.now();
     if (!WASM_MODULE) { 
       WASM_MODULE = await ESBUILD_WASM();
-      trackEvent({ type: "flushed-wasm-source", }, "flushed-wasm-source", url.href)
+      trackEvent("flushed-wasm", { type: "flushed-wasm-source", }, url.href)
     }
     if (!wasmModule) { 
       wasmModule = new WebAssembly.Module(WASM_MODULE);
-      trackEvent({ type: "flushed-wasm-module", }, "flushed-wasm-module", url.href)
+      trackEvent("flushed-wasm", { type: "flushed-wasm-module", }, url.href)
     }
 
     const [response, resultText] = await bundle(url, initialValue, configObj, versions, query);
@@ -312,10 +312,10 @@ serve(async (req: Request) => {
     return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
 
-    trackEvent({
+    trackEvent("error", {
       type: "full-error",
       message: e.toString()
-    }, "full-error")
+    })
 
     if ("msgs" in e && e.msgs) {
       try {

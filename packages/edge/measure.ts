@@ -62,70 +62,51 @@ let cache: string | undefined;
 export let currentRef = "";
 
 /* Collect metrics */
-
-export const post = async (url: string, data: object, callback: (res: Response) => any) => {
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: [
-        ["Content-Type", "application/json"],
-        cache ? ["x-umami-cache", cache] : []
-      ],
-      body: JSON.stringify(data)
-    })
-
-    if (res.ok) {
-      await callback(res);
-    }
-
-    return res;
-  } catch (e) {
-    console.warn("Umami error", e)
-  }
-};
-
-export const getPayload = () => ({
+const getPayload = () => ({
   website,
   hostname,
   language,
   url: currentUrl,
 });
 
-export const collect = (type: string, payload: object) => {
+export const endpoint = `${root}${apiRoute}`;
+export const collect = (type: string, payload: any) => {
   if (trackingDisabled()) return;
 
-  post(
-    `${root}${apiRoute}`,
-    {
-      type,
-      payload,
-    },
-    async res => (cache = await res.text()),
-  );
+  try {
+    return fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ type, payload }),
+      headers: Object.assign({ 'Content-Type': 'application/json' }, { ['x-umami-cache']: cache }) as HeadersInit,
+    })
+      .then(res => res.text())
+      .then(text => (cache = text));
+  } catch (e) {
+    console.warn("Umami error", e);
+  }
 };
 
-export const trackView = (url = currentUrl, referrer = currentRef, uuid = website) => {
+export const trackView = (url = currentUrl, referrer = currentRef, websiteUuid = website) =>
   collect(
-    "pageview",
+    'pageview',
     Object.assign(getPayload(), {
-      website: uuid,
+      website: websiteUuid,
       url,
       referrer,
     }),
   );
-};
 
-export const trackEvent = (event_value: any, event_type = "custom", url = currentUrl, uuid = website) => {
+export const trackEvent = (eventName: string, eventData: any = {}, url = currentUrl, websiteUuid = website) =>
   collect(
-    "event",
+    'event',
     Object.assign(getPayload(), {
-      website: uuid,
+      website: websiteUuid,
       url,
-      event_type: `api-${event_type}`,
-      event_value,
+      event_name: `api-${eventName}`,
+      event_data: eventData,
     }),
   );
-};
+
 
 /* Global */
 

@@ -69,7 +69,7 @@ function sanitizeShieldsIO(str: string) {
 
 export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
-  const event_key = cached ? "cached-json" : "json";
+  const event_key = cached ? "cached" : "json";
 
   const analysisQuery = url.searchParams.has("analysis") ||
     url.searchParams.has("analyze");
@@ -115,7 +115,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     const minifiedBadge = /minify|minified/.exec(badgeResult ?? "");
     const detailedBadge = /detail/.exec(badgeResult ?? "");
 
-    trackEvent({
+    trackEvent(event_key, {
       type: "badge-query",
       badgeKey,
       queries,
@@ -124,7 +124,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
       detailedBadge,
       size,
       noCache
-    }, event_key, url.href)
+    }, url.href)
 
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
     const detailBadgeText = sanitizeShieldsIO(
@@ -181,12 +181,12 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     //   throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
     // }
 
-    trackEvent({
+    trackEvent(event_key, {
       type: "file-query",
       queries,
       usingGists: false,
       noCache
-    }, event_key, url.href)
+    }, url.href)
     return new Response(resultText, {
       status: 200,
       headers: [
@@ -201,11 +201,11 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     const { analyzeMetafile } = await getEsbuild();
     const verboseAnlysis = analysisResult === "verbose";
 
-    trackEvent({
+    trackEvent(event_key, {
       type: "analysis-query",
       queries,
       verboseAnlysis
-    }, event_key, url.href)
+    }, url.href)
     return new Response(
       generateHTMLMessages([
         ansi(
@@ -229,11 +229,11 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (metafileQuery && value.metafile) {
-    trackEvent({
+    trackEvent(event_key, {
       type: "metafile-query",
       queries,
       noCache
-    }, event_key, url.href)
+    }, url.href)
 
     return new Response(JSON.stringify(value.metafile), {
       status: 200,
@@ -246,12 +246,12 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (warningsQuery) {
-    trackEvent({
+    trackEvent(event_key, {
       type: "warnings-query",
       queries,
       noCache,
       numOfWarnings: value.warnings?.length ?? 0
-    }, event_key, url.href)
+    }, url.href)
 
     return new Response(generateHTMLMessages(value.warnings ?? ["No warnings for this bundle"]),
       {
@@ -266,11 +266,11 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (rawQuery) {
-    trackEvent({
+    trackEvent(event_key, {
       type: "raw-query",
       queries,
       noCache,
-    }, event_key, url.href)
+    }, url.href)
 
     return new Response(JSON.stringify(value), {
       status: 200,
@@ -295,14 +295,14 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     )
   };
 
-  trackEvent({
+  trackEvent(event_key, {
     type: "json-only-query",
     queries,
     noCache,
     addDocs,
     time: finalResult.time,
     rawTime: finalResult.rawTime
-  }, event_key, url.href)
+  }, url.href)
   
   return new Response(JSON.stringify(finalResult), {
     status: 200,
