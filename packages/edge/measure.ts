@@ -30,7 +30,7 @@ const apiRoute = "/take-measurement"; // "/api/collect";
 
 const {
   navigator: { language },
-  location: { hostname, pathname, search },
+  location: { hostname, pathname, search } = new URL("https://deno.bundlejs.com"),
   localStorage,
 } = window;
 
