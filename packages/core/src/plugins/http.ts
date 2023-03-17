@@ -31,7 +31,7 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
-    // dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
+    dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever

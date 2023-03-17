@@ -1,3 +1,6 @@
 {
-  "importMap": "./import_map.json"
+  "importMap": "./import_map.json",
+  "tasks": {
+    "dev": "deno run -A --watch mod.ts"
+  }
 }
