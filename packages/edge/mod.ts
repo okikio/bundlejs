@@ -71,7 +71,11 @@ serve(async (req: Request) => {
       console.warn(e)
     }
 
-    trackEvent("redis-check", { redisAvailable: redis !== null && redis !== undefined }, url.href)
+    if (redis === null || redis === undefined) {
+      trackEvent("redis-unavailable", {
+        type: "redis-unavailable"
+      }, url.href)
+    }
 
     if (url.pathname === "/clear-all-cache-123") {
       trackEvent("clear-cache", { type: "clear-cache" }, url.href)
@@ -216,7 +220,7 @@ serve(async (req: Request) => {
           return new Response("Deleted from cache!");
         } catch (e) {
           console.warn(e);
-          trackEvent("error", {
+          trackEvent("error-deleting-cache", {
             type: "error-deleting-cache",
             jsonKeyObj,
             badgeKeyObj,
@@ -231,7 +235,7 @@ serve(async (req: Request) => {
         const BADGEResult = await redis.get<string>(badgeKey);
         if (badgeQuery && BADGEResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
-          trackEvent("cached", {
+          trackEvent("use-cached-badge", {
             type: "use-cached-badge",
             jsonKeyObj,
             badgeKeyObj,
@@ -251,7 +255,7 @@ serve(async (req: Request) => {
         const JSONResult = await redis.get<BundleResult>(jsonKey);
         const fileQuery = url.searchParams.has("file");
         if (JSONResult && !fileQuery) {
-          trackEvent("cached", {
+          trackEvent("generate-from-cache-json", {
             type: "generate-from-cache-json",
             jsonKeyObj
           }, url.href)
@@ -259,7 +263,7 @@ serve(async (req: Request) => {
         }
       }
     } catch (e) {
-      trackEvent("error", {
+      trackEvent("error-using-cache", {
         type: "error-using-cache",
         jsonKey,
         jsonKeyObj,
@@ -311,7 +315,7 @@ serve(async (req: Request) => {
 
     return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
-    trackEvent("error", {
+    trackEvent("full-error", {
       type: "full-error",
       message: e.toString()
     })

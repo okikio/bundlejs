@@ -69,7 +69,7 @@ function sanitizeShieldsIO(str: string) {
 
 export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
-  const event_key = cached ? "cached" : "json";
+  const event_key = cached ? "cached-json-" : "json-";
 
   const analysisQuery = url.searchParams.has("analysis") ||
     url.searchParams.has("analyze");
@@ -115,7 +115,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     const minifiedBadge = /minify|minified/.exec(badgeResult ?? "");
     const detailedBadge = /detail/.exec(badgeResult ?? "");
 
-    trackEvent(event_key, {
+    trackEvent(event_key + "badge", {
       type: "badge-query",
       badgeKey,
       queries,
@@ -181,7 +181,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     //   throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
     // }
 
-    trackEvent(event_key, {
+    trackEvent(event_key + "file", {
       type: "file-query",
       queries,
       usingGists: false,
@@ -201,7 +201,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     const { analyzeMetafile } = await getEsbuild();
     const verboseAnlysis = analysisResult === "verbose";
 
-    trackEvent(event_key, {
+    trackEvent(event_key + "analysis", {
       type: "analysis-query",
       queries,
       verboseAnlysis
@@ -229,7 +229,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (metafileQuery && value.metafile) {
-    trackEvent(event_key, {
+    trackEvent(event_key + "metafile", {
       type: "metafile-query",
       queries,
       noCache
@@ -246,7 +246,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (warningsQuery) {
-    trackEvent(event_key, {
+    trackEvent(event_key + "warnings", {
       type: "warnings-query",
       queries,
       noCache,
@@ -266,7 +266,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (rawQuery) {
-    trackEvent(event_key, {
+    trackEvent(event_key + "raw", {
       type: "raw-query",
       queries,
       noCache,
@@ -295,7 +295,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     )
   };
 
-  trackEvent(event_key, {
+  trackEvent(event_key + "only-json", {
     type: "json-only-query",
     queries,
     noCache,
