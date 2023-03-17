@@ -298,16 +298,16 @@ serve(async (req: Request) => {
       const prevValue = await redis.get<BundleResult>(jsonKey);
       await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
       if (!badgeQuery) await redis.del(badgeKey);
+
+      // if (prevValue) {
+      //   const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
+      //   if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
+      //     await deleteGist(jsonPrevValue.fileId)
+      //   }
+      // }
     } catch (e) {
       console.warn(e)
     }
-
-    // if (prevValue) {
-    //   const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
-    //   if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
-    //     await deleteGist(jsonPrevValue.fileId)
-    //   }
-    // }
 
     return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
