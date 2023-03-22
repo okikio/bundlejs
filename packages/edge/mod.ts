@@ -21,8 +21,8 @@ import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
 import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
-import { clearFiles as clearGists, deleteFile as deleteGist } from "./gist.ts";
-import { currentRef, trackEvent, trackView } from "./measure.ts";
+import { deleteFile, deleteFile as deleteGist, listFiles } from "./gist.ts";
+import { trackEvent, trackView } from "./measure.ts";
 const { compressToBase64 } = lzstring;
 
 export const headers = Object.entries({
@@ -37,6 +37,8 @@ export type Config = BuildConfig & {
 
 let WASM_MODULE: Uint8Array;
 let wasmModule: WebAssembly.Module;
+
+const encoder = new TextEncoder();
 
 function convertQueryValue(str?: string | null) {
   if (str === "false") return false;
@@ -79,10 +81,45 @@ serve(async (req: Request) => {
 
     if (url.pathname === "/clear-all-cache-123") {
       trackEvent("clear-cache", { type: "clear-cache" }, url.href)
-      await redis?.flushall()
-      // await clearGists();
 
-      return new Response("Cleared entire cache...careful now.")
+      let breakIteration = false;
+      const body = new ReadableStream({
+        async start(controller) {
+          controller.enqueue("Started clearing cache!\n")
+          await redis?.flushall()
+
+          for await (const gists of listFiles()) {
+            const files = gists.data;
+            if (!files || files.length <= 0 || breakIteration) break;
+
+            let log = '';
+            await Promise.all(
+              files.map(async file => {
+                const id = file.id;
+                await deleteFile(id);
+                log += `Deleted ${id}\n`;
+              })
+            )
+
+            console.log(log)
+            controller.enqueue(log);
+          }
+
+          controller.enqueue("\nCleared entire cache...careful now.")
+          controller.close();
+        },
+        cancel() {
+          breakIteration = true;
+        },
+      });
+      
+      return new Response(body
+        .pipeThrough(new TextEncoderStream()), {
+        headers: {
+          "Content-Type": "text/plain",
+          "x-content-type-options": "nosniff"
+        },
+      });
     }
 
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
@@ -212,11 +249,14 @@ serve(async (req: Request) => {
         }, url.href)
 
         try {
+          console.log(`Deleting ${badgeKey}`)
           const JSONResult = await redis.get<BundleResult>(jsonKey);
           await redis.del(jsonKey, badgeKey);
-          // if (JSONResult && JSONResult.fileId) { 
-          //   await deleteGist(JSONResult.fileId); 
-          // }
+          if (JSONResult && JSONResult.fileId) { 
+            await deleteGist(JSONResult.fileId); 
+          }
+
+          console.log(`Deleted ${badgeKey}`)
           return new Response("Deleted from cache!");
         } catch (e) {
           console.warn(e);
@@ -253,8 +293,8 @@ serve(async (req: Request) => {
 
         const start = Date.now();
         const JSONResult = await redis.get<BundleResult>(jsonKey);
-        const fileQuery = url.searchParams.has("file");
-        if (JSONResult && !fileQuery) {
+        const fileQuery = url.searchParams.has("file") ? JSONResult?.fileId : true;
+        if (JSONResult && fileQuery) {
           trackEvent("generate-from-cache-json", {
             type: "generate-from-cache-json",
             jsonKeyObj
@@ -303,12 +343,12 @@ serve(async (req: Request) => {
       await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
       if (!badgeQuery) await redis.del(badgeKey);
 
-      // if (prevValue) {
-      //   const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
-      //   if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
-      //     await deleteGist(jsonPrevValue.fileId)
-      //   }
-      // }
+      if (prevValue) {
+        const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
+        if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
+          await deleteGist(jsonPrevValue.fileId)
+        }
+      }
     } catch (e) {
       console.warn(e)
     }

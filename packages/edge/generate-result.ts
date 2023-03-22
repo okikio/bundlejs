@@ -1,7 +1,6 @@
 import type { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
 import type { CompressionType } from "@bundlejs/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
-import type { Config } from "./mod.ts";
 
 import { bytesToBase64 } from "byte-base64";
 
@@ -9,6 +8,7 @@ import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundlejs/core/src
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
 import styleText from "./style.ts";
+
 import { trackEvent } from "./measure.ts";
 
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
@@ -175,11 +175,11 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   }
 
   if (fileQuery) {
-    // const { fileId } = value;
-    // const fileResult = fileId ? await getFile(fileId) ?? "" : "";
-    // if (!fileId) {
-    //   throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
-    // }
+    const { fileId } = value;
+    const fileResult = fileId ? await getFile(fileId) ?? "" : resultText ?? "";
+    if (!fileId) {
+      console.warn("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+    }
 
     trackEvent(event_key + "file", {
       type: "file-query",
@@ -187,7 +187,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
       usingGists: false,
       noCache
     }, url.href)
-    return new Response(resultText, {
+    return new Response(fileResult, {
       status: 200,
       headers: [
         ...headers,

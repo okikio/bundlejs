@@ -1,5 +1,6 @@
 // @deno-types=npm:octokit
 import { Octokit } from "octokit";
+import { throttling } from "@octokit/plugin-throttling";
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "https://deno.land/x/velo/mod.ts";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
@@ -9,8 +10,29 @@ import { bytesToBase64 } from "byte-base64";
 const { extname } = path;
 
 export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(30_000).build();
-export const octokit = new Octokit({
-  auth: Deno.env.get('GITHUB_AUTH_TOKEN')
+
+export const CustomOctokit = Octokit.plugin(throttling);
+export const octokit = new CustomOctokit({
+  auth: Deno.env.get('GITHUB_AUTH_TOKEN'),
+  throttle: {
+    onRateLimit: (retryAfter: any, options: { method: any; url: any; }, octokit: { log: { warn: (arg0: string) => void; info: (arg0: string) => void; }; }, retryCount: number) => {
+      octokit.log.warn(
+        `Request quota exhausted for request ${options.method} ${options.url}`
+      );
+
+      if (retryCount < 1) {
+        // only retries once
+        octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+        return true;
+      }
+    },
+    onSecondaryRateLimit: (retryAfter: any, options: { method: any; url: any; }, octokit: { log: { warn: (arg0: string) => void; }; }) => {
+      // does not retry, only logs a warning
+      octokit.log.warn(
+        `SecondaryRateLimit detected for request ${options.method} ${options.url}`
+      );
+    },
+  },
 })
 
 export const BUNDLE_FILE_PATH = "index.js";
@@ -26,7 +48,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
           path,
           {
             content: (
-              /\.(wasm|png|jpg|jpeg)/.exec(extname(path)) ?
+              /\.(wasm|png|jpg|jpeg)$/.exec(extname(path)) ?
                 bytesToBase64(x.contents) :
                 x.text
             ) ?? "[bundlejs] Empty file..."
@@ -34,8 +56,10 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
         ]
       })
     );
+
     const result = (
-      await octokit.request('POST /gists', {
+      // 'POST /gists', 
+      await octokit.rest.gists.create({
         description: `Result of ${newUrl.href}`,
         'public': true,
         files: {
@@ -64,15 +88,14 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
   }
 }
 
-export async function listFiles(page = 0) {
-  return (
-    await octokit.request('GET /gists', {
-      page,
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
-      }
-    })
-  ).data
+export function listFiles() {
+  // 'GET /gists'
+  const list = octokit.paginate.iterator(octokit.rest.gists.list, {
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28'
+    }
+  });
+  return list;
 }
 
 export async function getFile(id: string) {
@@ -80,7 +103,8 @@ export async function getFile(id: string) {
   if (rawFile) return rawFile;
 
   try {
-    const req = await octokit.request('GET /gists/{gist_id}', {
+    //'GET /gists/{gist_id}'
+    const req = await octokit.rest.gists.get({
       gist_id: id,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28'
@@ -101,49 +125,17 @@ export async function getFile(id: string) {
 
 export async function deleteFile(id: string) {
   try {
-    console.log("Deleting")
     if (GIST_CACHE.has(id)) GIST_CACHE.remove(id);
-    const result = await octokit.request('DELETE /gists/{gist_id}', {
+
+    // 'DELETE /gists/{gist_id}'
+    const result = await octokit.rest.gists.delete({
       gist_id: id,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28'
       }
     });
-
-    console.log("Deleted")
     return result
   } catch (e) {
     console.warn(`gist delete: `, e);
-  }
-}
-
-export async function clearFiles() {
-  let page = 1;
-  while (page <= 100) {
-    try {
-      const files = await listFiles(page);
-      if (!files || files.length <= 0) break;
-
-      const results = await Promise.allSettled(
-        files.map((file: { id: string; }) => deleteFile(file.id))
-      );
-
-      const resultsLen = results.length;
-      results.forEach((result, i) => {
-        if (result.status === "rejected") {
-          console.warn(`gist clear: `, result.reason);
-
-          if (i >= resultsLen - 1) {
-            throw result.reason;
-          }
-        }
-      })
-
-      page++;
-    } catch (e) {
-      console.warn(`gist clear: `, e);
-      page = 100_000;
-      break;
-    }
   }
 }
