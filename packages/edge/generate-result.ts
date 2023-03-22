@@ -67,7 +67,7 @@ function sanitizeShieldsIO(str: string) {
     .replace(/\s/g, "_")
 }
 
-export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
+export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string | undefined], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
   const event_key = cached ? "cached-json-" : "json-";
 
@@ -176,9 +176,13 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
 
   if (fileQuery) {
     const { fileId } = value;
-    const fileResult = fileId ? await getFile(fileId) ?? "" : resultText ?? "";
-    if (!fileId) {
-      console.warn("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+    const fileResult = fileId ? await getFile(fileId) : resultText ?? " ";
+    if (!fileId && !resultText) {
+      throw new Error("The fileId was empty 🤔, hmm...maybe try again later, if this error persists please create an issue on https://github.com/okikio/bundlejs.")
+    }
+
+    if (fileResult === undefined) {
+      throw new Error("Whoops we can't quite find the file you're looking for, please create an issue on https://github.com/okikio/bundlejs.")
     }
 
     trackEvent(event_key + "file", {

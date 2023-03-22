@@ -299,7 +299,7 @@ serve(async (req: Request) => {
             type: "generate-from-cache-json",
             jsonKeyObj
           }, url.href)
-          return await generateResult(badgeKey, [JSONResult, "null"], url, true, Date.now() - start, redis);
+          return await generateResult(badgeKey, [JSONResult, undefined], url, true, Date.now() - start, redis);
         }
       }
     } catch (e) {
@@ -310,7 +310,7 @@ serve(async (req: Request) => {
         badgeKey,
         badgeKeyObj,
       }, url.href)
-      console.warn(e)
+      console.warn('error-using-cache: ', e)
     }
 
     const start = Date.now();
