@@ -38,7 +38,7 @@ export const octokit = new CustomOctokit({
 export const BUNDLE_FILE_PATH = "index.js";
 export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
   const newUrl = new URL(url);
-  newUrl.hostname = "deno.bundlejs.dev";
+  newUrl.hostname = "deno.bundlejs.com";
 
   try {
     const filesObj = Object.fromEntries(
