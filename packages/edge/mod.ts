@@ -3,6 +3,7 @@ import type { BundleResult } from "./bundle.ts";
 
 import { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
 import { serve } from "https://deno.land/std/http/server.ts";
+import { dirname, fromFileUrl, join, extname, basename } from "https://deno.land/std@0.182.0/path/mod.ts";
 
 // @deno-type=npm:byte-base64
 import { base64ToBytes } from "byte-base64";
@@ -47,6 +48,10 @@ function convertQueryValue(str?: string | null) {
   return str;
 } 
 
+const __dirname = dirname(fromFileUrl(import.meta.url))
+
+// Define the directory where the .well-known files are stored
+const wellKnownDir = "./.well-known/";
 serve(async (req: Request) => {
   try {
     const referer = req.headers.get("Referer") || req.headers.get("Referrer");
@@ -55,6 +60,19 @@ serve(async (req: Request) => {
 
     if (url.pathname === "/favicon.ico")
       return Response.redirect("https://bundlejs.com/favicon/favicon-api.ico");
+
+    if (url.pathname.startsWith("/.well-known/")) {
+      const ext = extname(url.pathname);
+      const fileName = basename(url.pathname);
+      return new Response(await Deno.readFile(join(__dirname, wellKnownDir, fileName)), {
+        status: 200,
+        headers: [
+          ...headers,
+          ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+          ['Content-Type', ext === ".png" ? "image/png" : (ext === ".yaml" ? "text/yaml" : "application/json")]
+        ],
+      })
+    }
 
     trackView(url.href, referer ?? "");
 

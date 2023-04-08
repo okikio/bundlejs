@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Bundlejs API Plugin",
+  "name_for_model": "bundlejs api",
+  "description_for_human": "Plugin for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code",
+  "description_for_model": "Plugin for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://deno.bundlejs.com/.well-known/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://deno.bundlejs.com/.well-known/logo.png",
+  "contact_email": "hey@okikio.dev",
+  "legal_info_url": "https://github.com/okikio/bundlejs/blob/deno-edge/LICENSE"
+}

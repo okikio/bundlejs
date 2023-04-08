@@ -1,0 +1,378 @@
+openapi: 3.1.2
+info:
+  title: BundleJS API
+  description: An API for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code.
+  version: 1.0.0
+servers:
+  - url: https://deno.bundlejs.com
+paths:
+  /:
+    get:
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: true
+          schema:
+            type: string
+        - name: badge
+          in: query
+          description: Generate a badge.
+          required: false
+          schema:
+            type: string
+            enum: ["", "detailed", "minified"]
+        - name: badge-style
+          in: query
+          description: Badge styles supported by shields.io.
+          required: false
+          schema:
+            type: string
+        - name: badge-raster
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: file
+          in: query
+          description: Resulting bundled code.
+          required: false
+          schema:
+            type: boolean
+        - name: analysis
+          in: query
+          description: Esbuild generate visual analysis.
+          required: false
+          schema:
+            type: string
+            enum: ["", "verbose"]
+        - name: metafile
+          in: query
+          description: Esbuild bundle metafile.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Config"
+        - name: treeshake
+          in: query
+          description: Represents the export/imports to treeshake.
+          required: false
+          schema:
+            $ref: "#/components/schemas/TreeshakeList"
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            type: string
+            enum: ["", "inline", "external", "true", "false"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: [iife, cjs, esm]
+        - name: warnings
+          in: query
+          description: Lists warnings for a particular bundle.
+          required: false
+          schema:
+            type: boolean
+        - name: raw
+          in: query
+          description: The raw result of the bundle.
+          required: false
+          schema:
+            type: boolean
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+      
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  rawQuery:
+                    type: string
+                  version:
+                    type: string
+                    nullable: true
+                  versions:
+                    type: array
+                    items:
+                      type: string
+                    nullable: true
+                  config:
+                    type: object
+                    additionalProperties: true
+                  input:
+                    type: string
+                  size:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      rawUncompressedSize:
+                        type: integer
+                      uncompressedSize:
+                        type: string
+                      rawCompressedSize:
+                        type: integer
+                      compressedSize:
+                        type: string
+                      size:
+                        type: string
+                  time:
+                    type: string
+                  rawTime:
+                    type: integer
+                  fileId:
+                    type: string
+                  fileUrl:
+                    type: string
+                  fileHTMLUrl:
+                    type: string
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "✘ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 │ export * from \"reac\";\n        ╵               ~~~~~~"
+        '500':
+          description: Internal server error
+  /?badge:
+    get:
+      summary: Generate an SVG badge for the bundle size.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+                example: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="146" height="20" role="img" aria-label="5.51 kB (gzip): bundlejs"><title>5.51 kB (gzip): bundlejs</title><a target="_blank" xlink:href="https://bundlejs.com/?q=spring-easing,react&amp;badge"><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="146" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="89" height="20" fill="#555"/><rect x="89" width="57" height="20" fill="#007ec6"/><rect width="146" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="455" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="790">5.51 kB (gzip)</text><text x="455" y="140" transform="scale(.1)" fill="#fff" textLength="790">5.51 kB (gzip)</text><text aria-hidden="true" x="1165" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="470">bundlejs</text><text x="1165" y="140" transform="scale(.1)" fill="#fff" textLength="470">bundlejs</text></g></a></svg>'
+  /?badge&badge-raster:
+    get:
+      summary: Generate a PNG badge for the bundle size.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  /?file:
+    get:
+      summary: Return the bundled JavaScript file.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/javascript:
+              schema:
+                type: string
+  /?analysis:
+    get:
+      summary: Generate a visual analysis of the bundle.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "index.js 12.9kb 100.0%\n ├ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n ├ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n ├ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n └ virtual-filesystem:/index.ts 16b 0.1%"
+
+components:
+  schemas:
+    PackageJson:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        homepage:
+          type: string
+        bugs:
+          type: object
+          properties:
+            url:
+              type: string
+            email:
+              type: string
+        license:
+          type: string
+        author:
+          oneOf:
+            - type: string
+            - type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                url:
+                  type: string
+        contributors:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  url:
+                    type: string
+        files:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  include:
+                    type: array
+                    items:
+                      type: string
+                  exclude:
+                    type: array
+                    items:
+                      type: string
+        dependencies:
+          type: object
+          additionalProperties:
+            type: string
+        devDependencies:
+          type: object
+          additionalProperties:
+            type: string
+        optionalDependencies:
+          type: object
+          additionalProperties:
+            type: string
+        peerDependencies:
+          type: object
+          additionalProperties:
+            type: string
+    CompressionOptions:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["gzip", "brotli", "zstd", "lz4"]
+        quality:
+          type: integer
+          enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    CompressConfig:
+      oneOf:
+        - $ref: "#/components/schemas/CompressionOptions"
+        - type: string
+          enum: ["gzip", "brotli", "zstd", "lz4"]
+    BuildConfig:
+      type: object
+      properties:
+        esbuild:
+          type: object
+        package.json:
+          $ref: "#/components/schemas/PackageJson"
+        polyfill:
+          type: boolean
+        cdn:
+          type: string
+        alias:
+          type: object
+          additionalProperties:
+            type: string
+        ansi:
+          type: string
+          enum: ["html", "html-and-ansi", "ansi"]
+        entryPoints:
+          type: array
+          items:
+            type: string
+    Config:
+      allOf:
+        - $ref: "#/components/schemas/BuildConfig"
+        - type: object
+          properties:
+            compression:
+              $ref: "#/components/schemas/CompressConfig"
+            analysis:
+              oneOf:
+                - type: boolean
+                - type: string
+            tsx:
+              type: boolean
+    TreeshakeExport:
+      type: object
+      properties:
+        exports:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  export:
+                    type: string
+                    as:
+                      type: string
+    TreeshakeList:
+      type: array
+      items:
+        $ref: "#/components/schemas/TreeshakeExport"
