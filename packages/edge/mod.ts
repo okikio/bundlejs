@@ -124,7 +124,7 @@ serve(async (req: Request) => {
     }
 
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
-    const { init: _, entryPoints: _2, ascii: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
+    const { init: _, entryPoints: _2, ansi: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
     const metafileQuery = url.searchParams.has("metafile");
     const analysisQuery = url.searchParams.has("analysis") || 

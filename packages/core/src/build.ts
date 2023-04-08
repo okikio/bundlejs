@@ -64,9 +64,9 @@ export type BuildConfig = CommonConfigOptions & {
   alias?: Record<string, string>,
 
   /**
-   * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
+   * Enables converting ansi logs to HTML so virtual consoles can handle the logs and print with color
    */
-  ascii?: "html" | "html-and-ascii" | "ascii",
+  ansi?: "html" | "html-and-ansi" | "ansi",
 
   /**
    * Documentation: https://esbuild.github.io/api/#entry-points
@@ -100,7 +100,7 @@ export const BUILD_CONFIG: BuildConfig = {
     "jsx": "transform"
   },
 
-  "ascii": "ascii",
+  "ansi": "ansi",
   init: {
     platform: PLATFORM_AUTO
   }
