@@ -254,7 +254,7 @@ export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
       build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, pkgJSON));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, pkgJSON));
     },
   };
 }

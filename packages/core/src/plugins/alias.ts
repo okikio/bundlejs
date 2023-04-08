@@ -45,7 +45,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, FAILED_EXTE
     if (isAlias(argPath, aliases)) {
       const pkgDetails = parsePackageName(argPath);
       const aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, FAILED_EXTENSION_CHECKS)({
+      return HTTP_RESOLVE(host)({
         ...args,
         path: aliasPath
       });
@@ -76,7 +76,7 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host, FAILED_EXTENSION_CHECKS)(args);
+          return ALIAS_RESOLVE(aliases, host)(args);
 
         if (!config.polyfill) {
           return {
