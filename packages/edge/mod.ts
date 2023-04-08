@@ -32,7 +32,8 @@ export const headers = Object.entries({
 
 export type Config = BuildConfig & { 
   compression?: CompressConfig,
-  analysis?: boolean | string
+  analysis?: boolean | string,
+  tsx?: boolean,
 };
 
 let WASM_MODULE: Uint8Array;
@@ -53,7 +54,7 @@ serve(async (req: Request) => {
     console.log(url.href)
 
     if (url.pathname === "/favicon.ico")
-      return Response.redirect("https://bundlejs.com/favicon/favicon.ico");
+      return Response.redirect("https://bundlejs.com/favicon/favicon-api.ico");
 
     trackView(url.href, referer ?? "");
 
@@ -135,6 +136,10 @@ serve(async (req: Request) => {
     const minifyQuery = url.searchParams.has("minify");
     const sourcemapQuery = url.searchParams.has("sourcemap");
 
+    const tsxQuery = 
+      url.searchParams.has("tsx") || 
+      url.searchParams.has("jsx");
+
     const enableMetafile = analysisQuery ||
       metafileQuery ||
       Boolean(initialConfig?.analysis);
@@ -165,7 +170,7 @@ serve(async (req: Request) => {
       } as Config,
       initialConfig, 
       {
-        entryPoints: ["/index.tsx"],
+        entryPoints: [`/index${tsxQuery ? ".tsx" : ".ts"}`],
         esbuild: deepAssign(
           {}, 
           enableMetafile ? { metafile: enableMetafile } : {},
@@ -182,6 +187,12 @@ serve(async (req: Request) => {
     );
     console.log(configObj)
 
+    const hasQuery = (
+      url.searchParams.has("q") ||
+      url.searchParams.has("query")
+    );
+    const shareQuery = url.searchParams.get("share");
+    const textQuery = url.searchParams.get("text");
     const query = (
       (
         url.searchParams.get("q") ||
@@ -189,13 +200,14 @@ serve(async (req: Request) => {
       ) ?? "spring-easing"
     );
     const versionsList = await Promise.allSettled(
-      query
-        .split(",")
-        .filter(x => !/^https?\:\/\//.exec(x))
-        .map(async x => {
-          const { name = x, version } = parsePackageName(x, true)
-          return [name, await resolveVersion(x) ?? version]
-        })
+      !hasQuery && (shareQuery || textQuery) ? [] :
+        query
+          .split(",")
+          .filter(x => !/^https?\:\/\//.exec(x))
+          .map(async x => {
+            const { name = x, version } = parsePackageName(x, true)
+            return [name, await resolveVersion(x) ?? version]
+          }) 
     );
 
     const versions: string[] = [];

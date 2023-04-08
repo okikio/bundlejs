@@ -46,7 +46,14 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const fs = await FileSystem;
   const start = performance.now();
 
-  setFile(fs, "/index.tsx", initialValue);
+  const { entryPoints = ["/index.ts"] } = configObj;
+  if (Array.isArray(entryPoints)) {
+    setFile(fs, (entryPoints as string[])[0], initialValue);
+  } else if (typeof entryPoints === "string") {
+    setFile(fs, entryPoints as string, initialValue);
+  } else {
+    setFile(fs, entryPoints.out, initialValue);
+  }
 
   const metafileQuery = url.searchParams.has("metafile");
   const analysisQuery = url.searchParams.has("analysis") ||

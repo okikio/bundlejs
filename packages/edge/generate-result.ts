@@ -19,6 +19,7 @@ export const timeFormatter = new Intl.RelativeTimeFormat("en", {
 export const docs = {
   docs: `/?docs - Takes you to some docs for the API`,
   examples: [
+    "(new) /?tsx or /?jsx",
     "(new) /?badge or /?badge=detailed or /?badge=minified",
     "(new) /?badge-style=for-the-badge",
     "(new) /?badge-raster",
@@ -39,6 +40,7 @@ export const docs = {
     `/?config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}`,
   ],
   basics: [
+    "(new) /?tsx or /?jsx - Support JSX and TSX. Used to be built-in but decided to make it optional, as it caused errors in non TSX packages",
     `(new) /?badge - Generates a badge (if you want more details, set \`?badge=detailed\` (to list the modules being bundled in the badge) or \`?badge=minified\` for the minified bundle size)`,
     `(new) /?badge-style - Various badge styles supported by http://shields.io (https://shields.io/#:~:text=PREFIX%3E%26suffix%3D%3CSUFFIX%3E-,Styles,-The%20following%20styles)`,
     `(new) /?badge-raster - The badge but as a png image`,
