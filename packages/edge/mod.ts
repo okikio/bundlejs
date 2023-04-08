@@ -170,7 +170,7 @@ serve(async (req: Request) => {
       } as Config,
       initialConfig, 
       {
-        entryPoints: [`/index${tsxQuery ? ".tsx" : ".ts"}`],
+        entryPoints: [`/index${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
         esbuild: deepAssign(
           {}, 
           enableMetafile ? { metafile: enableMetafile } : {},
