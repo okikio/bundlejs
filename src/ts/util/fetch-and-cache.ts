@@ -1,47 +1,62 @@
 export const CACHE = new Map();
-export const CACHE_NAME = 'EXTERNAL_FETCHES';
-export const newRequest = async (cache: Cache, request: Request, fetchOpts?: RequestInit) => {
-    let networkResponse: Response = await fetch(request, fetchOpts);
+export const CACHE_NAME = "EXTERNAL_FETCHES";
+export const SUPPORTS_CACHE_API = "caches" in globalThis;
+export const SUPPORTS_REQUEST_API = "Request" in globalThis;
 
-    let clonedResponse = networkResponse.clone();
-    if ("caches" in globalThis) 
-        cache.put(request, clonedResponse);
-    else 
-        CACHE.set(request, clonedResponse);
-
-    return networkResponse;
-};
-
-export let OPEN_CACHE: Cache;
-export const openCache = async () => { 
-    if (OPEN_CACHE) return OPEN_CACHE;
-    return (OPEN_CACHE = await caches.open(CACHE_NAME))
+export function requestKey(request: RequestInfo) {
+    return SUPPORTS_REQUEST_API && request instanceof Request ? request.url.toString() : request.toString()
 }
 
-export const getRequest = async (url: RequestInfo | URL, permanent: boolean = false, fetchOpts?: RequestInit) => {
-    let request = new Request(url.toString());
+export async function newRequest(request: RequestInfo, cache?: Cache, fetchOpts?: RequestInit) {
+    const networkResponse: Response = await fetch(request, fetchOpts);
+
+    if (!fetchOpts?.method || (fetchOpts?.method && fetchOpts.method.toUpperCase() !== "GET"))
+        return networkResponse;
+
+    const clonedResponse = networkResponse.clone();
+    if (SUPPORTS_CACHE_API && cache) {
+        cache.put(request, clonedResponse);
+    } else {
+        const reqKey = requestKey(request);
+        CACHE.set(reqKey, clonedResponse);
+    }
+
+    return networkResponse;
+}
+
+export let OPEN_CACHE: Cache;
+export async function openCache() {
+    if (OPEN_CACHE) return OPEN_CACHE;
+    return (OPEN_CACHE = await caches.open(CACHE_NAME));
+}
+
+export async function getRequest(url: RequestInfo | URL, permanent = false, fetchOpts?: RequestInit) {
+    const request = SUPPORTS_REQUEST_API ? new Request(url.toString(), fetchOpts) : url.toString();
     let response: Response;
 
-    let cache: Cache;
-    let cacheResponse: Response;
+    let cache: Cache | undefined;
+    let cacheResponse: Response | undefined;
 
     // In specific situations the browser will sometimes disable access to cache storage, 
     // so, I create my own in memory cache
-    if ("caches" in globalThis) {
+    if (SUPPORTS_CACHE_API) {
         cache = await openCache();
         cacheResponse = await cache.match(request);
     } else {
-        cacheResponse = CACHE.get(request);
+        const reqKey = requestKey(request);
+        cacheResponse = CACHE.get(reqKey);
     }
-    
-    response = cacheResponse;
+
+    if (cacheResponse)
+        response = cacheResponse;
 
     // If permanent is true, use the cache first and only go to the network if there is nothing in the cache, 
     // otherwise, still use cache first, but in the background queue up a network request
-    if (!cacheResponse) 
-        response = await newRequest(cache, request, fetchOpts);
-    else if (!permanent)
-        newRequest(cache, request, fetchOpts);
+    if (!cacheResponse)
+        response = await newRequest(request, cache, fetchOpts);
+    else if (!permanent) {
+        newRequest(request, cache, fetchOpts);
+    }
 
-    return response.clone();
+    return response!;
 }

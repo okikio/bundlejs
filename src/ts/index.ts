@@ -73,6 +73,12 @@ try {
   console.log(err);
 }
 
+function convertQueryValue(str?: string | null) {
+  if (str === "false") return false;
+  if (str === "true") return true;
+  return str;
+} 
+
 export const postMessage = (obj: { event: string, details: any }) => {
   let messageStr = JSON.stringify(obj);
   let encodedMessage = encode(messageStr);
@@ -174,16 +180,46 @@ BundleEvents.on({
       let query = searchParams.get("query") || searchParams.get("q");
       let share = searchParams.get("share");
       let bundle = searchParams.get("bundle");
-      let analysis = searchParams.get("analysis");
-      let polyfill = searchParams.get("polyfill");
-      let metafile = searchParams.get("metafile");
+      let polyfill = searchParams.has("polyfill");
+
+      const url = oldShareURL;
+      const metafileQuery = url.searchParams.has("metafile");
+      const analysisQuery = url.searchParams.has("analysis") ||
+        url.searchParams.has("analyze");
+
+      const minifyQuery = url.searchParams.has("minify");
+      const sourcemapQuery = url.searchParams.has("sourcemap");
+
+      const tsxQuery =
+        url.searchParams.has("tsx") ||
+        url.searchParams.has("jsx");
+
+      const enableMetafile = analysisQuery || metafileQuery;
+
+      const minifyResult = url.searchParams.get("minify");
+      const minify = (
+        minifyQuery ?
+          (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) as boolean
+          : null
+      );
+
+      const sourcemapResult = url.searchParams.get("sourcemap");
+      const sourcemap = (
+        sourcemapQuery ?
+          (convertQueryValue(sourcemapResult))
+          : null
+      );
+
+      const formatQuery = url.searchParams.has("format");
+      const format = url.searchParams.get("format");
+
       let config = searchParams.get("config") ?? "{}";
-      if (query || share || plaintext || config || analysis || polyfill || metafile) {
+      if (query || share || plaintext || config || analysisQuery || metafileQuery || minifyQuery || sourcemapQuery || polyfill || tsxQuery || formatQuery) {
         if (bundle != null) {
           // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
 
           let initialConfig = `export default ${config}`;
-          BundleEvents.emit("bundle", initialConfig, searchParams.has("analysis") || searchParams.has("metafile"), searchParams.has("polyfill"));
+          BundleEvents.emit("bundle", initialConfig, enableMetafile, polyfill, tsxQuery, sourcemap, minify, format);
         }
 
         isInitial = false;
@@ -276,9 +312,9 @@ export const pushState = (url: string | URL, historyManager: HistoryManager) => 
   }
 }
 
-export const getConfig = async (config: string, analysis: boolean, polyfill: boolean) => {
+export const getConfig = async (config: string, analysis: boolean, polyfill: boolean, tsx: boolean, sourcemap: string | boolean | null, minify: boolean, format: string) => {
   return new Promise(resolve => {
-    SANDBOX_WORKER.postMessage([config, analysis, polyfill]);
+    SANDBOX_WORKER.postMessage([config, analysis, polyfill, tsx, sourcemap, minify, format]);
     SANDBOX_WORKER.onmessage = ({ data }: MessageEvent<string>) => {
       resolve(
         typeof data === "object" &&
@@ -316,7 +352,7 @@ export const build = async (app: App) => {
 
   // bundles using esbuild and returns the result
   BundleEvents.on({
-    bundle(config: string, analysis: boolean, polyfill: boolean) {
+    bundle(config: string, analysis: boolean, polyfill: boolean, tsx: boolean, sourcemap: string | boolean | null, minify: boolean, format: string) {
       if (!initialized) return;
       value = `` + inputModel?.getValue();
 
@@ -330,12 +366,12 @@ export const build = async (app: App) => {
       img.src = shareUrl.href;
 
       start = Date.now();
-      postMessage({ event: "build", details: { config, value, analysis, polyfill } });
+      postMessage({ event: "build", details: { config, value, analysis, polyfill, tsx, sourcemap, minify, format,  } });
 
       (async () => {
         let configObj: BundleConfigOptions = {};
         try {
-          configObj = await getConfig(config, analysis, polyfill);
+          configObj = await getConfig(config, analysis, polyfill, tsx, sourcemap, minify, format);
         } catch (e) {
           console.warn(e);
         }
@@ -412,7 +448,36 @@ export const build = async (app: App) => {
       const thisWorker = await worker(model.uri);
 
       const url = new URL(globalThis.location.href);
-      const config: Record<any, any> = await getConfig(configModel.getValue(), url.searchParams.has("analysis") || url.searchParams.has("metafile"), url.searchParams.has("polyfill")) ?? {};
+      const metafileQuery = url.searchParams.has("metafile");
+      const analysisQuery = url.searchParams.has("analysis") ||
+        url.searchParams.has("analyze");
+
+      const minifyQuery = url.searchParams.has("minify");
+      const sourcemapQuery = url.searchParams.has("sourcemap");
+
+      const tsxQuery =
+        url.searchParams.has("tsx") ||
+        url.searchParams.has("jsx");
+
+      const enableMetafile = analysisQuery || metafileQuery;
+
+      const minifyResult = url.searchParams.get("minify");
+      const minify = (
+        minifyQuery ?
+          (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) as boolean
+          : null
+      );
+
+      const sourcemapResult = url.searchParams.get("sourcemap");
+      const sourcemap = (
+        sourcemapQuery ?
+          (convertQueryValue(sourcemapResult))
+          : null
+      );
+
+      let polyfill = url.searchParams.has("polyfill");
+      const format = url.searchParams.get("format");
+      const config: Record<any, any> = await getConfig(configModel.getValue(), enableMetafile, polyfill, tsxQuery, sourcemap, minify, format) ?? {};
 
       // @ts-ignore
       return await thisWorker.getShareableURL(
@@ -631,7 +696,38 @@ export const build = async (app: App) => {
       try {
         const searchParams = oldShareURL.searchParams;
         const config = searchParams.get("config") ?? "{}";
-        newConfig = await getConfig(`export default ${config}`, searchParams.has("analysis") || searchParams.has("metafile"), searchParams.has("polyfill"));
+
+        const url = oldShareURL;
+        const metafileQuery = url.searchParams.has("metafile");
+        const analysisQuery = url.searchParams.has("analysis") ||
+          url.searchParams.has("analyze");
+
+        const minifyQuery = url.searchParams.has("minify");
+        const sourcemapQuery = url.searchParams.has("sourcemap");
+
+        const tsxQuery =
+          url.searchParams.has("tsx") ||
+          url.searchParams.has("jsx");
+
+        const enableMetafile = analysisQuery || metafileQuery;
+
+        const minifyResult = url.searchParams.get("minify");
+        const minify = (
+          minifyQuery ?
+            (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) as boolean
+            : null
+        );
+
+        const sourcemapResult = url.searchParams.get("sourcemap");
+        const sourcemap = (
+          sourcemapQuery ?
+            (convertQueryValue(sourcemapResult))
+            : null
+        );
+
+        let polyfill = url.searchParams.has("polyfill");
+        const format = url.searchParams.get("format");
+        newConfig = await getConfig(`export default ${config}`, enableMetafile, polyfill, tsxQuery, sourcemap, minify, format);
       } catch (e) { }
 
       const oldConfigFromURL = serialize(

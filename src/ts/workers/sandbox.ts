@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 import { initialize, transform } from "esbuild-wasm";
+import { DefaultConfig } from "../configs/bundle-options";
 export let _initialized = false;
 
 const initPromise = (async () => {
@@ -28,11 +29,11 @@ export const start = async (port: MessagePort) => {
   let $port: MessagePort;
 
   const onmessage = (_port: MessagePort) => {
-    return async function ({ data: arr }: MessageEvent<[string, boolean, boolean]>) {
+    return async function ({ data: arr }: MessageEvent<[string, boolean, boolean, boolean, string | boolean | null, boolean, string | undefined]>) {
       try {
         await initPromise;
 
-        const [data, analysis, polyfill] = arr; 
+        const [data, analysis, polyfill, tsx, sourcemap, minify, format] = arr; 
         const config = configs.has(data) ? configs.get(data) : (
           await transform(data, {
             loader: 'ts',
@@ -50,7 +51,12 @@ export const start = async (port: MessagePort) => {
         const result = await Function('"use strict";return (async function () { "use strict";' + config + 'return (await std_global?.default); })()')();
         // const result = (0, eval)(config + ' std_global');
         result.analysis = result.analysis || analysis;
-        result.polyfill = polyfill ?? result.polyfill;
+        result.polyfill = polyfill ?? result.polyfill ?? DefaultConfig.polyfill;
+        result.tsx = tsx ?? result.tsx ?? DefaultConfig.tsx;
+
+        result.esbuild.sourcemap = sourcemap ?? result.esbuild.sourcemap ?? DefaultConfig.esbuild.sourcemap;
+        result.esbuild.minify = minify ?? result.esbuild.minify ?? DefaultConfig.esbuild.minify;
+        result.esbuild.format = format ?? result.esbuild.format ?? DefaultConfig.esbuild.format;
 
         console.log({ result })
 
@@ -70,7 +76,7 @@ export const start = async (port: MessagePort) => {
       $port.start();
       $port.onmessage = onmessage($port);
     } else {
-      msg({ data } as MessageEvent<[string, boolean, boolean]>);
+      msg({ data } as MessageEvent<[string, boolean, boolean, boolean, string | boolean | null, boolean, string | undefined]>);
     }
   };
 }

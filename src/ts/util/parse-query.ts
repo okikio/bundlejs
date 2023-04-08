@@ -38,6 +38,16 @@ export const parseInput = (value: string) => {
 export const parseTreeshakeExports = (str: string) =>
     (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
+/**
+ * Get cleaned up module name
+ * e.g. "@okikio/animate" -> okikioAnimate
+ */
+export const getModuleName = (str: string) =>
+    str.split(/(?:-|_|\/)/g)
+        .map((x, i) => i > 0 ? x[0].toUpperCase() + x.slice(1) : x)
+        .join("")
+        .replace(/[^\w\s]/gi, "")
+
 // Inspired by https://github.com/solidjs/solid-playground
 /**
 * Converts URL's into code. It allows for specifing multiple exports per package, through this syntax
@@ -69,6 +79,7 @@ export const parseSearchQuery = (shareURL: URL) => {
         if (query) {
             let queryArr = query.trim().split(",");
             let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
+            const queryArrLen = queryArr.length;
             result += (
                 "// Click Build for the Bundled, Minified & Compressed package size\n" +
                 queryArr
@@ -80,13 +91,23 @@ export const parseSearchQuery = (shareURL: URL) => {
                         let [, ,
                             declaration = "export",
                             module
-                        ] = /^(\((.*)\))?(.*)/.exec(q);
-                        return `${declaration} ${treeshakeExports} from ${JSON.stringify(
+                        ] = /^(\((.*)\))?(.*)/.exec(q)!;
+                        return `${declaration} ${treeshakeExports}${treeshakeExports === "*" && !treeshakeArr[i] && queryArrLen > 1 ? ` as ${getModuleName(module)}` : ""} from ${JSON.stringify(
                             module
                         )};`;
                     })
                     .join("\n")
             );
+            if (queryArr.length === 1 && (treeshake ?? "").trim().length <= 0) {
+                let [, ,
+                    declaration = "export",
+                    module
+                ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
+                let moduleName = getModuleName(module);
+                result += `\n${declaration} { default ${declaration === "import" ? `as ${moduleName} ` : ""}} from ${JSON.stringify(
+                    module
+                )};`;
+            }
         }
 
         let share = searchParams.get("share");

@@ -63,7 +63,8 @@ export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL,
 export const outputModelResetValue = "// Output";
 export const inputModelResetValue = [
     '// Click Build for the bundled, minified and compressed package size',
-    'export * from "@okikio/animate";'
+    'export * from "spring-easing";',
+    'export { default } from "spring-easing";'
 ].join("\n");
 export const configModelResetValue = [
     '// Configure Bundle',

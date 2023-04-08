@@ -125,9 +125,9 @@ export const start = async (port: MessagePort) => {
   if (_initialized)
     initEvent.emit("init");
 
-  const getConfig = async (config: string, analysis: boolean, polyfill: boolean) => {
+  const getConfig = async (config: string, analysis: boolean, polyfill: boolean, tsx: boolean, sourcemap: string | boolean | null, minify: boolean, format: string) => {
     return new Promise(resolve => {
-      $port.postMessage([config, analysis, polyfill]);
+      $port.postMessage([config, analysis, polyfill, tsx, sourcemap, minify, format]);
       $port.onmessage = async function ({ data }: MessageEvent<string>) {
         resolve(
           typeof data === "object" &&
@@ -139,8 +139,8 @@ export const start = async (port: MessagePort) => {
   }
 
   BuildEvents.on("build", async (details) => {
-    let { config: _config, value: input, analysis, polyfill } = details;
-    let newConfig = await getConfig(_config ? _config : "export default {}", analysis, polyfill);
+    let { config: _config, value: input, analysis, polyfill, tsx, sourcemap, minify, format, } = details;
+    let newConfig = await getConfig(_config ? _config : "export default {}", analysis, polyfill, tsx, sourcemap, minify, format);
     let config = deepAssign({}, DefaultConfig, newConfig) as BundleConfigOptions;
 
     // Exclude certain esbuild config properties
@@ -169,7 +169,7 @@ export const start = async (port: MessagePort) => {
 
     try {
       // Catch esbuild errors 
-      setFile("/input.tsx", `${input}`);
+      setFile(`/input.${config.tsx ? "tsx" : "ts"}`, `${input}`);
       console.log({ esbuildOpts })
       
       try {
@@ -179,8 +179,8 @@ export const start = async (port: MessagePort) => {
           "stdin": {
             // Ensure input is a string
             contents: `${input}`,
-            loader: 'tsx',
-            sourcefile: "/input.tsx"
+            loader: config.tsx ? "tsx" : "ts",
+            sourcefile: `/input.${config.tsx ? "tsx" : "ts"}`
           },
 
           ...esbuildOpts,
@@ -205,7 +205,7 @@ export const start = async (port: MessagePort) => {
             ALIAS(config?.alias, origin, logger),
             EXTERNAL(esbuildOpts?.external, origin, config?.polyfill),
             HTTP(assets, origin, logger),
-            CDN(origin, logger),
+            CDN(origin, config["package.json"], logger),
           ],
           outdir: "/"
         });

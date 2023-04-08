@@ -10,7 +10,7 @@ import { parse as parsePackageName } from "parse-package-name";
 export const EXTERNALS_NAMESPACE = 'external-globals';
 
 /** An empty export as a Uint8Array */
-export const EMPTY_EXPORT = encode(`export default {}`);
+export const EMPTY_EXPORT = encode("export default {}");
 
 /** List of polyfillable native node modules, you should now use aliases to polyfill features */
 export const PolyfillMap = {
@@ -22,10 +22,10 @@ export const PolyfillMap = {
     "vm": "vm-browserify",
     "zlib": "browserify-zlib",
     "assert": "assert",
-    "child_process": "child_process",
-    "cluster": "child_process",
+    // "child_process": "child_process",
+    // "cluster": "child_process",
     "dgram": "browser-node-dgram",
-    "dns": "dns",
+    // "dns": "dns",
     "domain": "domain-browser",
     "events": "events",
     "http": "http-browserify",
@@ -36,28 +36,34 @@ export const PolyfillMap = {
     "punycode": "punycode",
     "querystring": "querystring",
     "readline": "readline-browser",
-    "repl": "repl",
+    // "repl": "repl",
     "stream": "stream-browserify",
     "string_decoder": "string_decoder",
-    "sys": "sys",
+    // "sys": "sys",
     "timers": "timers-browserify",
     "tls": "browserify-tls",
     "tty": "tty-browserify",
     "url": "browserify-url",
     "util": "util/util.js",
     "_shims": "_shims",
-    "_stream_duplex": "readable-stream/duplex.js",
-    "_stream_readable": "readable-stream/readable.js",
-    "_stream_writable": "readable-stream/writable.js",
-    "_stream_transform": "readable-stream/transform.js",
-    "_stream_passthrough": "readable-stream/passthrough.js",
+    "readable-stream/": "readable-stream/lib",
+    "readable-stream/duplex": "readable-stream/lib/duplex.js",
+    "readable-stream/readable": "readable-stream/lib/readable.js",
+    "readable-stream/writable": "readable-stream/lib/writable.js",
+    "readable-stream/transform": "readable-stream/lib/transform.js",
+    "readable-stream/passthrough": "readable-stream/lib/passthrough.js",
+    "_stream_duplex": "readable-stream/lib/duplex.js",
+    "_stream_readable": "readable-stream/lib/readable.js",
+    "_stream_writable": "readable-stream/lib/writable.js",
+    "_stream_transform": "readable-stream/lib/transform.js",
+    "_stream_passthrough": "readable-stream/lib/passthrough.js",
     process: "process/browser",
     fs: "memfs",
     os: "os-browserify/browser",
-    "v8": "v8",
-    "node-inspect": "node-inspect",
+    // "v8": "v8",
+    // "node-inspect": "node-inspect",
     "_linklist": "_linklist",
-    "_stream_wrap": "_stream_wrap"
+    "_stream_wrap": "_stream_wrap",
 };
 
 /** Array of native node packages (that are polyfillable) */
@@ -65,7 +71,7 @@ export const PolyfillKeys = Object.keys(PolyfillMap);
 /** API's & Packages that were later removed from nodejs */
 export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"];
 /** Packages `bundle` should ignore, including deprecated apis, and polyfillable API's */
-export const ExternalPackages = ['chokidar', 'yargs', 'fsevents', `worker_threads`, "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
+export const ExternalPackages = ["pnpapi", "v8", "node-inspect", "sys", "repl", "dns", "child_process", "cluster", "chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 /** Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51 */
 export const isExternal = (id: string, external: string[] = []) => {
@@ -96,7 +102,7 @@ export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyf
                 if (isExternal(argPath, external)) {
                     if (polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
                         const pkgDetails = parsePackageName(argPath);
-                        const aliasPath = PolyfillMap[pkgDetails.name];
+                        const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
                         return CDN_RESOLVE(host)({
                             ...args,
                             path: aliasPath
@@ -127,7 +133,7 @@ export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyf
                     contents: EMPTY_EXPORT,
                     warnings: [{
                         text: `${args.path} is marked as an external module and will be ignored.`,
-                        details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com, sorry about that.`
+                        details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com (technically it can be supported but...it's currently disabled. If you'd like this functionallity, please reach out at https://github.com/okikio/bundlejs), sorry about that.`
                     }]
                 };
             });

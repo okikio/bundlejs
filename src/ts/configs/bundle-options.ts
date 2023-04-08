@@ -1,6 +1,7 @@
 import type { BuildOptions } from "esbuild-wasm";
 import type { OutputOptions } from "rollup";
 import type { TemplateType } from "../plugins/analyzer/types/template-types";
+import type { PackageJson } from "../plugins/cdn";
 
 import { deepAssign } from "../util/deep-equal";
 import { DEFAULT_CDN_HOST } from "../util/util-cdn";
@@ -39,6 +40,16 @@ export type BundleConfigOptions = {
     /** Polyfill Node Built-ins */
     polyfill?: boolean,
 
+    /**
+     * The package.json to use when trying to bundle files
+     */
+    "package.json"?: PackageJson;
+
+    /**
+     * Support TSX
+     */
+    "tsx"?: boolean,
+
     /** The default CDN to import packages from */
     cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & {}),
 
@@ -73,6 +84,11 @@ export const EasyDefaultConfig: BundleConfigOptions = {
     "compression": "gzip",
     "analysis": false,
     "polyfill": false,
+    "tsx": false,
+    "package.json": {
+        "name": "bundled-code",
+        "version": "0.0.0"
+    },
     "esbuild": {
         "target": ["esnext"],
         "format": "esm",
