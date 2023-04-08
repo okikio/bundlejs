@@ -51,7 +51,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
               /\.(wasm|png|jpg|jpeg)$/.exec(extname(path)) ?
                 bytesToBase64(x.contents) :
                 x.text
-            ) ?? "[bundlejs] Empty file..."
+            ) || "[bundlejs] Empty file..."
           }
         ]
       })

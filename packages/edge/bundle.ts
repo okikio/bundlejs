@@ -38,7 +38,8 @@ export type BundleResult = {
 }
 
 export const inputModelResetValue = [
-  'export * from "spring-easing";'
+  'export * from "spring-easing";',
+  'export { default } from "spring-easing";'
 ].join("\n");
 
 export async function bundle(url: URL, initialValue: string, configObj: Config, versions: string[], query: string) {
