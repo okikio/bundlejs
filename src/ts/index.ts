@@ -36,7 +36,7 @@ import { getRequest } from "./util/fetch-and-cache";
 import { deepAssign } from "./util/deep-equal";
 import serialize from "./util/serialize-javascript";
 
-export let oldShareURL = new URL(String(document.location));
+export let oldShareURL = new URL(String(window.location));
 export const BundleEvents = new EventEmitter();
 
 let value = "";
@@ -217,7 +217,6 @@ BundleEvents.on({
       if (query || share || plaintext || config || analysisQuery || metafileQuery || minifyQuery || sourcemapQuery || polyfill || tsxQuery || formatQuery) {
         if (bundle != null) {
           // fileSizeEl.forEach(el => (el.textContent = `Wait!`));
-
           let initialConfig = `export default ${config}`;
           BundleEvents.emit("bundle", initialConfig, enableMetafile, polyfill, tsxQuery, sourcemap, minify, format);
         }
@@ -366,6 +365,10 @@ export const build = async (app: App) => {
       img.src = shareUrl.href;
 
       start = Date.now();
+      
+      console.log({
+        config, value, analysis, polyfill, tsx, sourcemap, minify, format,
+      })
       postMessage({ event: "build", details: { config, value, analysis, polyfill, tsx, sourcemap, minify, format,  } });
 
       (async () => {
@@ -689,7 +692,7 @@ export const build = async (app: App) => {
     };
 
     // Build the Code Editor
-    [editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL);
+    ([editor, inputModel, outputModel, configModel] = Monaco.build(oldShareURL));
 
     (async () => {
       let newConfig = {};

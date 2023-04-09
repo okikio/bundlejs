@@ -44,7 +44,7 @@ export const parseTreeshakeExports = (str: string) =>
  */
 export const getModuleName = (str: string) =>
     str.split(/(?:-|_|\/)/g)
-        .map((x, i) => i > 0 ? x[0].toUpperCase() + x.slice(1) : x)
+        .map((x, i) => i > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
         .join("")
         .replace(/[^\w\s]/gi, "")
 
@@ -103,10 +103,14 @@ export const parseSearchQuery = (shareURL: URL) => {
                     declaration = "export",
                     module
                 ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
-                let moduleName = getModuleName(module);
-                result += `\n${declaration} { default ${declaration === "import" ? `as ${moduleName} ` : ""}} from ${JSON.stringify(
+                result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module) } ` : ""}} from ${JSON.stringify(
                     module
                 )};`;
+                console.log({
+                    result,
+                    declaration,
+                    module
+                })
             }
         }
 

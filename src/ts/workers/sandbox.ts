@@ -44,19 +44,23 @@ export const start = async (port: MessagePort) => {
         ).code;
         
         console.log({
+          data,
+          sourcemap,
           config
         })
-        configs.set(data, config);
 
         const result = await Function('"use strict";return (async function () { "use strict";' + config + 'return (await std_global?.default); })()')();
         // const result = (0, eval)(config + ' std_global');
-        result.analysis = result.analysis || analysis;
+        result.analysis = analysis || result.analysis;
         result.polyfill = polyfill ?? result.polyfill ?? DefaultConfig.polyfill;
         result.tsx = tsx ?? result.tsx ?? DefaultConfig.tsx;
 
+        if (!result.esbuild) result.esbuild ??= {};
         result.esbuild.sourcemap = sourcemap ?? result.esbuild.sourcemap ?? DefaultConfig.esbuild.sourcemap;
         result.esbuild.minify = minify ?? result.esbuild.minify ?? DefaultConfig.esbuild.minify;
         result.esbuild.format = format ?? result.esbuild.format ?? DefaultConfig.esbuild.format;
+
+        configs.set(data, config);
 
         console.log({ result })
 
