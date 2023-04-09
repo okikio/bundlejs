@@ -24,7 +24,7 @@ export const parseTreeshakeExports = (str: string) =>
  */
 export const getModuleName = (str: string) => 
   str.split(/(?:-|_|\/)/g)
-    .map((x, i) => i > 0 ? x[0].toUpperCase() + x.slice(1) : x)
+    .map((x, i) => i > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
     .join("")
     .replace(/[^\w\s]/gi, "")
 
@@ -54,21 +54,21 @@ export const parseShareURLQuery = (shareURL: URL) => {
   try {
     const searchParams = shareURL.searchParams;
     let result = "";
-    let query = searchParams.get("query") || searchParams.get("q");
-    let treeshake = searchParams.get("treeshake");
+    const query = searchParams.get("query") || searchParams.get("q");
+    const treeshake = searchParams.get("treeshake");
     if (query) {
-      let queryArr = query.trim().split(",");
-      let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
+      const queryArr = query.trim().split(",");
+      const treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
       const queryArrLen = queryArr.length;
       result += (
         "// Click Build for the Bundled, Minified & Compressed package size\n" +
         queryArr
           .map((q, i) => {
-            let treeshakeExports =
+            const treeshakeExports =
               treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
                 ? treeshakeArr[i].trim().split(",").join(", ")
                 : "*";
-            let [, ,
+            const [, ,
               declaration = "export",
               module
             ] = /^(\((.*)\))?(.*)/.exec(q)!;
@@ -79,21 +79,20 @@ export const parseShareURLQuery = (shareURL: URL) => {
           .join("\n")
       );
       if (queryArr.length === 1 && (treeshake ?? "").trim().length <= 0) {
-        let [, ,
+        const [, ,
           declaration = "export",
           module
         ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
-        let moduleName = getModuleName(module);
-        result += `\n${declaration} { default ${declaration === "import" ? `as ${moduleName} ` : "" }} from ${JSON.stringify(
+        result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module)} ` : "" }} from ${JSON.stringify(
           module
         )};`;
       }
     }
 
-    let share = searchParams.get("share");
+    const share = searchParams.get("share");
     if (share) result += "\n" + decompressFromURL(share.trim());
 
-    let plaintext = searchParams.get("text");
+    const plaintext = searchParams.get("text");
     if (plaintext) {
       result += "\n" + JSON.parse(
         /**    
@@ -118,7 +117,9 @@ export const parseShareURLQuery = (shareURL: URL) => {
     }
 
     return result.trim();
-  } catch (e) { }
+  } catch (e) { 
+    console.warn(e);
+  }
 };
 
 
@@ -131,5 +132,7 @@ export const parseConfig = (shareURL: URL) => {
     const searchParams = shareURL.searchParams;
     const config = searchParams.get("config") ?? "{}";
     return deepAssign({}, JSON.parse(config ? config : "{}"));
-  } catch (e) { }
+  } catch (e) { 
+    console.warn(e);
+  }
 };
