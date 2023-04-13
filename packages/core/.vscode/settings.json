@@ -1,5 +1,3 @@
 {
-  "deno.enablePaths": [
-    "./repl.ts"
-  ]
+  "deno.enable": true
 }

@@ -2,7 +2,7 @@ import { decode, encode } from "./encode-decode.ts";
 import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
 
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
-import { Velo } from "https://deno.land/x/velo@1.0.0/mod.ts";
+import { Velo } from "velo";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */

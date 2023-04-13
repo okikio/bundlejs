@@ -2,10 +2,10 @@
 import { Octokit } from "octokit";
 import { throttling } from "@octokit/plugin-throttling";
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
-import { Velo } from "https://deno.land/x/velo@1.0.0/mod.ts";
+import { Velo } from "velo";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
 
-import { bytesToBase64 } from "byte-base64";
+import { fromUint8Array } from "base64";
 
 const { extname } = path;
 
@@ -49,7 +49,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
           {
             content: (
               /\.(wasm|png|jpg|jpeg)$/.exec(extname(path)) ?
-                bytesToBase64(x.contents) :
+                fromUint8Array(x.contents) :
                 x.text
             ) || "[bundlejs] Empty file..."
           }

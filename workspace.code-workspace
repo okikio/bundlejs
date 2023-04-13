@@ -15,7 +15,7 @@
   ],
 	"settings": {
     "typescript.tsdk": "✨ root/node_modules/typescript/lib",
-    "deno.config": "./packages/edge/deno.jsonc",
-    "deno.enable": true
+    "deno.enable": true,
+    "deno.config": "./packages/edge/deno.jsonc"
   }
 }
