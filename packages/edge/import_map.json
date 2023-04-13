@@ -2,8 +2,8 @@
   "imports": {
     "@bundlejs/core/": "../core/",
     "@bundlejs/core": "../core/src/index.ts",
-    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm@0.17.16/esm/browser.d.ts",
 
+    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm@0.17.16/esm/browser.d.ts",
     "esbuild-wasm": "https://esm.sh/esbuild-wasm@0.17.16",
     "esbuild": "https://deno.land/x/esbuild@v0.17.16/wasm.js",
 
