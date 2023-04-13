@@ -2,9 +2,9 @@
   "imports": {
     "@bundlejs/core/": "../core/",
     "@bundlejs/core": "../core/src/index.ts",
-    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm@0.17.15/esm/browser.d.ts",
-    "esbuild-wasm": "https://esm.sh/esbuild-wasm@0.17.15",
-    "esbuild": "https://esm.sh/esbuild@0.17.15",
+    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm@0.17.16/esm/browser.d.ts",
+    "esbuild-wasm": "https://esm.sh/esbuild-wasm@0.17.16",
+    "esbuild": "https://esm.sh/esbuild@0.17.16",
     "resolve.exports": "https://esm.sh/resolve.exports",
     "byte-base64": "https://esm.sh/byte-base64",
     "octokit": "https://esm.sh/octokit",

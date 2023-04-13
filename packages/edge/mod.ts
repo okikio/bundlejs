@@ -1,8 +1,8 @@
 import type { BuildConfig, CompressConfig } from "@bundlejs/core";
 import type { BundleResult } from "./bundle.ts";
 
-import { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
-import { serve } from "https://deno.land/std/http/server.ts";
+import { Redis } from "https://deno.land/x/upstash_redis@v1.20.2/mod.ts";
+import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
 import { dirname, fromFileUrl, join, extname, basename } from "https://deno.land/std@0.182.0/path/mod.ts";
 
 // @deno-type=npm:byte-base64
@@ -37,8 +37,8 @@ export type Config = BuildConfig & {
   tsx?: boolean,
 };
 
-let WASM_MODULE: Uint8Array;
-let wasmModule: WebAssembly.Module;
+// let WASM_MODULE: Uint8Array;
+// let wasmModule: WebAssembly.Module;
 
 const encoder = new TextEncoder();
 
@@ -199,7 +199,7 @@ serve(async (req: Request) => {
         init: {
           platform: "deno-wasm",
           worker: false,
-          wasmModule
+          // wasmModule
         },
       } as Config
     );
@@ -344,14 +344,14 @@ serve(async (req: Request) => {
     }
 
     const start = Date.now();
-    if (!WASM_MODULE) { 
-      WASM_MODULE = await ESBUILD_WASM();
-      trackEvent("flushed-wasm", { type: "flushed-wasm-source", }, url.href)
-    }
-    if (!wasmModule) { 
-      wasmModule = new WebAssembly.Module(WASM_MODULE);
-      trackEvent("flushed-wasm", { type: "flushed-wasm-module", }, url.href)
-    }
+    // if (!WASM_MODULE) { 
+    //   WASM_MODULE = await ESBUILD_WASM();
+    //   trackEvent("flushed-wasm", { type: "flushed-wasm-source", }, url.href)
+    // }
+    // if (!wasmModule) { 
+    //   wasmModule = new WebAssembly.Module(WASM_MODULE);
+    //   trackEvent("flushed-wasm", { type: "flushed-wasm-module", }, url.href)
+    // }
 
     const [response, resultText] = await bundle(url, initialValue, configObj, versions, query);
 

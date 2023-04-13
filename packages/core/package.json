@@ -76,8 +76,8 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.17.15",
-    "esbuild-wasm": "^0.17.15",
+    "esbuild": "^0.17.16",
+    "esbuild-wasm": "^0.17.16",
     "resolve.exports": "^2.0.2"
   },
   "devDependencies": {

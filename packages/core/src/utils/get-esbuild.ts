@@ -24,7 +24,7 @@ globalThis.Worker = worker ?? class {
  * @param platform Which platform skew of esbuild should be used
  * @returns esbuild module
  */
-import * as DenoEsbuild from "https://deno.land/x/esbuild@v0.17.16/wasm.js";
+import * as DenoEsbuild from "https://deno.land/x/esbuild@v0.17.16/mod.js";
 export async function getEsbuild(platform: Platform = PLATFORM_AUTO) {
   try {
     return DenoEsbuild;

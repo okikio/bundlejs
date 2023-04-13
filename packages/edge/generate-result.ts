@@ -1,4 +1,4 @@
-import type { Redis } from "https://deno.land/x/upstash_redis/mod.ts";
+import type { Redis } from "https://deno.land/x/upstash_redis@v1.20.2/mod.ts";
 import type { CompressionType } from "@bundlejs/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
 
