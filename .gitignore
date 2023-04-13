@@ -144,7 +144,7 @@ pnpm-debug.log*
 .DS_Store
 
 core.*
-deno.lock
+**/deno.lock
 
 packages/core/lib/
 packages/core/@types/
@@ -154,3 +154,5 @@ packages/analysis/@types/
 
 packages/edge/lib/
 packages/edge/@types/
+
+packages/edge/deno.lock
