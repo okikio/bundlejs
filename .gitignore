@@ -144,6 +144,7 @@ pnpm-debug.log*
 .DS_Store
 
 core.*
+deno.lock
 
 packages/core/lib/
 packages/core/@types/

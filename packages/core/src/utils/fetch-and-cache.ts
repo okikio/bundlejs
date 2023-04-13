@@ -1,4 +1,4 @@
-import { Velo } from "https://deno.land/x/velo/mod.ts";
+import { Velo } from "https://deno.land/x/velo@1.0.0/mod.ts";
 
 export const CACHE = Velo.builder<string, Response>().capacity(300).lru().ttl(30_000).build();
 
