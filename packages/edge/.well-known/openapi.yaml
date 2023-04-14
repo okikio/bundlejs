@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: BundleJS API
   description: An API for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code.
@@ -59,7 +59,39 @@ paths:
           in: query
           required: false
           schema:
-            $ref: "#/components/schemas/Config"
+            oneOf:
+              - type: string
+                format: json
+                example:
+                  > 
+                    {
+                      "cdn": "https://unpkg.com",
+                      "compression": "gzip",
+                      "analysis": true,
+                      "polyfill": false,
+                      "tsx": false,
+                      "package.json": {
+                        "name": "bundled-code",
+                        "version": "0.0.0",
+                      },
+                      "esbuild": {
+                        "target": [
+                          "esnext",
+                        ],
+                        "format": "esm",
+                        "bundle": true,
+                        "minify": true,
+                        "treeShaking": true,
+                        "platform": "browser",
+                        "sourcemap": false,
+                        "external": ["react"],
+                        "alias": {
+                          "react-dom": "https://esm.sh/react-dom" 
+                        }
+                      },
+                    }
+              - $ref: "#/components/schemas/Config"
+              - nullable: true
         - name: treeshake
           in: query
           description: Represents the export/imports to treeshake.
@@ -79,6 +111,7 @@ paths:
           schema:
             type: string
             enum: ["", "inline", "external", "true", "false"]
+            nullable: true
         - name: minify
           in: query
           description: Esbuild minify.
@@ -116,7 +149,6 @@ paths:
           required: false
           schema:
             type: string
-      
         - name: tsx
           in: query
           description: Support JSX and TSX.
@@ -128,7 +160,6 @@ paths:
           description: Bundled code, analysis, badge or JSON response.
           content:
             application/json:
-              operationId: getJSONResponse
               schema:
                 type: object
                 properties:
@@ -175,23 +206,43 @@ paths:
                   fileHTMLUrl:
                     type: string
             application/javascript:
-              operationId: getFile
-              summary: Return the bundled JavaScript file.
               schema:
                 type: string
             image/svg+xml:
               schema:
                 type: string
-                example: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="146" height="20" role="img" aria-label="5.51 kB (gzip): bundlejs"><title>5.51 kB (gzip): bundlejs</title><a target="_blank" xlink:href="https://bundlejs.com/?q=spring-easing,react&amp;badge"><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="146" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="89" height="20" fill="#555"/><rect x="89" width="57" height="20" fill="#007ec6"/><rect width="146" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="455" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="790">5.51 kB (gzip)</text><text x="455" y="140" transform="scale(.1)" fill="#fff" textLength="790">5.51 kB (gzip)</text><text aria-hidden="true" x="1165" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="470">bundlejs</text><text x="1165" y="140" transform="scale(.1)" fill="#fff" textLength="470">bundlejs</text></g></a></svg>'
+                example: 
+                  >
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="146" height="20" role="img" aria-label="5.51 kB (gzip): bundlejs">
+                      <title>5.51 kB (gzip): bundlejs</title>
+                      <a target="_blank" xlink:href="https://bundlejs.com/?q=spring-easing,react&amp;badge">
+                        <linearGradient id="s" x2="0" y2="100%">
+                          <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+                          <stop offset="1" stop-opacity=".1"/>
+                        </linearGradient>
+                        <clipPath id="r">
+                          <rect width="146" height="20" rx="3" fill="#fff"/>
+                        </clipPath>
+                        <g clip-path="url(#r)">
+                          <rect width="89" height="20" fill="#555"/>
+                          <rect x="89" width="57" height="20" fill="#007ec6"/>
+                          <rect width="146" height="20" fill="url(#s)"/>
+                        </g>
+                        <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">
+                          <text aria-hidden="true" x="455" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="790">5.51 kB (gzip)</text>
+                          <text x="455" y="140" transform="scale(.1)" fill="#fff" textLength="790">5.51 kB (gzip)</text>
+                          <text aria-hidden="true" x="1165" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="470">bundlejs</text>
+                          <text x="1165" y="140" transform="scale(.1)" fill="#fff" textLength="470">bundlejs</text>
+                        </g>
+                      </a>
+                    </svg>
+
             image/png:
-              operationId: getBadgeRaster
-              summary: Generate a PNG badge for the bundle size.
               schema:
                 type: string
                 format: binary
             text/plain:
-              operationId: getAnalysis
-              summary: Generate a visual analysis of the bundle.
               schema:
                 type: string
                 example: "index.js 12.9kb 100.0%\n ├ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n ├ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n ├ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n └ virtual-filesystem:/index.ts 16b 0.1%"
@@ -209,16 +260,6 @@ paths:
 
 components:
   schemas:
-    Platform:
-      type: string
-      enum:
-        - node
-        - deno
-        - browser
-        - edge
-        - cloudflare
-        - wasm
-        - deno-wasm
     InitOptions:
       type: object
       properties:
@@ -360,8 +401,10 @@ components:
         charset:
           $ref: '#/components/schemas/Charset'
         sourcemap:
-          type: string
-          enum: [true, false, 'linked', 'inline', 'external', 'both']
+          oneOf:
+            - type: boolean
+            - type: string
+              enum: ['linked', 'inline', 'external', 'both']
           nullable: true
         legalComments:
           type: string
@@ -551,44 +594,3 @@ components:
         - binary
         - css
         - wasm
-    LegalComments:
-      type: string
-      enum:
-        - none
-        - linked
-        - inline
-        - eof
-    StrictOptions:
-      type: object
-      properties:
-        nullishCoalescing:
-          type: boolean
-        optionalChaining:
-          type: boolean
-        classFields:
-          type: boolean
-        topLevelAwait:
-          type: boolean
-        importsNotUsedAsValues:
-          type: boolean
-        codeSplitting:
-          type: boolean
-      additionalProperties: false
-    Plugin:
-      type: object
-      properties:
-        name:
-          type: string
-        setup:
-          type: object
-          additionalProperties: true
-      additionalProperties: false
-    WatchMode:
-      type: object
-      properties:
-        onRebuild:
-          type: object
-          additionalProperties: true
-        clearScreen:
-          type: boolean
-      additionalProperties: false

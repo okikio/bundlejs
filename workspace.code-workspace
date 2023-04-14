@@ -16,6 +16,9 @@
 	"settings": {
     "typescript.tsdk": "✨ root/node_modules/typescript/lib",
     "deno.enable": true,
-    "deno.config": "./packages/edge/deno.jsonc"
+    "deno.config": "./packages/edge/deno.jsonc",
+    "yaml.schemas": {
+      "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.json": "file:///workspace/bundlejs/packages/edge/.well-known/openapi.yaml"
+    }
   }
 }
