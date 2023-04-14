@@ -73,6 +73,9 @@ paths:
                       "package.json": {
                         "name": "bundled-code",
                         "version": "0.0.0",
+                        "dependencies": {
+                          "react": "^16"
+                        }
                       },
                       "esbuild": {
                         "target": [
