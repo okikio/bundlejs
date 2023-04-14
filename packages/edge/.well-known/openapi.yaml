@@ -1,4 +1,4 @@
-openapi: 3.1.2
+openapi: 3.1.0
 info:
   title: BundleJS API
   description: An API for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code.
