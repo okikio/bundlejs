@@ -74,24 +74,26 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   const event_key = cached ? "cached-json-" : "json-";
 
   const analysisQuery = url.searchParams.has("analysis") ||
-    url.searchParams.has("analyze");
+    url.searchParams.has("analyze") ||
+    ["/analysis", "/analyze"].includes(url.pathname);
 
   const analysisResult = url.searchParams.get("analysis") || 
     url.searchParams.get("analyze");
 
-  const metafileQuery = url.searchParams.has("metafile");
-  const fileQuery = url.searchParams.has("file");
+  const metafileQuery = url.searchParams.has("metafile") ||
+    ["/metafile"].includes(url.pathname);
+  const fileQuery = url.searchParams.has("file") || url.pathname === "/file";
 
-  const badgeQuery = url.searchParams.has("badge");
+  const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge-raster"].includes(url.pathname);
   const warningsQuery = url.searchParams.has("warnings") || 
-    url.searchParams.has("warning");
+    url.searchParams.has("warning") || ["/warnings"].includes(url.pathname);
 
-  const rawQuery = url.searchParams.has("raw");
+  const rawQuery = url.searchParams.has("raw") || url.pathname === "/raw";
 
   const badgeResult = url.searchParams.get("badge");
   const badgeStyle = url.searchParams.get("badge-style");
 
-  const badgeRasterQuery = url.searchParams.has("badge-raster");
+  const badgeRasterQuery = url.searchParams.has("badge-raster") || url.pathname === "/badge-raster";
   const query = (
     url.searchParams.get("q") || 
     url.searchParams.get("query")

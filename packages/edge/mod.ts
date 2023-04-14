@@ -147,7 +147,7 @@ serve(async (req: Request) => {
     const analysisQuery = url.searchParams.has("analysis") || 
       url.searchParams.has("analyze");
 
-    const badgeQuery = url.searchParams.has("badge");
+    const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge-raster"].includes(url.pathname);
     const polyfill = url.searchParams.has("polyfill");
 
     const minifyQuery = url.searchParams.has("minify");
@@ -158,7 +158,8 @@ serve(async (req: Request) => {
       url.searchParams.has("jsx");
 
     const enableMetafile = analysisQuery ||
-      metafileQuery ||
+      metafileQuery || 
+      ["/analysis", "/analyze", "/metafile"].includes(url.pathname) ||
       Boolean(initialConfig?.analysis);
 
     const minifyResult = url.searchParams.get("minify");
@@ -322,7 +323,8 @@ serve(async (req: Request) => {
 
         const start = Date.now();
         const JSONResult = await redis.get<BundleResult>(jsonKey);
-        const fileQuery = url.searchParams.has("file") ? JSONResult?.fileId : true;
+        const fileCheck = url.searchParams.has("file") || url.pathname === "/file";
+        const fileQuery = fileCheck ? JSONResult?.fileId : true;
         if (JSONResult && fileQuery) {
           trackEvent("generate-from-cache-json", {
             type: "generate-from-cache-json",
