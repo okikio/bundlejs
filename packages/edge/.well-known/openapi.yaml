@@ -365,24 +365,16 @@ paths:
               Represents the export/imports to treeshake.
               Treeshake export object using this custom format 
               
-              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
-              
-              which would result this code being bundled.
-              
+              `treeshake` represents the export/imports to treeshake.
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                
               ```ts
-              // Click Build for the Bundled, Minified & Compressed package size
-              import T from "@okikio/emitter";
-              import { animate } from "@okikio/animate";
-              import { animate as B } from "@okikio/animate";
-              import  as TR from "@okikio/animate";
-              import { type animate } from "@okikio/animate";
-              export  from "@okikio/animate";
-              export { animate as A } from "@okikio/animate";
-              export  as PR from "@okikio/animate";
-              export { animate } from "@okikio/animate";
-              console.log("Cool")
-              export  as PR18 from "@okikio/animate";
-              export { animate as animate2 } from "@okikio/animate";
+              "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+              // to
+              export { x, y, z } from "...";
+              export * from "...";
+              export * as X from "...";
+              export { type xyz } from "...";
               ```
           required: false
           schema:
