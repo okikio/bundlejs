@@ -316,7 +316,6 @@ serve(async (req: Request) => {
 
       if (url.pathname !== "/no-cache") {
         const BADGEResult = await redis.get<string>(badgeKey);
-        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
         if (badgeQuery && BADGEResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
           trackEvent("use-cached-badge", {
