@@ -98,56 +98,67 @@ serve(async (req: Request) => {
     }
 
     if (url.pathname === "/clear-all-cache-123") {
-      trackEvent("clear-cache", { type: "clear-cache" }, url.href)
+      trackEvent("clear-cache", { type: "clear-cache" }, url.href);
+      const clearGists = url.searchParams.has("gist") || url.searchParams.has("gists");
 
-      let breakIteration = false;
-      const body = new ReadableStream({
-        async start(controller) {
-          controller.enqueue("Started clearing cache!\n")
-          await redis?.flushall()
+      if (clearGists) {
+        let breakIteration = false;
+        const body = new ReadableStream({
+          async start(controller) {
+            controller.enqueue("Started clearing cache including gists!\n")
+            await redis?.flushall()
 
-          for await (const gists of listFiles()) {
-            const files = gists.data;
-            if (!files || files.length <= 0 || breakIteration) break;
+            for await (const gists of listFiles()) {
+              const files = gists.data;
+              if (!files || files.length <= 0 || breakIteration) break;
 
-            let log = '';
-            await Promise.all(
-              files.map(async file => {
-                const id = file.id;
-                await deleteFile(id);
-                log += `Deleted ${id}\n`;
-              })
-            )
+              let log = '';
+              await Promise.all(
+                files.map(async file => {
+                  const id = file.id;
+                  await deleteFile(id);
+                  log += `Deleted ${id}\n`;
+                })
+              )
 
-            console.log(log)
-            controller.enqueue(log);
-          }
+              console.log(log)
+              controller.enqueue(log);
+            }
 
-          controller.enqueue("\nCleared entire cache...careful now.")
-          controller.close();
-        },
-        cancel() {
-          breakIteration = true;
-        },
-      });
-      
-      return new Response(body
-        .pipeThrough(new TextEncoderStream()), {
-        headers: {
-          "Content-Type": "text/plain",
-          "x-content-type-options": "nosniff"
-        },
-      });
+            controller.enqueue("\nCleared entire cache + gists...careful now.")
+            controller.close();
+          },
+          cancel() {
+            breakIteration = true;
+          },
+        });
+        
+        return new Response(body
+          .pipeThrough(new TextEncoderStream()), {
+          headers: {
+            "Content-Type": "text/plain",
+            "x-content-type-options": "nosniff"
+          },
+        });
+      } else {
+        return new Response("Started clearing cache!\nCleared entire cache", {
+          headers: {
+            "Content-Type": "text/plain",
+            "x-content-type-options": "nosniff"
+          },
+        });
+      }
     }
 
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ansi: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
-    const metafileQuery = url.searchParams.has("metafile");
+    const metafileQuery = url.searchParams.has("metafile") || url.pathname === "/metafile";
     const analysisQuery = url.searchParams.has("analysis") || 
-      url.searchParams.has("analyze");
+      url.searchParams.has("analyze") ||
+      ["/analysis", "/analyze"].includes(url.pathname);
 
-    const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge-raster"].includes(url.pathname);
+    const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge/raster", "/badge-raster"].includes(url.pathname);
     const polyfill = url.searchParams.has("polyfill");
 
     const minifyQuery = url.searchParams.has("minify");
@@ -159,7 +170,6 @@ serve(async (req: Request) => {
 
     const enableMetafile = analysisQuery ||
       metafileQuery || 
-      ["/analysis", "/analyze", "/metafile"].includes(url.pathname) ||
       Boolean(initialConfig?.analysis);
 
     const minifyResult = url.searchParams.get("minify");
@@ -253,7 +263,10 @@ serve(async (req: Request) => {
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
 
-    const badgeRasterQuery = url.searchParams.has("badge-raster");
+    const badgeRasterQuery = 
+      url.searchParams.has("badge-raster") || 
+      url.searchParams.has("png") || 
+      ["/badge/raster", "/badge-raster"].includes(url.pathname);
     const badgeKeyObj = {
       jsonKey,
       badge: badgeQuery,
@@ -303,6 +316,7 @@ serve(async (req: Request) => {
 
       if (url.pathname !== "/no-cache") {
         const BADGEResult = await redis.get<string>(badgeKey);
+        dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
         if (badgeQuery && BADGEResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
           trackEvent("use-cached-badge", {

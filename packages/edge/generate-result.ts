@@ -81,10 +81,10 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     url.searchParams.get("analyze");
 
   const metafileQuery = url.searchParams.has("metafile") ||
-    ["/metafile"].includes(url.pathname);
+    url.pathname === "/metafile";
   const fileQuery = url.searchParams.has("file") || url.pathname === "/file";
 
-  const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge-raster"].includes(url.pathname);
+  const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge/raster", "/badge-raster"].includes(url.pathname);
   const warningsQuery = url.searchParams.has("warnings") || 
     url.searchParams.has("warning") || ["/warnings"].includes(url.pathname);
 
@@ -93,7 +93,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
   const badgeResult = url.searchParams.get("badge");
   const badgeStyle = url.searchParams.get("badge-style");
 
-  const badgeRasterQuery = url.searchParams.has("badge-raster") || url.pathname === "/badge-raster";
+  const badgeRasterQuery = url.searchParams.has("badge-raster") || url.searchParams.has("png") || ["/badge/raster", "/badge-raster"].includes(url.pathname);
   const query = (
     url.searchParams.get("q") || 
     url.searchParams.get("query")
