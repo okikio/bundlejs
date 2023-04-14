@@ -14,7 +14,7 @@ paths:
         - name: q
           in: query
           description: Represents the modules to bundle.
-          required: true
+          required: false
           schema:
             type: string
         - name: badge
