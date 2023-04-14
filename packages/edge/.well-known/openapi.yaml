@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: BundleJS API
   description: An API located at https://deno.bundlejs.com for bundling, treeshaking, transpiling, compressing and minification of JavaScript and TypeScript code.
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: https://deno.bundlejs.com
 paths:
@@ -17,20 +17,69 @@ paths:
           required: false
           schema:
             type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
         - name: badge
           in: query
           description: Generate a badge.
           required: false
           schema:
-            type: string
-            enum: ["", "detailed", "minified"]
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["detailed", "minified", "uncompressed"]
         - name: badge-style
           in: query
           description: Badge styles supported by shields.io.
           required: false
           schema:
             type: string
+            enum: ["flat", "plastic", "flat-square", "for-the-badge", "social"]
         - name: badge-raster
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: png
           in: query
           description: The badge as a png image.
           required: false
@@ -47,8 +96,10 @@ paths:
           description: Esbuild generate visual analysis.
           required: false
           schema:
-            type: string
-            enum: ["", "verbose"]
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["verbose"]
         - name: metafile
           in: query
           description: Esbuild bundle metafile.
@@ -58,74 +109,41 @@ paths:
         - name: config
           in: query
           required: false
-          schema:
-            oneOf:
-              - type: string
-                format: json
-                example:
-                  > 
-                    {
-                      "cdn": "https://unpkg.com",
-                      "compression": "gzip",
-                      "analysis": true,
-                      "polyfill": false,
-                      "tsx": false,
-                      "package.json": {
-                        "name": "bundled-code",
-                        "version": "0.0.0",
-                        "dependencies": {
-                          "react": "^16"
-                        }
-                      },
-                      "esbuild": {
-                        "target": [
-                          "esnext",
-                        ],
-                        "format": "esm",
-                        "bundle": true,
-                        "minify": true,
-                        "treeShaking": true,
-                        "platform": "browser",
-                        "sourcemap": false,
-                        "external": ["react"],
-                        "alias": {
-                          "react-dom": "https://esm.sh/react-dom" 
-                        }
-                      },
-                    }
-              - nullable: true
-        - name: treeshake
-          in: query
-          description: Represents the export/imports to treeshake.
-          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
           schema:
             type: string
-            example: 
+            format: json
+            example:
               > 
-                [T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]
-            description: 
-              > 
-                Treeshake export object using this custom format 
-                
-                /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
-                
-                which would result this code being bundled.
-                
-                ```ts
-                // Click Build for the Bundled, Minified & Compressed package size
-                import T from "@okikio/emitter";
-                import { animate } from "@okikio/animate";
-                import { animate as B } from "@okikio/animate";
-                import  as TR from "@okikio/animate";
-                import { type animate } from "@okikio/animate";
-                export  from "@okikio/animate";
-                export { animate as A } from "@okikio/animate";
-                export  as PR from "@okikio/animate";
-                export { animate } from "@okikio/animate";
-                console.log("Cool")
-                export  as PR18 from "@okikio/animate";
-                export { animate as animate2 } from "@okikio/animate";
-                ```
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
         - name: polyfill
           in: query
           description: Polyfill Node built-ins.
@@ -137,9 +155,10 @@ paths:
           description: Esbuild sourcemap.
           required: false
           schema:
-            type: string
-            enum: ["", "inline", "external", "true", "false"]
-            nullable: true
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
         - name: minify
           in: query
           description: Esbuild minify.
@@ -152,7 +171,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [iife, cjs, esm]
+            enum: ["iife", "cjs", "esm"]
         - name: warnings
           in: query
           description: Lists warnings for a particular bundle.
@@ -315,7 +334,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "index.js 12.9kb 100.0%\n ├ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n ├ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n ├ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n └ virtual-filesystem:/index.ts 16b 0.1%"
+                example: "index.js 12.9kb 100.0%\n â”œ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n â”œ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n â”œ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n â”” virtual-filesystem:/index.ts 16b 0.1%"
         '400':
           description: Bad request
         '404':
@@ -324,6 +343,1544 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "✘ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 │ export * from \"reac\";\n        ╵               ~~~~~~"
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
         '500':
           description: Internal server error
+        
+  /badge:
+    get:
+      operationId: getBundleBadge
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code, and respond with a badge.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: badge
+          in: query
+          description: Generate a badge.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["detailed", "minified", "uncompressed"]
+        - name: badge-style
+          in: query
+          description: Badge styles supported by shields.io.
+          required: false
+          schema:
+            type: string
+            enum: ["flat", "plastic", "flat-square", "for-the-badge", "social"]
+        - name: badge-raster
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: png
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                example: 
+                  >
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="146" height="20" role="img" aria-label="5.51 kB (gzip): bundlejs">
+                      <title>5.51 kB (gzip): bundlejs</title>
+                      <a target="_blank" xlink:href="https://deno.bundlejs.com/?q=spring-easing,react&amp;badge">
+                        <linearGradient id="s" x2="0" y2="100%">
+                          <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+                          <stop offset="1" stop-opacity=".1"/>
+                        </linearGradient>
+                        <clipPath id="r">
+                          <rect width="146" height="20" rx="3" fill="#fff"/>
+                        </clipPath>
+                        <g clip-path="url(#r)">
+                          <rect width="89" height="20" fill="#555"/>
+                          <rect x="89" width="57" height="20" fill="#007ec6"/>
+                          <rect width="146" height="20" fill="url(#s)"/>
+                        </g>
+                        <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">
+                          <text aria-hidden="true" x="455" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="790">5.51 kB (gzip)</text>
+                          <text x="455" y="140" transform="scale(.1)" fill="#fff" textLength="790">5.51 kB (gzip)</text>
+                          <text aria-hidden="true" x="1165" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="470">bundlejs</text>
+                          <text x="1165" y="140" transform="scale(.1)" fill="#fff" textLength="470">bundlejs</text>
+                        </g>
+                      </a>
+                    </svg>
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+           
+  /badge/raster:
+    get:
+      operationId: getBundleBadgeRasterPNG
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with a badge raster badge (think png).
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: badge
+          in: query
+          description: Generate a badge.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["detailed", "minified", "uncompressed"]
+        - name: badge-style
+          in: query
+          description: Badge styles supported by shields.io.
+          required: false
+          schema:
+            type: string
+            enum: ["flat", "plastic", "flat-square", "for-the-badge", "social"]
+        - name: badge-raster
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: png
+          in: query
+          description: The badge as a png image.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+          
+  /file:
+    get:
+      operationId: getBundledFile
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with the actual javascript bundle.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: file
+          in: query
+          description: Resulting bundled code.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            application/javascript:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+       
+  /analysis:
+    get:
+      operationId: getBundleAnalysis
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with the bundle analysis, in esbuild analysis format.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: analysis
+          in: query
+          description: Esbuild generate visual analysis.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["verbose"]
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "index.js 12.9kb 100.0%\n â”œ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n â”œ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n â”œ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n â”” virtual-filesystem:/index.ts 16b 0.1%"
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+        
+  /metafile:
+    get:
+      operationId: getBundleMetafileFromEsbuild
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with it's metafile.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: metafile
+          in: query
+          description: Esbuild bundle metafile.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: warnings
+          in: query
+          description: Lists warnings for a particular bundle.
+          required: false
+          schema:
+            type: boolean
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "index.js 12.9kb 100.0%\n â”œ http-url:https://unpkg.com/react@18.2.0/cjs/react.production.min.js 6.3kb 49.0%\n â”œ http-url:https://unpkg.com/spring-easing@2.1.2/lib/index.mjs 4.3kb 33.1%\n â”œ http-url:https://unpkg.com/react@18.2.0/index.js 50b 0.4%\n â”” virtual-filesystem:/index.ts 16b 0.1%"
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+          
+  /warnings:
+    get:
+      operationId: getBundleWarnings
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with a list of warnings that may potentially causes issues.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: file
+          in: query
+          description: Resulting bundled code.
+          required: false
+          schema:
+            type: boolean
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+       
+  /raw:
+    get:
+      operationId: getRawBundleMetadataAsJSON
+      summary: Bundle, treeshake and minify JavaScript and TypeScript code and respond with a JSON object listing the raw metadata with no extra processing.
+      parameters:
+        - name: q
+          in: query
+          description: Represents the modules to bundle.
+          required: false
+          schema:
+            type: string
+            description: 
+              > 
+                `q` or `query` represents the module, e.g. react, vue, etc...
+
+                You can add (import) in-front of a specific module to make it an import instead of an export 
+            example:
+              > 
+                react,react-dom,(import)spring-easing
+        - name: treeshake
+          in: query
+          description: 
+            > 
+              Represents the export/imports to treeshake.
+              Treeshake export object using this custom format 
+              
+              /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+              
+              which would result this code being bundled.
+              
+              ```ts
+              // Click Build for the Bundled, Minified & Compressed package size
+              import T from "@okikio/emitter";
+              import { animate } from "@okikio/animate";
+              import { animate as B } from "@okikio/animate";
+              import  as TR from "@okikio/animate";
+              import { type animate } from "@okikio/animate";
+              export  from "@okikio/animate";
+              export { animate as A } from "@okikio/animate";
+              export  as PR from "@okikio/animate";
+              export { animate } from "@okikio/animate";
+              console.log("Cool")
+              export  as PR18 from "@okikio/animate";
+              export { animate as animate2 } from "@okikio/animate";
+              ```
+          required: false
+          schema:
+            type: string
+          example: 
+            > 
+              [*],[{default}]
+        - name: config
+          in: query
+          required: false
+          description: Bundlejs's Config in JSON form, with support for esbuild options in the esbuild field, and "package.json" in the "package.json" field
+          schema:
+            type: string
+            format: json
+            example:
+              > 
+                {
+                  "cdn": "https://unpkg.com",
+                  "compression": "gzip",
+                  "analysis": true,
+                  "polyfill": false,
+                  "tsx": false,
+                  "package.json": {
+                    "name": "bundled-code",
+                    "version": "0.0.0",
+                    "dependencies": {
+                      "react": "^16"
+                    }
+                  },
+                  "esbuild": {
+                    "target": [
+                      "esnext",
+                    ],
+                    "format": "esm",
+                    "bundle": true,
+                    "minify": true,
+                    "treeShaking": true,
+                    "platform": "browser",
+                    "sourcemap": false,
+                    "external": ["react"],
+                    "alias": {
+                      "react-dom": "https://esm.sh/react-dom" 
+                    }
+                  },
+                }
+        - name: polyfill
+          in: query
+          description: Polyfill Node built-ins.
+          required: false
+          schema:
+            type: boolean
+        - name: sourcemap
+          in: query
+          description: Esbuild sourcemap.
+          required: false
+          schema:
+            oneOf:
+              - type: boolean
+              - type: string
+                enum: ["inline", "external"]
+        - name: minify
+          in: query
+          description: Esbuild minify.
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: Esbuild format.
+          required: false
+          schema:
+            type: string
+            enum: ["iife", "cjs", "esm"]
+        - name: raw
+          in: query
+          description: The raw result of the bundle.
+          required: false
+          schema:
+            type: boolean
+        - name: text
+          in: query
+          description: Represents the input code as a string.
+          required: false
+          schema:
+            type: string
+        - name: share
+          in: query
+          description: Represents the compressed string version of the input code (compressed using @amoutonbrady/lz-string).
+          required: false
+          schema:
+            type: string
+        - name: tsx
+          in: query
+          description: Support JSX and TSX.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  rawQuery:
+                    type: string
+                  version:
+                    type: string
+                    nullable: true
+                  versions:
+                    type: array
+                    items:
+                      type: string
+                    nullable: true
+                  config:
+                    type: object
+                    additionalProperties: true
+                  input:
+                    type: string
+                  size:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      rawUncompressedSize:
+                        type: integer
+                      uncompressedSize:
+                        type: string
+                      rawCompressedSize:
+                        type: integer
+                      compressedSize:
+                        type: string
+                      size:
+                        type: string
+                  time:
+                    type: string
+                  rawTime:
+                    type: integer
+                  fileId:
+                    type: string
+                  fileUrl:
+                    type: string
+                  fileHTMLUrl:
+                    type: string
+        '400':
+          description: Bad request
+        '404':
+          description: Package not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "âœ˜ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 â”‚ export * from \"reac\";\n        â•µ               ~~~~~~"
+        '500':
+          description: Internal server error
+       
