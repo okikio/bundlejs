@@ -286,7 +286,7 @@ paths:
                     <?xml version="1.0" encoding="UTF-8"?>
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="146" height="20" role="img" aria-label="5.51 kB (gzip): bundlejs">
                       <title>5.51 kB (gzip): bundlejs</title>
-                      <a target="_blank" xlink:href="https://bundlejs.com/?q=spring-easing,react&amp;badge">
+                      <a target="_blank" xlink:href="https://deno.bundlejs.com/?q=spring-easing,react&amp;badge">
                         <linearGradient id="s" x2="0" y2="100%">
                           <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
                           <stop offset="1" stop-opacity=".1"/>
