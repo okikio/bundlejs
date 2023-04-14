@@ -488,7 +488,7 @@ components:
           properties:
             esbuild:
               $ref: '#/components/schemas/BuildOptions'
-            package.json:
+            "package.json": # Using quotes to specify the property name with a period
               $ref: '#/components/schemas/PackageJson'
             polyfill:
               type: boolean
