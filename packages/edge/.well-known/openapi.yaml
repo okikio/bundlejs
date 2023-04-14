@@ -90,14 +90,39 @@ paths:
                         }
                       },
                     }
-              - $ref: "#/components/schemas/Config"
               - nullable: true
         - name: treeshake
           in: query
           description: Represents the export/imports to treeshake.
           required: false
           schema:
-            $ref: "#/components/schemas/TreeshakeList"
+            type: string
+            example: 
+              > 
+                [T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]
+            description: 
+              > 
+                Treeshake export object using this custom format 
+                
+                /?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{ animate }],[{ animate as B }],[ as TR],[{ type animate }],[],[{ animate as A }],[ as PR],[{ animate }]&text="export  as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&bundle
+                
+                which would result this code being bundled.
+                
+                ```ts
+                // Click Build for the Bundled, Minified & Compressed package size
+                import T from "@okikio/emitter";
+                import { animate } from "@okikio/animate";
+                import { animate as B } from "@okikio/animate";
+                import  as TR from "@okikio/animate";
+                import { type animate } from "@okikio/animate";
+                export  from "@okikio/animate";
+                export { animate as A } from "@okikio/animate";
+                export  as PR from "@okikio/animate";
+                export { animate } from "@okikio/animate";
+                console.log("Cool")
+                export  as PR18 from "@okikio/animate";
+                export { animate as animate2 } from "@okikio/animate";
+                ```
         - name: polyfill
           in: query
           description: Polyfill Node built-ins.
@@ -157,7 +182,49 @@ paths:
             type: boolean
       responses:
         '200':
-          description: Bundled code, analysis, badge or JSON response.
+          description: 
+            > 
+              Bundled code, analysis, badge or JSON response.
+              
+              The URL breakdown is,
+              
+              ```ts
+              /?
+              q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&
+              treeshake=[T],[{ animate }],[{ animate as B }],[* as TR],[{ type animate }],[*],[{ animate as A }],[* as PR],[{ animate }]&
+              text="export * as PR18 from \"@okikio/animate\";\nexport { animate as animate2 } from \"@okikio/animate\";"&
+              share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA&
+              config={"cdn":"skypack","compression":"brotli","esbuild":{"format":"cjs","minify":false,"treeShaking":false}}&
+              bundle
+              ```
+              
+              * `q` or `query` represents the module, e.g. `react`, `vue`, etc...
+                You can add `(import)` in-front of a specific module to make it an import instead of an export
+                  
+              * `treeshake` represents the export/imports to treeshake.
+                The treeshake syntax allows for specifying multiple exports per package, through this syntax
+                  
+                ```ts
+                "[{ x,y,z }],[*],[* as X],[{ type xyz }]" 
+                // to
+                export { x, y, z } from "...";
+                export * from "...";
+                export * as X from "...";
+                export { type xyz } from "...";
+                ```
+                  
+                The square brackets represent seperate packages, and everything inside the squarebrackets, are the exported methods, types, etc...
+                  
+              * `text` represents the input code as a string (it's used for short input code)
+              * `share` represents compressed string version of the input code (it's used for large input code)
+              * `config` represents the bundle configuration to use when building the bundle
+              * `bundle` tells **bundlejs** to bundle the input code on start-up. This isn't on by default for security reasons. I want to discourage people from sending large complex bundles that crash browsers or that take a long time to load, especially before the input code is properly verified as non-malicious. So, if you want to bundle the code on startup, you have to manually add `&bundle` to the end of the url yourself.
+              
+              The reason why I decided on this syntax is because it allows for a lot of flexibility, and transparency concerning what is being bundled. I also wanted to make it easy to share bundle session between users.
+
+              You can add (import) in-front of a specific module to make it an import instead of an export, treeshake represents the export/imports to treeshake.
+              
+              The treeshake syntax allows for specifying multiple exports per package, through this syntax
           content:
             application/json:
               schema:
@@ -257,340 +324,3 @@ paths:
                 example: "✘ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 │ export * from \"reac\";\n        ╵               ~~~~~~"
         '500':
           description: Internal server error
-
-components:
-  schemas:
-    InitOptions:
-      type: object
-      properties:
-        platform:
-          $ref: '#/components/schemas/EsbuildPlatform'
-    CommonConfigOptions:
-      type: object
-      properties:
-        init:
-          $ref: '#/components/schemas/InitOptions'
-    PackageJson:
-      type: object
-      properties:
-        name:
-          type: string
-        version:
-          type: string
-        description:
-          type: string
-        keywords:
-          type: array
-          items:
-            type: string
-        homepage:
-          type: string
-        bugs:
-          type: object
-          properties:
-            url:
-              type: string
-            email:
-              type: string
-        license:
-          type: string
-        author:
-          type: object
-          properties:
-            name:
-              type: string
-            email:
-              type: string
-            url:
-              type: string
-        dependencies:
-          type: object
-          additionalProperties:
-            type: string
-        devDependencies:
-          type: object
-          additionalProperties:
-            type: string
-        optionalDependencies:
-          type: object
-          additionalProperties:
-            type: string
-        peerDependencies:
-          type: object
-          additionalProperties:
-            type: string
-    BuildOptions:
-      type: object
-      properties:
-        absWorkingDir:
-          type: string
-        entryPoints:
-          type: array
-          items:
-            type: string
-        stdin:
-          type: object
-          properties:
-            contents:
-              type: string
-            resolveDir:
-              type: string
-            sourcefile:
-              type: string
-            loader:
-              $ref: '#/components/schemas/Loader'
-          additionalProperties: false
-        bundle:
-          type: boolean
-        outfile:
-          type: string
-        outdir:
-          type: string
-        outbase:
-          type: string
-        platform:
-          $ref: '#/components/schemas/EsbuildPlatform'
-        format:
-          $ref: '#/components/schemas/Format'
-        external:
-          type: array
-          items:
-            type: string
-        loader:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Loader'
-        resolveExtensions:
-          type: array
-          items:
-            type: string
-        tsconfig:
-          type: string
-        target:
-          oneOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-        jsxFactory:
-          type: string
-        jsxFragment:
-          type: string
-        define:
-          type: object
-          additionalProperties:
-            type: string
-        pure:
-          type: array
-          items:
-            type: string
-        avoidTDZ:
-          type: boolean
-        globalName:
-          type: string
-        keepNames:
-          type: boolean
-        banner:
-          type: object
-          additionalProperties:
-            type: string
-        footer:
-          type: object
-          additionalProperties:
-            type: string
-        charset:
-          $ref: '#/components/schemas/Charset'
-        sourcemap:
-          oneOf:
-            - type: boolean
-            - type: string
-              enum: ['linked', 'inline', 'external', 'both']
-          nullable: true
-        legalComments:
-          type: string
-          enum: ['none', 'inline', 'eof', 'linked', 'external']
-          nullable: true
-        sourceRoot:
-          type: string
-          nullable: true
-        sourcesContent:
-          type: boolean
-          nullable: true
-        supported:
-          type: object
-          additionalProperties:
-            type: boolean
-          nullable: true
-        mangleProps:
-          type: string
-          format: regex
-          nullable: true
-        reserveProps:
-          type: string
-          format: regex
-          nullable: true
-        mangleQuoted:
-          type: boolean
-          nullable: true
-        mangleCache:
-          type: object
-          additionalProperties:
-            oneOf:
-              - type: string
-              - type: boolean
-          nullable: true
-        drop:
-          type: array
-          items:
-            $ref: '#/components/schemas/Drop'
-          nullable: true
-        minify:
-          type: boolean
-          nullable: true
-        minifyWhitespace:
-          type: boolean
-          nullable: true
-        minifyIdentifiers:
-          type: boolean
-          nullable: true
-        minifySyntax:
-          type: boolean
-          nullable: true
-        treeShaking:
-          type: boolean
-          nullable: true
-        ignoreAnnotations:
-          type: boolean
-          nullable: true
-        jsx:
-          type: string
-          enum: ['transform', 'preserve', 'automatic']
-          nullable: true
-        jsxImportSource:
-          type: string
-          nullable: true
-        jsxDev:
-          type: boolean
-          nullable: true
-        jsxSideEffects:
-          type: boolean
-          nullable: true
-        color:
-          type: boolean
-          nullable: true
-        logLevel:
-          $ref: '#/components/schemas/LogLevel'
-        logLimit:
-          type: integer
-          nullable: true
-        logOverride:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LogLevel'
-          nullable: true
-        splitting:
-          type: boolean
-        inject:
-          type: array
-          items:
-            type: string
-        # Add the rest of the properties from BuildOptions
-      additionalProperties: true        
-    Format:
-      type: string
-      enum: ['iife', 'cjs', 'esm']
-    EsbuildPlatform:
-      type: string
-      enum: ['browser', 'node', 'neutral']
-    LogLevel:
-      type: string
-      enum: ['verbose', 'debug', 'info', 'warning', 'error', 'silent']
-    Charset:
-      type: string
-      enum: ['ascii', 'utf8']
-    Drop:
-      type: object
-      properties:
-        name:
-          type: string
-        dropArgs:
-          type: boolean
-          nullable: true
-        dropPure:
-          type: boolean
-          nullable: true
-        dropConsole:
-          type: boolean
-          nullable: true
-      required:
-        - name
-    BuildConfig:
-      allOf:
-        - $ref: '#/components/schemas/CommonConfigOptions'
-        - type: object
-          properties:
-            esbuild:
-              $ref: '#/components/schemas/BuildOptions'
-            "package.json": # Using quotes to specify the property name with a period
-              $ref: '#/components/schemas/PackageJson'
-            polyfill:
-              type: boolean
-            cdn:
-              type: string
-            alias:
-              type: object
-              additionalProperties:
-                type: string
-    CompressionType:
-      type: string
-      enum:
-        - gzip
-        - brotli
-        - zstd
-        - lz4
-    CompressionOptions:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/CompressionType'
-        quality:
-          type: integer
-          minimum: 1
-          maximum: 12
-    CompressConfig:
-      oneOf:
-        - $ref: '#/components/schemas/CompressionOptions'
-        - $ref: '#/components/schemas/CompressionType'
-    Config:
-      allOf:
-        - $ref: '#/components/schemas/BuildConfig'
-        - type: object
-          properties:
-            compression:
-              $ref: '#/components/schemas/CompressConfig'
-            analysis:
-              oneOf:
-                - type: boolean
-                - type: string
-            tsx:
-              type: boolean
-          additionalProperties: false
-    TreeshakeList:
-      type: array
-      items:
-        type: string
-    Loader:
-      type: string
-      enum:
-        - js
-        - jsx
-        - ts
-        - tsx
-        - json
-        - text
-        - base64
-        - file
-        - dataurl
-        - binary
-        - css
-        - wasm
