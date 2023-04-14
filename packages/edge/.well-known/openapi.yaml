@@ -206,8 +206,29 @@ paths:
                 example: "✘ [ERROR] [getRequest] Failed at request (https://unpkg.com/reac@0.0.0)\nError: Couldn't load https://unpkg.com/reac@0.0.0/index.js (404 code) [plugin cdn-url]\n\n    virtual-filesystem:/index.ts:2:14:\n\n      2 │ export * from \"reac\";\n        ╵               ~~~~~~"
         '500':
           description: Internal server error
+
 components:
   schemas:
+    Platform:
+      type: string
+      enum:
+        - node
+        - deno
+        - browser
+        - edge
+        - cloudflare
+        - wasm
+        - deno-wasm
+    InitOptions:
+      type: object
+      properties:
+        platform:
+          $ref: '#/components/schemas/EsbuildPlatform'
+    CommonConfigOptions:
+      type: object
+      properties:
+        init:
+          $ref: '#/components/schemas/InitOptions'
     PackageJson:
       type: object
       properties:
@@ -233,44 +254,14 @@ components:
         license:
           type: string
         author:
-          oneOf:
-            - type: string
-            - type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                url:
-                  type: string
-        contributors:
-          type: array
-          items:
-            oneOf:
-              - type: string
-              - type: object
-                properties:
-                  name:
-                    type: string
-                  email:
-                    type: string
-                  url:
-                    type: string
-        files:
-          type: array
-          items:
-            oneOf:
-              - type: string
-              - type: object
-                properties:
-                  include:
-                    type: array
-                    items:
-                      type: string
-                  exclude:
-                    type: array
-                    items:
-                      type: string
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            url:
+              type: string
         dependencies:
           type: object
           additionalProperties:
@@ -287,56 +278,317 @@ components:
           type: object
           additionalProperties:
             type: string
-    CompressionOptions:
+    BuildOptions:
       type: object
       properties:
-        type:
+        absWorkingDir:
           type: string
-          enum: ["gzip", "brotli", "zstd", "lz4"]
-        quality:
-          type: integer
-          enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
-    CompressConfig:
-      oneOf:
-        - $ref: "#/components/schemas/CompressionOptions"
-        - type: string
-          enum: ["gzip", "brotli", "zstd", "lz4"]
-    BuildConfig:
-      type: object
-      properties:
-        esbuild:
-          type: object
-        package.json:
-          $ref: "#/components/schemas/PackageJson"
-        polyfill:
-          type: boolean
-        cdn:
-          type: string
-        alias:
-          type: object
-          additionalProperties:
-            type: string
-        ansi:
-          type: string
-          enum: ["html", "html-and-ansi", "ansi"]
         entryPoints:
           type: array
           items:
             type: string
+        stdin:
+          type: object
+          properties:
+            contents:
+              type: string
+            resolveDir:
+              type: string
+            sourcefile:
+              type: string
+            loader:
+              $ref: '#/components/schemas/Loader'
+          additionalProperties: false
+        bundle:
+          type: boolean
+        outfile:
+          type: string
+        outdir:
+          type: string
+        outbase:
+          type: string
+        platform:
+          $ref: '#/components/schemas/EsbuildPlatform'
+        format:
+          $ref: '#/components/schemas/Format'
+        external:
+          type: array
+          items:
+            type: string
+        loader:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Loader'
+        resolveExtensions:
+          type: array
+          items:
+            type: string
+        tsconfig:
+          type: string
+        target:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        jsxFactory:
+          type: string
+        jsxFragment:
+          type: string
+        define:
+          type: object
+          additionalProperties:
+            type: string
+        pure:
+          type: array
+          items:
+            type: string
+        avoidTDZ:
+          type: boolean
+        globalName:
+          type: string
+        keepNames:
+          type: boolean
+        banner:
+          type: object
+          additionalProperties:
+            type: string
+        footer:
+          type: object
+          additionalProperties:
+            type: string
+        charset:
+          $ref: '#/components/schemas/Charset'
+        sourcemap:
+          type: string
+          enum: [true, false, 'linked', 'inline', 'external', 'both']
+          nullable: true
+        legalComments:
+          type: string
+          enum: ['none', 'inline', 'eof', 'linked', 'external']
+          nullable: true
+        sourceRoot:
+          type: string
+          nullable: true
+        sourcesContent:
+          type: boolean
+          nullable: true
+        supported:
+          type: object
+          additionalProperties:
+            type: boolean
+          nullable: true
+        mangleProps:
+          type: string
+          format: regex
+          nullable: true
+        reserveProps:
+          type: string
+          format: regex
+          nullable: true
+        mangleQuoted:
+          type: boolean
+          nullable: true
+        mangleCache:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: boolean
+          nullable: true
+        drop:
+          type: array
+          items:
+            $ref: '#/components/schemas/Drop'
+          nullable: true
+        minify:
+          type: boolean
+          nullable: true
+        minifyWhitespace:
+          type: boolean
+          nullable: true
+        minifyIdentifiers:
+          type: boolean
+          nullable: true
+        minifySyntax:
+          type: boolean
+          nullable: true
+        treeShaking:
+          type: boolean
+          nullable: true
+        ignoreAnnotations:
+          type: boolean
+          nullable: true
+        jsx:
+          type: string
+          enum: ['transform', 'preserve', 'automatic']
+          nullable: true
+        jsxImportSource:
+          type: string
+          nullable: true
+        jsxDev:
+          type: boolean
+          nullable: true
+        jsxSideEffects:
+          type: boolean
+          nullable: true
+        color:
+          type: boolean
+          nullable: true
+        logLevel:
+          $ref: '#/components/schemas/LogLevel'
+        logLimit:
+          type: integer
+          nullable: true
+        logOverride:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LogLevel'
+          nullable: true
+        splitting:
+          type: boolean
+        inject:
+          type: array
+          items:
+            type: string
+        # Add the rest of the properties from BuildOptions
+      additionalProperties: true        
+    Format:
+      type: string
+      enum: ['iife', 'cjs', 'esm']
+    EsbuildPlatform:
+      type: string
+      enum: ['browser', 'node', 'neutral']
+    LogLevel:
+      type: string
+      enum: ['verbose', 'debug', 'info', 'warning', 'error', 'silent']
+    Charset:
+      type: string
+      enum: ['ascii', 'utf8']
+    Drop:
+      type: object
+      properties:
+        name:
+          type: string
+        dropArgs:
+          type: boolean
+          nullable: true
+        dropPure:
+          type: boolean
+          nullable: true
+        dropConsole:
+          type: boolean
+          nullable: true
+      required:
+        - name
+    BuildConfig:
+      allOf:
+        - $ref: '#/components/schemas/CommonConfigOptions'
+        - type: object
+          properties:
+            esbuild:
+              $ref: '#/components/schemas/BuildOptions'
+            package.json:
+              $ref: '#/components/schemas/PackageJson'
+            polyfill:
+              type: boolean
+            cdn:
+              type: string
+            alias:
+              type: object
+              additionalProperties:
+                type: string
+    CompressionType:
+      type: string
+      enum:
+        - gzip
+        - brotli
+        - zstd
+        - lz4
+    CompressionOptions:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/CompressionType'
+        quality:
+          type: integer
+          minimum: 1
+          maximum: 12
+    CompressConfig:
+      oneOf:
+        - $ref: '#/components/schemas/CompressionOptions'
+        - $ref: '#/components/schemas/CompressionType'
     Config:
       allOf:
-        - $ref: "#/components/schemas/BuildConfig"
+        - $ref: '#/components/schemas/BuildConfig'
         - type: object
           properties:
             compression:
-              $ref: "#/components/schemas/CompressConfig"
+              $ref: '#/components/schemas/CompressConfig'
             analysis:
               oneOf:
                 - type: boolean
                 - type: string
             tsx:
               type: boolean
+          additionalProperties: false
     TreeshakeList:
       type: array
       items:
         type: string
+    Loader:
+      type: string
+      enum:
+        - js
+        - jsx
+        - ts
+        - tsx
+        - json
+        - text
+        - base64
+        - file
+        - dataurl
+        - binary
+        - css
+        - wasm
+    LegalComments:
+      type: string
+      enum:
+        - none
+        - linked
+        - inline
+        - eof
+    StrictOptions:
+      type: object
+      properties:
+        nullishCoalescing:
+          type: boolean
+        optionalChaining:
+          type: boolean
+        classFields:
+          type: boolean
+        topLevelAwait:
+          type: boolean
+        importsNotUsedAsValues:
+          type: boolean
+        codeSplitting:
+          type: boolean
+      additionalProperties: false
+    Plugin:
+      type: object
+      properties:
+        name:
+          type: string
+        setup:
+          type: object
+          additionalProperties: true
+      additionalProperties: false
+    WatchMode:
+      type: object
+      properties:
+        onRebuild:
+          type: object
+          additionalProperties: true
+        clearScreen:
+          type: boolean
+      additionalProperties: false
