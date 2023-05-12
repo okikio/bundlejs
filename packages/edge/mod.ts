@@ -11,13 +11,13 @@ import { toUint8Array } from "base64";
 const worker = globalThis?.Worker;
 // @ts-ignore Workers are undefined
 globalThis.Worker = worker ?? class {
-  constructor() {}
+  constructor() { }
 };
 
 import { deepAssign, createConfig, resolveVersion, lzstring, parsePackageName, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
-import { parseShareURLQuery, parseConfig } from "./parse-query.ts";
+import { parseShareURLQuery, parseConfig, parseTreeshakeExports } from "./parse-query.ts";
 import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
@@ -30,7 +30,7 @@ export const headers = Object.entries({
   "Access-Control-Allow-Methods": "GET"
 })
 
-export type Config = BuildConfig & { 
+export type Config = BuildConfig & {
   compression?: CompressConfig,
   analysis?: boolean | string,
   tsx?: boolean,
@@ -45,12 +45,18 @@ function convertQueryValue(str?: string | null) {
   if (str === "false") return false;
   if (str === "true") return true;
   return str;
-} 
+}
 
 const __dirname = dirname(fromFileUrl(import.meta.url))
 
 // Define the directory where the .well-known files are stored
 const wellKnownDir = "./.well-known/";
+const PACKAGE_PREFIX = `json-package`;
+
+function getPackageResultKey(str: string) {
+  return `${str}-${PACKAGE_PREFIX}`
+}
+
 serve(async (req: Request) => {
   try {
     const referer = req.headers.get("Referer") || req.headers.get("Referrer");
@@ -77,7 +83,7 @@ serve(async (req: Request) => {
 
     const docsQuery = url.searchParams.has("docs");
     if (docsQuery) {
-      trackEvent("redirect_to_docs",  { type: "docs" }, url.href)
+      trackEvent("redirect_to_docs", { type: "docs" }, url.href)
       return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
     }
 
@@ -132,7 +138,7 @@ serve(async (req: Request) => {
             breakIteration = true;
           },
         });
-        
+
         return new Response(body
           .pipeThrough(new TextEncoderStream()), {
           headers: {
@@ -141,7 +147,9 @@ serve(async (req: Request) => {
           },
         });
       } else {
-        return new Response("Started clearing cache!\nCleared entire cache", {
+        if (redis) await redis.flushdb({ async: true })
+
+        return new Response(`Started clearing cache!\n${!redis ? "Redis is unavailable, try again at a later date!" : "Cleared entire cache"}`, {
           headers: {
             "Content-Type": "text/plain",
             "x-content-type-options": "nosniff"
@@ -153,8 +161,20 @@ serve(async (req: Request) => {
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ansi: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
+    const treeshakeQuery = url.searchParams.has("treehake");
+    const treeshake = url.searchParams.get("treehake");
+    const treeshakeArr = parseTreeshakeExports(
+      decodeURIComponent(treeshake ?? "")
+      .trim()
+      // Replace multiple 2 or more spaces with just a single space
+      .replace(/\s{2,}/, " ")
+    ).map(x => x.trim())
+    const uniqueTreeshakeArr = Array.from(new Set(treeshakeArr))
+    // This treeshake pattern is what's required export all modules
+    const exportAll = !treeshakeQuery || uniqueTreeshakeArr.every(x => /\*|{\s?default\s?}/.test(x))
+
     const metafileQuery = url.searchParams.has("metafile") || url.pathname === "/metafile";
-    const analysisQuery = url.searchParams.has("analysis") || 
+    const analysisQuery = url.searchParams.has("analysis") ||
       url.searchParams.has("analyze") ||
       ["/analysis", "/analyze"].includes(url.pathname);
 
@@ -164,28 +184,28 @@ serve(async (req: Request) => {
     const minifyQuery = url.searchParams.has("minify");
     const sourcemapQuery = url.searchParams.has("sourcemap");
 
-    const tsxQuery = 
-      url.searchParams.has("tsx") || 
+    const tsxQuery =
+      url.searchParams.has("tsx") ||
       url.searchParams.has("jsx");
 
     const enableMetafile = analysisQuery ||
-      metafileQuery || 
+      metafileQuery ||
       Boolean(initialConfig?.analysis);
 
     const minifyResult = url.searchParams.get("minify");
     const minify = initialConfig?.esbuild?.minify ?? (
-      minifyQuery ? 
-        (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult)) 
+      minifyQuery ?
+        (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult))
         : initialConfig?.esbuild?.minify
     );
 
     const sourcemapResult = url.searchParams.get("sourcemap");
     const sourcemap = initialConfig?.esbuild?.sourcemap ?? (
-      sourcemapQuery ? 
-        (convertQueryValue(sourcemapResult)) 
+      sourcemapQuery ?
+        (convertQueryValue(sourcemapResult))
         : initialConfig?.esbuild?.sourcemap
     );
-    
+
     const formatQuery = url.searchParams.has("format");
     const format = initialConfig?.esbuild?.format || url.searchParams.get("format");
 
@@ -196,11 +216,11 @@ serve(async (req: Request) => {
         polyfill,
         compression: createConfig("compress", initialConfig.compression),
       } as Config,
-      initialConfig, 
+      initialConfig,
       {
         entryPoints: [`/index${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
         esbuild: deepAssign(
-          {}, 
+          {},
           enableMetafile ? { metafile: enableMetafile } : {},
           minifyQuery ? { minify } : {},
           sourcemapQuery ? { sourcemap } : {},
@@ -231,20 +251,34 @@ serve(async (req: Request) => {
       !hasQuery && (shareQuery || textQuery) ? [] :
         query
           .split(",")
-          .filter(x => !/^https?\:\/\//.exec(x))
-          .map(async x => {
-            const { name = x, version } = parsePackageName(x, true)
-            return [name, await resolveVersion(x) ?? version]
-          }) 
+          .map(x => [
+            x.replace(/^\((\w+)\)/, ""),
+            /^\((\w+)\)/.exec(x)?.[1] ?? "export"
+          ] as const)
+          .filter(x => !/^https?\:\/\//.exec(x[0]))
+          .map(async (x) => {
+            const [pkgName, imported] = x;
+            const { name = pkgName, version, path } = parsePackageName(pkgName, true)
+            return [name, await resolveVersion(pkgName) ?? version, path, imported]
+          })
     );
 
     const versions: string[] = [];
+    const modules: [string, "import" | "export" | (string & {})][] = [];
     for (const version of versionsList) {
       if (version.status === "fulfilled" && version.value) {
-        const [name, ver] = version.value;
+        const [name, ver, path, imported] = version.value;
         versions.push(`${name}@${ver}`);
+        modules.push([`${name}@${ver}${path}`, imported])
       }
     }
+
+    console.log({
+      modules,
+      exportAll,
+      shareQuery,
+      textQuery
+    })
 
     const { init, ..._configObj } = configObj;
     const { wasmModule: _wasmModule, ..._init } = init || {};
@@ -263,9 +297,9 @@ serve(async (req: Request) => {
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
 
-    const badgeRasterQuery = 
-      url.searchParams.has("badge-raster") || 
-      url.searchParams.has("png") || 
+    const badgeRasterQuery =
+      url.searchParams.has("badge-raster") ||
+      url.searchParams.has("png") ||
       ["/badge/raster", "/badge-raster"].includes(url.pathname);
     const badgeKeyObj = {
       jsonKey,
@@ -292,11 +326,27 @@ serve(async (req: Request) => {
         }, url.href)
 
         try {
-          console.log(`Deleting ${badgeKey}`)
+          console.log(`Deleting ${badgeKey}\n`)
           const JSONResult = await redis.get<BundleResult>(jsonKey);
-          await redis.del(jsonKey, badgeKey);
-          if (JSONResult && JSONResult.fileId) { 
-            await deleteGist(JSONResult.fileId); 
+
+          const [moduleName] = modules[0];
+          const PackageResult = await redis.get<BundleResult>(getPackageResultKey(moduleName));
+
+          await redis.del(jsonKey, badgeKey, getPackageResultKey(moduleName));
+          console.log(`Deleting "${getPackageResultKey(moduleName)}" and ${jsonKey}\n`)
+
+          if (JSONResult && JSONResult.fileId) {
+            await deleteGist(JSONResult.fileId);
+            console.log("Deleting `jsonKey` gist")
+          }
+
+          if (
+            JSONResult && PackageResult && 
+            PackageResult.fileId && JSONResult.fileId && 
+            JSONResult?.fileId !== PackageResult?.fileId
+          ) {
+            await deleteGist(PackageResult.fileId);
+            console.log("Deleting `packageResult` gist")
           }
 
           console.log(`Deleted ${badgeKey}`)
@@ -344,6 +394,25 @@ serve(async (req: Request) => {
             jsonKeyObj
           }, url.href)
           return await generateResult(badgeKey, [JSONResult, undefined], url, true, Date.now() - start, redis);
+        } else if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
+          const [moduleName, mode] = modules[0];
+          if (mode === "export") {
+            const PackageResult = await redis.get<BundleResult>(getPackageResultKey(moduleName));
+            const fileQuery = fileCheck ? PackageResult?.fileId : true;
+            if (PackageResult && fileQuery) {
+              trackEvent("generate-from-package-cache-json", {
+                type: "generate-from-package-cache-json",
+                packageResultKey: getPackageResultKey(moduleName),
+                jsonKeyObj
+              }, url.href)
+              console.log({
+                type: "generate-from-package-cache-json",
+                packageResultKey: getPackageResultKey(moduleName),
+                jsonKeyObj
+              })
+              return await generateResult(badgeKey, [PackageResult, undefined], url, true, Date.now() - start, redis);
+            }
+          }
         }
       }
     } catch (e) {
@@ -358,16 +427,16 @@ serve(async (req: Request) => {
     }
 
     const start = Date.now();
-    if (!WASM_MODULE) { 
+    if (!WASM_MODULE) {
       WASM_MODULE = await ESBUILD_WASM();
       trackEvent("flushed-wasm", { type: "flushed-wasm-source", }, url.href)
     }
-    if (!wasmModule) { 
+    if (!wasmModule) {
       wasmModule = new WebAssembly.Module(WASM_MODULE);
       trackEvent("flushed-wasm", { type: "flushed-wasm-module", }, url.href)
     }
 
-    const [response, resultText] = await bundle(url, initialValue, configObj, versions, query);
+    const [response, resultText] = await bundle(url, initialValue, configObj, versions, modules, query);
 
     if (!response.ok) {
       const headers = response.headers;
@@ -382,9 +451,17 @@ serve(async (req: Request) => {
 
     try {
       if (!redis) throw new Error("Redis not available");
-      
+
       const prevValue = await redis.get<BundleResult>(jsonKey);
       await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
+
+      if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
+        const [moduleName, mode] = modules[0];
+        if (mode === "export") {
+          await redis.set(getPackageResultKey(moduleName), JSON.stringify(value));
+        }
+      }
+
       if (!badgeQuery) await redis.del(badgeKey);
 
       if (prevValue) {
@@ -408,8 +485,8 @@ serve(async (req: Request) => {
       try {
         return new Response(
           generateHTMLMessages(e.msgs as string[]),
-          { 
-            status: 404, 
+          {
+            status: 404,
             headers: [
               ['Content-Type', 'text/html']
             ]

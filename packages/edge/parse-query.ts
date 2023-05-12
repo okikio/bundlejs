@@ -52,6 +52,7 @@ export const getModuleName = (str: string) =>
 */
 export const parseShareURLQuery = (shareURL: URL) => {
   try {
+    const counts = new Map<string, number>();
     const searchParams = shareURL.searchParams;
     let result = "";
     const query = searchParams.get("query") || searchParams.get("q");
@@ -72,7 +73,20 @@ export const parseShareURLQuery = (shareURL: URL) => {
               declaration = "export",
               module
             ] = /^(\((.*)\))?(.*)/.exec(q)!;
-            return `${declaration} ${treeshakeExports}${treeshakeExports === "*" && !treeshakeArr[i] && queryArrLen > 1 ? ` as ${getModuleName(module)}` : ""} from ${JSON.stringify(
+            console.log({
+              declaration,
+              treeshakeExports,
+              module,
+              treeshakeArr,
+              queryArrLen,
+              i
+            })
+
+            if (!(counts.has(module))) counts.set(module, 0);
+            const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
+            const countStr = count <= 0 ? "" : count;
+            
+            return `${declaration} ${treeshakeExports}${treeshakeExports === "*" && !treeshakeArr[i] && queryArrLen > 0 ? ` as ${getModuleName(module + countStr)}` : ""} from ${JSON.stringify(
               module
             )};`;
           })
@@ -83,7 +97,13 @@ export const parseShareURLQuery = (shareURL: URL) => {
           declaration = "export",
           module
         ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
-        result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module)} ` : "" }} from ${JSON.stringify(
+
+        if (!(counts.has(module))) counts.set(module, 0);
+        const count = counts.get(module)! - 1;
+        const countStr = count <= 0 ? "" : count;
+        // countStr
+
+        result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module + "Default" + countStr)} ` : "" }} from ${JSON.stringify(
           module
         )};`;
       }

@@ -60,7 +60,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
     const result = (
       // 'POST /gists', 
       await octokit.rest.gists.create({
-        description: `Result of ${newUrl.href}`,
+        description: `Result of ${newUrl.href}`.slice(0, 255),
         'public': true,
         files: {
           ...filesObj,

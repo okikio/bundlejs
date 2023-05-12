@@ -27,6 +27,7 @@ export type BundleResult = {
   input: string,
   version?: string,
   versions?: string[],
+  modules?: [string, "import" | "export" | (string & {})][],
   size: Omit<Awaited<ReturnType<typeof compress>>, "content">,
   time: string,
   rawTime: number,
@@ -42,9 +43,11 @@ export const inputModelResetValue = [
   'export { default } from "spring-easing";'
 ].join("\n");
 
-export async function bundle(url: URL, initialValue: string, configObj: Config, versions: string[], query: string) {
+export async function bundle(url: URL, initialValue: string, configObj: Config, versions: string[], modules: [string, "import" | "export" | (string & {})][], query: string) {
   const fs = await FileSystem;
   const start = performance.now();
+  const versionsArr = Array.from(new Set(versions))
+  const modulesArr = Array.from(new Set(modules))
 
   const { entryPoints = ["/index.ts"] } = configObj;
   if (Array.isArray(entryPoints)) {
@@ -83,7 +86,8 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const finalResult: BundleResult = {
     query: decodeURIComponent(searchQueries),
     rawQuery: encodeURIComponent(searchQueries),
-    ...(versions.length === 1 ? { version: versions[0] } : { versions }),
+    ...(versionsArr.length === 1 ? { version: versionsArr[0] } : { versions: versionsArr }),
+    modules: modulesArr,
     config: printableConfig,
     input: initialValue,
     size,
