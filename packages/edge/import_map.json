@@ -9,8 +9,8 @@
 
     "resolve.exports": "https://esm.sh/resolve.exports",
 
-    "octokit": "https://esm.sh/octokit@2.0.14",
-    "@octokit/plugin-throttling": "https://esm.sh/@octokit/plugin-throttling@5.0.1",
+    "octokit": "https://cdn.skypack.dev/octokit?dts",
+    "@octokit/plugin-throttling": "https://cdn.skypack.dev/@octokit/plugin-throttling?dts",
 
     "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
     "base64": "https://deno.land/x/base64@v0.2.1/mod.ts",

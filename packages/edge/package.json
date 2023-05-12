@@ -1,0 +1,14 @@
+{
+  "name": "@bundlejs/edge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/plugin-throttling": "^5.2.0",
+    "octokit": "^2.0.14"
+  }
+}
