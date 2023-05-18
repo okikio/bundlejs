@@ -44,7 +44,7 @@ export const parseTreeshakeExports = (str: string) =>
  */
 export const getModuleName = (str: string) =>
     str.split(/(?:-|_|\/)/g)
-        .map((x, i) => i > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
+        .map((x, i) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
         .join("")
         .replace(/[^\w\s]/gi, "")
 
