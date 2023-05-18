@@ -14,6 +14,7 @@ import type ts from "typescript";
 import { DefaultConfig } from "../configs/bundle-options";
 import { deepAssign, deepDiff } from "../util/deep-equal";
 import { getRequest } from "../util/fetch-and-cache";
+import { parseTreeshakeExports } from "../util/parse-query";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -171,8 +172,26 @@ const worker = (TypeScriptWorker, fileMap) => {
             treeshake = treeshake.replace(/\]\,$/, "]").trim();
             remainingCode = remainingCode.trim();
 
+            const treeshakeArr = parseTreeshakeExports(
+                decodeURIComponent(treeshake ?? "")
+                    .trim()
+                    // Replace multiple 2 or more spaces with just a single space
+                    .replace(/\s{2,}/, " ")
+            ).map(x => x.trim())
+            const uniqueTreeshakeArr = Array.from(new Set(treeshakeArr))
+            // This treeshake pattern is what's required export all modules
+            const modulesArr = modules.length > 0 ? Array.from(new Set(modules.split(","))) : [];
+
+            console.log({
+                uniqueTreeshakeArr
+            })
+            const exportAll = uniqueTreeshakeArr.every(x => /\*|{\s?default\s?}/.test(x))
+
             let url = new URL(self.location.origin.toString());
-            if (modules.length > 0) url.searchParams.set("q", modules);
+            if (modules.length > 0) { 
+                const modulesStr = exportAll && modulesArr.length > 1 ? modulesArr.join(",") : modules;
+                url.searchParams.set("q", modulesStr); 
+            }
             if (treeshake.replace(/\[\*\]|\,/g, "").length > 0) {
                 url.searchParams.set("treeshake", treeshake);
             }

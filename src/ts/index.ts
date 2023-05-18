@@ -1,6 +1,6 @@
 import type { editor as Editor } from "monaco-editor";
 import type { App, HistoryManager, IHistoryItem } from "@okikio/native";
-import { BundleConfigOptions, EasyDefaultConfig } from "./configs/bundle-options";
+import { BundleConfigOptions, DefaultConfig } from "./configs/bundle-options";
 
 import { USE_SHAREDWORKER, PRODUCTION_MODE } from "../../env";
 
@@ -372,9 +372,9 @@ export const build = async (app: App) => {
       postMessage({ event: "build", details: { config, value, analysis, polyfill, tsx, sourcemap, minify, format,  } });
 
       (async () => {
-        let configObj: BundleConfigOptions = {};
+        let configObj: BundleConfigOptions = deepAssign({}, DefaultConfig);
         try {
-          configObj = await getConfig(config, analysis, polyfill, tsx, sourcemap, minify, format);
+          configObj = deepAssign({}, DefaultConfig, await getConfig(config, analysis, polyfill, tsx, sourcemap, minify, format));
         } catch (e) {
           console.warn(e);
         }
@@ -734,7 +734,7 @@ export const build = async (app: App) => {
       } catch (e) { }
 
       const oldConfigFromURL = serialize(
-        deepAssign({}, EasyDefaultConfig, newConfig),
+        deepAssign({}, DefaultConfig, newConfig),
         { unsafe: true, ignoreFunction: true, space: 2 }
       );
 
