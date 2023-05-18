@@ -1,5 +1,5 @@
-// @deno-types=npm:octokit
-import { Octokit } from "octokit";
+// @deno-types=https://cdn.skypack.dev/@octokit/rest?dts
+import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "velo";

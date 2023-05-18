@@ -274,6 +274,7 @@ serve(async (req: Request) => {
     }
 
     console.log({
+      query,
       modules,
       exportAll,
       shareQuery,
