@@ -1,4 +1,5 @@
-import { deepAssign, lzstring } from "@bundlejs/core";
+import { deepAssign, lzstring, parsePackageName } from "@bundlejs/core";
+import { basename, extname } from "@bundlejs/core/src/utils/path.ts";
 
 const { decompressFromURL } = lzstring;
 
@@ -19,14 +20,32 @@ export const parseTreeshakeExports = (str: string) =>
   (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
 /**
+ * Grab the basename w/o an extension
+ */
+export const fromBasename = (path: string) => 
+  basename(path.replace(/^https?\:\/\//, ""), extname(path));
+
+/**
  * Get cleaned up module name
  * e.g. "@okikio/animate" -> okikioAnimate
  */
-export const getModuleName = (str: string) => 
-  str.split(/(?:-|_|\/)/g)
-    .map((x, i) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
+export const getModuleName = (str: string) => {
+  const { name, path } = parsePackageName(str, true);
+  let _str = str;
+  if (/^https?\:\/\//.test(str)) {
+    _str = fromBasename(str);
+  } else if (name.length > 0) {
+    _str = name + (path ? fromBasename(path) : "")
+  }
+  console.log({
+    _str,
+    str
+  })
+  return _str.split(/(?:-|_|\/)/g)
+    .map((x: string|any[], i: number) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
     .join("")
     .replace(/[^\w\s]/gi, "")
+}
 
 // Inspired by https://github.com/solidjs/solid-playground
 /**
