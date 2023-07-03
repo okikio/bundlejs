@@ -292,14 +292,18 @@ export const start = async (port: MessagePort) => {
       );
       let totalCompressedSize = bytes(
         (await Promise.all(
-          content.map((code: Uint8Array) => {
+          content.map(async (code: Uint8Array) => {
             switch (type) {
               case "lz4":
                 return lz4_compress(code);
               case "brotli":
                 return compress(code, code.length, level);
               default:
-                return gzip(code, level);
+                if (level === 9 && 'CompressionStream' in globalThis) {
+                  const cs = new CompressionStream('gzip');
+                  const compressedStream = new Blob([code]).stream().pipeThrough(cs);
+                  return new Uint8Array(await new Response(compressedStream).arrayBuffer());
+                }
             }
           })
         )).reduce((acc, { length }) => acc + length, 0)
