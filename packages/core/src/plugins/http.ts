@@ -158,6 +158,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
         return {
           path: argPath,
           namespace: HTTP_NAMESPACE,
+          sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
           pluginData: { pkg: args.pluginData?.pkg },
         };
       }
@@ -192,6 +193,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
         return {
           path: getCDNUrl(argPath, origin).url.toString(),
           namespace: HTTP_NAMESPACE,
+          sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
           pluginData: { pkg: args.pluginData?.pkg },
         };
       }
@@ -202,6 +204,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
     return {
       path,
       namespace: HTTP_NAMESPACE,
+      sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
       pluginData: { pkg: args.pluginData?.pkg },
     };
   };

@@ -25,6 +25,30 @@ export type PackageJson = {
   version: string;
   // A short description of the package.
   description?: string;
+
+  /** The main entry point for the package. Optional. */
+  main?: string;
+
+  /** 
+   * A field to define entry points for a package when it is loaded by a loader like Node.js or a bundler like Webpack. Optional.
+   * It can be a string, an object or an array of strings/objects.
+   * An example: `exports: { ".": "./main.js", "./feature": "./feature/index.js" }`
+   * */
+  exports?: string | string[] | { [key: string]: string };
+
+  /** 
+   * A property indicating whether the package includes assets that might have side effects when imported. 
+   * This can be either a boolean or an array of file paths. 
+   * This information is used by bundlers like webpack for tree shaking. Optional. 
+   */
+  sideEffects?: boolean | string[];
+
+  /** 
+   * An object containing script commands that are run by npm. 
+   * The keys are script names and the values are the scripts themselves. Optional. 
+   */
+  scripts?: { [key: string]: string };
+
   // An array of keywords that describe the package.
   keywords?: string[];
   // The URL to the homepage of the package.
@@ -73,7 +97,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       const parsed = parsePackageName(argPath);
       let subpath = parsed.path;
 
-      let pkg: PackageJson = args.pluginData?.pkg ?? { ...rootPkg };
+      let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+      let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
       let oldPkg = pkg;
 
       // Are there an dependecies???? Well Goood.
@@ -226,6 +251,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       return {
         namespace: HTTP_NAMESPACE,
         path: (await determineExtension(url.toString())).url,
+        sideEffects: typeof pkg.sideEffects === "boolean" ? pkg.sideEffects : undefined,
         pluginData: { 
           pkg: {
             ...pkg,
