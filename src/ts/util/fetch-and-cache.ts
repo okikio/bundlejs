@@ -7,21 +7,30 @@ export function requestKey(request: RequestInfo) {
     return SUPPORTS_REQUEST_API && request instanceof Request ? request.url.toString() : request.toString()
 }
 
-export async function newRequest(request: RequestInfo, cache?: Cache, fetchOpts?: RequestInit) {
+export async function newRequest(request: RequestInfo, cache?: Cache, fetchOpts?: RequestInit, clone = true) {
     const networkResponse: Response = await fetch(request, fetchOpts);
 
     if (!fetchOpts?.method || (fetchOpts?.method && fetchOpts.method.toUpperCase() !== "GET"))
         return networkResponse;
 
-    const clonedResponse = networkResponse.clone();
+    if (clone) {
+        const clonedResponse = networkResponse.clone();
+        if (SUPPORTS_CACHE_API && cache) {
+            cache.put(request, networkResponse);
+        } else {
+            const reqKey = requestKey(request);
+            CACHE.set(reqKey, networkResponse);
+        }
+
+        return clonedResponse;
+    }
+    
     if (SUPPORTS_CACHE_API && cache) {
-        cache.put(request, clonedResponse);
+        cache.put(request, networkResponse);
     } else {
         const reqKey = requestKey(request);
-        CACHE.set(reqKey, clonedResponse);
+        CACHE.set(reqKey, networkResponse);
     }
-
-    return networkResponse;
 }
 
 export let OPEN_CACHE: Cache;
@@ -55,7 +64,7 @@ export async function getRequest(url: RequestInfo | URL, permanent = false, fetc
     if (!cacheResponse)
         response = await newRequest(request, cache, fetchOpts);
     else if (!permanent) {
-        newRequest(request, cache, fetchOpts);
+        newRequest(request, cache, fetchOpts, false);
     }
 
     return response!;
