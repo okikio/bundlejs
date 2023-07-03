@@ -150,6 +150,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
                 return {
                     path: argPath,
                     namespace: HTTP_NAMESPACE,
+                    sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
                     pluginData: { pkg: args.pluginData?.pkg },
                 };
             }
@@ -184,6 +185,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
                 return {
                     path: getCDNUrl(argPath, origin).url.toString(),
                     namespace: HTTP_NAMESPACE,
+                    sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
                     pluginData: { pkg: args.pluginData?.pkg },
                 };
             }
@@ -194,6 +196,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
         return {
             path,
             namespace: HTTP_NAMESPACE,
+            sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
             pluginData: { pkg: args.pluginData?.pkg },
         };
     };
