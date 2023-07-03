@@ -10,21 +10,30 @@ export function requestKey(request: RequestInfo) {
   return SUPPORTS_REQUEST_API && request instanceof Request ? request.url.toString() : request.toString()
 }
 
-export async function newRequest(request: RequestInfo, cache?: Cache, fetchOpts?: RequestInit) {
+export async function newRequest(request: RequestInfo, cache?: Cache, fetchOpts?: RequestInit, clone = true) {
   const networkResponse: Response = await fetch(request, fetchOpts);
 
   if (!fetchOpts?.method || (fetchOpts?.method && fetchOpts.method.toUpperCase() !== "GET")) 
     return networkResponse;
 
-  const clonedResponse = networkResponse.clone();
-  if (SUPPORTS_CACHE_API && cache) {
-    cache.put(request, clonedResponse);
-  } else {
-    const reqKey = requestKey(request);
-    CACHE.set(reqKey, clonedResponse);
+  if (clone) {
+    const clonedResponse = networkResponse.clone();
+    if (SUPPORTS_CACHE_API && cache) {
+      cache.put(request, networkResponse);
+    } else {
+      const reqKey = requestKey(request);
+      CACHE.set(reqKey, networkResponse);
+    }
+
+    return clonedResponse;
   }
 
-  return networkResponse;
+  if (SUPPORTS_CACHE_API && cache) {
+    cache.put(request, networkResponse);
+  } else {
+    const reqKey = requestKey(request);
+    CACHE.set(reqKey, networkResponse);
+  }
 }
 
 export let OPEN_CACHE: Cache;
@@ -56,9 +65,9 @@ export async function getRequest(url: RequestInfo | URL, permanent = false, fetc
   // If permanent is true, use the cache first and only go to the network if there is nothing in the cache, 
   // otherwise, still use cache first, but in the background queue up a network request
   if (!cacheResponse)
-    response = await newRequest(request, cache, fetchOpts);
+    response = (await newRequest(request, cache, fetchOpts))!;
   else if (!permanent) {
-    newRequest(request, cache, fetchOpts);
+    newRequest(request, cache, fetchOpts, false);
   }
 
   return response!;
