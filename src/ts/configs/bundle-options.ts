@@ -6,8 +6,8 @@ import type { PackageJson } from "../plugins/cdn";
 import { deepAssign } from "../util/deep-equal";
 import { DEFAULT_CDN_HOST } from "../util/util-cdn";
 
-/** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
-export type CompressionType = "gzip" | "brotli" | "lz4";
+/** The compression algorithim to use, there are currently 4 options "gzip", "brotli", "zstd", and "lz4" */
+export type CompressionType = "gzip" | "brotli" | "lz4" | "zstd";
 
 /** 
 * You can configure the quality of the compression using an object, 
@@ -23,7 +23,7 @@ export type CompressionType = "gzip" | "brotli" | "lz4";
 * ```
 */
 export type CompressionOptions = {
-    /** The compression algorithim to use, there are currently 3 options "gzip", "brotli", and "lz4" */
+    /** The compression algorithim to use, there are currently 4 options "gzip", "brotli", "zstd", and "lz4" */
     type: CompressionType,
 
     /** Compression quality ranging from 1 to 11 */

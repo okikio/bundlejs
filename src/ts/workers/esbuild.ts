@@ -8,10 +8,10 @@ import { EventEmitter } from "@okikio/emitter";
 
 import bytes from "bytes";
 
-import { treeshake } from "../util/rollup";
-import { gzip, getWASM } from "../deno/denoflate/mod";
-import { compress } from "../deno/brotli/mod";
+import { gzip as gzip_compress, getWASM } from "../deno/denoflate/mod";
+import { compress as brotli_compress } from "../deno/brotli/mod";
 import { compress as lz4_compress } from "../deno/lz4/mod";
+import { compress as zstd_compress } from "../deno/zstd/mod.ts";
 
 import { EXTERNAL } from "../plugins/external";
 import { HTTP } from "../plugins/http";
@@ -34,7 +34,6 @@ export const configChannel = new MessageChannel();
 const initPromise = (async () => {
   try {
     if (!_initialized) {
-      await getWASM();
       await initialize({
         worker: false,
         wasmURL: `./esbuild.wasm`
@@ -297,13 +296,19 @@ export const start = async (port: MessagePort) => {
               case "lz4":
                 return lz4_compress(code);
               case "brotli":
-                return compress(code, code.length, level);
+                return brotli_compress(code, code.length, level);
+              case "zstd": 
+                return zstd_compress(code, level);
+              case "gzip":
               default:
                 if (level === 9 && 'CompressionStream' in globalThis) {
                   const cs = new CompressionStream('gzip');
                   const compressedStream = new Blob([code]).stream().pipeThrough(cs);
                   return new Uint8Array(await new Response(compressedStream).arrayBuffer());
                 }
+
+                await getWASM();
+                return gzip_compress(code, level);
             }
           })
         )).reduce((acc, { length }) => acc + length, 0)
