@@ -14,7 +14,7 @@ import type ts from "typescript";
 import { DefaultConfig } from "../configs/bundle-options";
 import { deepAssign, deepDiff } from "../util/deep-equal";
 import { getRequest } from "../util/fetch-and-cache";
-import { parseTreeshakeExports } from "../util/parse-query";
+import { getModuleName, parseTreeshakeExports } from "../util/parse-query";
 
 let formatter: Formatter;
 let config: Record<string, unknown> | undefined = {
@@ -92,6 +92,10 @@ const SyntaxKind = {
     ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
     ExportDeclaration: 271 as ts.SyntaxKind.ExportDeclaration,
 };
+
+function treeshakeArrToStr(arr: string[]) {
+    return arr.map(x => x.replace(/\s/g, "").trim()).join(",").trim()
+}
 
 const worker = (TypeScriptWorker, fileMap) => {
     return class MonacoTSWorker extends TypeScriptWorker {
@@ -182,17 +186,32 @@ const worker = (TypeScriptWorker, fileMap) => {
             // This treeshake pattern is what's required export all modules
             const modulesArr = modules.length > 0 ? Array.from(new Set(modules.split(","))) : [];
 
-            console.log({
-                uniqueTreeshakeArr
-            })
-            const exportAll = uniqueTreeshakeArr.every(x => /\*|{\s?default\s?}/.test(x))
+            const counts = new Map<string, number>();
+            const exportAllUniqTreeshake = Array.from(new Set(modulesArr.map((module) => {
+                if (!(counts.has(module))) counts.set(module, 0);
+                const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
+                const countStr = count <= 0 ? "" : count;
+                return ["*", `{ default as ${getModuleName(module) + "Default" + countStr}}`]
+            }).flat()))
+            const exportAll = 
+                treeshakeArrToStr(uniqueTreeshakeArr) === treeshakeArrToStr(["*", "{ default }"]) ||
+                treeshakeArrToStr(uniqueTreeshakeArr) === treeshakeArrToStr(exportAllUniqTreeshake)
 
+            console.log({
+                uniqueTreeshakeArr,
+                modules,
+                modulesArr,
+                exportAll,
+                defaultTreeshakeArrAsStr: treeshakeArrToStr(["*", "{ default }"]),
+                uniqueTreeshakeArrAsStr: treeshakeArrToStr(uniqueTreeshakeArr),
+                exportAllUniqTreeshake
+            })
             let url = new URL(self.location.origin.toString());
             if (modules.length > 0) { 
-                const modulesStr = exportAll && modulesArr.length > 1 ? modulesArr.join(",") : modules;
-                url.searchParams.set("q", modulesStr); 
+                const modulesStr = exportAll && modulesArr.length >= 1 ? modulesArr.join(",") : modules;
+                url.searchParams.set("q", modulesStr);
             }
-            if (treeshake.replace(/\[\*\]|\,/g, "").length > 0) {
+            if (!exportAll) {
                 url.searchParams.set("treeshake", treeshake);
             }
 

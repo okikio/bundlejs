@@ -72,6 +72,7 @@ export const getModuleName = (str: string) =>
 */
 export const parseSearchQuery = (shareURL: URL) => {
     try {
+        const counts = new Map<string, number>();
         const searchParams = shareURL.searchParams;
         let result = "";
         let query = searchParams.get("query") || searchParams.get("q");
@@ -84,34 +85,36 @@ export const parseSearchQuery = (shareURL: URL) => {
                 "// Click Build for the Bundled, Minified & Compressed package size\n" +
                 queryArr
                     .map((q, i) => {
-                        let treeshakeExports =
+                        const treeshakeExports =
                             treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
                                 ? treeshakeArr[i].trim().split(",").join(", ")
                                 : "*";
-                        let [, ,
+                        const [, ,
                             declaration = "export",
                             module
                         ] = /^(\((.*)\))?(.*)/.exec(q)!;
-                        return `${declaration} ${treeshakeExports}${treeshakeExports === "*" && !treeshakeArr[i] && queryArrLen > 1 ? ` as ${getModuleName(module)}` : ""} from ${JSON.stringify(
+                        console.log({
+                            declaration,
+                            treeshakeExports,
+                            module,
+                            treeshakeArr,
+                            queryArrLen,
+                            i
+                        })
+
+                        if (!(counts.has(module))) counts.set(module, 0);
+                        const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
+                        const countStr = count <= 0 ? "" : count;
+
+                        return `${declaration} ${treeshakeExports} from ${JSON.stringify(
                             module
-                        )};`;
+                        )};${(treeshake ?? "").trim().length <= 0 ?
+                                `\n${declaration} { default ${declaration === "import" || queryArrLen > 1 ? `as ${getModuleName(module) + "Default" + countStr} ` : ""
+                                }} from ${JSON.stringify(module)};` : ``
+                            }`;
                     })
                     .join("\n")
             );
-            if (queryArr.length === 1 && (treeshake ?? "").trim().length <= 0) {
-                let [, ,
-                    declaration = "export",
-                    module
-                ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
-                result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module) } ` : ""}} from ${JSON.stringify(
-                    module
-                )};`;
-                console.log({
-                    result,
-                    declaration,
-                    module
-                })
-            }
         }
 
         let share = searchParams.get("share");
