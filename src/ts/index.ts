@@ -359,7 +359,7 @@ export const build = async (app: App) => {
 
       const shareUrl = new URL(location.href);
       shareUrl.hostname = "deno.bundlejs.com";
-      shareUrl.searchParams.append("badge", "");
+      shareUrl.pathname = "/badge";
 
       // Preload badge
       img.src = shareUrl.href;
@@ -413,7 +413,7 @@ export const build = async (app: App) => {
 
       const shareUrl = new URL(location.href);
       shareUrl.hostname = "deno.bundlejs.com"; 
-      shareUrl.searchParams.append("badge","");
+      shareUrl.pathname = "/badge";
       addLogs([
         { title: bundleTime, type: "info" },
         { title: `Bundle size is ${initialSize} -> ${size}`, type: "info" },
