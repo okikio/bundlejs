@@ -120,7 +120,7 @@ serve(async (req: Request) => {
 
               let log = '';
               await Promise.all(
-                files.map(async file => {
+                files.map(async (file: { id: string; }) => {
                   const id = file.id;
                   await deleteFile(id);
                   log += `Deleted ${id}\n`;
