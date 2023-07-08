@@ -8,9 +8,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/core": "^4.2.1",
-    "@octokit/plugin-throttling": "^5.2.0",
-    "@octokit/rest": "^19.0.8",
-    "octokit": "^2.0.14"
+    "@octokit/core": "^4.2.4",
+    "@octokit/plugin-throttling": "^6.1.0",
+    "@octokit/rest": "^19.0.13",
+    "octokit": "^2.1.0"
   }
 }
