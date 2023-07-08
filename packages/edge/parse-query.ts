@@ -37,10 +37,6 @@ export const getModuleName = (str: string) => {
   } else if (name.length > 0) {
     _str = name + (path ? fromBasename(path) : "")
   }
-  console.log({
-    _str,
-    str
-  })
   return _str.split(/(?:-|_|\/)/g)
     .map((x: string|any[], i: number) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
     .join("")
@@ -105,27 +101,17 @@ export const parseShareURLQuery = (shareURL: URL) => {
             const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
             const countStr = count <= 0 ? "" : count;
             
-            return `${declaration} ${treeshakeExports}${treeshakeExports === "*" && !treeshakeArr[i] && queryArrLen > 0 ? ` as ${getModuleName(module + countStr)}` : ""} from ${JSON.stringify(
+            return `${declaration} ${treeshakeExports} from ${JSON.stringify(
               module
-            )};`;
+            )};${
+              (treeshake ?? "").trim().length <= 0 ? 
+                `\n${declaration} { default ${
+                  declaration === "import" || queryArrLen > 1 ? `as ${getModuleName(module) + "Default" + countStr} ` : ""
+                }} from ${JSON.stringify(module)};` : ``
+            }`;
           })
           .join("\n")
       );
-      if (queryArr.length === 1 && (treeshake ?? "").trim().length <= 0) {
-        const [, ,
-          declaration = "export",
-          module
-        ] = /^(\((.*)\))?(.*)/.exec(queryArr[0])!;
-
-        if (!(counts.has(module))) counts.set(module, 0);
-        const count = counts.get(module)! - 1;
-        const countStr = count <= 0 ? "" : count;
-        // countStr
-
-        result += `\n${declaration} { default ${declaration === "import" ? `as ${getModuleName(module + "Default" + countStr)} ` : "" }} from ${JSON.stringify(
-          module
-        )};`;
-      }
     }
 
     const share = searchParams.get("share");
