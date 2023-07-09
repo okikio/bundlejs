@@ -69,7 +69,7 @@ function sanitizeShieldsIO(str: string) {
     .replace(/\s/g, "_")
 }
 
-export async function generateResult(badgeKey: string, [value, resultText]: [BundleResult, string | undefined], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
+export async function generateResult([badgeKey, badgeID]: string[], [value, resultText]: [BundleResult, string | undefined], url: URL, cached: boolean, duration: number, redis?: Redis | null) {
   const noCache = ["/no-cache", "/clear-cache", "/delete-cache"].includes(url.pathname);
   const event_key = cached ? "cached-json-" : "json-";
 
@@ -122,6 +122,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
     trackEvent(event_key + "badge", {
       type: "badge-query",
       badgeKey,
+      badgeID,
       queries,
       uncompressedBadge,
       minifiedBadge,
@@ -163,7 +164,9 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
 
     try {
       if (!redis) throw new Error("Redis not available");
-      await redis.set<string>(badgeKey, typeof imgShield === "string" ? imgShield : fromUint8Array(imgShield), { ex: 7200 })
+      await redis.hset<string>(badgeKey, { 
+        [badgeID]: typeof imgShield === "string" ? imgShield : fromUint8Array(imgShield) 
+      })
     } catch (e) {
       console.warn(e);
     }
@@ -172,7 +175,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
+        ['Cache-Control', `max-age=${noCache ? 30 : 720}, s-maxage=30, public`],
         ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
       ],
     })
@@ -247,7 +250,7 @@ export async function generateResult(badgeKey: string, [value, resultText]: [Bun
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 1800}, s-maxage=30, public`],
+        ['Cache-Control', `max-age=${noCache ? 30 : 180}, s-maxage=30, public`],
         ['Content-Type', 'application/json']
       ],
     })
