@@ -1,6 +1,7 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
 import { EasyDefaultConfig } from "../configs/bundle-options";
 import { deepAssign } from "./deep-equal";
+import { parse as parsePackageName } from "parse-package-name";
 
 export const parseInput = (value: string) => {
     const host = "https://registry.npmjs.com/-/v1/search?text";
@@ -42,11 +43,16 @@ export const parseTreeshakeExports = (str: string) =>
  * Get cleaned up module name
  * e.g. "@okikio/animate" -> okikioAnimate
  */
-export const getModuleName = (str: string) =>
-    str.split(/(?:-|_|\/)/g)
+export const getModuleName = (str: string) => {
+    let name = str;
+    try {
+        ({ name } = parsePackageName(str));
+    } catch (e) {}
+    return name.split(/(?:-|_|\/)/g)
         .map((x, i) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
         .join("")
         .replace(/[^\w\s]/gi, "")
+}
 
 // Inspired by https://github.com/solidjs/solid-playground
 /**
