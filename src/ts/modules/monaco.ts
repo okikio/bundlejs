@@ -211,13 +211,13 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
             let content = model.getLineContent(position.lineNumber);
             if (typeof content != "string" || content.length == 0) return;
     
-            let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
+            let matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? []; 
             if (matches.length <= 0) return;
     
             let matchArr = matches.map(([, pkg]) => pkg);
             let pkg = matchArr[0];
             
-            if (/\.|http(s)?\:/.test(pkg)) return;
+            if (/^\.|http(s)?\:/.test(pkg)) return;
             
             // npm supporting CDN's only, as in exclude deno, github, etc...
             else if (/^(skypack|unpkg|jsdelivr|esm|esm\.run|esm\.sh)\:/.test(pkg)) 
@@ -251,12 +251,12 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
                 return {
                     contents: [].concat({
                         value: `\
-### [${name}](${links?.npm}) v${inputedVersion || version}
+### [${name}](${links?.npm}${version ? `/v/${version}` : ""}) v${inputedVersion || version}
 ${description}
 
 Published on ${_date} ${_author}
 
-${_repo_link}  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)  | [Openbase](https://openbase.com/js/${name})`,
+${_repo_link}  [NPM](https://npmjs.com/package/${name}${version ? `/v/${version}` : ""})  |  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)`,
                     }),
                 };
             })();
