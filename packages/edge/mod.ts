@@ -302,17 +302,18 @@ serve(async (req: Request) => {
       url.searchParams.has("badge-raster") ||
       url.searchParams.has("png") ||
       ["/badge/raster", "/badge-raster"].includes(url.pathname);
-    const badgeKeyObj = {
+
+    const badgeKey = `badge-${jsonKey}`;
+    const badgeIDObj = {     
       jsonKey,
-      badge: badgeQuery,
 
       badgeRasterQuery,
       badgeResult,
       badgeStyle
     };
-    const badgeKey = `badge-${
+    const badgeID = `${
       compressToBase64(
-        JSON.stringify(badgeKeyObj).trim()
+        JSON.stringify(badgeIDObj).trim()
       ) // .slice(0, 512 - 1)
     }`;
 
@@ -357,7 +358,9 @@ serve(async (req: Request) => {
           trackEvent("error-deleting-cache", {
             type: "error-deleting-cache",
             jsonKeyObj,
-            badgeKeyObj,
+            badgeIDObj,
+            badgeID,
+            badge: badgeQuery,
             badgeKey,
             jsonKey
           }, url.href)
@@ -366,13 +369,17 @@ serve(async (req: Request) => {
       }
 
       if (url.pathname !== "/no-cache") {
-        const BADGEResult = await redis.get<string>(badgeKey);
-        if (badgeQuery && BADGEResult) {
+        const BADGEResult = await redis.hget<string>(badgeKey, badgeID);
+        const JSONResult = await redis.get<BundleResult>(jsonKey);
+
+        if (badgeQuery && BADGEResult && JSONResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
           trackEvent("use-cached-badge", {
             type: "use-cached-badge",
             jsonKeyObj,
-            badgeKeyObj,
+            badgeIDObj,
+            badgeID,
+            badge: badgeQuery,
           }, url.href)
 
           return new Response(badgeRasterQuery ? toUint8Array(BADGEResult) : BADGEResult, {
@@ -383,10 +390,12 @@ serve(async (req: Request) => {
               ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
             ],
           })
+        } else if (badgeQuery && !JSONResult) {
+          // Pre-emptively delete badges to avoid them becoming stale
+          await redis.del(badgeKey);
         }
 
         const start = Date.now();
-        const JSONResult = await redis.get<BundleResult>(jsonKey);
         const fileCheck = url.searchParams.has("file") || url.pathname === "/file";
         const fileQuery = fileCheck ? JSONResult?.fileId : true;
         if (JSONResult && fileQuery) {
@@ -394,7 +403,7 @@ serve(async (req: Request) => {
             type: "generate-from-cache-json",
             jsonKeyObj
           }, url.href)
-          return await generateResult(badgeKey, [JSONResult, undefined], url, true, Date.now() - start, redis);
+          return await generateResult([badgeKey, badgeID], [JSONResult, undefined], url, true, Date.now() - start, redis);
         } else if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
           const [moduleName, mode] = modules[0];
           if (mode === "export") {
@@ -411,7 +420,7 @@ serve(async (req: Request) => {
                 packageResultKey: getPackageResultKey(moduleName),
                 jsonKeyObj
               })
-              return await generateResult(badgeKey, [PackageResult, undefined], url, true, Date.now() - start, redis);
+              return await generateResult([badgeKey, badgeID], [PackageResult, undefined], url, true, Date.now() - start, redis);
             }
           }
         }
@@ -422,7 +431,9 @@ serve(async (req: Request) => {
         jsonKey,
         jsonKeyObj,
         badgeKey,
-        badgeKeyObj,
+        badgeIDObj,
+        badgeID,
+        badge: badgeQuery,
       }, url.href)
       console.warn('error-using-cache: ', e)
     }
@@ -463,11 +474,10 @@ serve(async (req: Request) => {
         }
       }
 
-      if (!badgeQuery) await redis.del(badgeKey);
-
+      await redis.del(badgeKey);
       if (prevValue) {
-        const jsonPrevValue: BundleResult = typeof prevValue == "object" ? prevValue : JSON.parse(prevValue);
-        if (typeof jsonPrevValue == "object" && jsonPrevValue.fileId) {
+        const jsonPrevValue: BundleResult = typeof prevValue === "object" ? prevValue : JSON.parse(prevValue);
+        if (typeof jsonPrevValue === "object" && jsonPrevValue.fileId) {
           await deleteGist(jsonPrevValue.fileId)
         }
       }
@@ -475,7 +485,7 @@ serve(async (req: Request) => {
       console.warn(e)
     }
 
-    return await generateResult(badgeKey, [value, resultText], url, false, Date.now() - start, redis);
+    return await generateResult([badgeKey, badgeID], [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
     trackEvent("full-error", {
       type: "full-error",
