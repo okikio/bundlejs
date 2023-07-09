@@ -1,5 +1,6 @@
 import { decompressFromURL } from "@amoutonbrady/lz-string";
 import { EasyDefaultConfig } from "../configs/bundle-options";
+import { basename, extname } from "../deno/path/mod.ts";
 import { deepAssign } from "./deep-equal";
 import { parse as parsePackageName } from "parse-package-name";
 
@@ -40,16 +41,31 @@ export const parseTreeshakeExports = (str: string) =>
     (str ?? "").split(/\],/).map((str) => str.replace(/\[|\]/g, ""));
 
 /**
+ * Grab the basename w/o an extension
+ */
+export const fromBasename = (path: string) =>
+    basename(path.replace(/^https?\:\/\//, ""), extname(path));
+    
+/**
  * Get cleaned up module name
  * e.g. "@okikio/animate" -> okikioAnimate
  */
 export const getModuleName = (str: string) => {
-    let name = str;
+    let name = str; 
+    let path = null;
     try {
-        ({ name } = parsePackageName(str));
+        ({ name, path } = parsePackageName(str));
     } catch (e) {}
-    return name.split(/(?:-|_|\/)/g)
-        .map((x, i) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
+
+    let _str = str;
+    if (/^https?\:\/\//.test(str)) {
+        _str = fromBasename(str);
+    } else if (name.length > 0) {
+        _str = name + (path ? fromBasename(path) : "")
+    }
+    
+    return _str.split(/(?:-|_|\/)/g)
+        .map((x: string | any[], i: number) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
         .join("")
         .replace(/[^\w\s]/gi, "")
 }
