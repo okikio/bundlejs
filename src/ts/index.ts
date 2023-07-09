@@ -25,7 +25,7 @@ import {
 import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
-import { parseInput } from "./util/parse-query";
+import { parseInput, parseSearchQuery } from "./util/parse-query";
 
 import SANDBOX_WORKER_URL from "worker:./workers/sandbox.ts";
 import ESBUILD_WORKER_URL from "worker:./workers/esbuild.ts";
@@ -829,9 +829,23 @@ export const build = async (app: App) => {
   // Add Module from Search Results
   (() => {
     // Listen to events for the results
-    ResultEvents.on("add-module", (v) => {
-      value = isInitial ? "// Click Build for the bundled, minified and compressed package size" : `` + inputModel?.getValue();
-      inputModel?.setValue((value + "\n" + v).trim());
+    ResultEvents.on("add-module", async ([_package, name]) => {
+      const urlStr = await getShareableURL(inputModel);
+      let url: URL | undefined;
+      try {
+        url = new URL(urlStr);
+
+        if (isInitial) {
+          url.searchParams.set("q", _package);
+        } else {
+          const oldQuery: string = url.searchParams.get("q");
+          url.searchParams.set("q", [...oldQuery.trim().split(","), _package].join(",").trim());
+        }
+        inputModel?.setValue(parseSearchQuery(url))
+      } catch (e) {
+        value = isInitial ? "// Click Build for the bundled, minified and compressed package size" : `` + inputModel?.getValue();
+        inputModel?.setValue((value + "\n" + `export * from "${_package}";`).trim());
+      }
     });
   })();
 
@@ -888,8 +902,8 @@ export const InitialRender = (shareURL: URL) => {
             // result?.results   ->   api.npms.io
             // result?.objects   ->   registry.npmjs.com
             result?.objects.map((obj) => {
-              const { name, description, date, publisher } =
-                obj.package;
+              const { name, description, date, publisher } = obj.package;
+              version = obj?.package?.version || version;
               return {
                 name,
                 description,
