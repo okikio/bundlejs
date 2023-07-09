@@ -96,7 +96,7 @@
 //             return null;
 
 //           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-//           if (esbuildOpts?.logLevel == "verbose") {
+//           if (esbuildOpts?.logLevel === "verbose") {
 //             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
 //             if (ignoreFile) {
 //               EVENTS.emit("logger.log", "Output File: " + path);

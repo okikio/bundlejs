@@ -169,7 +169,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
       ).origin;
 
       // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
-      const NPM_CDN = getCDNStyle(pathOrigin) == "npm";
+      const NPM_CDN = getCDNStyle(pathOrigin) === "npm";
       const origin = NPM_CDN ? pathOrigin : host;
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
@@ -267,13 +267,13 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
           const _assetResults =
             (await fetchAssets(url, content, state))
               .filter((result) => {
-                if (result.status == "rejected") {
+                if (result.status === "rejected") {
                   dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())
                   return false;
                 } else return true;
               })
               .map((result) => {
-                if (result.status == "fulfilled")
+                if (result.status === "fulfilled")
                   return result.value;
               }) as ESBUILD.OutputFile[];
 

@@ -16,11 +16,11 @@ export const inferLoader = (urlStr: string): Loader => {
   if (ext === ".mjs" || ext === ".cjs") return "ts"; // "js"
   if (ext === ".mts" || ext === ".cts") return "ts";
 
-  if (ext == ".scss") return "css";
+  if (ext === ".scss") return "css";
 
-  if (ext == ".png" || ext == ".jpeg" || ext == ".ttf") return "dataurl";
-  if (ext == ".svg" || ext == ".html" || ext == ".txt") return "text";
-  if (ext == ".wasm") return "file";
+  if (ext === ".png" || ext === ".jpeg" || ext === ".ttf") return "dataurl";
+  if (ext === ".svg" || ext === ".html" || ext === ".txt") return "text";
+  if (ext === ".wasm") return "file";
 
   return ext.length ? "text" : "ts";
 };

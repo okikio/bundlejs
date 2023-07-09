@@ -31,7 +31,7 @@ console.log(
 );
 
 
-if (PLATFORM_AUTO == "deno") {
+if (PLATFORM_AUTO === "deno") {
   globalThis?.Deno?.exit?.();
 } else {
   // @ts-ignore Only for Node

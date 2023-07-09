@@ -91,7 +91,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       const { path: argPath, origin } = getCDNUrl(args.path, cdn);
 
       // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
-      const NPM_CDN = getCDNStyle(origin) == "npm";
+      const NPM_CDN = getCDNStyle(origin) === "npm";
 
       // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
       const parsed = parsePackageName(argPath);

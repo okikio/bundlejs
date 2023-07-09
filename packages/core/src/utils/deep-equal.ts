@@ -45,7 +45,7 @@ export const deepDiff = (obj1: any, obj2: any) => {
 
     if (key in obj1) {
       const bothAreArrays = Array.isArray(obj1[key]) && Array.isArray(value);
-      if (obj1[key] == value) {
+      if (obj1[key] === value) {
         continue;
       } else if (bothAreArrays) {
         if (!deepEqual(obj1[key], value))

@@ -199,7 +199,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
             return null;
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-          if (esbuildOpts?.logLevel == "verbose") {
+          if (esbuildOpts?.logLevel === "verbose") {
             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
             if (ignoreFile) {
               dispatchEvent(LOGGER_LOG, "Output File: " + path);

@@ -19,7 +19,7 @@ export const doNotTrack = () => {
   // @ts-ignore Navigator doNotTrack
   const dnt = doNotTrack || navigator.doNotTrack || msTracking();
 
-  return dnt == "1" || dnt === "yes";
+  return dnt === "1" || dnt === "yes";
 };
 
 export function removeTrailingSlash(url: string) {

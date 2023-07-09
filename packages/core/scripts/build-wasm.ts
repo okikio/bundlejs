@@ -19,34 +19,34 @@ await init();
 export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" = "zstd", src: string | Uint8Array | Promise<string | Uint8Array> = "./node_modules/esbuild-wasm/esbuild.wasm", target = "src/wasm.ts") {
   const value = await src;
 
-  if (typeof value == "string") console.log(`\n- Source file: ${value}`);
-  const res = typeof value == "string" ? await fs.readFile(value) : value;
+  if (typeof value === "string") console.log(`\n- Source file: ${value}`);
+  const res = typeof value === "string" ? await fs.readFile(value) : value;
   const wasm = new Uint8Array(res);
   console.log(`- Read WASM (size: ${bytes(wasm.length)} bytes)`);
   
   console.time("Compression time")
   let compressed: Uint8Array = wasm;
-  if (mode == "zstd") {
+  if (mode === "zstd") {
     compressed = await zstdCompress(wasm, 22);
-  } else if (mode == "brotli") {
+  } else if (mode === "brotli") {
     compressed = await brotli(wasm);
-  } else if (mode == "gzip") {
+  } else if (mode === "gzip") {
     await getWASM(await WASM());
     compressed = await gzip(wasm, 6);
-  } else if (mode == "lz4") {
+  } else if (mode === "lz4") {
     compressed = await compress(wasm);
   }
   console.timeEnd("Compression time")
 
   console.time("Decompression time")
-  if (mode == "zstd") {
+  if (mode === "zstd") {
     await zstdDecompress(compressed);
-  } else if (mode == "brotli") {
+  } else if (mode === "brotli") {
     await unbrotli(compressed);
-  } else if (mode == "gzip") {
+  } else if (mode === "gzip") {
     await getWASM(await WASM());
     await gunzip(compressed);
-  } else if (mode == "lz4") {
+  } else if (mode === "lz4") {
     await decompress(wasm);
   }
   console.timeEnd("Decompression time")
@@ -75,24 +75,24 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
   export const source = async () => {
     const uint8arr = Uint8Array.from(atob("${encoded}"), c => c.charCodeAt(0));
     ${
-      mode == "base64" ? `return uint8arr;` :
-      mode == "zstd" ? `
+      mode === "base64" ? `return uint8arr;` :
+      mode === "zstd" ? `
     const { decompress } = await import(\"./${relative(targetDir, "src/deno/zstd/mod.ts")}\");
     return await decompress(uint8arr);
-  ` : mode == "brotli" ? `
+  ` : mode === "brotli" ? `
     const { decompress } = await import(\"./${relative(targetDir, "src/deno/brotli/mod.ts")}\");
     return await decompress(uint8arr);
   ` : (`
     const mode: "zstd" | "lz4" | "gzip" | "base64" = "${mode}";
-    if ('DecompressionStream' in globalThis && mode == "gzip") {
+    if ('DecompressionStream' in globalThis && mode === "gzip") {
       const ds = new DecompressionStream('gzip');
       const decompressedStream = new Blob([uint8arr.buffer]).stream().pipeThrough(ds);
       return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
     }
 
-    const { ${mode == "gzip" ? "gunzip, getWASM" : "decompress"} } = await import(\"./${relative(targetDir, mode == "gzip" ? "src/deno/denoflate/mod.ts" : "src/deno/lz4/mod.ts")}\");
-    ${mode == "gzip" ? "await getWASM();" : ""}
-    return await ${mode == "gzip" ? "gunzip" : "decompress"}(uint8arr);
+    const { ${mode === "gzip" ? "gunzip, getWASM" : "decompress"} } = await import(\"./${relative(targetDir, mode === "gzip" ? "src/deno/denoflate/mod.ts" : "src/deno/lz4/mod.ts")}\");
+    ${mode === "gzip" ? "await getWASM();" : ""}
+    return await ${mode === "gzip" ? "gunzip" : "decompress"}(uint8arr);
   `)
   }};
   export default source;`;
