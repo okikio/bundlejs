@@ -73,7 +73,7 @@ serve(async (req: Request) => {
         status: 200,
         headers: [
           ...headers,
-          ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+          ['Cache-Control', 'max-age=180, public'],
           ['Content-Type', ext === ".png" ? "image/png" : (ext === ".yaml" ? "text/yaml" : "application/json")]
         ],
       })
@@ -386,7 +386,7 @@ serve(async (req: Request) => {
             status: 200,
             headers: [
               ...headers,
-              ['Cache-Control', 'max-age=3600, s-maxage=30, public'],
+              ['Cache-Control', 'max-age=36, public'],
               ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
             ],
           })

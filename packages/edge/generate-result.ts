@@ -151,7 +151,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     }
 
     const imgUrl = new URL(
-      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeText}${sanitizeShieldsIO(`${badgeBundleSize} (${badgeType})`)}-${detailBadgeName}-blue?cacheSeconds=3600&link=${urlQuery}`
+      `https://${badgeRasterQuery ? "raster.shields.io" : "img.shields.io"}/badge/${detailBadgeText}${sanitizeShieldsIO(`${badgeBundleSize} (${badgeType})`)}-${detailBadgeName}-blue?link=${urlQuery}`
     );
 
     if (badgeStyle) { imgUrl.searchParams.append("style", badgeStyle); }
@@ -175,7 +175,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 720}, s-maxage=30, public`],
+        ['Cache-Control', `max-age=${30}, public`],
         ['Content-Type', badgeRasterQuery ? "image/png" : 'image/svg+xml']
       ],
     })
@@ -202,7 +202,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 7200}, s-maxage=30, public`],
+        ['Cache-Control', `max-age=${noCache ? 30 : 720}, public`],
         ['Content-Type', 'text/javascript']
       ],
     })
@@ -232,7 +232,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
         status: 200,
         headers: [
           ...headers,
-          ['Cache-Control', `max-age=${noCache ? 30 : 1800}, s-maxage=30, public`],
+          ['Cache-Control', `max-age=${noCache ? 30 : 180}, public`],
           ['Content-Type', 'text/html']
         ],
       }
@@ -250,7 +250,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=${noCache ? 30 : 180}, s-maxage=30, public`],
+        ['Cache-Control', `max-age=${noCache ? 30 : 180}, public`],
         ['Content-Type', 'application/json']
       ],
     })
@@ -269,7 +269,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
         status: 200,
         headers: [
           ...headers,
-          ['Cache-Control', `max-age=30, s-maxage=30, public`],
+          ['Cache-Control', `max-age=30, public`],
           ['Content-Type', 'text/html']
         ]
       }
@@ -287,7 +287,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       status: 200,
       headers: [
         ...headers,
-        ['Cache-Control', `max-age=30, s-maxage=30, public`],
+        ['Cache-Control', `max-age=30, public`],
         ['Content-Type', 'application/json']
       ],
     });
@@ -319,7 +319,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     status: 200,
     headers: [
       ...headers,
-      ['Cache-Control', 'max-age=7200, s-maxage=30, public'],
+      ['Cache-Control', 'max-age=720, public'],
       ['Content-Type', 'application/json']
     ],
   })
