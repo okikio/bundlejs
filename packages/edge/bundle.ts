@@ -69,6 +69,8 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const result = await build(configObj, FileSystem);
   const end = performance.now();
 
+  (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
+
   let resultValue: string = result.contents[0].text;
   const { content: _content, ...size } = await compress(
     result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => { 
@@ -81,26 +83,36 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const { init: _init, ...printableConfig } = createConfig("build", configObj);
   const duration = (end - start);
 
-  const { fileId, fileUrl, fileHTMLUrl } = await setGist(url.href, result.outputs) ?? {};
-  const searchQueries = url.search || `?q=${query}`;
-  const finalResult: BundleResult = {
-    query: decodeURIComponent(searchQueries),
-    rawQuery: encodeURIComponent(searchQueries),
-    ...(versionsArr.length === 1 ? { version: versionsArr[0] } : { versions: versionsArr }),
-    modules: modulesArr,
-    config: printableConfig,
-    input: initialValue,
-    size,
-    time: timeFormatter.format(duration / 1000, "seconds"),
-    rawTime: duration,
-    ...(fileId ? { fileId } : {}),
-    ...(fileUrl ? { fileUrl } : {}), 
-    ...(fileHTMLUrl ? { fileHTMLUrl } : {}),
-    ...(result?.warnings?.length > 0 ? { warnings: await createNotice(result.warnings, "warning", false) } : {}),
-    ...(enableMetafile && result?.metafile ? { metafile: result?.metafile } : {})
-  };
+  const [
+    gistDetails, 
+    warnings
+  ] = await Promise.all([
+    setGist(url.href, result.outputs),
+    createNotice(result.warnings, "warning", false),
+  ]);
 
-  (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
+  const { fileId, fileUrl, fileHTMLUrl } = gistDetails ?? {};
+
+  const searchQueries = url.search || `?q=${query}`;
+  const finalResult: BundleResult = Object.assign({
+      query: decodeURIComponent(searchQueries),
+      rawQuery: encodeURIComponent(searchQueries),
+    },
+    (versionsArr.length === 1 ? { version: versionsArr[0] } : { versions: versionsArr }),
+    {
+      modules: modulesArr,
+      config: printableConfig,
+      input: initialValue,
+      size,
+      time: timeFormatter.format(duration / 1000, "seconds"),
+      rawTime: duration
+    },
+    (fileId ? { fileId } : null),
+    (fileUrl ? { fileUrl } : null), 
+    (fileHTMLUrl ? { fileHTMLUrl } : null),
+    (result?.warnings?.length > 0 ? { warnings } : null),
+    (enableMetafile && result?.metafile ? { metafile: result?.metafile } : null)
+  );
 
   return [
     new Response(JSON.stringify(finalResult), {

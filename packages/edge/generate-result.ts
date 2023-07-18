@@ -295,16 +295,12 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
 
   const { metafile: _metafile, warnings: _warnings, ...usefulInfo } = value;
   const addDocs = (url.search === "" ? docs : "");
-  const finalResult = {
-    ...usefulInfo,
-    ...addDocs,
-    ...(
-      cached ? {
-        time: timeFormatter.format(duration / 1000, "seconds"),
-        rawTime: duration
-      } : {}
-    )
-  };
+  const finalResult = Object.assign({}, usefulInfo, addDocs, 
+    cached ? {
+      time: timeFormatter.format(duration / 1000, "seconds"),
+      rawTime: duration
+    } : null
+  );
 
   trackEvent(event_key + "only-json", {
     type: "json-only-query",

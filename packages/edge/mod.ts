@@ -14,7 +14,7 @@ globalThis.Worker = worker ?? class {
   constructor() { }
 };
 
-import { deepAssign, createConfig, resolveVersion, lzstring, parsePackageName, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
+import { deepAssign, createConfig, resolveVersion, parsePackageName, dispatchEvent, LOGGER_INFO, BUILD_CONFIG } from "@bundlejs/core/src/index.ts";
 import ESBUILD_WASM from "@bundlejs/core/src/wasm.ts";
 
 import { parseShareURLQuery, parseConfig, parseTreeshakeExports } from "./parse-query.ts";
@@ -23,7 +23,6 @@ import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 import { bundle, inputModelResetValue } from "./bundle.ts";
 import { deleteFile, deleteFile as deleteGist, listFiles } from "./gist.ts";
 import { trackEvent, trackView } from "./measure.ts";
-const { compressToBase64 } = lzstring;
 
 export const headers = Object.entries({
   "Access-Control-Allow-Origin": "*",
@@ -54,7 +53,7 @@ const wellKnownDir = "./.well-known/";
 const PACKAGE_PREFIX = `json-package`;
 
 function getPackageResultKey(str: string) {
-  return `${str}-${PACKAGE_PREFIX}`
+  return `${PACKAGE_PREFIX}/${str}`
 }
 
 serve(async (req: Request) => {
@@ -283,17 +282,11 @@ serve(async (req: Request) => {
 
     const { init, ..._configObj } = configObj;
     const { wasmModule: _wasmModule, ..._init } = init || {};
-    const jsonKeyObj = {
-      init: _init,
-      ..._configObj,
+    const jsonKeyObj = Object.assign({ init: _init }, _configObj, {
       versions,
       initialValue: initialValue.trim(),
-    };
-    const jsonKey = `json-${
-      compressToBase64(
-        JSON.stringify(jsonKeyObj).trim()
-      ) // .slice(0, 512 - 1)
-    }`;
+    });
+    const jsonKey = `json/${JSON.stringify(jsonKeyObj).trim()}`;
 
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
@@ -303,19 +296,15 @@ serve(async (req: Request) => {
       url.searchParams.has("png") ||
       ["/badge/raster", "/badge-raster"].includes(url.pathname);
 
-    const badgeKey = `badge-${jsonKey}`;
-    const badgeIDObj = {     
-      jsonKey,
-
-      badgeRasterQuery,
-      badgeResult,
-      badgeStyle
-    };
-    const badgeID = `${
-      compressToBase64(
-        JSON.stringify(badgeIDObj).trim()
-      ) // .slice(0, 512 - 1)
-    }`;
+    const badgeKey = `badge/${jsonKey}`;
+    const badgeIDObj = Object.assign({}, jsonKeyObj, {     
+      badge: {
+        raster: badgeRasterQuery,
+        result: badgeResult,
+        style: badgeStyle
+      }
+    });
+    const badgeID = JSON.stringify(badgeIDObj).trim();
 
     try {
       if (!redis) throw new Error("Redis not available");
