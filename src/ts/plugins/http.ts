@@ -242,7 +242,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                 // Some typescript files don't have file extensions but you can't fetch a file without their file extension
                 // so bundle tries to solve for that
                 let content: Uint8Array | undefined, url: string;
-                ({ content, url } = await determineExtension(args.path, false));
+                ({ content, url } = await determineExtension(args.path, false, logger));
 
                 // Create a virtual file system for storing node modules
                 // This is for building a package bundle analyzer 
