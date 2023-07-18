@@ -86,7 +86,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   const uncompressedSize = bytes(rawUncompressedSize) as string;
 
   // Choose a different compression function based on the compression type
-  const compressionMap = await (async () => {
+  const compressionMap = await (async (type?: CompressionType) => {
     switch (type) {
       case "brotli": {
         await brotliWASM();
@@ -103,6 +103,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
       case "gzip":
       default: {
         if (quality === COMPRESS_CONFIG.quality && 'CompressionStream' in globalThis) {
+          console.info("Using `CompressionStream` to determine compressed bundle size...")
           return async (code: Uint8Array) => {
             const cs = new CompressionStream('gzip');
             const compressedStream = new Blob([code]).stream().pipeThrough(cs);
@@ -114,7 +115,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
         return async (code: Uint8Array) => await gzip(code, quality);
       }
     }
-  })();
+  })(type);
 
   // Compress all binary contents according to the compression map
   const compressedContent = await Promise.all(
@@ -124,6 +125,15 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   // Convert sizes to human readable formats, e.g. 10000 bytes to 10MB
   const rawCompressedSize = compressedContent.reduce((acc, { length }) => acc + length, 0);
   const compressedSize = bytes(rawCompressedSize);
+
+  console.log({
+    type,
+    quality,
+    uncompressedSize,
+    rawUncompressedSize,
+    rawCompressedSize,
+    compressedSize
+  })
   
   return {
     type,
@@ -138,5 +148,3 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
     size: `${compressedSize} (${type})`
   };
 }
-
-export { };
