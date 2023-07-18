@@ -26,9 +26,6 @@ dependencies:
   '@typescript/ata':
     specifier: ^0.9.3
     version: 0.9.3(typescript@5.1.6)
-  bytes:
-    specifier: ^3.1.2
-    version: 3.1.2
   countapi-js:
     specifier: ^1.0.2
     version: 1.0.2
@@ -4449,6 +4446,7 @@ packages:
   /bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
+    dev: true
 
   /cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}

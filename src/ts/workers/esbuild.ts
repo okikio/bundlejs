@@ -6,7 +6,7 @@ import { FileSystem, setFile } from "../util/filesystem";
 import { initialize, build, formatMessages } from "esbuild-wasm";
 import { EventEmitter } from "@okikio/emitter";
 
-import bytes from "bytes";
+import { bytes } from "../util/pretty-bytes.ts";
 
 import { gzip as gzip_compress, getWASM } from "../deno/denoflate/mod";
 import { compress as brotli_compress } from "../deno/brotli/mod";
@@ -285,12 +285,10 @@ export const start = async (port: MessagePort) => {
       let { type = "gzip", quality: level = 9 } =
         (typeof compression == "string" ? { type: compression } : (compression ?? {})) as CompressionOptions;
 
-      // @ts-ignore
-      let totalByteLength = bytes(
-        content.reduce((acc, { byteLength }) => acc + byteLength, 0)
-      );
-      let totalCompressedSize = bytes(
-        (await Promise.all(
+      let rawByteLen = content.reduce((acc, { byteLength }) => acc + byteLength, 0);
+      let totalByteLength = bytes(rawByteLen);
+
+      let rawCompressedSize = (await Promise.all(
           content.map(async (code: Uint8Array) => {
             switch (type) {
               case "lz4":
@@ -302,6 +300,8 @@ export const start = async (port: MessagePort) => {
               case "gzip":
               default:
                 if (level === 9 && 'CompressionStream' in globalThis) {
+                  logger("Using `CompressionStream` to determine compressed bundle size...", "info")
+
                   const cs = new CompressionStream('gzip');
                   const compressedStream = new Blob([code]).stream().pipeThrough(cs);
                   return new Uint8Array(await new Response(compressedStream).arrayBuffer());
@@ -311,8 +311,12 @@ export const start = async (port: MessagePort) => {
                 return gzip_compress(code, level);
             }
           })
-        )).reduce((acc, { length }) => acc + length, 0)
-      );
+        )).reduce((acc, { length }) => acc + length, 0);
+      let totalCompressedSize = bytes(rawCompressedSize);
+      console.log({
+        rawByteLen,
+        rawCompressedSize
+      })
 
       postMessage({
         event: "result",

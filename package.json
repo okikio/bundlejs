@@ -59,7 +59,6 @@
         "@okikio/native": "^3.0.1",
         "@okikio/sharedworker": "^1.0.4",
         "@typescript/ata": "^0.9.3",
-        "bytes": "^3.1.2",
         "countapi-js": "^1.0.2",
         "d3": "^7.8.5",
         "d3-array": "^3.2.4",
