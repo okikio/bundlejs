@@ -36,8 +36,11 @@ import { getRequest } from "../util/fetch-and-cache.js";
 import { USE_SHAREDWORKER } from "../../../env";
 import { EasyDefaultConfig } from "../configs/bundle-options.js";
 import { toLocaleDateString } from "../components/SearchResults.jsx";
+import { getResolvedPackage } from "../util/npm-search.js";
 
 export const TS_WORKER = USE_SHAREDWORKER ? new WebWorker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" }) : new Worker(TYPESCRIPT_WORKER_URL, { name: "ts-worker" });
+
+const ListFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
 
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
@@ -228,8 +231,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
                 let result: any;
     
                 try {
-                    let response = await getRequest(url, false);
-                    result = await response.json();
+                    result = await getResolvedPackage(pkg);
                 } catch (e) {
                     console.warn(e);
                     return;
@@ -237,26 +239,28 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     
                 // result?.results   ->   api.npms.io
                 // result?.objects   ->   registry.npmjs.com
-                if (result?.objects.length <= 0) return;
-    
-                // result?.results   ->   api.npms.io
-                // result?.objects   ->   registry.npmjs.com
-                const { name, description, version, date, publisher, links } = result?.objects?.[0]?.package ?? {};
-                let author = publisher?.username;
-                let _date = toLocaleDateString(date);
-                let _author = author ? `by [@${author}](https://www.npmjs.com/~${author})` : "";
-                let _repo_link = links?.repository ? `[GitHub](${links?.repository})  |` : "";
+                const { name, description, version, date, repository, bugs, homepage, readme, maintainers } = result ?? {};
+                let author = Array.from(maintainers, x => {
+                    let _maintainer = (x as { name?: string })?.name
+                    return `[@${_maintainer}](https://www.npmjs.com/~${_maintainer})`
+                });
+                let _author = author.length > 0 ? `by ` + ListFormatter.format(author) : "";
+
+                let _repo_url = repository?.url?.replace?.(/^git\+/, "") ?? bugs?.url ?? homepage;
+                let _repo_link = _repo_url ? `[GitHub](${_repo_url})  |` : "";
             
     
                 return {
                     contents: [].concat({
                         value: `\
-### [${name}](${links?.npm}${version ? `/v/${version}` : ""}) v${inputedVersion || version}
+### [${name}](https://npmjs.com/package/${name}${version ? `/v/${version}` : ""}) v${version || inputedVersion}
 ${description}
 
-Published on ${_date} ${_author}
+Published ${_author}
 
-${_repo_link}  [NPM](https://npmjs.com/package/${name}${version ? `/v/${version}` : ""})  |  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}/)`,
+${_repo_link}  [NPM](https://npmjs.com/package/${name}${version ? `/v/${version}` : ""})  |  [Skypack](https://skypack.dev/view/${name})  |  [Unpkg](https://unpkg.com/browse/${name}@${version || inputedVersion}/)
+
+${readme ? "~~~\n\n" + "## Documentation\n\n" + readme as string : ""}`,
                     }),
                 };
             })();
