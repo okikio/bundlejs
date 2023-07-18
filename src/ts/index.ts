@@ -1113,19 +1113,20 @@ export const InitialRender = (shareURL: URL) => {
     });
   })();
 
+  // countapi-js has been bought out and is deprecated
   // countapi-js hit counter. It counts the number of time the website is loaded
-  (async () => {
-    if (!PRODUCTION_MODE) return;
-    try {
-      let { value } = await hit("bundle.js.org", "visits");
-      let visitCounterEl = document.querySelector("#visit-counter");
-      if (visitCounterEl)
-        visitCounterEl.textContent = `👋 ${value} visits`;
-    } catch (err) {
-      console.warn(
-        "Visit Counter Error (please create a new issue in the repo)",
-        err
-      );
-    }
-  })();
+  // (async () => {
+  //   if (!PRODUCTION_MODE) return;
+  //   try {
+  //     let { value } = await hit("bundle.js.org", "visits");
+  //     let visitCounterEl = document.querySelector("#visit-counter");
+  //     if (visitCounterEl)
+  //       visitCounterEl.textContent = `👋 ${value} visits`;
+  //   } catch (err) {
+  //     console.warn(
+  //       "Visit Counter Error (please create a new issue in the repo)",
+  //       err
+  //     );
+  //   }
+  // })();
 }
