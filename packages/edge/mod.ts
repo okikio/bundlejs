@@ -161,8 +161,8 @@ serve(async (req: Request) => {
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ansi: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
-    const treeshakeQuery = url.searchParams.has("treehake");
-    const treeshake = url.searchParams.get("treehake");
+    const treeshakeQuery = url.searchParams.has("treeshake");
+    const treeshake = url.searchParams.get("treeshake");
     const treeshakeArr = parseTreeshakeExports(
       decodeURIComponent(treeshake ?? "")
       .trim()
