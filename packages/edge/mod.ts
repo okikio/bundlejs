@@ -239,7 +239,7 @@ serve(async (req: Request) => {
         },
       } as Config
     );
-    console.log(configObj)
+    console.log({ configObj })
 
     const hasQuery = (
       url.searchParams.has("q") ||
@@ -259,7 +259,7 @@ serve(async (req: Request) => {
       formatQuery || configQuery || badgeQuery || sourcemapQuery || analysisQuery || metafileQuery;
     const rootPkg = configObj["package.json"] ?? {} as PackageJson;
     const dependecies = Object.assign({}, rootPkg.devDependencies, rootPkg.peerDependencies, rootPkg.dependencies)
-    console.log({ dependecies })
+    
     const versionsList = await Promise.allSettled(
       !hasQuery && (shareQuery || textQuery) ? [] :
         query
@@ -411,9 +411,7 @@ serve(async (req: Request) => {
             jsonKeyObj
           }, url.href)
 
-          console.log("Respond with Cached JSON Response", {
-            jsonKeyObj,
-          })
+          console.log("Respond with Cached JSON Response")
           return await generateResult([badgeKey, badgeID], [JSONResult, undefined], url, true, Date.now() - start, redis);
         } else if (modules.length === 1 && exportAll && !mutationQueries) {
           const [moduleName, mode] = modules[0];
