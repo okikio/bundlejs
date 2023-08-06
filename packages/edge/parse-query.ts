@@ -1,5 +1,6 @@
 import { deepAssign, lzstring, parsePackageName } from "@bundlejs/core";
 import { basename, extname } from "@bundlejs/core/src/utils/path.ts";
+import JSON5 from "./vendor/json5.ts";
 
 const { decompressFromURL } = lzstring;
 
@@ -101,13 +102,13 @@ export const parseShareURLQuery = (shareURL: URL) => {
             const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
             const countStr = count <= 0 ? "" : count;
             
-            return `${declaration} ${treeshakeExports} from ${JSON.stringify(
+            return `${declaration} ${treeshakeExports} from ${JSON5.stringify(
               module
             )};${
               (treeshake ?? "").trim().length <= 0 ? 
                 `\n${declaration} { default ${
                   declaration === "import" || queryArrLen > 1 ? `as ${getModuleName(module) + "Default" + countStr} ` : ""
-                }} from ${JSON.stringify(module)};` : ``
+                }} from ${JSON5.stringify(module)};` : ``
             }`;
           })
           .join("\n")
@@ -119,7 +120,7 @@ export const parseShareURLQuery = (shareURL: URL) => {
 
     const plaintext = searchParams.get("text");
     if (plaintext) {
-      result += "\n" + JSON.parse(
+      result += "\n" + JSON5.parse(
         /**    
          * Support users wrapping/not-wrapping plaintext in a string, 
          * e.g. 
@@ -137,7 +138,7 @@ export const parseShareURLQuery = (shareURL: URL) => {
          * console.log(window)
          * ```
         */
-        /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON.stringify("" + plaintext).replace(/\\\\/g, "\\")
+        /^["']/.test(plaintext) && /["']$/.test(plaintext) ? plaintext : JSON5.stringify("" + plaintext).replace(/\\\\/g, "\\")
       );
     }
 
@@ -156,7 +157,7 @@ export const parseConfig = (shareURL: URL) => {
   try {
     const searchParams = shareURL.searchParams;
     const config = searchParams.get("config") ?? "{}";
-    return deepAssign({}, JSON.parse(config ? config : "{}"));
+    return deepAssign({}, JSON5.parse(config ? config : "{}"));
   } catch (e) { 
     console.warn(e);
   }

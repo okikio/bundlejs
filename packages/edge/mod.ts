@@ -1,5 +1,7 @@
-import type { BuildConfig, CompressConfig } from "@bundlejs/core";
+import type { BuildConfig, CompressConfig, PackageJson } from "@bundlejs/core";
 import type { BundleResult } from "./bundle.ts";
+
+import JSON5 from "./vendor/json5.ts";
 
 import { Redis } from "upstash_redis";
 import { serve } from "http";
@@ -160,6 +162,8 @@ serve(async (req: Request) => {
     const initialValue = parseShareURLQuery(url) || inputModelResetValue;
     const { init: _, entryPoints: _2, ansi: _3, ...initialConfig } = (parseConfig(url) || {}) as Config;
 
+    const configQuery = url.searchParams.get("config");
+    
     const treeshakeQuery = url.searchParams.has("treeshake");
     const treeshake = url.searchParams.get("treeshake");
     const treeshakeArr = parseTreeshakeExports(
@@ -180,6 +184,7 @@ serve(async (req: Request) => {
     const badgeQuery = url.searchParams.has("badge") || ["/badge", "/badge/raster", "/badge-raster"].includes(url.pathname);
     const polyfill = url.searchParams.has("polyfill");
 
+    const prettyQuery = url.searchParams.has("pretty");
     const minifyQuery = url.searchParams.has("minify");
     const sourcemapQuery = url.searchParams.has("sourcemap");
 
@@ -191,11 +196,13 @@ serve(async (req: Request) => {
       metafileQuery ||
       Boolean(initialConfig?.analysis);
 
+    const prettyResult = url.searchParams.get("pretty");
     const minifyResult = url.searchParams.get("minify");
     const minify = initialConfig?.esbuild?.minify ?? (
       minifyQuery ?
         (minifyResult?.length === 0 ? true : convertQueryValue(minifyResult))
-        : initialConfig?.esbuild?.minify
+        : (prettyQuery ? (prettyResult?.length === 0 ? !prettyQuery : !convertQueryValue(prettyResult)) : null) ?? 
+        initialConfig?.esbuild?.minify 
     );
 
     const sourcemapResult = url.searchParams.get("sourcemap");
@@ -207,7 +214,7 @@ serve(async (req: Request) => {
 
     const formatQuery = url.searchParams.has("format");
     const format = initialConfig?.esbuild?.format || url.searchParams.get("format");
-
+    
     const configObj: Config = deepAssign(
       {},
       BUILD_CONFIG,
@@ -221,7 +228,7 @@ serve(async (req: Request) => {
         esbuild: deepAssign(
           {},
           enableMetafile ? { metafile: enableMetafile } : {},
-          minifyQuery ? { minify } : {},
+          minifyQuery || prettyQuery ? { minify } : {},
           sourcemapQuery ? { sourcemap } : {},
           formatQuery ? { format } : {},
         ),
@@ -246,6 +253,13 @@ serve(async (req: Request) => {
         url.searchParams.get("query")
       ) ?? "spring-easing"
     );
+    // All the queries that will affect the final result
+    const mutationQueries = 
+      shareQuery || textQuery || minifyQuery || prettyQuery || polyfill || tsxQuery || 
+      formatQuery || configQuery || badgeQuery || sourcemapQuery || analysisQuery || metafileQuery;
+    const rootPkg = configObj["package.json"] ?? {} as PackageJson;
+    const dependecies = Object.assign({}, rootPkg.devDependencies, rootPkg.peerDependencies, rootPkg.dependencies)
+    console.log({ dependecies })
     const versionsList = await Promise.allSettled(
       !hasQuery && (shareQuery || textQuery) ? [] :
         query
@@ -258,7 +272,7 @@ serve(async (req: Request) => {
           .map(async (x) => {
             const [pkgName, imported] = x;
             const { name = pkgName, version, path } = parsePackageName(pkgName, true)
-            return [name, await resolveVersion(pkgName) ?? version, path, imported]
+            return [name, await resolveVersion(dependecies[name] ? `${name}@${dependecies[name]}` : pkgName) ?? version, path, imported]
           })
     );
 
@@ -286,7 +300,7 @@ serve(async (req: Request) => {
       versions,
       initialValue: initialValue.trim(),
     });
-    const jsonKey = `json/${JSON.stringify(jsonKeyObj).trim()}`;
+    const jsonKey = `json/${JSON5.stringify(jsonKeyObj).trim()}`;
 
     const badgeResult = url.searchParams.get("badge");
     const badgeStyle = url.searchParams.get("badge-style");
@@ -304,7 +318,7 @@ serve(async (req: Request) => {
         style: badgeStyle
       }
     });
-    const badgeID = JSON.stringify(badgeIDObj).trim();
+    const badgeID = JSON5.stringify(badgeIDObj).trim();
 
     try {
       if (!redis) throw new Error("Redis not available");
@@ -318,10 +332,12 @@ serve(async (req: Request) => {
 
         try {
           console.log(`Deleting ${badgeKey}\n`)
-          const JSONResult = await redis.get<BundleResult>(jsonKey);
+          const JSONResultString = await redis.get<string>(jsonKey);
+          const JSONResult = JSONResultString ? JSON5.parse<BundleResult>(JSONResultString) : null;
 
           const [moduleName] = modules[0];
-          const PackageResult = await redis.get<BundleResult>(getPackageResultKey(moduleName));
+          const PackageResultString = await redis.get<string>(getPackageResultKey(moduleName));
+          const PackageResult = PackageResultString ? JSON5.parse<BundleResult>(PackageResultString) : null;
 
           await redis.del(jsonKey, badgeKey, getPackageResultKey(moduleName));
           console.log(`Deleting "${getPackageResultKey(moduleName)}" and ${jsonKey}\n`)
@@ -359,7 +375,8 @@ serve(async (req: Request) => {
 
       if (url.pathname !== "/no-cache") {
         const BADGEResult = await redis.hget<string>(badgeKey, badgeID);
-        const JSONResult = await redis.get<BundleResult>(jsonKey);
+        const JSONStringValue = await redis.get<string>(jsonKey);
+        const JSONResult = JSONStringValue ? JSON5.parse<BundleResult>(JSONStringValue) : null;
 
         if (badgeQuery && BADGEResult && JSONResult) {
           dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
@@ -371,6 +388,7 @@ serve(async (req: Request) => {
             badge: badgeQuery,
           }, url.href)
 
+          console.log("Respond with Cached Badge")
           return new Response(badgeRasterQuery ? toUint8Array(BADGEResult) : BADGEResult, {
             status: 200,
             headers: [
@@ -392,11 +410,16 @@ serve(async (req: Request) => {
             type: "generate-from-cache-json",
             jsonKeyObj
           }, url.href)
+
+          console.log("Respond with Cached JSON Response", {
+            jsonKeyObj,
+          })
           return await generateResult([badgeKey, badgeID], [JSONResult, undefined], url, true, Date.now() - start, redis);
-        } else if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
+        } else if (modules.length === 1 && exportAll && !mutationQueries) {
           const [moduleName, mode] = modules[0];
           if (mode === "export") {
-            const PackageResult = await redis.get<BundleResult>(getPackageResultKey(moduleName));
+            const PackageResultString = await redis.get<string>(getPackageResultKey(moduleName));
+            const PackageResult = PackageResultString ? JSON5.parse<BundleResult>(PackageResultString) : null;
             const fileQuery = fileCheck ? PackageResult?.fileId : true;
             if (PackageResult && fileQuery) {
               trackEvent("generate-from-package-cache-json", {
@@ -404,11 +427,8 @@ serve(async (req: Request) => {
                 packageResultKey: getPackageResultKey(moduleName),
                 jsonKeyObj
               }, url.href)
-              console.log({
-                type: "generate-from-package-cache-json",
-                packageResultKey: getPackageResultKey(moduleName),
-                jsonKeyObj
-              })
+
+              console.log("Respond with Module Response from Permanent Cache", getPackageResultKey(moduleName))
               return await generateResult([badgeKey, badgeID], [PackageResult, undefined], url, true, Date.now() - start, redis);
             }
           }
@@ -453,20 +473,20 @@ serve(async (req: Request) => {
     try {
       if (!redis) throw new Error("Redis not available");
 
-      const prevValue = await redis.get<BundleResult>(jsonKey);
-      await redis.set(jsonKey, JSON.stringify(value), { ex: 86400 });
+      const prevValueString = await redis.get<string>(jsonKey)
+      await redis.set(jsonKey, JSON5.stringify(value), { ex: 86400 });
 
       if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
         const [moduleName, mode] = modules[0];
         if (mode === "export") {
-          await redis.set(getPackageResultKey(moduleName), JSON.stringify(value));
+          await redis.set(getPackageResultKey(moduleName), JSON5.stringify(value));
         }
       }
 
       await redis.del(badgeKey);
-      if (prevValue) {
-        const jsonPrevValue: BundleResult = typeof prevValue === "object" ? prevValue : JSON.parse(prevValue);
-        if (typeof jsonPrevValue === "object" && jsonPrevValue.fileId) {
+      if (prevValueString) {
+        const jsonPrevValue = prevValueString ? JSON5.parse<BundleResult>(prevValueString) : null;
+        if (jsonPrevValue && typeof jsonPrevValue === "object" && jsonPrevValue.fileId) {
           await deleteGist(jsonPrevValue.fileId)
         }
       }
@@ -474,6 +494,7 @@ serve(async (req: Request) => {
       console.warn(e)
     }
 
+    console.log("Respond with New Bundle Result")
     return await generateResult([badgeKey, badgeID], [value, resultText], url, false, Date.now() - start, redis);
   } catch (e) {
     trackEvent("full-error", {

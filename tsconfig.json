@@ -17,6 +17,7 @@
     "emitDeclarationOnly": true,
     "declaration": true,
     // Add support for Web Workers
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "verbatimModuleSyntax": true
   }
 }

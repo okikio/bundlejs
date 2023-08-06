@@ -3,9 +3,9 @@
     "@bundlejs/core/": "../core/",
     "@bundlejs/core": "../core/src/index.ts",
 
-    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm@0.18.11/esm/browser.d.ts",
-    "esbuild-wasm": "https://esm.sh/esbuild-wasm@0.18.11",
-    "esbuild": "https://deno.land/x/esbuild@v0.18.11/wasm.js",
+    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm/esm/browser.d.ts",
+    "esbuild-wasm": "https://esm.sh/esbuild-wasm",
+    "esbuild": "https://deno.land/x/esbuild/wasm.js",
 
     "resolve.exports": "https://esm.sh/resolve.exports",
 
@@ -16,8 +16,8 @@
     "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
     "base64": "https://deno.land/x/base64@v0.2.1/mod.ts",
 
-    "upstash_redis": "https://deno.land/x/upstash_redis@v1.22.0/mod.ts",
-    "http": "https://deno.land/std@0.193.0/http/server.ts",
-    "path": "https://deno.land/std@0.193.0/path/mod.ts"
+    "upstash_redis": "https://deno.land/x/upstash_redis/mod.ts",
+    "http": "https://deno.land/std/http/server.ts",
+    "path": "https://deno.land/std/path/mod.ts"
   }
 }

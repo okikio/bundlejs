@@ -293,6 +293,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     });
   }
 
+  // console.log("Respond with JSON Response", value)
   const { metafile: _metafile, warnings: _warnings, ...usefulInfo } = value;
   const addDocs = (url.search === "" ? docs : "");
   const finalResult = Object.assign({}, usefulInfo, addDocs, 

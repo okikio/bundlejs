@@ -12,6 +12,7 @@ import { extname, isBareImport } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { deepAssign } from "../util.ts";
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = "cdn-url";
@@ -98,7 +99,13 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       let subpath = parsed.path;
 
       let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-      let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+      let pkg: PackageJson = deepAssign({ ...rootPkg }, 
+        excludeSideEffects,
+        rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
+        rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
+        rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
+      );
+
       let oldPkg = pkg;
 
       // Are there an dependecies???? Well Goood.

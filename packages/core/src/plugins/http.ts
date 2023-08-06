@@ -5,7 +5,7 @@ import type { ESBUILD } from "../types.ts";
 
 import { dispatchEvent, LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN } from "../configs/events.ts";
 
-import { CDN_RESOLVE } from "./cdn.ts";
+import { CDN_RESOLVE, PackageJson } from "./cdn.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 import { decode } from "../utils/encode-decode.ts";
 import { parsePackageName } from "../utils/parse-package-name.ts";
@@ -146,7 +146,7 @@ export async function determineExtension(path: string, headersOnly: true | false
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
+export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path; //.replace(/\/$/, "/index");
@@ -174,7 +174,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return await CDN_RESOLVE(origin)(args);
+        return await CDN_RESOLVE(origin, rootPkg)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -220,6 +220,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST) {
 export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
+  const pkgJSON = config["package.json"];
 
   const [get, set] = state;
   const assets = get()["assets"] ?? [];
@@ -244,7 +245,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, pkgJSON));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to

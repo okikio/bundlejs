@@ -93,6 +93,7 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
   // Convert CDN values to URL origins
   const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const { external = [] } = config?.esbuild ?? {};
+  const pkgJSON = config["package.json"];
   const [get] = state;
 
   return {
@@ -110,7 +111,7 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
           if (config.polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
             const pkgDetails = parsePackageName(argPath);
             const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
-            return CDN_RESOLVE(host)({
+            return CDN_RESOLVE(host, pkgJSON)({
               ...args,
               path: aliasPath
             });
