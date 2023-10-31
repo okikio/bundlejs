@@ -1,7 +1,7 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
 import { determineExtension, fetchPkg, HTTP_NAMESPACE } from './http';
-import { extname, isBareImport } from '../util/path';
+import { extname, isBareImport, join } from '../util/path';
 import { getRequest } from '../util/fetch-and-cache';
 
 import { getCDNUrl, getCDNStyle } from '../util/util-cdn';
@@ -85,15 +85,35 @@ export type PackageJson = {
  */
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPkg: Partial<PackageJson> = {}) => {
     return async (args: OnResolveArgs): Promise<OnResolveResult | undefined> => {
-        if (/^#/.test(args.path) || isBareImport(args.path)) {
+        let argPath = args.path;
+        if (/^#/.test(argPath)) {
+            let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+            let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+
+            try {
+                // Resolving imports & exports from the package.json
+                // If an import starts with "#" then it's a subpath-import, and should be treated as so
+                const modernResolve = resolve(pkg, argPath, { browser: true, conditions: ["module"] }) ||
+                    resolve(pkg, argPath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+                    resolve(pkg, argPath, { require: true });
+
+                if (modernResolve) {
+                    const resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
+                    argPath = join(pkg.name + "@" + pkg.version, resolvedPath);
+                }
+                // deno-lint-ignore no-empty
+            } catch (e) { }
+        }
+
+        if (isBareImport(args.path)) {
             // Support a different default CDN + allow for custom CDN url schemes
-            const { path: argPath, origin } = getCDNUrl(args.path, cdn);
+            const { path: _argPath, origin } = getCDNUrl(argPath, cdn);
 
             // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
             const NPM_CDN = getCDNStyle(origin) == "npm";
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-            const parsed = parsePackageName(argPath);
+            const parsed = parsePackageName(_argPath);
             let subpath = parsed.path;
 
             let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
@@ -102,7 +122,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
 
             // Are there an dependecies???? Well Goood.
             const depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
-            if (depsExists && !/\S+@\S+/.test(argPath)) {
+            if (depsExists && !/\S+@\S+/.test(_argPath)) {
                 const {
                     devDependencies = {},
                     dependencies = {},
@@ -112,8 +132,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                 const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
                 const keys = Object.keys(deps);
 
-                if (keys.includes(argPath))
-                    parsed.version = deps[argPath];
+                if (keys.includes(_argPath))
+                    parsed.version = deps[_argPath];
             }
 
             let finalSubpath = subpath;
@@ -134,33 +154,31 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                     ].filter(x => x !== null);
 
                     let isDirPkgJSON = false;
-                    if (!/^#/.test(args.path)) {
-                        const pkgVariantsLen = pkgVariants.length;
-                        for (let i = 0; i < pkgVariantsLen; i++) {
-                            const pkgMetadata = pkgVariants[i]!;
-                            const { url } = getCDNUrl(pkgMetadata.path, origin);
-                            const { href } = url;
+                    const pkgVariantsLen = pkgVariants.length;
+                    for (let i = 0; i < pkgVariantsLen; i++) {
+                        const pkgMetadata = pkgVariants[i]!;
+                        const { url } = getCDNUrl(pkgMetadata.path, origin);
+                        const { href } = url;
 
-                            try {
-                                if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
-                                    continue;
-                                }
-
-                                // Strongly cache package.json files
-                                const res = await getRequest(url, true);
-                                if (!res.ok) throw new Error(await res.text());
-
-                                pkg = await res.json();
-                                isDirPkgJSON = pkgMetadata.isDir ?? false;
-                                break;
-                            } catch (e) {
-                                FAILED_PKGJSON_URLS.add(href);
-
-                                // If after checking all the different file extensions none of them are valid
-                                // Throw the first fetch error encountered, as that is generally the most accurate error
-                                if (i >= pkgVariantsLen - 1)
-                                    throw e;
+                        try {
+                            if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
+                                continue;
                             }
+
+                            // Strongly cache package.json files
+                            const res = await getRequest(url, true);
+                            if (!res.ok) throw new Error(await res.text());
+
+                            pkg = await res.json();
+                            isDirPkgJSON = pkgMetadata.isDir ?? false;
+                            break;
+                        } catch (e) {
+                            FAILED_PKGJSON_URLS.add(href);
+
+                            // If after checking all the different file extensions none of them are valid
+                            // Throw the first fetch error encountered, as that is generally the most accurate error
+                            if (i >= pkgVariantsLen - 1)
+                                throw e;
                         }
                     }
 
@@ -232,7 +250,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                         finalSubpath = `${dir}${finalSubpath}`;
                     }
                 } catch (e) {
-                    logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
+                    logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${_argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
                     console.warn(e);
                 }
             }
