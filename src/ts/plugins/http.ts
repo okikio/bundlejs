@@ -26,6 +26,9 @@ export async function fetchPkg(url: string, logger = console.log, fetchOpts?: Re
         if (!response.ok)
             throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
+        if (/text\/html/.test(response.headers.get("content-type")))
+            throw new Error("Can't load HTML as a package");
+
         logger(`Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`, "info");
 
         return {

@@ -12,7 +12,11 @@ export const DEFAULT_CDN_HOST = 'https://unpkg.com';
  * - `other` - CDNs that haven't been added to the list
  */
 export const getCDNStyle = (urlStr: string) => {
-    if (/^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(urlStr) || /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(urlStr)) 
+    // esm|esm\.sh|
+    // (cdn\.)?esm\.sh|
+    // skypack|
+    // cdn\.skypack\.dev|
+    if (/^(unpkg|jsdelivr|esm\.run)\:?/.test(urlStr) || /^(https?:\/\/)?(cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(urlStr)) 
         return "npm";
 
     else if (/^(jsdelivr\.gh|github)\:?/.test(urlStr) || /^https?:\/\/(cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com)/.test(urlStr)) 
@@ -79,7 +83,7 @@ export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
  export const getPureImportPath = (importStr: string) => 
     importStr
         .replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "")
-        .replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "")
+        .replace(/^(https?:\/\/)?(cdn\.skypack\.dev|(cdn\.)?esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "")
         .replace(/^\//, "");
 
 /**

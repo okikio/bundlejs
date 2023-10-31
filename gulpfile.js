@@ -128,7 +128,7 @@ task("css", async () => {
         { default: tailwind },
 
         { default: scss },
-        { default: sass },
+        sass,
 
         { default: postcssReplace },
         { postcssFontGrabber },
@@ -150,7 +150,7 @@ task("css", async () => {
             // Minify scss to css
             postcss(
                 [
-                    sass({ outputStyle: "compressed" }), // fiber
+                    sass.default({ outputStyle: "compressed" }), // fiber
                     tailwind("./tailwind.config.cjs"),
 
                     postcssReplace({

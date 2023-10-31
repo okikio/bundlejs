@@ -83,7 +83,17 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
             <summary class="console-summary" tabindex="0">
               <p class="px-4 py-3" innerHTML={title} />
               <Show when={badge}>
-                <img id="build-badge" src={badge} alt="Build badge" />
+                <a
+                  class="px-4"
+                  href={decodeURIComponent(badge)}
+                  rel="noopener"
+                  target="_blank"
+                >
+                  <span>
+                    {decodeURIComponent(badge.replace("https://", ""))}
+                  </span>
+                  {/* <img id="build-badge" src={badge} alt="Build badge" /> */}
+                </a>
               </Show>
             </summary>
             <div class="content">
@@ -95,9 +105,16 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
             <div class="content inline-flex flex-wrap">
               <p class="px-4" innerHTML={title} />
               <Show when={badge}>
-                <a class="px-4" href={decodeURIComponent(badge)} rel="noopener" target="_blank">
-                  <span>{decodeURIComponent(badge.replace("https://", ""))}</span>
-                  <img id="build-badge" src={badge} alt="Build badge" />
+                <a
+                  class="px-4"
+                  href={decodeURIComponent(badge)}
+                  rel="noopener"
+                  target="_blank"
+                >
+                  <span>
+                    {decodeURIComponent(badge.replace("https://", ""))}
+                  </span>
+                  {/* <img id="build-badge" src={badge} alt="Build badge" /> */}
                 </a>
               </Show>
             </div>

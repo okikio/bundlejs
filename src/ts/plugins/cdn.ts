@@ -85,7 +85,7 @@ export type PackageJson = {
  */
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPkg: Partial<PackageJson> = {}) => {
     return async (args: OnResolveArgs): Promise<OnResolveResult | undefined> => {
-        if (isBareImport(args.path)) {
+        if (/^#/.test(args.path) || isBareImport(args.path)) {
             // Support a different default CDN + allow for custom CDN url schemes
             const { path: argPath, origin } = getCDNUrl(args.path, cdn);
 
@@ -134,31 +134,33 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                     ].filter(x => x !== null);
 
                     let isDirPkgJSON = false;
-                    const pkgVariantsLen = pkgVariants.length;
-                    for (let i = 0; i < pkgVariantsLen; i++) {
-                        const pkgMetadata = pkgVariants[i]!;
-                        const { url } = getCDNUrl(pkgMetadata.path, origin);
-                        const { href } = url;
+                    if (!/^#/.test(args.path)) {
+                        const pkgVariantsLen = pkgVariants.length;
+                        for (let i = 0; i < pkgVariantsLen; i++) {
+                            const pkgMetadata = pkgVariants[i]!;
+                            const { url } = getCDNUrl(pkgMetadata.path, origin);
+                            const { href } = url;
 
-                        try {
-                            if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
-                                continue;
+                            try {
+                                if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
+                                    continue;
+                                }
+
+                                // Strongly cache package.json files
+                                const res = await getRequest(url, true);
+                                if (!res.ok) throw new Error(await res.text());
+
+                                pkg = await res.json();
+                                isDirPkgJSON = pkgMetadata.isDir ?? false;
+                                break;
+                            } catch (e) {
+                                FAILED_PKGJSON_URLS.add(href);
+
+                                // If after checking all the different file extensions none of them are valid
+                                // Throw the first fetch error encountered, as that is generally the most accurate error
+                                if (i >= pkgVariantsLen - 1)
+                                    throw e;
                             }
-
-                            // Strongly cache package.json files
-                            const res = await getRequest(url, true);
-                            if (!res.ok) throw new Error(await res.text());
-
-                            pkg = await res.json();
-                            isDirPkgJSON = pkgMetadata.isDir ?? false;
-                            break;
-                        } catch (e) {
-                            FAILED_PKGJSON_URLS.add(href);
-
-                            // If after checking all the different file extensions none of them are valid
-                            // Throw the first fetch error encountered, as that is generally the most accurate error
-                            if (i >= pkgVariantsLen - 1)
-                                throw e;
                         }
                     }
 

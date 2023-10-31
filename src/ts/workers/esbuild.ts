@@ -173,7 +173,7 @@ export const start = async (port: MessagePort) => {
       
       try {
         // Convert CDN values to URL origins
-        let { origin } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+        let { origin } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":", config?.cdn) : getCDNUrl(config?.cdn, config?.cdn);
         result = await build({
           "stdin": {
             // Ensure input is a string

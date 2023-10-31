@@ -22,7 +22,6 @@ import {
   type TypeLog
 } from "./components/Console";
 
-import { hit } from "countapi-js";
 import { decode, encode } from "./util/encode-decode";
 
 import { parseInput, parseSearchQuery } from "./util/parse-query";
@@ -61,7 +60,7 @@ BundleWorker?.start?.(); // Only SharedWorkers support the start method, so opti
 export const channel = new MessageChannel();
 export const SandboxWorkerConfig = [SANDBOX_WORKER_URL, { name: 'sandbox' } as WorkerOptions] as const;
 export const SANDBOX_WORKER = new Worker(...SandboxWorkerConfig) as WebWorker;
-const img = new Image();
+// const img = new Image();
 
 try {
   SANDBOX_WORKER?.start?.();
@@ -362,7 +361,7 @@ export const build = async (app: App) => {
       shareUrl.pathname = "/badge";
 
       // Preload badge
-      img.src = shareUrl.href;
+      // img.src = shareUrl.href;
 
       start = Date.now();
       
@@ -1112,21 +1111,4 @@ export const InitialRender = (shareURL: URL) => {
       setStickToBottom(false);
     });
   })();
-
-  // countapi-js has been bought out and is deprecated
-  // countapi-js hit counter. It counts the number of time the website is loaded
-  // (async () => {
-  //   if (!PRODUCTION_MODE) return;
-  //   try {
-  //     let { value } = await hit("bundle.js.org", "visits");
-  //     let visitCounterEl = document.querySelector("#visit-counter");
-  //     if (visitCounterEl)
-  //       visitCounterEl.textContent = `👋 ${value} visits`;
-  //   } catch (err) {
-  //     console.warn(
-  //       "Visit Counter Error (please create a new issue in the repo)",
-  //       err
-  //     );
-  //   }
-  // })();
 }

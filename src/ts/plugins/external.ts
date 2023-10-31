@@ -97,7 +97,7 @@ export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyf
             // this plugin.
             build.onResolve({ filter: /.*/ }, (args) => {
                 let path = args.path.replace(/^node\:/, "");
-                let { path: argPath } = getCDNUrl(path);
+                let { path: argPath } = getCDNUrl(path, host);
 
                 if (isExternal(argPath, external)) {
                     if (polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
