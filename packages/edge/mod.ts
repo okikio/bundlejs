@@ -3,7 +3,7 @@ import type { BundleResult } from "./bundle.ts";
 
 import JSON5 from "./vendor/json5.ts";
 
-import { Redis } from "upstash_redis";
+import { Redis } from "@upstash/redis";
 import { serve } from "http";
 import { dirname, fromFileUrl, join, extname, basename } from "path";
 

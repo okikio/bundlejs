@@ -1,4 +1,4 @@
-import type { Redis } from "upstash_redis";
+import type { Redis } from "@upstash/redis";
 import type { CompressionType } from "@bundlejs/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
 

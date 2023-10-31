@@ -9,14 +9,14 @@
 
     "resolve.exports": "https://esm.sh/resolve.exports",
 
-    "@octokit/core": "https://esm.sh/@octokit/core",
-    "@octokit/rest": "https://esm.sh/@octokit/rest",
-    "@octokit/plugin-throttling": "https://esm.sh/@octokit/plugin-throttling",
+    "@octokit/core": "npm:@octokit/core",
+    "@octokit/rest": "npm:@octokit/rest",
+    "@octokit/plugin-throttling": "npm:@octokit/plugin-throttling",
 
     "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
     "base64": "https://deno.land/x/base64@v0.2.1/mod.ts",
 
-    "upstash_redis": "https://deno.land/x/upstash_redis/mod.ts",
+    "@upstash/redis": "https://esm.sh/@upstash/redis",
     "http": "https://deno.land/std/http/server.ts",
     "path": "https://deno.land/std/path/mod.ts"
   }

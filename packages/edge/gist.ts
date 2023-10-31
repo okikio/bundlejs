@@ -1,6 +1,9 @@
-// @deno-types=https://cdn.skypack.dev/@octokit/rest?dts
+// @deno-types=npm:@octokit/rest
 import { Octokit } from "@octokit/rest";
+
+// @deno-types=npm:@octokit/plugin-throttling
 import { throttling } from "@octokit/plugin-throttling";
+
 import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "velo";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
@@ -15,7 +18,11 @@ export const CustomOctokit = Octokit.plugin(throttling);
 export const octokit = new CustomOctokit({
   auth: Deno.env.get('GITHUB_AUTH_TOKEN'),
   throttle: {
+    timeout: 1000 * 5,
     onRateLimit: (retryAfter: any, options: { method: any; url: any; }, octokit: { log: { warn: (arg0: string) => void; info: (arg0: string) => void; }; }, retryCount: number) => {
+      console.log({
+        GIST: options
+      })
       octokit.log.warn(
         `Request quota exhausted for request ${options.method} ${options.url}`
       );
@@ -30,6 +37,12 @@ export const octokit = new CustomOctokit({
       // does not retry, only logs a warning
       octokit.log.warn(
         `SecondaryRateLimit detected for request ${options.method} ${options.url}`
+      );
+    },
+    onAbuseLimit: (retryAfter: any, options: { method: any; url: any; }) => {
+      // does not retry, only logs a warning
+      octokit.log.warn(
+        `Abuse detected for request ${options.method} ${options.url}`
       );
     },
   },

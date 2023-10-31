@@ -86,10 +86,16 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const [
     gistDetails, 
     warnings
-  ] = await Promise.all([
-    setGist(url.href, result.outputs),
+  ] = (await Promise.allSettled([
+    null, // setGist(url.href, result.outputs),
     createNotice(result.warnings, "warning", false),
-  ]);
+  ])).map(res => {
+    if (res.status === "fulfilled") {
+      return res.value;
+    }
+
+    return null;
+  });
 
   const { fileId, fileUrl, fileHTMLUrl } = gistDetails ?? {};
 
