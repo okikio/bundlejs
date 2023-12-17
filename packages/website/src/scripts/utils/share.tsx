@@ -19,6 +19,22 @@ export async function createShareURL() {
   }
 }
 
+export async function createShareURLQuery() {
+  if (!state.monaco.loading) {
+    const { input, config } = state.monaco.models;
+
+    try {
+      return await taskRunner.createShareURLParams(
+        input.uri.authority,
+        input.getValue(),
+        config.getValue()
+      );
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+}
+
 export async function share() {
   if (!state.monaco.loading) {
     try {
@@ -37,7 +53,7 @@ export async function share() {
         {
           loading: "Sharing...",
           success: () => <>{navigator.share ? "Shared!" : "Copied!"}</>,
-          error: "Share Error"
+          error: "Share Error",
         }
       );
     } catch (error) {

@@ -11,12 +11,19 @@ import { deepAssign, deepDiff, lzstring } from "@bundlejs/core/src/index";
 import ts from "typescript";
 
 const { compressToURL } = lzstring;
-export async function createShareURL(fileName: string, content: string, _config = configModelResetValue) {
+export async function _createShareURL(
+  fileName: string,
+  content: string,
+  _config = configModelResetValue
+) {
   const source = await createFile(fileName, content);
   const config = await parseConfig(_config);
 
   // Basically only keep the config options that have changed from the default
-  const changedConfig = deepDiff(DefaultConfig, deepAssign({}, DefaultConfig, config));
+  const changedConfig = deepDiff(
+    DefaultConfig,
+    deepAssign({}, DefaultConfig, config)
+  );
   const changedEntries = Object.keys(changedConfig);
 
   // Collect the first few import and export statements
@@ -25,43 +32,42 @@ export async function createShareURL(fileName: string, content: string, _config 
   // Back to Back Import
   let BackToBackImportExport = true;
 
-  source.forEachChild(
-    (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
-      const isImport =
-        node.kind == ts.SyntaxKind.ImportDeclaration;
-      const isExport =
-        node.kind == ts.SyntaxKind.ExportDeclaration;
-      if (!BackToBackImportExport) return;
+  source.forEachChild((node: ts.ImportDeclaration | ts.ExportDeclaration) => {
+    const isImport = node.kind == ts.SyntaxKind.ImportDeclaration;
+    const isExport = node.kind == ts.SyntaxKind.ExportDeclaration;
+    if (!BackToBackImportExport) return;
 
-      BackToBackImportExport = (isImport || isExport) && Boolean(node.moduleSpecifier);
-      if (BackToBackImportExport) {
-        const clause = isImport ?
-          (node as ts.ImportDeclaration)?.importClause :
-          (node as ts.ExportDeclaration)?.exportClause;
+    BackToBackImportExport =
+      (isImport || isExport) && Boolean(node.moduleSpecifier);
+    if (BackToBackImportExport) {
+      const clause = isImport
+        ? (node as ts.ImportDeclaration)?.importClause
+        : (node as ts.ExportDeclaration)?.exportClause;
 
-        ImportExportStatements.push({
-          kind: isImport ? "import" : "export",
-          clause: clause?.getText?.() ?? "*",
-          module: node?.moduleSpecifier?.getText?.(),
-          assert: node?.assertClause?.getText?.() ?? "",
-          pos: {
-            start: node.pos,
-            end: node.end,
-          },
-        });
-      }
+      ImportExportStatements.push({
+        kind: isImport ? "import" : "export",
+        clause: clause?.getText?.() ?? "*",
+        module: node?.moduleSpecifier?.getText?.(),
+        assert: node?.assertClause?.getText?.() ?? "",
+        pos: {
+          start: node.pos,
+          end: node.end,
+        },
+      });
     }
-  );
+  });
 
   // Remove import and export statements
   let remainingCode = source.getFullText();
-  [...ImportExportStatements].map(({ pos }) => {
-    const { start, end } = pos;
-    const snippet = remainingCode.substring(start, end);
-    return snippet;
-  }).forEach((snippet) => {
-    remainingCode = remainingCode.replace(snippet, "");
-  });
+  [...ImportExportStatements]
+    .map(({ pos }) => {
+      const { start, end } = pos;
+      const snippet = remainingCode.substring(start, end);
+      return snippet;
+    })
+    .forEach((snippet) => {
+      remainingCode = remainingCode.replace(snippet, "");
+    });
 
   // Collect import/export statements and create URL from them
   let modules = "";
@@ -96,17 +102,37 @@ export async function createShareURL(fileName: string, content: string, _config 
     const compressedURL = compressToURL(remainingCode);
     if (compressedURL.length > remainingCode.length)
       url.searchParams.set("text", JSON.stringify(remainingCode));
-    else
-      url.searchParams.set("share", compressToURL(remainingCode));
+    else url.searchParams.set("share", compressToURL(remainingCode));
   }
 
   if (changedConfig && changedEntries?.length) {
     console.log(serialize(changedConfig));
-    url.searchParams.set("config", serialize(changedConfig, { unsafe: true, ignoreFunction: true }));
+    url.searchParams.set(
+      "config",
+      serialize(changedConfig, { unsafe: true, ignoreFunction: true })
+    );
   }
 
   // Remove decodeURIComponent(), to allow for sharing on social media platforms
+  return url;
+}
+
+export async function createShareURL(
+  fileName: string,
+  content: string,
+  _config = configModelResetValue
+) {
+  const url = await _createShareURL(fileName, content, _config);
   return decodeURIComponent(url.toString());
+}
+
+export async function createShareURLParams(
+  fileName: string,
+  content: string,
+  _config = configModelResetValue
+) {
+  const url = await _createShareURL(fileName, content, _config);
+  return url.searchParams.toString();
 }
 
 export default createShareURL;
