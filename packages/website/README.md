@@ -6,9 +6,9 @@
 
 A small online tool for checking the minified gzip/brotli size of npm packages.
 
-I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, [esbuild](https://github.com/evanw/esbuild) as bundler and treeshaker respectively, [denoflate](https://github.com/hazae41/denoflate) as a wasm port of gzip, [deno\_brotli](https://github.com/denosaurs/deno_brotli) as a wasm port of brotli, [deno\_lz4](https://github.com/denosaurs/deno_lz4) as a wasm port of lz4, [bytes](https://github.com/visionmedia/bytes.js) to convert the compressed size to human readable values, [esbuild-visualizer](https://github.com/btd/esbuild-visualizer) to visualize and analyze your esbuild bundle to see which modules are taking up space, [umami](https://github.com/mikecao/umami) for private, publicly available analytics and general usage stats all without cookies, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.  
-  
-This project was greatly influenced by [@hardfists](https://github.com/hardfist) [neo-tools](https://github.com/hardfist/neo-tools) and [@mizchi's](https://github.com/mizchi) [uniroll](https://github.com/mizchi/uniroll) projects.  
+I used [monaco-editor](https://github.com/microsoft/monaco-editor) for the code-editor, [esbuild](https://github.com/evanw/esbuild) as bundler and treeshaker respectively, [denoflate](https://github.com/hazae41/denoflate) as a wasm port of gzip, [deno_brotli](https://github.com/denosaurs/deno_brotli) as a wasm port of brotli, [deno_lz4](https://github.com/denosaurs/deno_lz4) as a wasm port of lz4, [bytes](https://github.com/visionmedia/bytes.js) to convert the compressed size to human readable values, [esbuild-visualizer](https://github.com/btd/esbuild-visualizer) to visualize and analyze your esbuild bundle to see which modules are taking up space, [umami](https://github.com/mikecao/umami) for private, publicly available analytics and general usage stats all without cookies, and [countapi-js](https://github.com/mlomb/countapi-js) to keep track of the number of page visits, in a private and secure way.
+
+This project was greatly influenced by [@hardfists](https://github.com/hardfist) [neo-tools](https://github.com/hardfist/neo-tools) and [@mizchi's](https://github.com/mizchi) [uniroll](https://github.com/mizchi/uniroll) projects.
 
 **bundlejs** is a quick and easy way to bundle your projects, minify and see it's gzip size. It's an online tool similar to [bundlephobia](https://bundlephobia.com), but **bundle** does all the bundling locally on you browser and can treeshake and bundle multiple packages (both commonjs and esm) together, all without having to install any npm packages and with typescript support.
 
@@ -25,21 +25,20 @@ You can join the discussion on [github discussions](https://github.com/okikio/bu
 ## URL Queries & Shareable Links
 
 You can now use search queries in **bundle**, all you need to do is add this to the url  
-`?q={packages}&treeshake={methods to treeshake}`  
+`?q={packages}&treeshake={methods to treeshake}`
 
 e.g.  
-You want `react`, `react-dom`, `vue`, and `@okikio/animate`, but only want the `Animate` and `toStr` methods exported from `@okikio/animate`.  
+You want `react`, `react-dom`, `vue`, and `@okikio/animate`, but only want the `Animate` and `toStr` methods exported from `@okikio/animate`.
 
-You would add this to the url [bundlejs.com/?q=react,react-dom,vue,@okikio/animate&treeshake=[\*],[\*],[\*],[{Animate,toStr}]](https://bundlejs.com/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}])  
+You would add this to the url [bundlejs.com/?q=react,react-dom,vue,@okikio/animate&treeshake=[\*],[\*],[\*],[{Animate,toStr}]](https://bundlejs.com/?q=react,react-dom,vue,@okikio/animate&treeshake=[*],[*],[*],[{Animate,toStr}])
 
 If you only want a couple packages and don't care to treeshake, then all you need is something like this, [bundlejs.com?q=react,react-dom,vue,@okikio/animate](https://bundlejs.com/?q=react,react-dom,vue,@okikio/animate)
 
-There is another way to share a reproduciable bundle, the sharable link. Shareble links look like this [/?share=PTAEGEB...](https://bundlejs.com/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA) with the string value of the input code editor being compressed into a string and placed into the URL. 
+There is another way to share a reproduciable bundle, the sharable link. Shareble links look like this [/?share=PTAEGEB...](https://bundlejs.com/?share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA) with the string value of the input code editor being compressed into a string and placed into the URL.
 
-In order to create a shareble link, you click the `Share` button, it copies the share url to your clipboard, and from there you can paste where you wish. 
+In order to create a shareble link, you click the `Share` button, it copies the share url to your clipboard, and from there you can paste where you wish.
 
 > If you would like to bundle your code when the share URL is loaded, add `bundle` to the url, e.g. [/?bundle&q=@okikio/animate](https://bundlejs.com/?q=@okikio/animate&bundle) or [/?bundle&share=PTAEGEBs...](https://bundlejs.com/?bundle&share=PTAEGEBsEsGMGtQCUCuA7UAzA9gJ1AC4AWApqAELoAmkJVoA1KALLRrSbR2OgDiAXtAAOQ7kICGCcQHMyAZ2j8SAKBIAPIXgKgAVFlzYAtqABEAAWzxoV7MHHtD4giRMBuIA)
-
 
 ## Badges
 
@@ -48,16 +47,18 @@ You can also add bundle badges, they look like this,
 [![Open Bundle](./public/badge-light.svg)](https://bundlejs.com/) [![Open Bundle](./public/badge-dark.svg)](https://bundlejs.com/)
 
 All you need to do is to add this to your `README.md`
+
 ```md
-# Light Mode Badge 
+# Light Mode Badge
+
 [![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/)
 
-# Dark Mode Badge 
+# Dark Mode Badge
+
 [![Open Bundle](https://bundlejs.com/badge-dark.svg)](https://bundlejs.com/)
 ```
 
-You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
-
+You can use the "Generate a dynamic badge" above to create badges that dynamically display the computed size.
 
 ## Backers
 
@@ -72,4 +73,3 @@ Backers are awesome people and organizations who use, enjoy, and donate to the p
 <a href="https://opencollective.com/bundle/organization/0/website"><img src="https://opencollective.com/bundle/organization/0/avatar.svg?avatarHeight=128"></a>
 <a href="https://opencollective.com/bundle/individuals/0/website"><img src="https://opencollective.com/bundle/individuals/0/avatar.svg"></a>
 <a href="https://opencollective.com/bundle/organization/1/website"><img src="https://opencollective.com/bundle/organization/1/avatar.svg"></a>
-
