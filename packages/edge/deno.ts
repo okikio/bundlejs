@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --unstable -A --config deno.jsonc
 import { serve } from "https://deno.land/std/http/server.ts";
 
-import type { BuildConfig, CompressConfig } from "@bundlejs/core";
-import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundlejs/core/src/index.ts";
+import type { BuildConfig, CompressConfig } from "@bundle/core";
+import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundle/core/src/index.ts";
 
 import { parseShareURLQuery, parseConfig } from "./src/_parse-query.ts";
 

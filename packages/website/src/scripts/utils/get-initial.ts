@@ -1,10 +1,10 @@
-import { deepAssign } from "@bundlejs/core/src/util";
+import { deepAssign } from "@bundle/utils/src/mod.ts";
 import { EasyDefaultConfig } from "../configs/options";
 import { parseShareURLQuery } from "./parse-query";
 export function generateConfigValue(config: string | Record<string, unknown>) {
   return [
     "// Configure",
-    "import type { ConfigOptions } from \"@bundlejs/core\";",
+    "import type { ConfigOptions } from \"@bundle/core\";",
     `export default ${typeof config == "string" ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
   ].join("\n");
 }

@@ -1,4 +1,4 @@
-import { lzstring } from "@bundlejs/core/src/util";
+import { lzstring } from "@bundle/utils/src/mod.ts";
 
 const { decompressFromURL } = lzstring;
 

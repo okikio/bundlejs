@@ -5,19 +5,27 @@
       "path": "."
     },
     {
-      "name": "📦 @bundlejs/analysis",
+      "name": "📦 @bundle/analysis",
       "path": "packages/analysis"
     },
     {
-      "name": "📦 @bundlejs/core",
+      "name": "📦 @bundle/core",
       "path": "packages/core"
     },
     {
-      "name": "📦 @bundlejs/edge",
+      "name": "📦 @bundle/compress",
+      "path": "packages/compress"
+    },
+    {
+      "name": "📦 @bundle/utils",
+      "path": "packages/utils"
+    },
+    {
+      "name": "📦 @bundle/edge",
       "path": "packages/edge"
     },
     {
-      "name": "🚀 @bundlejs/website",
+      "name": "🚀 @bundle/website",
       "path": "packages/website"
     }
   ],

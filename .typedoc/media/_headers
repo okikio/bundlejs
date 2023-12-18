@@ -1,0 +1,43 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Cache-Control: max-age=1360, stale-while-revalidate=480, public
+  Accept-CH: DPR, Viewport-Width, Width
+  X-UA-Compatible: IE=edge
+  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com/ 'unsafe-inline'; img-src 'self' https://gitpod.io/ https://bundlejs.com data:; script-src 'self' https://bundlejs.com https://*.bundlejs.com 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com/; form-action 'self'; frame-ancestors 'self' https:;
+  Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), interest-cohort=()
+  Link: </fonts/FluentSystemIcons-Regular.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous
+  Link: <https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap>; rel=preload; as=style
+  Link: <https://fonts.gstatic.com/s/lexend/v7/~CggKBkxleGVuZBAHIAU=.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+  # Link: <https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap>; rel=preload; as=style
+  # Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
+
+/*.css
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
+  Content-Type: text/css
+
+/*.ttf
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=23480
+  Content-Type: font/ttf
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=23480
+  Content-Type: font/woff2
+
+/*.js
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
+  Content-Type: text/javascript
+
+/manifest.json
+  Cache-Control: public, max-age=604800, stale-while-revalidate=480
+  Content-Type: application/manifest+json
+
+/assets/*
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=23480
+
+/*.svg
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=23480
+  Content-Type: image/svg+xml

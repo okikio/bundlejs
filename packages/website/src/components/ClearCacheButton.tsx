@@ -1,5 +1,5 @@
 import Button from "./Button";
-import { CACHE } from "@bundlejs/core/src/util";
+import { CACHE } from "@bundle/utils/src/mod.ts";
 
 import IconArrowClockwise from "~icons/fluent/arrow-clockwise-24-filled";
 

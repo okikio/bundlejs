@@ -1,6 +1,6 @@
 import type { ComponentProps } from "solid-js";
 import { createEffect, createSignal, For } from "solid-js";
-import { ansi } from "@bundlejs/core/src/utils/ansi";
+import { ansi } from "@bundle/utils/utils/ansi.ts";
 
 import { ConsoleButtons } from "./ConsoleButtons";
 import { Log } from "./ConsoleLogs";

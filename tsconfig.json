@@ -4,7 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     // Enable node-style module resolution, for things like npm package imports.
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     // Enable JSON imports.
     "resolveJsonModule": true,
     // Enable stricter transpilation for better output.
@@ -16,7 +16,8 @@
     // Emit only declaration files
     "emitDeclarationOnly": true,
     "declaration": true,
+    "verbatimModuleSyntax": true,
     // Add support for Web Workers
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"]
   }
 }

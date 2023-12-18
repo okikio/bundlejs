@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.0.5",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -8,9 +8,12 @@
     "packages/*"
   ],
   "scripts": {
-    "typedoc": "rm -r -f website/dists/docs/ && node ./.typedoc/build.js && typedoc --options ./.typedoc/typedoc.jsonc && node ./.typedoc/rehype.js",
+    "typedoc": "esbuild ./.typedoc/typedoc.tsx --format=cjs --outfile=./.typedoc/typedoc.cjs && typedoc --options ./.typedoc/typedoc.jsonc",
     "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
-    "semantic-release": "semantic-release"
+    "build:all": "pnpm -r build",
+    "semantic-release": "semantic-release",
+    "prepare": "[ \"$NODE_ENV\" = \"production\" ] || [ -n \"$CI\" ] && echo \"Skipping Husky Install...\" || husky install",
+    "commitlint": "commitlint --edit"
   },
   "release": {
     "branches": [
@@ -26,10 +29,16 @@
         "@semantic-release/github",
         {
           "assets": [
-            "lib/**"
+            "lib",
+            "src"
           ]
         }
       ]
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
     ]
   },
   "changelog": {
@@ -43,37 +52,27 @@
     },
     "cacheDir": ".changelog"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
-    }
+  "publishConfig": {
+    "provenance": true
   },
+  "bugs": {
+    "url": "https://github.com/okikio/bundlejs/issues"
+  },
+  "homepage": "https://docs.bundlejs.com",
   "devDependencies": {
-    "@commitlint/cli": "^17.4.4",
-    "@commitlint/config-conventional": "^17.4.4",
-    "@semantic-release/changelog": "^6.0.2",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "commitizen": "^4.3.0",
-    "esbuild": "^0.17.11",
-    "esno": "^0.16.3",
-    "hastscript": "^7.2.0",
+    "@types/web": "^0.0.128",
     "husky": "^8.0.3",
-    "pnpm": "^7.28.0",
-    "postcss": "^8.4.21",
-    "postcss-font-grabber": "^3.1.0",
-    "rehype": "^12.0.1",
-    "rehype-external-links": "^2.0.1",
-    "rehype-slug": "^5.1.0",
-    "rehype-urls": "^1.1.1",
-    "sass": "^1.58.3",
-    "semantic-release": "^20.1.1",
-    "tiny-glob": "^0.2.9",
-    "typedoc": "^0.23.26",
-    "typedoc-plugin-extras": "^2.3.2",
+    "pnpm": "^8.12.1",
+    "semantic-release": "^22.0.12",
+    "tsup": "^8.0.1",
+    "typedoc": "^0.25.4",
+    "typedoc-plugin-extras": "^3.0.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
-    "typedoc-plugin-mdn-links": "^2.0.2",
-    "typedoc-plugin-missing-exports": "^1.0.0",
-    "typescript": "5.0.1-rc",
-    "ultra-runner": "^3.10.5"
+    "typedoc-plugin-mdn-links": "^3.1.8",
+    "typescript": "5.3.3"
   }
 }

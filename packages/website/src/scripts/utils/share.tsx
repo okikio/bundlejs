@@ -1,7 +1,7 @@
 import { copyToClipboard } from "./copy-to-clipboard";
 import { state } from "./store";
-import toast from "../../components/SolidToast";
 import { taskRunner } from "../index";
+import toast from "../../components/SolidToast";
 
 export async function createShareURL() {
   if (!state.monaco.loading) {

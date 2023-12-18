@@ -6,7 +6,7 @@ import IconDragHandleWidth from "~icons/fluent/re-order-dots-vertical-24-filled"
 
 import Button from "../../Button";
 
-import { debounce } from "@bundlejs/core/src/util";
+import { debounce } from "@bundle/utils/src/mod.ts";
 
 export function DragHandle(props?: ComponentProps<"button"> & {
   direction?: "x" | "y";

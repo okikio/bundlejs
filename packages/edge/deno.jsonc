@@ -1,7 +1,7 @@
 {
   "imports": {
-    "@bundlejs/core/": "../core/",
-    "@bundlejs/core": "../core/src/index.ts",
+    "@bundle/core/": "../core/",
+    "@bundle/core": "../core/src/index.ts",
     "esbuild-wasm": "npm:esbuild-wasm",
     "esbuild": "npm:esbuild"
   }

@@ -1,7 +1,7 @@
-import { SizeKey } from "../../types/types";
-import { Component, useContext, createMemo, createSignal } from "solid-js";
-import { bytes } from "@bundlejs/core/src/util";
-import { StaticContext, NetworkNode } from "./index";
+import type { SizeKey } from "../../types/types";
+import { type Component, useContext, createMemo, createSignal } from "solid-js";
+import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { StaticContext, type NetworkNode } from "./index";
 import { LABELS } from "../sizes";
 import onMountWithCleaning from "../../utils/onMountWithCleaning";
 

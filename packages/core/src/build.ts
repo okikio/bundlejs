@@ -1,4 +1,4 @@
-import type { CommonConfigOptions, ESBUILD } from "./types.ts";
+import type { BuildConfig, ESBUILD, LocalState } from "./types.ts";
 
 import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
 import { EXTERNAL } from "./plugins/external.ts";
@@ -15,48 +15,7 @@ import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
 import { init } from "./init.ts";
 
-import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, dispatchEvent } from "./configs/events.ts";
-
-/**
- * Local state available to all plugins
- */
-export type LocalState = {
-  filesystem?: Awaited<ReturnType<typeof useFileSystem>>,
-
-  /**
-   * Assets are files during the build process that esbuild can't handle natively, 
-   * e.g. fetching web workers using the `new URL("...", import.meta.url)`
-   */
-  assets?: ESBUILD.OutputFile[],
-
-  /**
-   * Array storing the [getter, setter] of the global state
-   */
-  GLOBAL?: [typeof getState, typeof setState],
-
-  [key: string]: unknown
-}
-
-export type BuildConfig = CommonConfigOptions & {
-  /** esbuild config options https://esbuild.github.io/api/#build-api */
-  esbuild?: ESBUILD.BuildOptions,
-
-  /** The default CDN to import packages from */
-  cdn?: "https://unpkg.com" | "https://esm.run" | "https://cdn.esm.sh" | "https://cdn.esm.sh" | "https://cdn.skypack.dev" | "https://cdn.jsdelivr.net/npm" | "https://cdn.jsdelivr.net/gh" | "https://deno.land/x" | "https://raw.githubusercontent.com" | "unpkg" | "esm.run" | "esm.sh" | "esm" | "skypack" | "jsdelivr" | "jsdelivr.gh" | "github" | "deno" | (string & object),
-
-  /** Aliases for replacing packages with different ones, e.g. replace "fs" with "memfs", so, it can work on the web, etc... */
-  alias?: Record<string, string>,
-
-  /**
-   * Enables converting ascii logs to HTML so virtual consoles can handle the logs and print with color
-   */
-  ascii?: "html" | "html-and-ascii" | "ascii",
-
-  /**
-   * Documentation: https://esbuild.github.io/api/#entry-points
-   */
-  entryPoints?: ESBUILD.BuildOptions["entryPoints"]
-};
+import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, LOGGER_WARN, dispatchEvent } from "./configs/events.ts";
 
 /**
  * Default build config
@@ -64,6 +23,7 @@ export type BuildConfig = CommonConfigOptions & {
 export const BUILD_CONFIG: BuildConfig = {
   "entryPoints": ["/index.tsx"],
   "cdn": DEFAULT_CDN_HOST,
+  "polyfill": false,
 
   "esbuild": {
     "color": true,
@@ -78,10 +38,12 @@ export const BUILD_CONFIG: BuildConfig = {
     "minify": true,
 
     "treeShaking": true,
-    "platform": "browser"
+    "platform": "browser",
+
+    "jsx": "transform"
   },
 
-  "ascii": "ascii",
+  "ansi": "ansi",
   init: {
     platform: PLATFORM_AUTO
   }
@@ -99,10 +61,10 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     dispatchEvent(INIT_LOADING);
 
   const CONFIG = createConfig("build", opts);
-  const STATE = createState<LocalState>({ 
-    filesystem: await filesystem, 
-    assets: [], 
-    GLOBAL: [getState, setState] 
+  const STATE = createState<LocalState>({
+    filesystem: await filesystem,
+    assets: [],
+    GLOBAL: [getState, setState],
   });
   const [get] = STATE;
 
@@ -113,7 +75,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let outputs: ESBUILD.OutputFile[] = [];
   let contents: ESBUILD.OutputFile[] = [];
-  let result: ESBUILD.BuildResult = null;
+  let result: ESBUILD.BuildResult;
 
   try {
     try {
@@ -138,39 +100,49 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         plugins: [
           ALIAS(STATE, CONFIG),
           EXTERNAL(STATE, CONFIG),
-          HTTP(STATE, CONFIG),
-          CDN(STATE, CONFIG),
           VIRTUAL_FS(STATE, CONFIG),
+          HTTP(STATE, CONFIG),
+          CDN(STATE, CONFIG,),
         ],
         ...esbuildOpts,
       });
     } catch (e) {
       if (e.errors) {
         // Log errors with added color info. to the virtual console
-        const asciMsgs = [...await createNotice(e.errors, "error", false)];
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
-        dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ asciMsgs, htmlMsgs })));
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
-        const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
-        return;
+
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        throw { msgs: htmlMsgs };
       } else throw e;
+    }
+
+    if (result.warnings) {
+      // Log errors with added color info. to the virtual console
+      const ansiMsgs = await createNotice(result.warnings, "warning", false) ?? [];
+      dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
+
+      const message = `${ansiMsgs.length} warning(s) `;
+      dispatchEvent(LOGGER_WARN, message);
     }
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
-      [...get()["assets"]]
+      [...(get()["assets"] ?? [])]
         .concat(result?.outputFiles as ESBUILD.OutputFile[])
     );
 
     contents = await Promise.all(
       outputs
-        ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
+        .map(({ path, text, contents, hash }): ESBUILD.OutputFile | null => {
           if (/\.map$/.test(path))
             return null;
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-          if (esbuildOpts?.logLevel == "verbose") {
+          if (esbuildOpts?.logLevel === "verbose") {
             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
             if (ignoreFile) {
               dispatchEvent(LOGGER_LOG, "Output File: " + path);
@@ -179,11 +151,11 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
             }
           }
 
-          return { path, text, contents };
+          return { path, text, contents, hash };
         })
 
         // Remove null output files
-        ?.filter(x => ![undefined, null].includes(x))
+        .filter(x => x !== null && x !== undefined) as ESBUILD.OutputFile[]
     );
 
     // Ensure a fresh filesystem on every run
@@ -204,7 +176,11 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
 
       ...result
     };
-  } catch (e) { 
-    dispatchEvent(BUILD_ERROR, e);
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
+
+    throw e;
   }
 }

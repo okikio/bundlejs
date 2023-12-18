@@ -1,6 +1,6 @@
 import type { PartialMessage } from "esbuild-wasm";
 
-import { ansi } from "./ansi.ts";
+import { ansi } from "@bundle/utils/utils/ansi.ts";
 import { getEsbuild } from "./get-esbuild.ts";
 
 /** 

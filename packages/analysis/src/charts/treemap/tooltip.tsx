@@ -1,11 +1,11 @@
-import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundlejs/core/src/util";
+import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
+import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
 import { LABELS } from "../sizes";
-import { HierarchyRectangularNode } from "d3";
+import { type HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { isModuleTree } from "../../utils/is-module-tree";
 
-import { Component, createSignal, createMemo, useContext } from "solid-js";
+import { type Component, createSignal, createMemo, useContext } from "solid-js";
 import onMountWithCleaning from "../../utils/onMountWithCleaning";
 
 export interface TooltipProps {

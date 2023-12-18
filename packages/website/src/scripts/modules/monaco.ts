@@ -1,13 +1,13 @@
 import type { Environment } from "monaco-editor";
 
-import CONFIG_DTS from "@bundlejs/core/src/index?dts";
+import CONFIG_DTS from "@bundle/core/src/index?dts";
 import {
   editor as Editor,
   languages,
   Uri
 } from "./monaco-editor-slim";
 
-import { getResolvedPackage } from "@bundlejs/core/src/util";
+import { getResolvedPackage } from "@bundle/utils/src/mod.ts";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
@@ -165,8 +165,8 @@ export function build(inputEl: HTMLDivElement) {
     "file://node_modules/@types/http/https.d.ts"
   );
   languages.typescript.typescriptDefaults.addExtraLib(
-    `declare module '@bundlejs/core' {\n${CONFIG_DTS}\n}`,
-    "file://node_modules/@bundlejs/core/config.d.ts"
+    `declare module '@bundle/core' {\n${CONFIG_DTS}\n}`,
+    "file://node_modules/@bundle/core/config.d.ts"
   );
 
   const IMPORTS_REXPORTS_REQUIRE_REGEX =
@@ -179,7 +179,7 @@ export function build(inputEl: HTMLDivElement) {
 
       const matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
       if (matches.length <= 0) return;
-      if (model == configModel && content.match("@bundlejs/core")) return;
+      if (model == configModel && content.match("@bundle/core")) return;
 
       const matchArr = matches.map(([, pkg]) => pkg);
       let pkg = matchArr[0];

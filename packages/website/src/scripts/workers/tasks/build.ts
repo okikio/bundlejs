@@ -1,8 +1,8 @@
 /// <reference lib="webworker" />
 import type { ConfigOptions } from "../../configs/options";
-import type { BuildConfig, ESBUILD } from "@bundlejs/core";
+import type { BuildConfig, ESBUILD } from "@bundle/core";
 
-import { build, compress, setFile, deepAssign, deleteFile, useFileSystem } from "@bundlejs/core/src/index";
+import { build, compress, setFile, deepAssign, deleteFile, useFileSystem } from "@bundle/core/src/index";
 
 import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";

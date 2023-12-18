@@ -1,4 +1,4 @@
-import type { ESBUILD } from "@bundlejs/core";
+import type { ESBUILD } from "@bundle/core";
 import toast from "../../components/SolidToast";
 
 import { setState, state } from "./store";

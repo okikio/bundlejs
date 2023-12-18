@@ -8,8 +8,8 @@ globalThis.TextEncoder = globalThis.TextEncoder ?? Encoder as unknown as Encoder
 globalThis.TextDecoder = globalThis.TextDecoder ?? Decoder as unknown as DecoderType;
 globalThis.location = globalThis.location ?? new URL("http://localhost:3000/") as unknown as Location;
 
-import type { BuildConfig, CompressConfig } from "@bundlejs/core/src/index.ts";
-import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundlejs/core/lib/index.mjs";
+import type { BuildConfig, CompressConfig } from "@bundle/core/src/index.ts";
+import { build, setFile, deepAssign, useFileSystem, createConfig, bytes } from "@bundle/core/lib/index.mjs";
 
 import { parseShareURLQuery, parseConfig } from "./_parse-query.ts";
 import wasmUrl from "../../core/lib/esbuild.wasm?url";

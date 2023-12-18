@@ -6,7 +6,7 @@ import Button from "../../Button";
 import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 
-import { debounce } from "@bundlejs/core/src/util";
+import { debounce } from "@bundle/utils/src/mod.ts";
 
 export const [getQuery, setQuery] = createSignal("");
 export function SearchInput() { 

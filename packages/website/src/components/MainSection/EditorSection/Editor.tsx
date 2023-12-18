@@ -1,5 +1,5 @@
 import { onCleanup, createEffect, createResource } from "solid-js";
-import { debounce } from "@bundlejs/core/src/util";
+import { debounce } from "@bundle/utils/src/mod.ts";
 
 import Loading from "../../Loading";
 import EditorButtons from "./EditorButtons";

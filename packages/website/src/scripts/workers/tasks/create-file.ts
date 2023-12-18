@@ -9,7 +9,7 @@ import TS_LIBS_URL from "../../ts-libs.json?url";
 import { createSystem, createVirtualTypeScriptEnvironment, knownLibFilesForCompilerOptions } from "@typescript/vfs";
 import ts from "typescript";
 
-import { getRequest } from "@bundlejs/core/src/util";
+import { getRequest } from "@bundle/utils/src/mod.ts";
 
 export async function createFile(fileName: string, content: string) {  
   const libFiles: Record<string, string> = await (await getRequest(TS_LIBS_URL, true)).json();

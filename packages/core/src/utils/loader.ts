@@ -1,5 +1,5 @@
 import type { Loader } from "esbuild-wasm";
-import { extname } from "./path.ts";
+import { extname } from "@bundle/utils/utils/path.ts";
 
 /** Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts */
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];

@@ -1,9 +1,9 @@
-import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundlejs/core/src/util";
-import { HierarchyRectangularNode } from "d3";
+import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
+import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { type HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
 import { PADDING, TOP_PADDING } from "./const";
-import { Component, useContext, createRenderEffect, on } from "solid-js";
+import { type Component, useContext, createRenderEffect, on } from "solid-js";
 
 type NodeEventHandler = (event: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>) => void;
 

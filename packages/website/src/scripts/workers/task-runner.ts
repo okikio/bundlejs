@@ -11,7 +11,7 @@ import {
   addEventListener,
   INIT_COMPLETE,
   LOGGER_INFO,
-} from "@bundlejs/core/src/index";
+} from "@bundle/core/src/index.ts";
 import * as Comlink from "comlink";
 
 import "../utils/transferhandle";

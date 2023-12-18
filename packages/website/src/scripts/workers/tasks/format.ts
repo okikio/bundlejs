@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import type { Formatter } from "@dprint/formatter";
 import { createStreaming } from "@dprint/formatter";
-import { getRequest } from "@bundlejs/core/src/index";
+import { getRequest } from "@bundle/core/src/index";
 
 let formatter: Formatter;
 const config: Record<string, unknown> | undefined = {

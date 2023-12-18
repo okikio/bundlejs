@@ -1,5 +1,5 @@
 /**
- * `@bundlejs/core`'s supported platforms
+ * `@bundle/core`'s supported platforms
  */
 export type Platform = "node" | "deno" | "browser" | "edge" | "cloudflare" | "wasm" | "deno-wasm";
 

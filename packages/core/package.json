@@ -1,45 +1,54 @@
 {
-  "name": "@bundlejs/core",
+  "name": "@bundle/core",
   "version": "0.0.0",
   "access": "public",
   "type": "module",
   "description": "An animation library for the modern web which utilizes the Web Animation API (WAAPI) to create butter smooth animation.",
   "typedocMain": "src/index.ts",
-  "types": "@types/index.d.ts",
+  "legacy": "lib/index.cjs",
+  "main": "lib/index.cjs",
+  "browser": "lib/index.js",
+  "module": "lib/index.js",
   "exports": {
     ".": {
-      "require": "./lib/index.cjs",
-      "import": "./lib/index.mjs",
-      "default": "./lib/index.js"
+      "require": {
+        "types": "./lib/index.d.cts",
+        "default": "./lib/index.cjs"
+      },
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
     },
     "./lib/*": "./lib/*",
-    "./types/*": "./@types/*",
-    "./@types/*": "./@types/*",
     "./src/*": "./src/*",
     "./deno/*": "./src/deno/*",
     "./plugins/*": "./src/plugins/*",
-    "./util": "./src/util.ts",
+    "./util": "./src/utils/index.ts",
     "./utils/*": "./src/utils/*",
     "./configs/*": "./src/configs/*",
     "./package.json": "./package.json"
   },
+  "directories": {
+    "lib": "./lib",
+    "src": "./src"
+  },
   "files": [
     "lib",
-    "src",
-    "@types"
+    "src"
   ],
+  "publishConfig": {
+    "provenance": true
+  },
   "scripts": {
-    "build:wasm": "esno ./scripts/build-wasm.ts",
-    "build:all": "pnpm build:wasm; pnpm build",
-    "build": "vite build",
-    "dev": "vite",
+    "build:wasm": "tsx ./scripts/build-wasm.ts",
+    "build:src": "tsup ./src/index.ts; cp ./src/esbuild.wasm ./lib",
+    "build": "pnpm build:wasm; pnpm build:src",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
-    "repl": "esno repl.ts",
+    "repl": "tsx repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
-    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "verify": "pnpm dts; pnpm test:run",
-    "pre-release": "pnpm build:all; ultra verify"
+    "pre-release": "pnpm build; pnpm test:run"
   },
   "repository": {
     "type": "git",
@@ -47,7 +56,6 @@
     "directory": "packages/core"
   },
   "keywords": [
-    "modern",
     "bundlejs",
     "bundle size checker",
     "esbuild-wasm",
@@ -76,17 +84,15 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.17.11",
-    "esbuild-wasm": "^0.17.11"
+    "@bundle/compress": "workspace:^",
+    "@bundle/utils": "workspace:^",
+    "esbuild": "^0.19.9",
+    "esbuild-wasm": "^0.19.9"
   },
   "devDependencies": {
-    "@types/node": "^18.14.6",
-    "del-cli": "^5.0.0",
-    "esno": "^0.16.3",
-    "pnpm": "^7.28.0",
-    "typescript": "5.0.1-rc",
-    "vite": "^4.1.4",
-    "vite-plugin-cp": "^1.0.0",
-    "vitest": "^0.29.2"
+    "pnpm": "^8.12.1",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "vitest": "^1.0.4"
   }
 }

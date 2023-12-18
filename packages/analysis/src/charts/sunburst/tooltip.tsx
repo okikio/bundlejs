@@ -1,9 +1,9 @@
-import { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundlejs/core/src/util";
-import { HierarchyRectangularNode } from "d3";
+import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
+import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import type { HierarchyRectangularNode } from "d3";
 import { LABELS } from "../sizes";
 import { StaticContext } from "./index";
-import { useContext, createMemo, Component } from "solid-js";
+import { useContext, createMemo, type Component } from "solid-js";
 
 export interface TooltipProps {
   node: HierarchyRectangularNode<ModuleTree | ModuleTreeLeaf>;

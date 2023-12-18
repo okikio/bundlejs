@@ -1,26 +1,26 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "exclude": [
-    "**/test.ts",
-    "**/@types/*.d.ts"
+  "exclude": ["**/test.ts", "**/@types/*.d.ts", "**/lib/**/*", "**/tests/**/*"],
+  "entryPoints": [
+    "../packages/core/src/index.ts",
+    "../packages/compress/src/index.ts",
+    "../packages/edge/src/index.ts",
+    "../packages/utils/src/index.ts"
   ],
-  "entryPoints": ["../packages/core/src/index.ts"],
-  "name": "@bundlejs",
-  "out": "docs",
-  "media": "media",
-  "theme": "default",
+  "name": "@bundle",
+  "out": "../docs",
+  "media": "../media",
   "lightHighlightTheme": "github-light",
   "darkHighlightTheme": "github-dark",
   "includeVersion": true,
-  "readme": "./README.md",
+  "readme": "../README.md",
   "customCss": "./typedoc.css",
   "tsconfig": "./tsconfig.json",
-  "umami-id": "4921ec19-210c-45b0-b5b8-cb9aaae292e9",
+  "umami-id": "fdfbb304-443d-403a-91db-da0cb7f4aa12",
   "plugin": [
     "./typedoc.cjs",
     "typedoc-plugin-extras",
     "typedoc-plugin-mdn-links",
-    "typedoc-plugin-missing-exports",
     "typedoc-plugin-inline-sources"
   ]
 }

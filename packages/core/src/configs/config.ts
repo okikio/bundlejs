@@ -1,12 +1,12 @@
-import type { BuildConfig } from "../build.ts";
+import type { BuildConfig } from "../types.ts";
 import type { TransformConfig } from "../transform.ts";
-import type { CompressConfig, CompressionOptions } from "../compress.ts";
+import type { CompressConfig, CompressionOptions } from "@bundle/compress/src/mod.ts";
 
 import { BUILD_CONFIG } from "../build.ts";
 import { TRANSFORM_CONFIG } from "../transform.ts";
-import { COMPRESS_CONFIG } from "../compress.ts";
 
-import { deepAssign } from "../utils/deep-equal.ts";
+import { deepAssign } from "@bundle/utils/utils/deep-equal.ts";
+import { createCompressConfig as createCompressConfig } from "@bundle/compress/src/mod.ts";
 
 /**
  * Creates the config needed for the transform, build, and compress functions
@@ -22,7 +22,7 @@ export function createConfig<T extends "transform" | "build" | "compress" | "con
   if (type == "transform") {
     return deepAssign({}, TRANSFORM_CONFIG, opts) as TransformConfig;
   } else if (type == "compress") {
-    return deepAssign({}, COMPRESS_CONFIG, typeof opts == "string" ? { type: opts } : opts) as CompressionOptions;
+    return createCompressConfig(opts as CompressConfig);
   } else {
     return deepAssign({}, BUILD_CONFIG, opts) as BuildConfig;
   }

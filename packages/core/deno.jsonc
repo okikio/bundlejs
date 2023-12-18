@@ -1,0 +1,18 @@
+{
+  "imports": {
+    "@bundle/utils/": "../utils/src/",
+    "@bundle/utils/deno/": "../utils/src/deno/",
+    "@bundle/utils/src/": "../utils/src/",
+    "@bundle/utils": "../utils/src/index.ts",
+
+    "@bundle/compress/": "../compress/src/",
+    "@bundle/compress/deno/": "../compress/src/deno/",
+    "@bundle/compress/src/": "../compress/src/",
+    "@bundle/compress": "../compress/src/index.ts",
+    "resolve.exports": "npm:resolve.exports",
+    
+    "esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
+    "esbuild-wasm": "npm:esbuild-wasm",
+    "esbuild": "npm:esbuild"
+  }
+}

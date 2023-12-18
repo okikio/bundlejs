@@ -1,5 +1,5 @@
-import type { BuildConfig, CompressConfig } from "@bundlejs/core";
-import { deepAssign } from "@bundlejs/core/src/util";
+import type { BuildConfig, CompressConfig } from "@bundle/core";
+import { deepAssign } from "@bundle/utils/src/mod.ts";
 
 export type ConfigOptions = Omit<BuildConfig, "ascii" | "filesystem" | "entryPoints" | "init"> & {
   /** 

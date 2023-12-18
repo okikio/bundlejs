@@ -1,0 +1,78 @@
+{
+  "name": "@bundle/utils",
+  "version": "0.0.0",
+  "access": "public",
+  "type": "module",
+  "description": "Essential TypeScript utilities for `@bundle/core`, streamlining web development workflows.",
+  "typedocMain": "src/index.ts",
+  "legacy": "lib/index.cjs",
+  "main": "lib/index.cjs",
+  "browser": "lib/index.js",
+  "module": "lib/index.js",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./lib/index.d.cts",
+        "default": "./lib/index.cjs"
+      },
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    },
+    "./utils/*": "./src/utils/*",
+    "./lib/*": "./lib/*",
+    "./src/*": "./src/*",
+    "./deno/*": "./src/deno/*",
+    "./package.json": "./package.json"
+  },
+  "directories": {
+    "lib": "./lib",
+    "src": "./src"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "publishConfig": {
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup ./src/index.ts",
+    "test:run": "vitest run && pnpm repl; pnpm deno",
+    "test": "vitest",
+    "repl": "tsx repl.ts",
+    "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
+    "pre-release": "pnpm build; pnpm test:run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikio/bundlejs.git",
+    "directory": "packages/utils"
+  },
+  "keywords": [
+    "bundlejs",
+    "utility",
+    "deno",
+    "typescript"
+  ],
+  "author": {
+    "name": "Okiki Ojo",
+    "email": "hey@okikio.dev",
+    "url": "https://okikio.dev"
+  },
+  "bugs": {
+    "url": "https://github.com/okikio/bundlejs/issues"
+  },
+  "homepage": "https://bundlejs.com",
+  "dependencies": {
+    "resolve.exports": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/web": "^0.0.128",
+    "pnpm": "^8.12.1",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "vitest": "^1.0.4"
+  }
+}

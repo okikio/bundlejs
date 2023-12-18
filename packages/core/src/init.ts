@@ -3,8 +3,8 @@ import type * as ESBUILD from "esbuild-wasm";
 import type { Platform } from "./configs/platform.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 
-import { getState, setState } from "./configs/state.ts";
 import { getEsbuild } from "./utils/get-esbuild.ts";
+import { getState, setState } from "./configs/state.ts";
 import { INIT_COMPLETE, INIT_ERROR, INIT_START, dispatchEvent } from "./configs/events.ts";
 
 /**

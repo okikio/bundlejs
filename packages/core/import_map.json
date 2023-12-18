@@ -1,7 +1,0 @@
-{
-  "imports": {
-    "@okikio/emitter": "npm:@okikio/emitter",
-    "esbuild-wasm/package.json": "npm:esbuild-wasm",
-    "esbuild-wasm": "npm:esbuild-wasm"
-  }
-}

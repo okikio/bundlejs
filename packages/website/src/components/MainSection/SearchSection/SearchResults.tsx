@@ -6,7 +6,7 @@ import { getQuery } from "./SearchInput";
 import { SearchResult, ErrorResult } from "./Result";
 
 import { rovingIndex } from "../../../hooks/roving-index";
-import { getPackages } from "@bundlejs/core/src/util";
+import { getPackages } from "@bundle/utils/src/mod.ts";
 
 export function SearchResults() {
   let searchContainerEl: HTMLDivElement = null;

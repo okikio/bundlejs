@@ -1,4 +1,4 @@
-import { bytes } from "@bundlejs/core/src/util";
+import { bytes } from "@bundle/utils/src/mod.ts";
 import glob from "fast-glob";
 
 import { basename } from "path";

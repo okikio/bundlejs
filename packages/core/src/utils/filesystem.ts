@@ -1,5 +1,5 @@
-import { decode, encode } from "./encode-decode.ts";
-import { dirname, basename, resolve, sep } from "../deno/path/mod.ts";
+import { decode, encode } from "@bundle/utils/utils/encode-decode.ts";
+import { dirname, basename, resolve, sep } from "@bundle/utils/utils/path.ts";
 
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 

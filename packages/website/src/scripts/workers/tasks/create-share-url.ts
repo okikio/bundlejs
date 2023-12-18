@@ -7,7 +7,7 @@ import { DefaultConfig } from "../../configs/options";
 
 import { serialize } from "../../utils/serialize-javascript";
 import { configModelResetValue } from "../../utils/get-initial";
-import { deepAssign, deepDiff, lzstring } from "@bundlejs/core/src/index";
+import { deepAssign, deepDiff, lzstring } from "@bundle/utils/src/mod.ts";
 import ts from "typescript";
 
 const { compressToURL } = lzstring;

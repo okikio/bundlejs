@@ -1,5 +1,0 @@
-[build.environment]
-NPM_FLAGS="--version"
-
-[build]
-command = "npx pnpm@7 install --store-dir=.pnpm --no-frozen-lockfile && npx pnpm@7 build"

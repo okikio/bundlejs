@@ -1,9 +1,13 @@
-import type { BuildConfig, LocalState } from "../build.ts";
+import type { BuildConfig, LocalState } from "../types.ts";
 import type { StateArray } from "../configs/state.ts";
 import type { ESBUILD } from "../types.ts";
 
-import { encode } from "../utils/encode-decode.ts";
-import { getCDNUrl } from "../utils/util-cdn.ts";
+import { encode } from "@bundle/utils/utils/encode-decode.ts";
+import { DEFAULT_CDN_HOST, getCDNUrl } from "../utils/util-cdn.ts";
+import { isAlias } from "./alias.ts";
+
+import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
+import { CDN_RESOLVE } from "./cdn.ts";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = "external-globals";
@@ -16,47 +20,53 @@ export const PolyfillMap = {
   "console": "console-browserify",
   "constants": "constants-browserify",
   "crypto": "crypto-browserify",
-  "http": "http-browserify",
   "buffer": "buffer",
   "Dirent": "dirent",
   "vm": "vm-browserify",
-  "zlib": "zlib-browserify",
+  "zlib": "browserify-zlib",
   "assert": "assert",
-  "child_process": "child_process",
-  "cluster": "child_process",
-  "dgram": "dgram",
-  "dns": "dns",
+  // "child_process": "child_process",
+  // "cluster": "child_process",
+  "dgram": "browser-node-dgram",
+  // "dns": "dns",
   "domain": "domain-browser",
   "events": "events",
-  "https": "https",
+  "http": "http-browserify",
+  "https": "https-browserify",
   "module": "module",
-  "net": "net",
+  "net": "net-browserify",
   "path": "path-browserify",
   "punycode": "punycode",
   "querystring": "querystring",
-  "readline": "readline",
-  "repl": "repl",
-  "stream": "stream",
+  "readline": "readline-browser",
+  // "repl": "repl",
+  "stream": "stream-browserify",
   "string_decoder": "string_decoder",
-  "sys": "sys",
-  "timers": "timers",
-  "tls": "tls",
+  // "sys": "sys",
+  "timers": "timers-browserify",
+  "tls": "browserify-tls",
   "tty": "tty-browserify",
-  "url": "url",
-  "util": "util",
+  "url": "browserify-url",
+  "util": "util/util.js",
   "_shims": "_shims",
-  "_stream_duplex": "_stream_duplex",
-  "_stream_readable": "_stream_readable",
-  "_stream_writable": "_stream_writable",
-  "_stream_transform": "_stream_transform",
-  "_stream_passthrough": "_stream_passthrough",
+  "readable-stream/": "readable-stream/lib",
+  "readable-stream/duplex": "readable-stream/lib/duplex.js",
+  "readable-stream/readable": "readable-stream/lib/readable.js",
+  "readable-stream/writable": "readable-stream/lib/writable.js",
+  "readable-stream/transform": "readable-stream/lib/transform.js",
+  "readable-stream/passthrough": "readable-stream/lib/passthrough.js",
+  "_stream_duplex": "readable-stream/lib/duplex.js",
+  "_stream_readable": "readable-stream/lib/readable.js",
+  "_stream_writable": "readable-stream/lib/writable.js",
+  "_stream_transform": "readable-stream/lib/transform.js",
+  "_stream_passthrough": "readable-stream/lib/passthrough.js",
   process: "process/browser",
   fs: "memfs",
   os: "os-browserify/browser",
-  "v8": "v8",
-  "node-inspect": "node-inspect",
+  // "v8": "v8",
+  // "node-inspect": "node-inspect",
   "_linklist": "_linklist",
-  "_stream_wrap": "_stream_wrap"
+  "_stream_wrap": "_stream_wrap",
 };
 
 /** Array of native node packages (that are polyfillable) */
@@ -64,7 +74,7 @@ export const PolyfillKeys = Object.keys(PolyfillMap);
 /** API's & Packages that were later removed from nodejs */
 export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/tools/csvparser", "v8/tools/logreader", "v8/tools/profile_view", "v8/tools/profile", "v8/tools/SourceMap", "v8/tools/splaytree", "v8/tools/tickprocessor-driver", "v8/tools/tickprocessor", "node-inspect/lib/_inspect", "node-inspect/lib/internal/inspect_client ", "node-inspect/lib/internal/inspect_repl", "_linklist", "_stream_wrap"];
 /** Packages `bundle` should ignore, including deprecated apis, and polyfillable API's */
-export const ExternalPackages = ["chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
+export const ExternalPackages = ["pnpapi", "v8", "node-inspect", "sys", "repl", "dns", "child_process", "cluster", "chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 /** Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51 */
 export const isExternal = (id: string, external: string[] = []) => {
@@ -80,8 +90,13 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
-  const { external = [] } = config?.esbuild ?? {}; 
+export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+  // Convert CDN values to URL origins
+  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
+  const { external = [] } = config?.esbuild ?? {};
+  const pkgJSON = config["package.json"];
+  const [get] = state;
+
   return {
     name: EXTERNALS_NAMESPACE,
     setup(build) {
@@ -94,6 +109,15 @@ export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): E
         const { path: argPath } = getCDNUrl(path);
 
         if (isExternal(argPath, external)) {
+          if (config.polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
+            const pkgDetails = parsePackageName(argPath);
+            const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
+            return CDN_RESOLVE(host, pkgJSON)({
+              ...args,
+              path: aliasPath
+            });
+          }
+
           return {
             path: argPath,
             namespace: EXTERNALS_NAMESPACE,
@@ -118,7 +142,7 @@ export function EXTERNAL (state: StateArray<LocalState>, config: BuildConfig): E
           contents: EMPTY_EXPORT,
           warnings: [{
             text: `${args.path} is marked as an external module and will be ignored.`,
-            details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com, sorry about that.`
+            details: `"${args.path}" is a built-in node module thus can't be bundled by https://bundlejs.com (technically it can be supported but...it's currently disabled. If you'd like this functionallity, please reach out at https://github.com/okikio/bundlejs), sorry about that.`
           }]
         };
       });

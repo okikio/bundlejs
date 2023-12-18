@@ -1,4 +1,4 @@
-import { deepAssign, lzstring } from "@bundlejs/core";
+import { deepAssign, lzstring } from "@bundle/core";
 
 const { decompressFromURL } = lzstring;
 

@@ -1,5 +1,5 @@
 {
-  "name": "@bundlejs/analysis",
+  "name": "@bundle/analysis",
   "version": "0.0.0",
   "access": "public",
   "type": "module",
@@ -19,25 +19,15 @@
   },
   "files": [
     "lib",
-    "src",
-    "@types"
+    "src"
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
     "test:run": "vitest run && pnpm deno",
     "test": "vitest",
-    "repl": "esno repl.ts",
+    "repl": "tsx repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
-    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
-    "verify": "pnpm test:run && pnpm dts",
-    "pre-release": "ultra build && ultra verify"
-  },
-  "ultra": {
-    "concurrent": [
-      "verify",
-      "test:run"
-    ]
+    "pre-release": "pnpm build && pnpm test:run"
   },
   "repository": {
     "type": "git",
@@ -76,27 +66,25 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "@bundlejs/core": "workspace:^0.0.0",
+    "@bundle/compress": "workspace:^",
+    "@bundle/utils": "workspace:^",
     "bytes": "^3.1.2",
-    "d3": "^7.8.2",
-    "esbuild-wasm": "^0.17.11",
-    "nanoid": "^4.0.1",
-    "solid-js": "^1.6.11",
+    "d3": "^7.8.5",
+    "esbuild-wasm": "^0.19.9",
+    "nanoid": "^5.0.4",
+    "solid-js": "^1.8.7",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@types/bytes": "^3.1.1",
-    "@types/d3": "^7.4.0",
-    "@types/node": "^18.14.6",
-    "del-cli": "^5.0.0",
-    "esno": "^0.16.3",
-    "jsdom": "^21.1.0",
-    "pnpm": "^7.28.0",
-    "typescript": "5.0.1-rc",
-    "ultra-runner": "^3.10.5",
-    "vite": "^4.1.4",
-    "vite-plugin-solid": "^2.6.1",
-    "vitest": "^0.29.2"
+    "@babel/core": "^7.23.6",
+    "@types/bytes": "^3.1.4",
+    "@types/d3": "^7.4.3",
+    "jsdom": "^23.0.1",
+    "pnpm": "^8.12.1",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "vite": "^5.0.10",
+    "vite-plugin-solid": "^2.8.0",
+    "vitest": "^1.0.4"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@bundlejs/edge",
+  "name": "@bundle/edge",
   "version": "0.0.0",
   "access": "public",
   "type": "module",
@@ -55,18 +55,20 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "@bundlejs/core": "workspace:^0.0.0",
-    "esbuild-wasm": "^0.17.11",
+    "@bundle/core": "workspace:^",
+    "@bundle/utils": "workspace:^",
+    "esbuild-wasm": "^0.19.9",
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230228.0",
-    "@types/node": "^18.14.6",
-    "del-cli": "^5.0.0",
-    "pnpm": "^7.28.0",
-    "typescript": "5.0.1-rc",
-    "vite": "^4.1.4",
-    "vite-plugin-cp": "^1.0.0",
-    "wrangler": "2.12.0"
+    "@cloudflare/workers-types": "^4.20231121.0",
+    "del-cli": "^5.1.0",
+    "pnpm": "^8.12.1",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "typescript": "5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-cp": "^4.0.3",
+    "wrangler": "3.21.0"
   }
 }

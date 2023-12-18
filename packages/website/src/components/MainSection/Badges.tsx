@@ -1,4 +1,4 @@
-import { ComponentProps, For, Show, createSignal } from "solid-js";
+import { type ComponentProps, For, Show, createSignal } from "solid-js";
 import Details from "../Details";
 import { createShareURLQuery } from "../../scripts/utils/share";
 

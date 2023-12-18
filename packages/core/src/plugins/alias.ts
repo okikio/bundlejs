@@ -4,10 +4,10 @@ import type { ESBUILD } from "../types.ts";
 
 import { EXTERNALS_NAMESPACE } from "./external.ts";
 import { HTTP_RESOLVE } from "./http.ts";
-import { parsePackageName } from "../utils/parse-package-name.ts";
+import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
 
 import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
-import { isBareImport } from "../utils/path.ts";
+import { isBareImport } from "@bundle/utils/utils/path.ts";
 
 /** Alias Plugin Namespace */
 export const ALIAS_NAMESPACE = "alias-globals";

@@ -3,7 +3,7 @@ import copy from 'vite-plugin-cp';
 
 export default defineConfig({
   build: {
-    target: ["chrome110"],
+    target: ["chrome120"],
     sourcemap: true,
     outDir: "dist",
     assetsInlineLimit: 0,
