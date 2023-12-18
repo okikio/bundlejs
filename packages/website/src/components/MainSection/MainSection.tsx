@@ -5,16 +5,17 @@ import Container from "../Container";
 import SearchContainer from "./SearchSection/SearchContainer";
 import EditorSection from "./EditorSection/EditorSection";
 import Analysis from "./Analysis";
+import Badges from "./Badges";
 
 export const KEYCODE = {
   LEFT: "ArrowLeft",
   UP: "ArrowUp",
   RIGHT: "ArrowRight",
   DOWN: "ArrowDown",
-  ESC: "Escape"
-}
+  ESC: "Escape",
+};
 
-export function MainSection(props?: ComponentProps<'div'>) {
+export function MainSection(props?: ComponentProps<"div">) {
   let ref: HTMLDivElement = null;
   let editorRef: HTMLDivElement = null;
 
@@ -24,14 +25,15 @@ export function MainSection(props?: ComponentProps<'div'>) {
   function onKeyUp(e?: KeyboardEvent) {
     switch (e.code) {
       case KEYCODE.ESC:
-        if (searchEl?.open) 
-          tabBarEl?.focus();
+        if (searchEl?.open) tabBarEl?.focus();
         break;
     }
   }
 
   onMount(() => {
-    searchEl = ref.querySelector('dialog') as unknown as (HTMLDialogElement & { open?: boolean });
+    searchEl = ref.querySelector("dialog") as unknown as HTMLDialogElement & {
+      open?: boolean;
+    };
     tabBarEl = editorRef.querySelector(".tab-bar button");
   });
 
@@ -45,10 +47,11 @@ export function MainSection(props?: ComponentProps<'div'>) {
       <Container class="px-none">
         <SearchContainer onKeyUp={onKeyUp} />
       </Container>
-  
-      <EditorSection ref={editorRef} /> 
-  
-      <Container class="lt-md:px-none pb-4">
+
+      <EditorSection ref={editorRef} />
+
+      <Container class="lt-md:px-none pb-4 space-y-3">
+        <Badges />
         <Analysis>{props.children}</Analysis>
       </Container>
     </Container>

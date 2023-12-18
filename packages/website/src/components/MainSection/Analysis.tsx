@@ -3,9 +3,9 @@ import Details from "../Details";
 import Loading from "../Loading";
 import DragHandle from "./EditorSection/DragHandle";
 
-export function Analysis(props?: ComponentProps<'details'>) {
+export function Analysis(props?: ComponentProps<"details">) {
   return (
-    <div class="analysis-section">
+    <div class="details-section">
       <Details
         class="inline-details umami--toggle--analysis-accordian"
         summary="Analysis"
@@ -21,7 +21,13 @@ export function Analysis(props?: ComponentProps<'details'>) {
                 <p class="loader-content">Nothing to analyze...</p>
               </div>
             </div>
-            <iframe class="analysis-iframe" title="Bundle Analysis" id="analyzer" src="about:blank" sandbox="allow-scripts"></iframe>
+            <iframe
+              class="analysis-iframe"
+              title="Bundle Analysis"
+              id="analyzer"
+              src="about:blank"
+              sandbox="allow-scripts"
+            ></iframe>
           </div>
           <DragHandle direction="y" />
         </div>

@@ -3,11 +3,15 @@ import type { addLogs } from "../../components/MainSection/EditorSection/Console
 
 import { format } from "./tasks/format";
 import { createFile } from "./tasks/create-file";
-import { createShareURL } from "./tasks/create-share-url";
+import { createShareURL, createShareURLParams } from "./tasks/create-share-url";
 import { bundle } from "./tasks/build";
 import { parseConfig } from "./tasks/parse-config";
 
-import { addEventListener, INIT_COMPLETE, LOGGER_INFO } from "@bundlejs/core/src/index";
+import {
+  addEventListener,
+  INIT_COMPLETE,
+  LOGGER_INFO,
+} from "@bundlejs/core/src/index";
 import * as Comlink from "comlink";
 
 import "../utils/transferhandle";
@@ -16,6 +20,7 @@ export const TaskRunner = {
   format,
   createFile,
   createShareURL,
+  createShareURLParams,
   bundle,
   parseConfig,
 };
@@ -26,11 +31,11 @@ export const connect = async (port: MessagePort | typeof globalThis) => {
   const addLog = Comlink.wrap<typeof addLogs>(port);
   addEventListener(INIT_COMPLETE, () => {
     addLog({ type: "info", detail: "Initialized 🚀✨" });
-  })
+  });
 
   addEventListener(LOGGER_INFO, (e) => {
     addLog({ type: "log", detail: e.detail });
-  })
+  });
 };
 
 (self as unknown as SharedWorkerGlobalScope).onconnect = (e) => {
