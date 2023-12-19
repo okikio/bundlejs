@@ -1,6 +1,6 @@
 import { deepAssign } from "@bundle/utils/src/mod.ts";
 import { EasyDefaultConfig } from "../configs/options";
-import { parseShareURLQuery } from "./parse-query";
+import { parseShareURLQuery } from "@bundle/query-string/src/parse-query.ts";
 export function generateConfigValue(config: string | Record<string, unknown>) {
   return [
     "// Configure",

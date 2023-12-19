@@ -17,6 +17,10 @@
       "path": "packages/compress"
     },
     {
+      "name": "📦 @bundle/query-string",
+      "path": "packages/query-string"
+    },
+    {
       "name": "📦 @bundle/utils",
       "path": "packages/utils"
     },
