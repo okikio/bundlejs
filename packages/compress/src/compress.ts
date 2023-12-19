@@ -1,4 +1,4 @@
-import type { CompressConfig, CompressionOptions } from "./types.ts";
+import type { CompressConfig, CompressionOptions, CompressionType } from "./types.ts";
 import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
 import { encode } from "@bundle/utils/utils/encode-decode.ts";
 import { createCompressConfig } from "./config.ts";
@@ -33,12 +33,11 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   });
 
   // Total uncompressed size
-  const totalByteLength = bytes(
-    contents.reduce((acc, content) => acc + content.byteLength, 0)
-  ) as string;
+  const rawUncompressedSize = contents.reduce((acc, content) => acc + content.byteLength, 0);
+  const uncompressedSize = bytes(rawUncompressedSize) as string;
 
   // Choose a different compression function based on the compression type
-  const compressionMap = await (async () => {
+  const compressionMap = await (async (type?: CompressionType) => {
     switch (type) {
       case "brotli": {
         const { compress, getWASM } = await import("./deno/brotli/mod.ts");
@@ -71,7 +70,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
         };
       }
     }
-  })();
+  })(type);
 
   // Compress all binary contents according to the compression map
   const compressedContent = await Promise.all(
@@ -79,18 +78,19 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
   );
 
   // Convert sizes to human readable formats, e.g. 10000 bytes to 10MB
-  const totalCompressedSize = bytes(
-    compressedContent.reduce((acc, { length }) => acc + length, 0)
-  );
+  const rawCompressedSize = compressedContent.reduce((acc, { length }) => acc + length, 0);
+  const compressedSize = bytes(rawCompressedSize);
 
   return {
     type,
     content: compressedContent,
 
-    totalByteLength,
-    totalCompressedSize,
+    rawUncompressedSize,
+    uncompressedSize,
 
-    initialSize: `${totalByteLength}`,
-    size: `${totalCompressedSize} (${type})`
+    rawCompressedSize,
+    compressedSize,
+
+    size: `${compressedSize} (${type})`
   };
 }
