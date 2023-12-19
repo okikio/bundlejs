@@ -1,4 +1,6 @@
 // Based off of @hyrious esbuild-repl https://github.com/hyrious/esbuild-repl/blob/main/src/helpers/ansi.ts
+import { escape as htmlEscape } from "./html.ts";
+
 // https://github.com/evanw/esbuild/blob/master/internal/logger/logger.go
 export const ESCAPE_TO_COLOR = {
   "37": "dim",
@@ -24,17 +26,6 @@ export const ESCAPE_TO_COLOR = {
 
 export type Escape = "0" | "1" | "4" | keyof typeof ESCAPE_TO_COLOR;
 export type Color = typeof ESCAPE_TO_COLOR[keyof typeof ESCAPE_TO_COLOR];
-
-// https://github.com/sindresorhus/escape-goat
-export function htmlEscape(string: string) {
-  return string
-    .replace(/\<br\>/g, "\n")
-    .replace(/\&/g, "&amp;")
-    .replace(/\"/g, "&quot;")
-    .replace(/\'/g, "&#39;")
-    .replace(/\</g, "&lt;")
-    .replace(/\>/g, "&gt;");
-}
 
 export class AnsiBuffer {
   result = "";
@@ -85,6 +76,7 @@ export class AnsiBuffer {
 
 export function render(ansi: string) {
   ansi = ansi.trimEnd();
+
   let i = 0;
   const buffer = new AnsiBuffer();
   for (const m of ansi.matchAll(/\x1B\[([\d;]+)m/g)) {
@@ -108,9 +100,14 @@ export function render(ansi: string) {
   /** 
    * Based on https://stackoverflow.com/questions/6038061/regular-expression-to-find-urls-within-a-string
    * Based on http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
-   */
-  return buffer.done().replace(
-    /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi, 
+   */  
+  const str = buffer.done()
+    .replace(/&colon;/g, ":")
+    .replace(/&period;/g, ".")
+    .replace(/&sol;/g, "/")
+    .replace(/&commat;/g, "@");
+  return str.replace(
+    /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi,
     (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
   );
 }

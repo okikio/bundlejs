@@ -16,3 +16,4 @@ export * from "./join.ts";
 export * from "./normalize.ts";
 export * from "./encoding.ts";
 export * from "./query.ts";
+export * from "./utils.ts";

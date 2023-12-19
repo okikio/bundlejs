@@ -66,7 +66,12 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
+    "json5": "^2.2.3",
     "resolve.exports": "^2.0.2"
+  },
+  "peerDependencies": {
+    "json5": "^2",
+    "resolve.exports": "^2"
   },
   "devDependencies": {
     "@types/web": "^0.0.128",

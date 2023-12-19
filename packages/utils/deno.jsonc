@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "json5": "npm:json5"
+  }
+}
