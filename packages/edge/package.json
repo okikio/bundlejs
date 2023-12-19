@@ -14,9 +14,8 @@
   "scripts": {
     "start": "wrangler dev",
     "deploy": "wrangler publish",
-    "build": "vite build",
+    "build": "tsup ./src/index.ts",
     "dev": "wrangler dev",
-    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
     "pre-release": "pnpm build"
   },
   "repository": {
@@ -57,18 +56,14 @@
   "dependencies": {
     "@bundle/core": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "esbuild-wasm": "^0.19.9",
+    "esbuild-wasm": "^0.19.10",
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231121.0",
-    "del-cli": "^5.1.0",
     "pnpm": "^8.12.1",
     "tsup": "^8.0.1",
     "tsx": "^4.6.2",
-    "typescript": "5.3.3",
-    "vite": "^5.0.10",
-    "vite-plugin-cp": "^4.0.3",
     "wrangler": "3.21.0"
   }
 }

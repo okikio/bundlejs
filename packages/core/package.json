@@ -86,8 +86,8 @@
   "dependencies": {
     "@bundle/compress": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "esbuild": "^0.19.9",
-    "esbuild-wasm": "^0.19.9"
+    "esbuild": "^0.19.10",
+    "esbuild-wasm": "^0.19.10"
   },
   "devDependencies": {
     "pnpm": "^8.12.1",
