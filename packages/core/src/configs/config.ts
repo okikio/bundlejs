@@ -19,9 +19,9 @@ export function createConfig<T extends "compress", O extends CompressConfig>(typ
 export function createConfig<T extends "transform", O extends TransformConfig>(type: T, opts?: O): TransformConfig;
 export function createConfig<T extends "context", O extends TransformConfig>(type: T, opts?: O): TransformConfig;
 export function createConfig<T extends "transform" | "build" | "compress" | "context", O extends TransformConfig | BuildConfig | CompressConfig>(type: T, opts?: O) {
-  if (type == "transform") {
+  if (type === "transform") {
     return deepAssign({}, TRANSFORM_CONFIG, opts) as TransformConfig;
-  } else if (type == "compress") {
+  } else if (type === "compress") {
     return createCompressConfig(opts as CompressConfig);
   } else {
     return deepAssign({}, BUILD_CONFIG, opts) as BuildConfig;
