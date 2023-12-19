@@ -7,7 +7,7 @@ import { resolve, legacy } from "@bundle/utils/utils/resolve-exports-imports.ts"
 import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
 import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
 
-import { extname, isBareImport } from "@bundle/utils/utils/path.ts";
+import { extname, isBareImport, join } from "@bundle/utils/utils/path.ts";
 import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
@@ -26,15 +26,39 @@ const FAILED_PKGJSON_URLS = new Set<string>();
  */
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
+    let argPath = args.path;
+    
+    // Resolving imports from the package.json, if said import starts with "#" 
+    // If an import starts with "#" then it's a subpath-import
+    // https://nodejs.org/api/packages.html#subpath-imports
+    if (/^#/.test(argPath)) {
+      let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+      let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+
+      try {
+        // Resolving imports & exports from the package.json
+        // If an import starts with "#" then it's a subpath-import, and should be treated as so
+        const modernResolve = resolve(pkg, argPath, { browser: true, conditions: ["module"] }) ||
+          resolve(pkg, argPath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+          resolve(pkg, argPath, { require: true });
+
+        if (modernResolve) {
+          const resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
+          argPath = join(pkg.name + "@" + pkg.version, resolvedPath);
+        }
+        // deno-lint-ignore no-empty
+      } catch (e) { }
+    }
+
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
-      const { path: argPath, origin } = getCDNUrl(args.path, cdn);
+      const { path: _argPath, origin } = getCDNUrl(argPath, cdn);
 
       // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
       const NPM_CDN = getCDNStyle(origin) === "npm";
 
       // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-      const parsed = parsePackageName(argPath);
+      const parsed = parsePackageName(_argPath);
       let subpath = parsed.path;
 
       let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
@@ -49,7 +73,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
       // Are there an dependecies???? Well Goood.
       const depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
-      if (depsExists && !/\S+@\S+/.test(argPath)) {
+      if (depsExists && !/\S+@\S+/.test(_argPath)) {
         const {
           devDependencies = {},
           dependencies = {},
@@ -59,8 +83,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
         const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
         const keys = Object.keys(deps);
 
-        if (keys.includes(argPath))
-          parsed.version = deps[argPath];
+        if (keys.includes(_argPath))
+          parsed.version = deps[_argPath];
       }
 
       let finalSubpath = subpath;
@@ -177,7 +201,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             finalSubpath = `${dir}${finalSubpath}`;
           }
         } catch (e) {
-          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
+          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${_argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
           dispatchEvent(LOGGER_WARN, e);
         }
       }
@@ -229,4 +253,4 @@ export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD
       build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, pkgJSON));
     },
   };
-}
+};

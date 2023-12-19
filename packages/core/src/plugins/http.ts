@@ -1,3 +1,4 @@
+/** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
 import type { ESBUILD, BuildConfig, LocalState, PackageJson } from "../types.ts";
 import type { StateArray } from "../configs/state.ts";
 
@@ -22,6 +23,9 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
+    if (/text\/html/.test(response.headers.get("content-type")))
+      throw new Error("Can't load HTML as a package");
+
     dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
@@ -30,7 +34,9 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
       content: new Uint8Array(await response.arrayBuffer()),
     };
   } catch (err) {
-    throw new Error(`[getRequest] Failed at request (${url})\n${err.toString()}`);
+    throw new Error(`[getRequest] Failed at request (${url})\n${err.toString()}`, {
+      cause: err
+    });
   }
 }
 
@@ -68,7 +74,8 @@ export async function fetchAssets(path: string, content: Uint8Array, state: Stat
 
     return {
       path: assetURL, contents: asset,
-      get text() { return decode(asset); }
+      get text() { return decode(asset); },
+      hash: ""
     };
   });
 
@@ -77,7 +84,7 @@ export async function fetchAssets(path: string, content: Uint8Array, state: Stat
 
 // Imports have various extentions, fetch each extention to confirm what the user meant
 const fileEndings = ["", "/index"];
-const exts = ["", ".js", ".mjs", "/index.js", ".ts", ".tsx", ".cjs", ".d.ts"];
+const exts = ["", ".js", ".mjs", "/index.js", ".ts", ".tsx", ".cjs", ".jsx", ".mts", ".cts"];
 
 // It's possible to have `./lib/index.d.ts` or `./lib/index.mjs`, and have a user enter use `./lib` as the import
 // It's very annoying but you have to check all variants
@@ -93,7 +100,7 @@ const FAILED_EXT_URLS = new Set<string>();
  * @param path 
  * @returns 
  */
-export async function determineExtension(path: string, headersOnly: true | false = true) {
+export async function determineExtension(path: string, headersOnly: boolean = true) {
   // Some typescript files don't have file extensions but you can't fetch a file without their file extension
   // so bundle tries to solve for that
   const argPath = (suffix = "") => path + suffix;
@@ -106,9 +113,7 @@ export async function determineExtension(path: string, headersOnly: true | false
     const testingUrl = argPath(endings);
 
     try {
-      if (FAILED_EXT_URLS.has(testingUrl)) {
-        continue;
-      }
+      if (FAILED_EXT_URLS.has(testingUrl)) continue;
 
       ({ url, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
       break;
@@ -253,8 +258,8 @@ export function HTTP(state: StateArray<LocalState>, config: BuildConfig): ESBUIL
         // await FileSystem.set(args.namespace + ":" + args.path, content);
 
         if (content) {
-          // if (FileSystem)
-          //   await setFile(FileSystem, url, content)
+          if (FileSystem)
+            await setFile(FileSystem, url, content)
 
           const _assetResults =
             (await fetchAssets(url, content, state))
