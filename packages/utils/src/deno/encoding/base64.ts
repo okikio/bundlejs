@@ -1,27 +1,14 @@
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
+// This module is browser compatible.
+
+import { validateBinaryLike } from "./_util.ts";
 
 /**
- * {@linkcode encode} and {@linkcode decode} for
- * [base64](https://en.wikipedia.org/wiki/Base64) encoding.
+ * Utilities for
+ * [base64]{@link https://datatracker.ietf.org/doc/html/rfc4648#section-4}
+ * encoding and decoding.
  *
  * This module is browser compatible.
- *
- * @example
- * ```ts
- * import {
- *   decode,
- *   encode,
- * } from "https://deno.land/std@$STD_VERSION/encoding/base64.ts";
- *
- * const b64Repr = "Zm9vYg==";
- *
- * const binaryData = decode(b64Repr);
- * console.log(binaryData);
- * // => Uint8Array [ 102, 111, 111, 98 ]
- *
- * console.log(encode(binaryData));
- * // => Zm9vYg==
- * ```
  *
  * @module
  */
@@ -96,14 +83,33 @@ const base64abc = [
 /**
  * CREDIT: https://gist.github.com/enepomnyaschih/72c423f727d395eeaa09697058238727
  * Encodes a given Uint8Array, ArrayBuffer or string into RFC4648 base64 representation
- * @param data
+ *
+ * @deprecated (will be removed in 0.210.0) Use {@linkcode encodeBase64} instead.
  */
-export function encode(data: ArrayBuffer | string): string {
-  const uint8 = typeof data === "string"
-    ? new TextEncoder().encode(data)
-    : data instanceof Uint8Array
-      ? data
-      : new Uint8Array(data);
+export const encode: typeof encodeBase64 = encodeBase64;
+
+/**
+ * Decodes a given RFC4648 base64 encoded string
+ *
+ * @deprecated (will be removed in 0.210.0) Use {@linkcode decodeBase64} instead.
+ */
+export const decode: typeof decodeBase64 = decodeBase64;
+
+/**
+ * Converts data into a base64-encoded string.
+ *
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc4648#section-4}
+ *
+ * @example
+ * ```ts
+ * import { encodeBase64 } from "https://deno.land/std@$STD_VERSION/encoding/base64.ts";
+ *
+ * encodeBase64("foobar"); // "Zm9vYmFy"
+ * ```
+ */
+export function encodeBase64(data: ArrayBuffer | Uint8Array | string): string {
+  // CREDIT: https://gist.github.com/enepomnyaschih/72c423f727d395eeaa09697058238727
+  const uint8 = validateBinaryLike(data);
   let result = "",
     i;
   const l = uint8.length;
@@ -130,10 +136,18 @@ export function encode(data: ArrayBuffer | string): string {
 }
 
 /**
- * Decodes a given RFC4648 base64 encoded string
- * @param b64
+ * Decodes a base64-encoded string.
+ *
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc4648#section-4}
+ *
+ * @example
+ * ```ts
+ * import { encodeBase64 } from "https://deno.land/std@$STD_VERSION/encoding/base64.ts";
+ *
+ * encodeBase64("foobar"); // "Zm9vYmFy"
+ * ```
  */
-export function decode(b64: string): Uint8Array {
+export function decodeBase64(b64: string): Uint8Array {
   const binString = atob(b64);
   const size = binString.length;
   const bytes = new Uint8Array(size);
@@ -141,12 +155,4 @@ export function decode(b64: string): Uint8Array {
     bytes[i] = binString.charCodeAt(i);
   }
   return bytes;
-}
-
-/**
- * Decodes data assuming the output is in string type
- * @param data input to decode
- */
-export function decodeString(data: string): string {
-  return atob(data);
 }
