@@ -177,6 +177,11 @@ export interface PackageJson {
  */
 export type LocalState = {
   filesystem?: Awaited<ReturnType<typeof useFileSystem>>,
+  
+  /**
+   * Versions
+   */
+  versions?: Map<string, string>,
 
   /**
    * Assets are files during the build process that esbuild can't handle natively, 

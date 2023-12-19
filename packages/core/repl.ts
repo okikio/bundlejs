@@ -1,4 +1,5 @@
-import { build, compress, getFile, setFile, PLATFORM_AUTO, TheFileSystem } from "./src/index.ts";
+import { getFile, setFile, PLATFORM_AUTO, TheFileSystem } from "./src/index.ts";
+import { context, cancel, dispose, rebuild, compress, } from "./src/index.ts";
 
 const fs = await TheFileSystem;
 
@@ -14,7 +15,7 @@ export * from "@okikio/emitter";`);
 console.log(await getFile(fs, "/index.tsx", "string") )
 console.log(fs)
 
-const result = await build({
+const ctx = await context({
   entryPoints: ["/index.tsx", "/new.tsx"],
   esbuild: {
     treeShaking: true,
@@ -22,6 +23,7 @@ const result = await build({
     format: "esm"
   },
 });
+const result = await rebuild(ctx);
 
 console.log(
   await compress(
@@ -30,8 +32,9 @@ console.log(
   )
 );
 
-
-if (PLATFORM_AUTO == "deno") {
+await cancel(ctx);
+await dispose(ctx);
+if (PLATFORM_AUTO === "deno") {
   globalThis?.Deno?.exit?.();
 } else {
   // @ts-ignore Only for Node

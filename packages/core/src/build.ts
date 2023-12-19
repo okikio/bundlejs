@@ -1,4 +1,5 @@
 import type { BuildConfig, ESBUILD, LocalState } from "./types.ts";
+import type { StateArray } from "./configs/state.ts";
 
 import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
 import { EXTERNAL } from "./plugins/external.ts";
@@ -54,8 +55,12 @@ export type BuildResult = (ESBUILD.BuildResult) & {
   contents: ESBUILD.OutputFile[];
 };
 
-export const TheFileSystem = useFileSystem();
+export type BuildResultContext = (ESBUILD.BuildResult) & {
+  config: BuildConfig,
+  state: StateArray<LocalState>
+};
 
+export const TheFileSystem = useFileSystem();
 export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildResult> {
   if (!getState("initialized"))
     dispatchEvent(INIT_LOADING);
@@ -66,20 +71,16 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     assets: [],
     GLOBAL: [getState, setState],
   });
-  const [get] = STATE;
 
   const { platform, ...initOpts } = CONFIG.init ?? {};
   const { build: bundle } = await init(platform, initOpts);
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-  let outputs: ESBUILD.OutputFile[] = [];
-  let contents: ESBUILD.OutputFile[] = [];
   let result: ESBUILD.BuildResult;
 
   try {
     try {
-      const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         loader: {
@@ -92,7 +93,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         },
         define: {
           "__NODE__": "false",
-          [key]: "\"production\"",
+          "process.env.NODE_ENV": "\"production\"",
           ...define
         },
         write: false,
@@ -102,7 +103,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
           EXTERNAL(STATE, CONFIG),
           VIRTUAL_FS(STATE, CONFIG),
           HTTP(STATE, CONFIG),
-          CDN(STATE, CONFIG,),
+          CDN(STATE, CONFIG),
         ],
         ...esbuildOpts,
       });
@@ -120,9 +121,32 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
       } else throw e;
     }
 
-    if (result.warnings) {
+    return await formatBuildResult({
+      config: CONFIG,
+      state: STATE,
+      ...result
+    });
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
+
+    throw e;
+  }
+}
+
+export async function formatBuildResult(ctx: BuildResultContext) {
+  const { config: CONFIG, state: STATE } = ctx;
+  const [get] = STATE;
+
+  try {
+    const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+    let outputs: ESBUILD.OutputFile[] = [];
+    let contents: ESBUILD.OutputFile[] = [];
+
+    if (ctx.warnings) {
       // Log errors with added color info. to the virtual console
-      const ansiMsgs = await createNotice(result.warnings, "warning", false) ?? [];
+      const ansiMsgs = await createNotice(ctx.warnings, "warning", false) ?? [];
       dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
 
       const message = `${ansiMsgs.length} warning(s) `;
@@ -132,7 +156,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
       [...(get()["assets"] ?? [])]
-        .concat(result?.outputFiles as ESBUILD.OutputFile[])
+        .concat(ctx?.outputFiles as ESBUILD.OutputFile[])
     );
 
     contents = await Promise.all(
@@ -174,7 +198,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
        */
       outputs,
 
-      ...result
+      ...ctx
     };
   } catch (e) {
     if (!("msgs" in e)) {

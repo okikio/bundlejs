@@ -11,7 +11,8 @@
     "@bundle/compress": "../compress/src/index.ts",
     "resolve.exports": "npm:resolve.exports",
     
-    "esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
+    "json5": "npm:json5",
+    "../../node_modules/esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
     "esbuild-wasm": "npm:esbuild-wasm",
     "esbuild": "npm:esbuild"
   }

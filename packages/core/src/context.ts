@@ -1,136 +1,184 @@
-// import type { CommonConfigOptions, ESBUILD } from "./types.ts";
+import type { BuildConfig, ESBUILD, LocalState } from "./types.ts";
+import type { StateArray } from "./configs/state.ts";
+import type { BuildResult } from "./build.ts";
 
-// import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
-// import { EXTERNAL } from "./plugins/external.ts";
-// import { ALIAS } from "./plugins/alias.ts";
-// import { HTTP } from "./plugins/http.ts";
-// import { CDN } from "./plugins/cdn.ts";
+import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
+import { EXTERNAL } from "./plugins/external.ts";
+import { ALIAS } from "./plugins/alias.ts";
+import { HTTP } from "./plugins/http.ts";
+import { CDN } from "./plugins/cdn.ts";
 
-// import { EVENTS } from "./configs/events.ts";
-// import { createConfig } from "./configs/config.ts";
-// import { PLATFORM_AUTO } from "./configs/platform.ts";
-// import { createState, getState, setState } from "./configs/state.ts";
+import { createConfig } from "./configs/config.ts";
+import { createState, getState, setState } from "./configs/state.ts";
 
-// import { getFile, setFile, getResolvedPath, useFileSystem } from "./utils/filesystem.ts";
-// import { createNotice } from "./utils/create-notice.ts";
-// import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
-// import { init } from "./init.ts";
+import { createNotice } from "./utils/create-notice.ts";
+import { init } from "./init.ts";
 
-// import type { BuildConfig, LocalState } from "./build.ts";
+import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, dispatchEvent } from "./configs/events.ts";
+import { TheFileSystem, formatBuildResult } from "./build.ts";
 
-// export interface BuildContext<SpecificOptions extends ESBUILD.BuildOptions = ESBUILD.BuildOptions> extends ESBUILD.BuildContext<SpecificOptions> {
-//   outputs: ESBUILD.OutputFile[];
-//   contents: ESBUILD.OutputFile[];
-// };
+export type BuildContext = (ESBUILD.BuildContext) & {
+  config: BuildConfig,
+  state: StateArray<LocalState>
+};
 
-// export async function context<T extends BuildConfig>(opts?: T, filesystem = useFileSystem(EVENTS)): Promise<BuildContext<T>> {
-//   if (!getState("initialized"))
-//     EVENTS.emit("init.loading");
+export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildContext> {
+  if (!getState("initialized"))
+    dispatchEvent(INIT_LOADING);
 
-//   const CONFIG = createConfig("build", opts);
-//   const STATE = createState<LocalState>({ assets: [], GLOBAL: [getState, setState] });
-//   const [get] = STATE;
+  const CONFIG = createConfig("build", opts);
+  const STATE = createState<LocalState>({
+    filesystem: await filesystem,
+    assets: [],
+    GLOBAL: [getState, setState],
+  });
 
-//   const { platform, ...initOpts } = CONFIG.init ?? {};
-//   const { context } = await init(platform, initOpts);
-//   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const { platform, ...initOpts } = CONFIG.init ?? {};
+  const { context } = await init(platform, initOpts);
+  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
-//   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-//   let outputs: ESBUILD.OutputFile[] = [];
-//   let contents: ESBUILD.OutputFile[] = [];
-//   let result: ESBUILD.BuildContext<T> = null;
+  // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
+  let ctx: ESBUILD.BuildContext;
 
-//   try {
-//     try {
-//       const key = "p.env.NODE_ENV".replace("p.", "process.");
-//       result = await context({
-//         entryPoints: CONFIG?.entryPoints ?? [],
-//         loader: {
-//           ".png": "file",
-//           ".jpeg": "file",
-//           ".ttf": "file",
-//           ".svg": "text",
-//           ".html": "text",
-//           ".scss": "css"
-//         },
-//         define: {
-//           "__NODE__": "false",
-//           [key]: "\"production\"",
-//           ...define
-//         },
-//         write: false,
-//         outdir: "/",
-//         plugins: [
-//           ALIAS(EVENTS, STATE, CONFIG),
-//           EXTERNAL(EVENTS, STATE, CONFIG),
-//           HTTP(EVENTS, STATE, CONFIG),
-//           CDN(EVENTS, STATE, CONFIG),
-//           VIRTUAL_FS(EVENTS, STATE, CONFIG),
-//         ],
-//         ...esbuildOpts,
-//       });
-//     } catch (e) {
-//       if (e.errors) {
-//         // Log errors with added color info. to the virtual console
-//         const asciMsgs = [...await createNotice(e.errors, "error", false)];
-//         const htmlMsgs = [...await createNotice(e.errors, "error")];
+  try {
+    try {
+      ctx = await context({
+        entryPoints: CONFIG?.entryPoints ?? [],
+        loader: {
+          ".png": "file",
+          ".jpeg": "file",
+          ".ttf": "file",
+          ".svg": "text",
+          ".html": "text",
+          ".scss": "css"
+        },
+        define: {
+          "__NODE__": "false",
+          "process.env.NODE_ENV": "\"production\"",
+          ...define
+        },
+        write: false,
+        outdir: "/",
+        plugins: [
+          ALIAS(STATE, CONFIG),
+          EXTERNAL(STATE, CONFIG),
+          VIRTUAL_FS(STATE, CONFIG),
+          HTTP(STATE, CONFIG),
+          CDN(STATE, CONFIG),
+        ],
+        ...esbuildOpts,
+      });
+    } catch (e) {
+      if (e.errors) {
+        // Log errors with added color info. to the virtual console
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
-//         EVENTS.emit("logger.error", asciMsgs, htmlMsgs);
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
 
-//         const message = (htmlMsgs.length > 1 ? `${htmlMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundle)";
-//         EVENTS.emit("logger.error", message);
-//         return;
-//       } else throw e;
-//     }
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        throw { msgs: htmlMsgs };
+      } else throw e;
+    }
 
-//     // Create an array of assets and actual output files, this will later be used to calculate total file size
-//     outputs = await Promise.all(
-//       [...get()["assets"]]
-//         .concat(result?.outputFiles as ESBUILD.OutputFile[])
-//     );
+    return {
+      state: STATE,
+      config: CONFIG,
+      ...ctx
+    }
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
 
-//     contents = await Promise.all(
-//       outputs
-//         ?.map(({ path, text, contents }): ESBUILD.OutputFile => {
-//           if (/\.map$/.test(path))
-//             return null;
+    throw e;
+  }
+}
 
-//           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-//           if (esbuildOpts?.logLevel == "verbose") {
-//             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
-//             if (ignoreFile) {
-//               EVENTS.emit("logger.log", "Output File: " + path);
-//             } else {
-//               EVENTS.emit("logger.log", "Output File: " + path + "\n" + text);
-//             }
-//           }
+export async function rebuild(ctx: BuildContext): Promise<BuildResult> {
+  const { config: CONFIG, state: STATE } = ctx;
+  let result: ESBUILD.BuildResult;
 
-//           return { path, text, contents };
-//         })
+  try {
+    try {
+      result = await ctx.rebuild();
+    } catch (e) {
+      if (e.errors) {
+        // Log errors with added color info. to the virtual console
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
-//         // Remove null output files
-//         ?.filter(x => ![undefined, null].includes(x))
-//     );
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
 
-//     // Ensure a fresh filesystem on every run
-//     FileSystem.clear();
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        throw { msgs: htmlMsgs };
+      } else throw e;
+    }
 
-//     return {
-//       /** 
-//        * The output and asset files without unnecessary croft, e.g. `.map` sourcemap files 
-//        */
-//       contents,
+    return await formatBuildResult({
+      config: CONFIG,
+      state: STATE,
+      ...result
+    });
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
 
-//       /**
-//        * The output and asset files with `.map` sourcemap files 
-//        */
-//       outputs,
+    throw e;
+  }
+}
 
-//       ...result
-//     };
-//   } catch (e) { 
-//     EVENTS.emit("build.error", e);
-//   }
-// }
+export async function cancel(ctx: BuildContext): Promise<void> {
+  try {
+    try {
+      await ctx.cancel();
+    } catch (e) {
+      if (e.errors) {
+        // Log errors with added color info. to the virtual console
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
-export {};
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
+
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        throw { msgs: htmlMsgs };
+      } else throw e;
+    }
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
+
+    throw e;
+  }
+}
+
+export async function dispose(ctx: BuildContext): Promise<void> {
+  try {
+    try {
+      await ctx.dispose();
+    } catch (e) {
+      if (e.errors) {
+        // Log errors with added color info. to the virtual console
+        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
+
+        const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
+        dispatchEvent(LOGGER_ERROR, new Error(message));
+
+        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        throw { msgs: htmlMsgs };
+      } else throw e;
+    }
+  } catch (e) {
+    if (!("msgs" in e)) {
+      dispatchEvent(BUILD_ERROR, e);
+    }
+
+    throw e;
+  }
+}
