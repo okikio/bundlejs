@@ -1,22 +1,21 @@
-// https://deno.land/x/lz4@v0.1.2/mod.ts
+// Based on https://deno.land/x/lz4@v0.1.3/mod.ts
 // Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
+import _init, { lz4_compress, lz4_decompress } from "./lz4.ts";
 
-// import init, {
-//     source,
-//     lz4_compress,
-//     lz4_decompress,
-// } from "./wasm";
-
-const initialized = false;
-let initWASM: typeof import("./wasm.ts");
+let initWASM: Uint8Array;
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const wasm = await import("./wasm.ts");
-  const { default: init, source } = wasm;
-    
-  if (!initialized) await init(await source());
-  return (initWASM = wasm);
+  const { source } = await import("./wasm.ts");
+  return (initWASM = new Uint8Array(await source())); 
+};
+
+let initialized: typeof import("./lz4.ts");
+export const init = async () => {
+  if (initialized) return initialized;
+
+  const bytes = await getWASM();
+  return (initialized = await _init(bytes));
 };
 
 /**
@@ -32,7 +31,7 @@ export const getWASM = async () => {
  * @param input Input data.
  */
 export async function compress(input: Uint8Array): Promise<Uint8Array> {
-  const { lz4_compress } = await getWASM();
+  await init();
   return lz4_compress(input);
 }
 
@@ -49,6 +48,6 @@ export async function compress(input: Uint8Array): Promise<Uint8Array> {
  * @param input Input data.
  */
 export async function decompress(input: Uint8Array): Promise<Uint8Array> {
-  const { lz4_decompress } = await getWASM();
+  await init();
   return lz4_decompress(input);
 }

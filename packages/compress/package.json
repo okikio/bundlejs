@@ -37,7 +37,7 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsup ./src/index.ts",
+    "build": "tsup ./src/index.ts; find ./src -name '*.wasm' | xargs -I {} cp {} ./lib",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
     "repl": "tsx repl.ts",
@@ -70,6 +70,9 @@
   "homepage": "https://bundlejs.com",
   "dependencies": {
     "@bundle/utils": "workspace:^"
+  },
+  "peerDependencies": {
+    "@bundle/utils": "^"
   },
   "devDependencies": {
     "pnpm": "^8.12.1",

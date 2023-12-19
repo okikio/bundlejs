@@ -1,21 +1,21 @@
-// https://deno.land/x/brotli@v0.1.4/mod.ts
+// https://deno.land/x/brotli@v0.1.7/mod.ts
 // Copyright 2020-present the denosaurs team. All rights reserved. MIT license.
-// import init, {
-//     source,
-//     compress as wasm_compress,
-//     decompress as wasm_decompress,
-// } from "./wasm";
+import _init, { compress as wasm_compress, decompress as wasm_decompress } from "./brotli.ts";
 
-const initialized = false;
-let initWASM: typeof import("./wasm.ts");
+let initWASM: Uint8Array;
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const wasm = await import("./wasm.ts");
-  const { default: init, source } = wasm;
-    
-  if (!initialized) await init(await source());
-  return (initWASM = wasm);
+  const { source } = await import("./wasm.ts");
+  return (initWASM = new Uint8Array(await source()));
+};
+
+let initialized: typeof import("./brotli.ts");
+export const init = async () => {
+  if (initialized) return initialized;
+
+  const bytes = await getWASM();
+  return (initialized = await _init(bytes));
 };
 
 /**
@@ -40,8 +40,8 @@ export async function compress(
   quality = 6,
   lgwin = 22,
 ): Promise<Uint8Array> {
-  const { compress } = await getWASM();
-  return compress(input, bufferSize, quality, lgwin);
+  await init();
+  return wasm_compress(input, bufferSize, quality, lgwin);
 }
 
 /**
@@ -61,6 +61,6 @@ export async function decompress(
   input: Uint8Array,
   bufferSize = 4096,
 ): Promise<Uint8Array> {
-  const { decompress } = await getWASM();
-  return decompress(input, bufferSize);
+  await init();
+  return wasm_decompress(input, bufferSize);
 }

@@ -15,5 +15,5 @@ export const COMPRESS_CONFIG: CompressionOptions = {
  * @returns An object representing the configuration for that type of function
  */
 export function createCompressConfig<O extends CompressConfig>(opts?: O): CompressionOptions {
-  return deepAssign({}, COMPRESS_CONFIG, typeof opts == "string" ? { type: opts } : opts);
+  return deepAssign({}, COMPRESS_CONFIG, typeof opts === "string" ? { type: opts } : opts);
 }

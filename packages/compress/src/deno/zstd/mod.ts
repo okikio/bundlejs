@@ -1,6 +1,5 @@
-// Based off of `zstd` https://deno.land/x/zstd_wasm@0.0.16/deno/zstd.ts?source by @bokuweb
-import { decode } from "../base64/mod.ts"
-import Module from './deno.js';
+// Based off of `zstd` https://deno.land/x/zstd_wasm@0.0.20/deno/zstd.ts?source by @bokuweb
+import Module from './zstd.deno.js';
 
 const initialized = (() =>
   new Promise<void>((resolve) => {
@@ -12,8 +11,8 @@ let initWASM: Uint8Array;
 export const getWASM = async () => {
   if (initWASM) return initWASM;
 
-  const { wasm } = await import("./encoded.wasm.ts");
-  return (initWASM = decode(wasm));
+  const { source } = await import("./zstd.encoded.wasm.ts");
+  return (initWASM = await source());
 };
 
 let initResolved = false;
@@ -27,7 +26,8 @@ export const init = async () => {
 };
 
 
-export const isError = (code: number): number => {
+export const isError = async (code: number): Promise<number> => {
+  await init();
   const _isError = Module["_ZSTD_isError"];
   return _isError(code);
 };
@@ -39,15 +39,86 @@ export const isError = (code: number): number => {
 // };
 
 
-const compressBound = (size: number): number => {
+const compressBound = async (size: number): Promise<number> => {
+  await init();
+
   const bound = Module["_ZSTD_compressBound"];
   return bound(size);
+};
+
+export const createCCtx = async (): Promise<number> => {
+  await init();
+  return Module["_ZSTD_createCCtx"]();
+};
+
+export const freeCCtx = async (cctx: number) => {
+  await init();
+  return Module["_ZSTD_freeCCtx"](cctx);
+};
+
+export const compressUsingDict = async (
+  cctx: number,
+  buf: ArrayBuffer,
+  dict: ArrayBuffer,
+  level?: number
+) => {
+  await init();
+  
+  const bound = await compressBound(buf.byteLength);
+  const malloc = Module["_malloc"];
+  const compressed = malloc(bound);
+  const src = malloc(buf.byteLength);
+  Module.HEAP8.set(buf, src);
+  // Setup dict
+  const pdict = malloc(dict.byteLength);
+  Module.HEAP8.set(dict, pdict);
+  const free = Module["_free"];
+  try {
+    /*
+      @See https://zstd.docsforge.com/dev/api/ZSTD_compress_usingDict/
+      size_t ZSTD_compress_usingDict(ZSTD_CCtx* cctx,
+                         void* dst, size_t dstCapacity,
+                         const void* src, size_t srcSize,
+                         const void* dict, size_t dictSize,
+                         int compressionLevel)
+    */
+    const _compress = Module["_ZSTD_compress_usingDict"];
+    const sizeOrError = _compress(
+      cctx,
+      compressed,
+      bound,
+      src,
+      buf.byteLength,
+      pdict,
+      dict.byteLength,
+      level ?? 3
+    );
+    if (await isError(sizeOrError)) {
+      throw new Error(`Failed to compress with code ${sizeOrError}`);
+    }
+    // // Copy buffer
+    // // Uint8Array.prototype.slice() return copied buffer.
+    const data = new Uint8Array(
+      Module.HEAPU8.buffer,
+      compressed,
+      sizeOrError
+    ).slice();
+    free(compressed, bound);
+    free(src, buf.byteLength);
+    free(pdict, dict.byteLength);
+    return data;
+  } catch (e) {
+    free(compressed, bound);
+    free(src, buf.byteLength);
+    free(pdict, dict.byteLength);
+    throw e;
+  }
 };
 
 export const compress = async (buf: ArrayBuffer, level?: number) => {
   await init();
 
-  const bound = compressBound(buf.byteLength);
+  const bound = await compressBound(buf.byteLength);
   const malloc = Module["_malloc"];
   const compressed = malloc(bound);
   const src = malloc(buf.byteLength);
@@ -70,7 +141,7 @@ export const compress = async (buf: ArrayBuffer, level?: number) => {
       buf.byteLength,
       level ?? 3
     );
-    if (isError(sizeOrError)) {
+    if (await isError(sizeOrError)) {
       throw new Error(`Failed to compress with code ${sizeOrError}`);
     }
     // // Copy buffer
@@ -94,6 +165,66 @@ export const compress = async (buf: ArrayBuffer, level?: number) => {
 const getFrameContentSize = (src: number, size: number): number => {
   const getSize = Module["_ZSTD_getFrameContentSize"];
   return getSize(src, size);
+};
+
+export const createDCtx = async (): Promise<number> => {
+  await init();
+  return Module["_ZSTD_createDCtx"]();
+};
+
+export const freeDCtx = async (dctx: number) => {
+  await init();
+  return Module["_ZSTD_freeDCtx"](dctx);
+};
+
+export const decompressUsingDict = async (
+  dctx: number,
+  buf: ArrayBuffer,
+  dict: ArrayBuffer,
+  opts: DecompressOption = { defaultHeapSize: 1024 * 1024 } // Use 1MB on default if it is failed to get content size.
+): Promise<Uint8Array> => {
+  await init();
+
+  const malloc = Module["_malloc"];
+  const src = malloc(buf.byteLength);
+  Module.HEAP8.set(buf, src);
+  const pdict = malloc(dict.byteLength);
+  Module.HEAP8.set(dict, pdict);
+  const contentSize = getFrameContentSize(src, buf.byteLength);
+  const size = contentSize === -1 ? opts.defaultHeapSize : contentSize;
+  const free = Module["_free"];
+  const heap = malloc(size);
+  try {
+    const _decompress = Module["_ZSTD_decompress_usingDict"];
+    const sizeOrError = _decompress(
+      dctx,
+      heap,
+      size,
+      src,
+      buf.byteLength,
+      pdict,
+      dict.byteLength
+    );
+    if (await isError(sizeOrError)) {
+      throw new Error(`Failed to compress with code ${sizeOrError}`);
+    }
+    // Copy buffer
+    // Uint8Array.prototype.slice() return copied buffer.
+    const data = new Uint8Array(
+      Module.HEAPU8.buffer,
+      heap,
+      sizeOrError
+    ).slice();
+    free(heap, size);
+    free(src, buf.byteLength);
+    free(pdict, dict.byteLength);
+    return data;
+  } catch (e) {
+    free(heap, size);
+    free(src, buf.byteLength);
+    free(pdict, dict.byteLength);
+    throw e;
+  }
 };
 
 export type DecompressOption = {
@@ -123,7 +254,7 @@ export const decompress = async (
     */
     const _decompress = Module["_ZSTD_decompress"];
     const sizeOrError = _decompress(heap, size, src, buf.byteLength);
-    if (isError(sizeOrError)) {
+    if (await isError(sizeOrError)) {
       throw new Error(`Failed to compress with code ${sizeOrError}`);
     }
     // Copy buffer

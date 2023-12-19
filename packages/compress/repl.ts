@@ -1,4 +1,4 @@
-import { encode } from "@bundle/utils/encode-decode.ts";
+import { encode } from "@bundle/utils/utils/encode-decode.ts";
 import { compress } from "./src/mod.ts";
 
 console.log("\n");
