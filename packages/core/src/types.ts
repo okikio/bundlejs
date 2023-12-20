@@ -9,7 +9,7 @@ export type CommonConfigOptions = {
   /**
    * Configures how esbuild-wasm is initialized 
    */
-  init?: ESBUILD.InitializeOptions & { platform?: Platform }
+  init?: ESBUILD.InitializeOptions & { platform?: Platform, version?: string }
 };
 
 /**

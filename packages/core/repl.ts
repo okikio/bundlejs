@@ -1,8 +1,11 @@
 import { getFile, setFile, PLATFORM_AUTO, TheFileSystem } from "./src/index.ts";
-import { context, cancel, dispose, rebuild, compress, } from "./src/index.ts";
+import { context, cancel, dispose, rebuild, compress, resolveVersion, defaultVersion } from "./src/index.ts";
 
 const fs = await TheFileSystem;
 
+console.log({
+  version: await resolveVersion(`esbuild@0.18`)
+})
 console.log("\n");
 await setFile(fs, "/index.tsx", `\
 export * as Other from "/new.tsx";
@@ -22,6 +25,11 @@ const ctx = await context({
     splitting: true,
     format: "esm"
   },
+  init: {
+    platform: "deno-wasm",
+    version: "0.17",
+    // wasm
+  }
 });
 const result = await rebuild(ctx);
 

@@ -36,8 +36,8 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
 
   const CONFIG = createConfig("transform", opts);
 
-  const { platform, ...initOpts } = CONFIG.init;
-  const { transform } = await init(platform, initOpts);
+  const { platform, version, ...initOpts } = CONFIG.init;
+  const { transform } = await init([platform, version], initOpts);
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files

@@ -33,8 +33,8 @@ export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem
     GLOBAL: [getState, setState],
   });
 
-  const { platform, ...initOpts } = CONFIG.init ?? {};
-  const { context } = await init(platform, initOpts);
+  const { platform, version, ...initOpts } = CONFIG.init ?? {};
+  const { context } = await init([platform, version], initOpts);
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files

@@ -1,9 +1,10 @@
 import type * as ESBUILD from "esbuild-wasm";
 import type { Platform } from "../configs/platform.ts";
+import { resolveVersion } from "@bundle/utils/utils/npm-search.ts";
 
 import { PLATFORM_AUTO } from "../configs/platform.ts";
 import pkg from "../../node_modules/esbuild-wasm/package.json" with { type: "json" };
-const { version: defaultVersion } = pkg;
+export const { version: defaultVersion } = pkg;
 
 /**
  * Determines which esbuild skew to use depending on the platform option supplied, 
@@ -40,4 +41,11 @@ export async function getEsbuild(platform: Platform = PLATFORM_AUTO, version = d
   } catch (e) {
     throw e;
   }
+}
+
+export async function getEsbuildVersion(_version = defaultVersion) {
+  return _version !== defaultVersion ?
+    // Resolve semver version, e.g. `~0.19`, `latest`, etc...
+    await resolveVersion(`esbuild@${_version.replace(/^(v|@)/, "")}`) :
+    _version;
 }

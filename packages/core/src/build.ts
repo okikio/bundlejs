@@ -13,7 +13,7 @@ import { createState, getState, setState } from "./configs/state.ts";
 
 import { useFileSystem } from "./utils/filesystem.ts";
 import { createNotice } from "./utils/create-notice.ts";
-import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
+import { DEFAULT_CDN_HOST } from "./utils/cdn-format.ts";
 import { init } from "./init.ts";
 
 import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, LOGGER_WARN, dispatchEvent } from "./configs/events.ts";
@@ -72,8 +72,8 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     GLOBAL: [getState, setState],
   });
 
-  const { platform, ...initOpts } = CONFIG.init ?? {};
-  const { build: bundle } = await init(platform, initOpts);
+  const { platform, version, ...initOpts } = CONFIG.init ?? {};
+  const { build: bundle } = await init([platform, version], initOpts);
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files

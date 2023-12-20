@@ -3,23 +3,27 @@ import type * as ESBUILD from "esbuild-wasm";
 import type { Platform } from "./configs/platform.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 
-import { getEsbuild } from "./utils/get-esbuild.ts";
-import { getState, setState } from "./configs/state.ts";
+import { defaultVersion, getEsbuild, getEsbuildVersion } from "./utils/get-esbuild.ts";
 import { INIT_COMPLETE, INIT_ERROR, INIT_START, dispatchEvent } from "./configs/events.ts";
+import { getState, setState } from "./configs/state.ts";
 
 /**
  * Configures how esbuild running in wasm is initialized 
  */
 export type InitOptions = ESBUILD.InitializeOptions & { platform?: Platform };
 
-export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOptions = {}) {
+export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]: Partial<[Platform, string]>, opts: ESBUILD.InitializeOptions = {}) {
   try {
     if (!getState("initialized")) {
       setState("initialized", true);
       dispatchEvent(INIT_START);
 
-      const esbuild = await getEsbuild(platform);
+      const version = await getEsbuildVersion(_version);
+      const esbuild = await getEsbuild(platform, version);
       setState("esbuild", esbuild);
+      console.log({
+        esbuildVersion: esbuild.version
+      })
       if (
         platform !== "node" &&
         platform !== "deno"
@@ -28,12 +32,14 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
           await esbuild.initialize(opts);
         } else if ("wasmURL" in opts) { 
           await esbuild.initialize(opts);
-        } else {
+        } else if (version === defaultVersion) {
           const { default: ESBUILD_WASM } = await import("./wasm.ts");
           await esbuild.initialize({
             wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
             ...opts
           });
+        } else {
+          await esbuild.initialize(opts);
         }
       }
 

@@ -17,5 +17,3 @@ export * from "./plugins/cdn.ts";
 export * from "./plugins/external.ts";
 export * from "./plugins/http.ts";
 export * from "./plugins/virtual-fs.ts";
-
-export { default as ESBUILD_SOURCE_WASM } from "./wasm.ts";
