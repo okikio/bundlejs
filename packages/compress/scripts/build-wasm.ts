@@ -111,7 +111,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
 }
 
 await build(["gzip"], "./src/deno/zstd/zstd.wasm", "src/deno/zstd/zstd.encoded.wasm.ts");
-await build(["none"], "./src/deno/lz4/deno_lz4_bg.wasm", "src/deno/lz4/wasm.ts");
+await build(["gzip"], "./src/deno/lz4/deno_lz4_bg.wasm", "src/deno/lz4/wasm.ts");
 await build(["zstd", "ascii85"], "./src/deno/brotli/deno_brotli_bg.wasm", "src/deno/brotli/wasm.ts", {
   "zstd": "../zstd/mod.ts"
 });
