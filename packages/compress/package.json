@@ -37,7 +37,8 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsup ./src/index.ts; find ./src -name '*.wasm' | xargs -I {} cp {} ./lib",
+    "build:wasm": "tsx ./scripts/build-wasm.ts",
+    "build": "tsup; find ./src -name '*.wasm' | xargs -I {} cp {} ./lib",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
     "repl": "tsx repl.ts",

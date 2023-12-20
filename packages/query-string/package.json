@@ -36,7 +36,7 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsup ./src/index.ts",
+    "build": "tsup",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
     "repl": "tsx repl.ts",

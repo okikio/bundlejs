@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build:wasm": "tsx ./scripts/build-wasm.ts",
-    "build:src": "tsup ./src/index.ts; cp ./src/esbuild.wasm ./lib",
+    "build:src": "tsup; cp ./src/esbuild.wasm ./lib",
     "build": "pnpm build:wasm; pnpm build:src",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",

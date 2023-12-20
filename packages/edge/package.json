@@ -14,7 +14,7 @@
   "scripts": {
     "start": "wrangler dev",
     "deploy": "wrangler publish",
-    "build": "tsup ./src/index.ts",
+    "build": "tsup",
     "dev": "wrangler dev",
     "pre-release": "pnpm build"
   },
