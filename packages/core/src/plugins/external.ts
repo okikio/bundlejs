@@ -3,7 +3,7 @@ import type { StateArray } from "../configs/state.ts";
 import type { ESBUILD } from "../types.ts";
 
 import { encode } from "@bundle/utils/utils/encode-decode.ts";
-import { DEFAULT_CDN_HOST, getCDNUrl } from "../utils/util-cdn.ts";
+import { DEFAULT_CDN_HOST, getCDNUrl } from "../utils/cdn-format.ts";
 import { isAlias } from "./alias.ts";
 
 import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";

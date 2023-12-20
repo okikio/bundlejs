@@ -5,7 +5,7 @@ import { EXTERNALS_NAMESPACE } from "./external.ts";
 import { HTTP_RESOLVE } from "./http.ts";
 import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/cdn-format.ts";
 import { isBareImport } from "@bundle/utils/utils/path.ts";
 
 /** Alias Plugin Namespace */

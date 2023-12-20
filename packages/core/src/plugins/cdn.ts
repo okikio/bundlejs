@@ -10,7 +10,7 @@ import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
 import { extname, isBareImport, join } from "@bundle/utils/utils/path.ts";
 import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
 
-import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
+import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/cdn-format.ts";
 import { deepAssign } from "@bundle/utils/utils/deep-equal.ts";
 
 /** CDN Plugin Namespace */
