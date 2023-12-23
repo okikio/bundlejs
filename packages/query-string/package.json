@@ -68,7 +68,10 @@
     "@bundle/utils": "workspace:^"
   },
   "devDependencies": {
+    "iconv-lite": "^0.6.3",
     "pnpm": "^8.12.1",
+    "qs": "^6.11.2",
+    "query-string": "^8.1.0",
     "tsup": "^8.0.1",
     "tsx": "^4.6.2",
     "vitest": "^1.0.4"

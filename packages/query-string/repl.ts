@@ -1,17 +1,44 @@
-import { encode } from "@bundle/utils/utils/encode-decode.ts";
-import { compress } from "./src/mod.ts";
+// import type { StringifyOptions } from "./src/types.ts";
+// import { stringifyUrl } from "./src/query-string.ts";
+// import qs from "npm:query-string";
 
-console.log("\n");
-console.log(
-  await compress(
-    [encode("Lorem Ipsium...Lorem Ipsium...Lorem Ipsium...Lorem Ipsium...")],
-    { type: "gzip" }
-  )
-);
+// const options: StringifyOptions = {
+//   arrayFormat: "bracket-separator",
+//   // arrayFormatSeparator: "|"
+// }
 
-if (globalThis?.Deno) {
-  globalThis?.Deno?.exit?.();
-} else {
-  // @ts-ignore Only for Node
-  globalThis?.process?.exit?.();
+// const inputObj = {
+//   url: "https://bundlejs.com",
+//   query: {
+//     x: [ 7, 8, null, undefined, '', 'cool', 10, [10, 6]]
+//   }
+// }
+
+// const originalResult = qs.stringifyUrl(inputObj, options)
+// const newResult = stringifyUrl(inputObj, options)
+// console.log({
+//   original: originalResult,
+//   new: newResult,
+//   match: originalResult === newResult
+// })
+
+
+import type { IStringifyOptions } from "./src/qs/types.ts";
+import fullStringify, { stringify } from "./src/qs/stringify.ts";
+import fs from "node:fs/promises";
+import qs from "npm:qs";
+
+
+const options: IStringifyOptions = { encode: false, arrayFormat: 'comma', strictNullHandling: true }
+const inputObj = { a: [], b: [null], c: 'c' }
+
+const originalResult = qs.stringify(inputObj, options)
+const newResult = fullStringify(inputObj, options)
+let result = {
+  original: (originalResult),
+  new: (newResult),
+  match: originalResult === newResult
 }
+console.log(result)
+
+await fs.writeFile("./url.ts", JSON.stringify(result, null, 2))

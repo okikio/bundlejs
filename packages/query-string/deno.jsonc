@@ -1,5 +1,6 @@
 {
   "imports": {
-    "@bundle/utils/": "../utils/src/utils/"
+    "@bundle/utils/": "../utils/src/",
+    "json5": "npm:json5"
   }
 }

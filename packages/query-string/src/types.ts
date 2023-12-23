@@ -123,7 +123,7 @@ export type ParseOptions = {
   //=> {a: 'one', c: 'three', b: 'two'}
   ```
   */
-  readonly sort?: ((itemLeft: string, itemRight: string) => number) | false;
+  readonly sort?: ((itemLeft: string, itemRight: string) => number) | boolean;
 
   /**
   Parse the value as a number type instead of string type if it's a number.
@@ -171,7 +171,7 @@ export type ParseOptions = {
   readonly parseFragmentIdentifier?: boolean;
 };
 
-export type ParsedQuery<T = string> = Record<string, T | null | Array<T | null>>;
+export type ParsedQuery<T = string> = Record<string, T | null | Array<T | null> | Record<string, T | null>>;
 export type ParsedUrl = {
   readonly url: string;
   readonly query: ParsedQuery;
@@ -181,7 +181,7 @@ export type ParsedUrl = {
 
   Present when the `parseFragmentIdentifier` option is `true`.
   */
-  readonly fragmentIdentifier?: string;
+  fragmentIdentifier?: string;
 };
 
 export type StringifyOptions = {
@@ -376,6 +376,8 @@ export type StringifyOptions = {
   ```
   */
   readonly skipEmptyString?: boolean;
+
+  [key: symbol]: any
 };
 
 export type Stringifiable = string | boolean | number | null | undefined;
