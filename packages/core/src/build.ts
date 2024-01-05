@@ -136,7 +136,6 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
 
   try {
     try {
-      const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
         loader: {
@@ -149,7 +148,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
         },
         define: {
           "__NODE__": "false",
-          [key]: "\"production\"",
+          "process.env.NODE_ENV": "\"production\"",
           ...define
         },
         write: false,

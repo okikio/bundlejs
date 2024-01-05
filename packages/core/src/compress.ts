@@ -51,7 +51,7 @@ export const COMPRESS_CONFIG: CompressionOptions = {
 import { compress as brotli, getWASM as brotliWASM } from "./deno/brotli/mod.ts";
 import { compress as zstd, getWASM as zstdWASM } from "./deno/zstd/mod.ts";
 import { compress as lz4, getWASM as lz4WASM } from "./deno/lz4/mod.ts";
-import { gzip, getWASM as gzipWASM } from "./deno/denoflate/mod.ts";
+import { compress as gzip } from "./deno/gzip/mod.ts";
 
 /**
  * Use multiple compression algorithims & pretty-bytes for the total gzip, brotli and/or lz4 compressed size
@@ -102,17 +102,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
       }
       case "gzip":
       default: {
-        if (quality === COMPRESS_CONFIG.quality && 'CompressionStream' in globalThis) {
-          console.info("Using `CompressionStream` to determine compressed bundle size...")
-          return async (code: Uint8Array) => {
-            const cs = new CompressionStream('gzip');
-            const compressedStream = new Blob([code]).stream().pipeThrough(cs);
-            return new Uint8Array(await new Response(compressedStream).arrayBuffer());
-          };
-        }
-
-        await gzipWASM();
-        return async (code: Uint8Array) => await gzip(code, quality);
+        return async (code: Uint8Array) => await gzip(code);
       }
     }
   })(type);

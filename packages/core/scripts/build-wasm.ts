@@ -1,53 +1,48 @@
-import { encode } from "../src/deno/base64/mod";
-import { compress, decompress } from "../src/deno/lz4/mod";
-import { gzip, gunzip, getWASM } from "../src/deno/denoflate/mod";
+import { base64, ascii85 } from "../src/utils/encoding.ts";
+import { outdent } from "../src/utils/outdent.ts";
 
-import { bytes } from "../src/utils/pretty-bytes";
+import { compress as lz4, decompress as unlz4 } from "../src/deno/lz4/mod.ts";
+import { compress as gzip, decompress as gunzip } from "../src/deno/gzip/mod.ts";
 
-// @ts-ignore
-import { wasm as WASM } from "../src/deno/denoflate/pkg/denoflate_bg.wasm.js";
+import { bytes } from "../src/utils/pretty-bytes.ts";
 
-import { compress as brotli, decompress as unbrotli } from "../src/deno/brotli/mod";
-import { init, compress as zstdCompress, decompress as zstdDecompress } from "../src/deno/zstd/mod.ts"; 
+import { compress as brotli, decompress as unbrotli } from "../src/deno/brotli/mod.ts";
+import { compress as zstd, decompress as unzstd } from "../src/deno/zstd/mod.ts";
 
 import { dirname, relative } from 'node:path';
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 
-await init();
-
-export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" = "zstd", src: string | Uint8Array | Promise<string | Uint8Array> = "./node_modules/esbuild-wasm/esbuild.wasm", target = "src/wasm.ts") {
+export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd" | "brotli" | "gzip" | "lz4" | "none", "base64" | "ascii85"]> = [], src: string | Uint8Array | Promise<string | Uint8Array> = "./node_modules/esbuild-wasm/esbuild.wasm", target = "src/wasm.ts", importsPaths?: Partial<Record<"gzip" | "zstd" | "lz4" | "brotli", string>>) {
   const value = await src;
 
   if (typeof value === "string") console.log(`\n- Source file: ${value}`);
   const res = typeof value === "string" ? await fs.readFile(value) : value;
   const wasm = new Uint8Array(res);
   console.log(`- Read WASM (size: ${bytes(wasm.length)} bytes)`);
-  
+
   console.time("Compression time")
   let compressed: Uint8Array = wasm;
   if (mode === "zstd") {
-    compressed = await zstdCompress(wasm, 22);
+    compressed = await zstd(wasm, 22);
   } else if (mode === "brotli") {
     compressed = await brotli(wasm);
   } else if (mode === "gzip") {
-    await getWASM(await WASM());
-    compressed = await gzip(wasm, 6);
+    compressed = await gzip(wasm);
   } else if (mode === "lz4") {
-    compressed = await compress(wasm);
+    compressed = await lz4(wasm);
   }
   console.timeEnd("Compression time")
 
   console.time("Decompression time")
   if (mode === "zstd") {
-    await zstdDecompress(compressed);
+    await unzstd(compressed);
   } else if (mode === "brotli") {
     await unbrotli(compressed);
   } else if (mode === "gzip") {
-    await getWASM(await WASM());
     await gunzip(compressed);
   } else if (mode === "lz4") {
-    await decompress(wasm);
+    await unlz4(wasm);
   }
   console.timeEnd("Decompression time")
 
@@ -55,52 +50,61 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
     `- Compressed WASM using ${mode} (reduction: ${bytes(wasm.length - compressed.length)} bytes, size: ${bytes(compressed.length)})`,
   );
 
-  const encoded = encode(compressed);
+  const encoded = JSON.stringify(encoding === "ascii85" ? ascii85.encodeAscii85(compressed) : base64.encodeBase64(compressed));
   console.log(
-    `- Encoded WASM using base64, (increase: ${bytes(encoded.length -
+    `- Encoded WASM using ${encoding}, (increase: ${bytes(encoded.length -
       compressed.length)}, size: ${bytes(encoded.length)})`,
   );
-  
+
   const targetDir = dirname(target);
   console.log({
     target,
     targetDir,
-    to: "src/deno/zstd/mod.ts",
-    path: relative(targetDir, "src/deno/zstd/mod.ts")
   })
 
   console.log("- Inlining wasm code in js");
-  const source = `\
-  // @ts-nocheck
-  export const source = async () => {
-    const uint8arr = Uint8Array.from(atob("${encoded}"), c => c.charCodeAt(0));
-    ${
-      mode === "base64" ? `return uint8arr;` :
-      mode === "zstd" ? `
-    const { decompress } = await import(\"./${relative(targetDir, "src/deno/zstd/mod.ts")}\");
-    return await decompress(uint8arr);
-  ` : mode === "brotli" ? `
-    const { decompress } = await import(\"./${relative(targetDir, "src/deno/brotli/mod.ts")}\");
-    return await decompress(uint8arr);
-  ` : (`
-    const mode: "zstd" | "lz4" | "gzip" | "base64" = "${mode}";
-    if ('DecompressionStream' in globalThis && mode === "gzip") {
-      const ds = new DecompressionStream('gzip');
-      const decompressedStream = new Blob([uint8arr.buffer]).stream().pipeThrough(ds);
-      return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
-    }
+  const compressionModuleImportPath = ({
+    "gzip": "../src/deno/gzip/mod.ts",
+    "brotli": "../src/deno/brotli/mod.ts",
+    "zstd": "../src/deno/zstd/mod.ts",
+    "lz4": "../src/deno/lz4/mod.ts",
+    "none": undefined,
+    ...importsPaths
+  })[mode];
 
-    const { ${mode === "gzip" ? "gunzip, getWASM" : "decompress"} } = await import(\"./${relative(targetDir, mode === "gzip" ? "src/deno/denoflate/mod.ts" : "src/deno/lz4/mod.ts")}\");
-    ${mode === "gzip" ? "await getWASM();" : ""}
-    return await ${mode === "gzip" ? "gunzip" : "decompress"}(uint8arr);
-  `)
-  }};
-  export default source;`;
+  const commonReturn = outdent`
+    const { decompress } = await import(\"${compressionModuleImportPath}\");
+    return await decompress(uint8arr);
+  `;
+
+  const modeReturns = ({
+    "gzip": outdent`
+        const cs = new DecompressionStream('gzip');
+        const decompressedStream = new Blob([uint8arr]).stream().pipeThrough(cs);
+        return new Uint8Array(await new Response(decompressedStream).arrayBuffer());
+    `,
+    "brotli": commonReturn,
+    "lz4": commonReturn,
+    "zstd": commonReturn,
+    "none": undefined,
+  })[mode] ?? `return uint8arr;`;
+
+  const source = outdent`
+    ${encoding === "ascii85" ? `import { ascii85 } from "../src/utils/encoding.ts";` : ""}
+    export const source = async () => {
+      const uint8arr = (${encoding === "ascii85" ?
+      `ascii85.decodeAscii85(\n\t${encoded}\n)` :
+      `Uint8Array.from(atob(${encoded}), c => c.charCodeAt(0))`
+    });
+      ${modeReturns}
+    };
+    export default source;
+  `;
 
   console.log(`- Writing output to file (${target})`);
   await Promise.all([
+    fs.writeFile("src/esbuild.wasm", res),
     fs.writeFile(target, encoder.encode(source)),
-    fs.writeFile("src/esbuild.wasm", res)
   ]);
 
   const outputFile = await fs.stat(target);
@@ -109,12 +113,4 @@ export async function build(mode: "zstd" | "brotli" | "gzip" | "lz4" | "base64" 
   );
 }
 
-await build("zstd");
-
-// import { source as gzipWASM } from "../src/deno/denoflate/pkg/wasm";
-// import { source as brotliWASM } from "../src/deno/brotli/wasm";
-// import { source as lz4WASM } from "../src/deno/lz4/wasm";
-
-// await build("zstd", await gzipWASM(), "src/deno/denoflate/wasm-2.ts");
-// await build("zstd", new Uint8Array(await lz4WASM()), "src/deno/lz4/wasm-2.ts");
-// await build("zstd", await brotliWASM(), "src/deno/brotli/wasm-3.ts");
+await build(["zstd", "ascii85"]);

@@ -76,18 +76,18 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.18.11",
-    "esbuild-wasm": "^0.18.11",
+    "esbuild": "^0.19.11",
+    "esbuild-wasm": "^0.19.11",
     "resolve.exports": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.4.1",
-    "del-cli": "^5.0.0",
-    "esno": "^0.16.3",
-    "pnpm": "^8.6.6",
-    "typescript": "5.1.6",
-    "vite": "^4.4.2",
-    "vite-plugin-cp": "^1.0.0",
-    "vitest": "^0.33.0"
+    "@types/node": "^20.10.6",
+    "del-cli": "^5.1.0",
+    "esno": "^4.0.0",
+    "pnpm": "^8.14.0",
+    "typescript": "5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-cp": "^4.0.7",
+    "vitest": "^1.1.2"
   }
 }

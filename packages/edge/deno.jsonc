@@ -1,6 +1,32 @@
 {
-  "importMap": "./import_map.json",
+  "imports": {
+    "@bundlejs/core/": "../core/",
+    "@bundlejs/core": "../core/src/index.ts",
+
+    "esbuild-wasm/esm/browser.d.ts": "https://unpkg.com/esbuild-wasm/esm/browser.d.ts",
+    "esbuild-wasm": "https://esm.sh/esbuild-wasm",
+    "esbuild": "https://deno.land/x/esbuild/wasm.js",
+
+    "resolve.exports": "https://esm.sh/resolve.exports",
+
+    "@octokit/core": "npm:@octokit/core",
+    "@octokit/rest": "npm:@octokit/rest",
+    "@octokit/plugin-throttling": "npm:@octokit/plugin-throttling",
+
+    "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
+    "base64": "https://deno.land/x/base64@v0.2.1/mod.ts",
+
+    "@upstash/redis": "https://esm.sh/@upstash/redis",
+    "http": "https://deno.land/std/http/server.ts",
+    "path": "https://deno.land/std/path/mod.ts"
+  },
   "tasks": {
     "dev": "deno run -A --watch mod.ts"
+  },
+  "deploy": {
+    "project": "bundlejs",
+    "exclude": ["node_modules"],
+    "include": [],
+    "entrypoint": "mod.ts"
   }
 }
