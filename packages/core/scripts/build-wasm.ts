@@ -68,6 +68,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
     "brotli": "@bundle/compress/deno/brotli/mod.ts",
     "zstd": "@bundle/compress/deno/zstd/mod.ts",
     "lz4": "@bundle/compress/deno/lz4/mod.ts",
+    "none": undefined,
     ...importsPaths
   })[mode];
 
@@ -85,6 +86,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
     "brotli": commonReturn,
     "lz4": commonReturn,
     "zstd": commonReturn,
+    "none": undefined,
   })[mode] ?? `return uint8arr;`;
 
   const source = outdent`
