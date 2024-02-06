@@ -28,6 +28,7 @@ export function removeTrailingSlash(url) {
 }
 
 (window => {
+  try {
   const apiRoute = "/take-measurement"; // "/api/collect";
 
   const {
@@ -244,4 +245,7 @@ export function removeTrailingSlash(url) {
 
     update();
   }
+} catch (e) {
+console.warn(e)
+}
 })(window);
