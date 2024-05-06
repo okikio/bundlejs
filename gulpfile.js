@@ -230,9 +230,12 @@ task("js", async () => {
             `${tsFolder}/*.js`,
             `!${tsFolder}/**/*.d.ts`,
             // `${tsFolder}/scripts/*`,
-            `node_modules/esbuild-wasm/esbuild.wasm`,
+            `node_modules/esbuild-wasm/esbuild.wasm`
         ],
         {
+            opts: {
+                allowEmpty: true,
+            },
             pipes: [
                 // Bundle Modules
                 esbuild({
