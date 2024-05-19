@@ -1,7 +1,7 @@
 /**
  * Based on https://deno.land/x/json5@v1.0.0/mod.ts
  */
-import JSON5_MOD from "https://esm.sh/json5";
+import JSON5_MOD from "npm:json5";
 
 /**
  * Converts a JSON5 string into an object.

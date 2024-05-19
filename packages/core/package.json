@@ -29,13 +29,13 @@
     "@types"
   ],
   "scripts": {
-    "build:wasm": "esno ./scripts/build-wasm.ts",
+    "build:wasm": "tsx ./scripts/build-wasm.ts",
     "build:all": "pnpm build:wasm; pnpm build",
     "build": "vite build",
     "dev": "vite",
     "test:run": "vitest run && pnpm repl; pnpm deno",
     "test": "vitest",
-    "repl": "esno repl.ts",
+    "repl": "tsx repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
     "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
     "verify": "pnpm dts; pnpm test:run",
@@ -76,18 +76,18 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.19.11",
-    "esbuild-wasm": "^0.19.11",
+    "esbuild": "^0.21.3",
+    "esbuild-wasm": "^0.21.3",
     "resolve.exports": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
+    "@types/node": "^20.12.12",
     "del-cli": "^5.1.0",
-    "esno": "^4.0.0",
-    "pnpm": "^8.14.0",
-    "typescript": "5.3.3",
-    "vite": "^5.0.10",
-    "vite-plugin-cp": "^4.0.7",
-    "vitest": "^1.1.2"
+    "pnpm": "^9.1.1",
+    "tsx": "^4.10.5",
+    "typescript": "5.4.5",
+    "vite": "^5.2.11",
+    "vite-plugin-cp": "^4.0.8",
+    "vitest": "^1.6.0"
   }
 }

@@ -3,11 +3,11 @@ import type { BundleResult } from "./bundle.ts";
 
 import JSON5 from "./vendor/json5.ts";
 
+// @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import { Redis } from "@upstash/redis";
-import { serve } from "http";
-import { dirname, fromFileUrl, join, extname, basename } from "path";
+import { dirname, fromFileUrl, join, extname, basename } from "@std/path";
 
-import { toUint8Array } from "base64";
+import { decodeBase64 } from "@std/encoding/base64";
 
 // @ts-ignore Workers are undefined
 const worker = globalThis?.Worker;
@@ -58,7 +58,7 @@ function getPackageResultKey(str: string) {
   return `${PACKAGE_PREFIX}/${str}`
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   try {
     const referer = req.headers.get("Referer") || req.headers.get("Referrer");
     const url = new URL(req.url);
@@ -389,7 +389,7 @@ serve(async (req: Request) => {
           }, url.href)
 
           console.log("Respond with Cached Badge")
-          return new Response(badgeRasterQuery ? toUint8Array(BADGEResult) : BADGEResult, {
+          return new Response(badgeRasterQuery ? decodeBase64(BADGEResult) : BADGEResult, {
             status: 200,
             headers: [
               ...headers,

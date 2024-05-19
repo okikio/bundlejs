@@ -1,20 +1,18 @@
-// @deno-types=npm:@octokit/rest
+// @deno-types="npm:@octokit/rest"
 import { Octokit } from "@octokit/rest";
 
-// @deno-types=npm:@octokit/plugin-throttling
+// @deno-types="npm:@octokit/plugin-throttling"
 import { throttling } from "@octokit/plugin-throttling";
 
-import { path, dispatchEvent, LOGGER_ERROR, LOGGER_WARN } from "@bundlejs/core/src/index.ts";
 import { Velo } from "velo";
 import { ESBUILD } from "@bundlejs/core/src/types.ts";
 
-import { fromUint8Array } from "base64";
-
-const { extname } = path;
+import { encodeBase64 } from "@std/encoding/base64";
+import { extname } from "@std/path";
 
 export const GIST_CACHE = Velo.builder<string, string>().capacity(10).lru().ttl(30_000).build();
-
 export const CustomOctokit = Octokit.plugin(throttling);
+
 export const octokit = new CustomOctokit({
   auth: Deno.env.get('GITHUB_AUTH_TOKEN'),
   throttle: {
@@ -62,7 +60,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
           {
             content: (
               /\.(wasm|png|jpg|jpeg)$/.exec(extname(path)) ?
-                fromUint8Array(x.contents) :
+                encodeBase64(x.contents) :
                 x.text
             ) || "[bundlejs] Empty file..."
           }
@@ -74,7 +72,7 @@ export async function setFile(url: string, files: ESBUILD.OutputFile[]) {
       // 'POST /gists', 
       await octokit.rest.gists.create({
         description: `Result of ${newUrl.href}`.slice(0, 255),
-        'public': true,
+        'public': false,
         files: {
           ...filesObj,
           'README.md': {

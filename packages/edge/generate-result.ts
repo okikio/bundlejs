@@ -1,8 +1,9 @@
+// @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import type { Redis } from "@upstash/redis";
 import type { CompressionType } from "@bundlejs/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
 
-import { fromUint8Array } from "base64";
+import { encodeBase64 } from "@std/encoding/base64";
 
 import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundlejs/core/src/index.ts";
 import { getFile } from "./gist.ts";
@@ -165,7 +166,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     try {
       if (!redis) throw new Error("Redis not available");
       await redis.hset<string>(badgeKey, { 
-        [badgeID]: typeof imgShield === "string" ? imgShield : fromUint8Array(imgShield) 
+        [badgeID]: typeof imgShield === "string" ? imgShield : encodeBase64(imgShield) 
       })
     } catch (e) {
       console.warn(e);
