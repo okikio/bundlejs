@@ -117,23 +117,20 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
             let subpath = parsed.path;
 
             let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-            let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
-            let oldPkg = pkg;
+            let oldPkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+            let pkg = structuredClone(oldPkg);
 
-            // Are there an dependecies???? Well Goood.
-            const depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
-            if (depsExists && !/\S+@\S+/.test(_argPath)) {
-                const {
-                    devDependencies = {},
-                    dependencies = {},
-                    peerDependencies = {}
-                } = pkg;
+            // Are there any dependecies???? Well Goood.
+            const _deps = Object.assign(
+                {},
+                pkg.devDependencies,
+                pkg.peerDependencies, 
+                pkg.dependencies
+            );
+            const keys = Object.keys(_deps);
 
-                const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
-                const keys = Object.keys(deps);
-
-                if (keys.includes(_argPath))
-                    parsed.version = deps[_argPath];
+            if (keys.includes(parsed.name)) {
+                parsed.version = _deps[parsed.name];
             }
 
             let finalSubpath = subpath;
@@ -263,6 +260,14 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
             const deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
             const peerDeps = pkg.peerDependencies ?? {};
             const peerDepsKeys = Object.keys(peerDeps);
+
+            // Some packages rely on cyclic dependencies, e.g. https://x.com/jsbundle/status/1792325771354149261
+            // so we create a new field in peerDependencies and place the current package and it's version,
+            // the algorithm should then be able to use the correct version if a dependency is cyclic
+            peerDeps[parsed.name] = version.length > 0 ? version.slice(1) : (deps?.[parsed.name] ?? "latest");
+
+            // Just in case the peerDependency is legitimately set from the package.json ignore the 
+            // cyclic deps. rules, as they just make things more complicated
             for (const depKey of peerDepsKeys) {
                 peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
             }
