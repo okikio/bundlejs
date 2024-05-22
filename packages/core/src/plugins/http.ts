@@ -2,10 +2,14 @@
 import type { ESBUILD, BuildConfig, LocalState, PackageJson } from "../types.ts";
 import type { StateArray } from "../configs/state.ts";
 
-import { DEFAULT_CDN_HOST, decode, getCDNStyle, getCDNUrl, getRequest, inferLoader, setFile } from "../utils/index.ts";
+import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
+import { decode } from "@bundle/utils/utils/encode-decode.ts";
+
+import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl, inferLoader, setFile } from "../utils/index.ts";
 import { LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
-import { urlJoin, isBareImport } from "@bundle/utils/utils/path.ts";
+import { isBareImport } from "@bundle/utils/utils/path.ts";
+import { urlJoin } from "@bundle/utils/utils/url.ts";
 import { CDN_RESOLVE } from "./cdn.ts";
 
 /** HTTP Plugin Namespace */

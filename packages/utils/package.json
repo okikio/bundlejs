@@ -23,7 +23,6 @@
     "./utils/*": "./src/utils/*",
     "./lib/*": "./lib/*",
     "./src/*": "./src/*",
-    "./deno/*": "./src/deno/*",
     "./package.json": "./package.json"
   },
   "directories": {
@@ -67,10 +66,10 @@
   "homepage": "https://bundlejs.com",
   "dependencies": {
     "@opentf/obj-diff": "npm:@jsr/opentf__obj-diff@^0.11.0",
-    "@std/assert": "npm:@jsr/std__assert@^0.225.2",
-    "@std/async": "npm:@jsr/std__async@^0.224.0",
-    "@std/collections": "npm:@jsr/std__collections@^0.224.2",
-    "@std/encoding": "npm:@jsr/std__encoding@^0.224.1",
+    "@std/assert": "npm:@jsr/std__assert@^0.225.3",
+    "@std/async": "npm:@jsr/std__async@^0.224.1",
+    "@std/collections": "npm:@jsr/std__collections@1.0.0-rc.1",
+    "@std/encoding": "npm:@jsr/std__encoding@^0.224.2",
     "@std/fmt": "npm:@jsr/std__fmt@^0.225.1",
     "@std/html": "npm:@jsr/std__html@^0.224.0",
     "@std/path": "npm:@jsr/std__path@^0.225.1",
@@ -83,7 +82,7 @@
     "@opentf/obj-diff": "npm:@jsr/opentf__obj-diff@^0",
     "@std/assert": "npm:@jsr/std__assert@^0",
     "@std/async": "npm:@jsr/std__async@^0",
-    "@std/collections": "npm:@jsr/std__collections@^0",
+    "@std/collections": "npm:@jsr/std__collections@^1",
     "@std/encoding": "npm:@jsr/std__encoding@^0",
     "@std/fmt": "npm:@jsr/std__fmt@^0",
     "@std/html": "npm:@jsr/std__html@^0",
@@ -94,10 +93,10 @@
     "resolve.exports": "^2"
   },
   "devDependencies": {
-    "@types/web": "^0.0.128",
-    "pnpm": "^8.12.1",
-    "tsup": "^8.0.1",
-    "tsx": "^4.6.2",
-    "vitest": "^1.0.4"
+    "@types/web": "^0.0.147",
+    "pnpm": "^9.1.2",
+    "tsup": "^8.0.2",
+    "tsx": "^4.10.5",
+    "vitest": "^1.6.0"
   }
 }

@@ -1,5 +1,5 @@
 import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 import type { HierarchyRectangularNode } from "d3";
 import { LABELS } from "../sizes";
 import { StaticContext } from "./index";
@@ -32,14 +32,14 @@ export const Tooltip: Component<TooltipProps> = ({ node, root, sizeProperty }) =
             return (
               <div class="details-size">
                 <b>
-                  {LABELS[sizeProp]}: {bytes(getModuleSize(node.data, sizeProp))}
+                  {LABELS[sizeProp]}: {bytes.format(getModuleSize(node.data, sizeProp))}
                 </b>
               </div>
             );
           } else {
             return (
               <div class="details-size">
-                {LABELS[sizeProp]}: {bytes(getModuleSize(node.data, sizeProp))}
+                {LABELS[sizeProp]}: {bytes.format(getModuleSize(node.data, sizeProp))}
               </div>
             );
           }

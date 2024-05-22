@@ -1,1 +1,1 @@
-export * from "../deno/assert/mod.ts";
+export * from "@std/assert";

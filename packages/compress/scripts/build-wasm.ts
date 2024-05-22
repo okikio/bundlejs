@@ -4,7 +4,7 @@ import { outdent } from "@bundle/utils/utils/outdent.ts";
 import { compress as lz4, decompress as unlz4 } from "@bundle/compress/deno/lz4/mod.ts";
 import { compress as gzip, decompress as gunzip } from "@bundle/compress/deno/gzip/mod.ts";
 
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 
 import { compress as brotli, decompress as unbrotli } from "@bundle/compress/deno/brotli/mod.ts";
 import { compress as zstd, decompress as unzstd } from "@bundle/compress/deno/zstd/mod.ts";
@@ -19,7 +19,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
   if (typeof value === "string") console.log(`\n- Source file: ${value}`);
   const res = typeof value === "string" ? await fs.readFile(value) : value;
   const wasm = new Uint8Array(res);
-  console.log(`- Read WASM (size: ${bytes(wasm.length)} bytes)`);
+  console.log(`- Read WASM (size: ${bytes.format(wasm.length)} bytes)`);
 
   console.time("Compression time")
   let compressed: Uint8Array = wasm;
@@ -47,13 +47,13 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
   console.timeEnd("Decompression time")
 
   console.log(
-    `- Compressed WASM using ${mode} (reduction: ${bytes(wasm.length - compressed.length)} bytes, size: ${bytes(compressed.length)})`,
+    `- Compressed WASM using ${mode} (reduction: ${bytes.format(wasm.length - compressed.length)} bytes, size: ${bytes.format(compressed.length)})`,
   );
 
-  const encoded = JSON.stringify(encoding === "ascii85" ? ascii85.encodeAscii85(compressed) : base64.encodeBase64(compressed));
+  const encoded = JSON.stringify(encoding === "ascii85" ? ascii85.encode(compressed) : base64.encode(compressed));
   console.log(
-    `- Encoded WASM using ${encoding}, (increase: ${bytes(encoded.length -
-      compressed.length)}, size: ${bytes(encoded.length)})`,
+    `- Encoded WASM using ${encoding}, (increase: ${bytes.format(encoded.length -
+      compressed.length)}, size: ${bytes.format(encoded.length)})`,
   );
 
   const targetDir = dirname(target);
@@ -91,7 +91,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
     ${encoding === "ascii85" ? `import { ascii85 } from "@bundle/utils/utils/encoding.ts";` : ""}
     export const source = async () => {
       const uint8arr = (${encoding === "ascii85" ? 
-        `ascii85.decodeAscii85(\n\t${encoded}\n)`  : 
+        `ascii85.decode(\n\t${encoded}\n)`  : 
         `Uint8Array.from(atob(${encoded}), c => c.charCodeAt(0))`
       });
       ${modeReturns}
@@ -106,7 +106,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
 
   const outputFile = await fs.stat(target);
   console.log(
-    `- Output file (${target}), final size is: ${bytes(outputFile.size)}\n`
+    `- Output file (${target}), final size is: ${bytes.format(outputFile.size)}\n`
   );
 }
 

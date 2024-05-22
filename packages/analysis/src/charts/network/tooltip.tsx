@@ -1,6 +1,6 @@
 import type { SizeKey } from "../../types/types";
 import { type Component, useContext, createMemo, createSignal } from "solid-js";
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 import { StaticContext, type NetworkNode } from "./index";
 import { LABELS } from "../sizes";
 import onMountWithCleaning from "../../utils/onMountWithCleaning";
@@ -30,15 +30,16 @@ export const Tooltip: Component<TooltipProps> = ({ node, visible, sizeProperty }
                         return (
                             <div>
                                 <b>
-                                    {LABELS[sizeProp]}: {bytes(node[sizeProp] ?? 0)}
+                                    {LABELS[sizeProp]}: {bytes.format(node[sizeProp] ?? 0)}
                                 </b>
                             </div>
                         );
                     } else {
                         return (
-                            <div>
-                                {LABELS[sizeProp]}: {bytes(node[sizeProp] ?? 0)}
-                            </div>
+                          <div>
+                            {LABELS[sizeProp]}:{" "}
+                            {bytes.format(node[sizeProp] ?? 0)}
+                          </div>
                         );
                     }
                 })}

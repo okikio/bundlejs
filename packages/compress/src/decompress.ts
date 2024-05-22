@@ -1,10 +1,10 @@
 import type { CompressConfig, CompressionOptions } from "./types.ts";
 import { encode } from "@bundle/utils/utils/encode-decode.ts";
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 import { createCompressConfig } from "./config.ts";
 
 /**
- * Use multiple compression algorithims & pretty-bytes for the total gzip, brotli and/or lz4 compressed size
+ * Use multiple compression algorithims & @std/fmt/bytes for the total gzip, brotli and/or lz4 compressed size
  * 
  * @param inputs An array of input files to compress
  * @param opts 
@@ -33,7 +33,7 @@ export async function decompress(inputs: Uint8Array[] | string[] = [], opts: Com
   });
 
   // Total uncompressed size
-  const totalByteLength = bytes(
+  const totalByteLength = bytes.format(
     contents.reduce((acc, content) => acc + content.byteLength, 0)
   ) as string;
 
@@ -79,7 +79,7 @@ export async function decompress(inputs: Uint8Array[] | string[] = [], opts: Com
   );
 
   // Convert sizes to human readable formats, e.g. 10000 bytes to 10MB
-  const totalCompressedSize = bytes(
+  const totalCompressedSize = bytes.format(
     compressedContent.reduce((acc, { length }) => acc + length, 0)
   );
 

@@ -1,20 +1,8 @@
-import { isAbsolute, join } from "../deno/path/mod.ts";
-import { encodeWhitespace } from "../deno/path/_common/to_file_url.ts";
+import { isAbsolute } from "@std/path";
 
-export * from "../deno/path/mod.ts";
-
-/** 
- * Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/path.ts#L123
- * 
- * Support joining paths to a URL
- */
-export const urlJoin = (urlStr: string, ...args: string[]) => {
-  const url = new URL(urlStr);
-  url.pathname = encodeWhitespace(
-    join(url.pathname, ...args).replace(/%/g, "%25").replace(/\\/g, "%5C"),
-  );
-  return url.toString();
-};
+export * from "@std/path";
+export * as posix from "@std/path/posix";
+export * as windows from "@std/path/windows";
 
 /**
  * An import counts as a bare import if it's neither a relative import of an absolute import

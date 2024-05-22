@@ -70,13 +70,13 @@ export default {
 			}
 
 			// const size = await compress(result.contents.map(x => x.contents), configObj);
-			const uncompressedSize = bytes(
+			const uncompressedSize = bytes.format(
 				result.contents.reduce((acc, content) => acc + content.contents.byteLength, 0)
 			) as string;
 			
 			const cs = new CompressionStream('gzip');
 			const compressedStream = new Blob(result.contents.map(x => x.contents.buffer)).stream().pipeThrough(cs);
-			const compressedSize = bytes(new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength);
+			const compressedSize = bytes.format(new Uint8Array(await new Response(compressedStream).arrayBuffer()).byteLength);
 
 			if (url.searchParams.has("badge")) {
 				const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);

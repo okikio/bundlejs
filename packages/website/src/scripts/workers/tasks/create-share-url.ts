@@ -6,11 +6,11 @@ import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";
 
 import { serialize } from "../../utils/serialize-javascript";
-import { configModelResetValue } from "../../utils/get-initial";
-import { deepAssign, deepDiff, lzstring } from "@bundle/utils/src/mod.ts";
+import { configModelResetValue } from "../../utils/get-initial"; 
+import { compressToURL } from "@bundle/utils/utils/lz-string.ts";
+import { deepDiff, deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 import ts from "typescript";
 
-const { compressToURL } = lzstring;
 export async function _createShareURL(
   fileName: string,
   content: string,
@@ -22,7 +22,7 @@ export async function _createShareURL(
   // Basically only keep the config options that have changed from the default
   const changedConfig = deepDiff(
     DefaultConfig,
-    deepAssign({}, DefaultConfig, config)
+    deepMerge(structuredClone(DefaultConfig), config)
   );
   const changedEntries = Object.keys(changedConfig);
 

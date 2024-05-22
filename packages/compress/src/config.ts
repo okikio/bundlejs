@@ -1,5 +1,5 @@
 import type { CompressConfig, CompressionOptions } from "./types";
-import { deepAssign } from "@bundle/utils/utils/deep-equal.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 
 /**
  * Default compress config
@@ -15,5 +15,5 @@ export const COMPRESS_CONFIG: CompressionOptions = {
  * @returns An object representing the configuration for that type of function
  */
 export function createCompressConfig<O extends CompressConfig>(opts?: O): CompressionOptions {
-  return deepAssign({}, COMPRESS_CONFIG, typeof opts === "string" ? { type: opts } : opts);
+  return deepMerge<CompressionOptions>(structuredClone(COMPRESS_CONFIG), typeof opts === "string" ? { type: opts } : opts);
 }

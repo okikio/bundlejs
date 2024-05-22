@@ -1,4 +1,4 @@
-import { deepAssign } from "@bundle/utils/src/mod.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 import { EasyDefaultConfig } from "../configs/options";
 import { parseShareURLQuery } from "@bundle/query-string/src/parse-query.ts";
 export function generateConfigValue(config: string | Record<string, unknown>) {
@@ -34,7 +34,7 @@ export function getShareURLValues() {
 
       inputValue: parseShareURLQuery(shareURL),
       configValue: configQuery ? generateConfigValue(
-        deepAssign({}, EasyDefaultConfig, JSON.parse(configQuery))
+        deepMerge(structuredClone(EasyDefaultConfig), JSON.parse(configQuery))
       ) : configModelResetValue
     };
   }

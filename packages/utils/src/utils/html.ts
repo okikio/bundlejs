@@ -1,1 +1,1 @@
-export * from "../deno/html/mod.ts";
+export * from "@std/html";

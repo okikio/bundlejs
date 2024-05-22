@@ -1,5 +1,5 @@
 import { decode, encode } from "@bundle/utils/utils/encode-decode.ts";
-import { dirname, basename, resolve, sep } from "@bundle/utils/utils/path.ts";
+import { dirname, basename, resolve, posix } from "@bundle/utils/utils/path.ts";
 
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
@@ -130,11 +130,11 @@ export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new M
       const resolvedPath = resolve(path);
       const dir = dirname(resolvedPath);
 
-      const parentDirs = dir.split(sep).filter(x => x.length > 0);
+      const parentDirs = dir.split(posix.SEPARATOR).filter(x => x.length > 0);
       const len = parentDirs.length;
 
       // Generate all the subdirectories in b/w
-      let accPath = parentDirs[0] !== sep ? "/" : "";
+      let accPath = parentDirs[0] !== posix.SEPARATOR ? "/" : "";
       for (let i = 0; i < len; i ++) {
         accPath += parentDirs[i];
         if (!FileSystem.has(accPath)) 
@@ -221,7 +221,7 @@ export async function createOPFSFileSystem() {
     const files = await INTERNAL_FS.files();
 
     const root = await navigator.storage.getDirectory();
-    files.set(sep, root);
+    files.set(posix.SEPARATOR, root);
 
     const fs: IFileSystem<typeof INTERNAL_FS> = {
       async files() {
@@ -245,11 +245,11 @@ export async function createOPFSFileSystem() {
         const resolvedPath = resolve(resPath);
         const dir = dirname(resolvedPath);
 
-        const parentDirs = dir.split(sep).filter(x => x.length > 0);
+        const parentDirs = dir.split(posix.SEPARATOR).filter(x => x.length > 0);
         const len = parentDirs.length;
 
         // Generate all the subdirectories in b/w
-        let accPath = parentDirs[0] !== sep ? "/" : "";
+        let accPath = parentDirs[0] !== posix.SEPARATOR ? "/" : "";
         let parentDirHandle = root;
         for (let i = 0; i < len; i++) {
           const parentDir = parentDirs[i];
@@ -260,7 +260,7 @@ export async function createOPFSFileSystem() {
             files.set(accPath, parentDirHandle);
           }
 
-          accPath += sep;
+          accPath += posix.SEPARATOR;
         }
 
         const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath), { "create": true });

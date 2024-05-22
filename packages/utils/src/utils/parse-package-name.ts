@@ -8,7 +8,7 @@ export const RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 /** Parsed a non-scoped package name into name, version, path */
 export const RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
 
-export function parsePackageName(input: string, ignoreError = false) {
+export function parsePackageName(input: string, { ignoreError = false, defaultVersion = "latest" } = { }) {
   const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
 
   if (!m && !ignoreError) {
@@ -17,7 +17,7 @@ export function parsePackageName(input: string, ignoreError = false) {
 
   return {
     name: m?.[1] || "",
-    version: m?.[2] || "latest",
+    version: m?.[2] || defaultVersion,
     path: m?.[3] || "",
   };
 }

@@ -1,8 +1,7 @@
-import { deepAssign, lzstring, parsePackageName } from "@bundle/utils/src/mod.ts";
+import { decompressFromURL } from "@bundle/utils/utils/lz-string.ts";
+import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
 import { basename, extname } from "@bundle/utils/utils/path.ts";
 import * as JSON5 from "@bundle/utils/utils/json5.ts";
-
-const { decompressFromURL } = lzstring;
 
 /**
  * Treeshake exports/imports. It allows for specifing multiple exports per package, through this syntax
@@ -31,7 +30,7 @@ export const fromBasename = (path: string) =>
  * e.g. "@okikio/animate" -> okikioAnimate
  */
 export const getModuleName = (str: string) => {
-  const { name, path } = parsePackageName(str, true);
+  const { name, path } = parsePackageName(str, { ignoreError: true });
   let _str = str;
   if (/^https?\:\/\//.test(str)) {
     _str = fromBasename(str);
@@ -155,7 +154,7 @@ export const parseConfig = (shareURL: URL) => {
   try {
     const searchParams = shareURL.searchParams;
     const config = searchParams.get("config") ?? "{}";
-    return deepAssign({}, JSON5.parse(config ? config : "{}"));
+    return JSON5.parse(config ? config : "{}");
   } catch (e) {
     console.warn(e);
   }

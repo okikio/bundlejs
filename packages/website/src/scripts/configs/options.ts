@@ -1,5 +1,6 @@
-import type { BuildConfig, CompressConfig } from "@bundle/core";
-import { deepAssign } from "@bundle/utils/src/mod.ts";
+import type { BuildConfig } from "@bundle/core/src/index.ts";
+import type { CompressConfig } from "@bundle/compress/src/index.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 
 export type ConfigOptions = Omit<BuildConfig, "ascii" | "filesystem" | "entryPoints" | "init"> & {
   /** 
@@ -40,7 +41,7 @@ export const EasyDefaultConfig: ConfigOptions = {
   }
 };
 
-export const DefaultConfig: ConfigOptions = deepAssign({}, EasyDefaultConfig, {
+export const DefaultConfig: ConfigOptions = deepMerge(structuredClone(EasyDefaultConfig), {
   "esbuild": {
     "color": true,
     "globalName": "BundledCode",

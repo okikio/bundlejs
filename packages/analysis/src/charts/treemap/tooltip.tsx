@@ -1,5 +1,5 @@
 import type { ModuleTree, ModuleTreeLeaf, SizeKey } from "../../types/types";
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 import { LABELS } from "../sizes";
 import { type HierarchyRectangularNode } from "d3";
 import { StaticContext } from "./index";
@@ -67,7 +67,7 @@ export const Tooltip: Component<TooltipProps> = ({ node, visible, root, sizeProp
             return (
               <div>
                 <b>
-                  {LABELS[sizeProp]}: {bytes(mainSize)}
+                  {LABELS[sizeProp]}: {bytes.format(mainSize)}
                 </b>{" "}
                 ({percentageString})
               </div>
@@ -75,7 +75,7 @@ export const Tooltip: Component<TooltipProps> = ({ node, visible, root, sizeProp
           } else {
             return (
               <div>
-                {LABELS[sizeProp]}: {bytes(getModuleSize(node.data, sizeProp))}
+                {LABELS[sizeProp]}: {bytes.format(getModuleSize(node.data, sizeProp))}
               </div>
             );
           }

@@ -1,10 +1,10 @@
 import type { CompressConfig, CompressionOptions, CompressionType } from "./types.ts";
-import { bytes } from "@bundle/utils/utils/pretty-bytes.ts";
+import { bytes } from "@bundle/utils/utils/fmt.ts";
 import { encode } from "@bundle/utils/utils/encode-decode.ts";
 import { createCompressConfig } from "./config.ts";
 
 /**
- * Use multiple compression algorithims & pretty-bytes for the total gzip, brotli and/or lz4 compressed size
+ * Use multiple compression algorithims & @std/fmt/bytes for the total gzip, brotli and/or lz4 compressed size
  * 
  * @param inputs An array of input files to compress
  * @param opts 
@@ -34,7 +34,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
 
   // Total uncompressed size
   const rawUncompressedSize = contents.reduce((acc, content) => acc + content.byteLength, 0);
-  const uncompressedSize = bytes(rawUncompressedSize) as string;
+  const uncompressedSize = bytes.format(rawUncompressedSize) as string;
 
   // Choose a different compression function based on the compression type
   const compressionMap = await (async (type?: CompressionType) => {
@@ -79,7 +79,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
 
   // Convert sizes to human readable formats, e.g. 10000 bytes to 10MB
   const rawCompressedSize = compressedContent.reduce((acc, { length }) => acc + length, 0);
-  const compressedSize = bytes(rawCompressedSize);
+  const compressedSize = bytes.format(rawCompressedSize);
 
   return {
     type,

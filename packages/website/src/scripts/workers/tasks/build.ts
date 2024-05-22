@@ -2,7 +2,9 @@
 import type { ConfigOptions } from "../../configs/options";
 import type { BuildConfig, ESBUILD } from "@bundle/core";
 
-import { build, compress, setFile, deepAssign, deleteFile, useFileSystem } from "@bundle/core/src/index";
+import { build, setFile, deleteFile, useFileSystem } from "@bundle/core/src/index.ts";
+import { deepMerge } from "@bundle/utils/src/index.ts";
+import { compress } from "@bundle/compress/src/index.ts";
 
 import { parseConfig } from "./parse-config";
 import { DefaultConfig } from "../../configs/options";
@@ -25,7 +27,7 @@ export async function bundle(fileName: string, content: string, _config = "expor
   await setFile(fs, "/index.tsx", content);
 
   const newConfig = await parseConfig(_config);
-  const config = deepAssign({}, DefaultConfig, newConfig) as ConfigOptions;
+  const config = deepMerge(structuredClone(DefaultConfig), newConfig) as ConfigOptions;
 
   await ready;
 

@@ -20,7 +20,7 @@ export async function generateLibs(src = "./node_modules/typescript/lib/*.d.ts",
 
   const outputFile = await fs.stat(target);
   console.log(
-    `- Output file (${target}), final size is: ${bytes(outputFile.size)}\n`
+    `- Output file (${target}), final size is: ${bytes.format(outputFile.size)}\n`
   );
 }
 
