@@ -21,9 +21,7 @@ export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]
       const version = await getEsbuildVersion(_version);
       const esbuild = await getEsbuild(platform, version);
       setState("esbuild", esbuild);
-      console.log({
-        esbuildVersion: esbuild.version
-      })
+      
       if (
         platform !== "node" &&
         platform !== "deno"

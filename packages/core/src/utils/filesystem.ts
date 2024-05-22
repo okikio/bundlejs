@@ -5,7 +5,7 @@ import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
-  files: () => Promise<T>,
+  files: () => Promise<Map<string, T>>,
 
   /**
    * Retrevies file from virtual file system storage in either string or uint8array buffer format
@@ -76,9 +76,8 @@ export async function getFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
 
     if (type === "string") return decode(file!);
     return file;
-  } catch (e) {
-    throw new Error(`Error occurred while getting "${resolvedPath}": ${e}`, { cause: e });
-  }
+  } catch (e) { }
+  return null;
 };
 
 /**
@@ -122,9 +121,9 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 };
 
 /** Virtual Filesystem Storage */
-export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new Map<string, Content | null>()) {
-  const fs: IFileSystem<typeof FileSystem, Content> = {
-    files: async () => FileSystem,
+export function createDefaultFileSystem<T = Uint8Array, Content = Uint8Array>(FileSystem = new Map<string, Content | null>()) {
+  const fs: IFileSystem<T, Content> = {
+    files: async () => FileSystem as unknown as Map<string, T>,
     get: async (path: string) => FileSystem.get(resolve(path)),
     async set(path: string, content?: Content | null) {
       const resolvedPath = resolve(path);
@@ -161,15 +160,17 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
     // Get sync access handle
     const accessHandle = await fileHandle.createSyncAccessHandle();
 
-    // Write the message to the begining of the file.
-    const encodedMessage = contents instanceof Uint8Array ? contents : encode(contents);
-    accessHandle.write(encodedMessage, { at: 0 });
+    try {
+      // Write the message to the begining of the file.
+      const encodedMessage = contents instanceof Uint8Array ? contents : encode(contents);
+      accessHandle.write(encodedMessage, { at: 0 });
 
-    // Persist changes to disk.
-    accessHandle.flush();
-
-    // Always close FileSystemSyncAccessHandle if done.
-    return accessHandle.close();
+      // Persist changes to disk.
+      accessHandle.flush();
+    } finally {
+      // Always close FileSystemSyncAccessHandle if done.
+      accessHandle.close();
+    }
   }
   
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable
@@ -180,7 +181,7 @@ async function writeFile(fileHandle: FileSystemFileHandle, contents: Uint8Array 
   await writable.write(contents);
 
   // Close the file and write the contents to disk.
-  return await writable.close();
+  await writable.close();
 }
 
 /**
@@ -192,13 +193,19 @@ async function readFile(fileHandle: FileSystemFileHandle) {
     // Get sync access handle
     const accessHandle = await fileHandle.createSyncAccessHandle();
 
-    // Get size of the file.
-    const fileSize = accessHandle.getSize();
+    try {
+      // Get size of the file.
+      const fileSize = accessHandle.getSize();
 
-    // Read file content to a buffer.
-    const buffer = new Uint8Array(new ArrayBuffer(fileSize));
-    accessHandle.read(buffer, { at: 0 });
-    return buffer;
+      // Read file content to a buffer.
+      const buffer = new Uint8Array(new ArrayBuffer(fileSize));
+      accessHandle.read(buffer, { at: 0 });
+
+      return buffer;
+    } finally {
+      // Always close FileSystemSyncAccessHandle if done.
+      accessHandle.close();
+    }
   }
 
   // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/getFile
@@ -207,7 +214,71 @@ async function readFile(fileHandle: FileSystemFileHandle) {
   const arrbuf = await fileData.arrayBuffer();
 
   // Return file contents as ArrayBuffer.
-  return new Uint8Array(arrbuf);
+  return new Uint8Array(arrbuf); 
+}
+
+async function traverseFileSystem(root: FileSystemDirectoryHandle, path: string, files?: Map<string, FileSystemHandle | FileSystemFileHandle | FileSystemDirectoryHandle>, { create = true } = {}) {
+  files ??= new Map<string, FileSystemHandle | FileSystemFileHandle | FileSystemDirectoryHandle>();
+
+  const resPath = path.replace(/[:,]/g, "_");
+  const resolvedPath = resolve(resPath);
+  const dir = dirname(resolvedPath);
+
+  const parentDirs = dir.split(posix.SEPARATOR).filter(x => x.length > 0);
+  const len = parentDirs.length;
+
+  // Generate all the subdirectories in between
+  let accPath = parentDirs[0] !== posix.SEPARATOR ? "/" : "";
+  let parentDirHandle = root;
+  files.set(posix.SEPARATOR, root);
+
+  for (let i = 0; i < len; i++) {
+    const parentDir = parentDirs[i];
+    accPath += parentDir;
+
+    if (!files.has(accPath)) {
+      parentDirHandle = await parentDirHandle.getDirectoryHandle(parentDir, { "create": create });
+      files.set(accPath, parentDirHandle);
+    }
+
+    accPath += posix.SEPARATOR;
+  }
+
+  return {
+    resolvedPath,
+    parentDirs,
+    dir,
+    files,
+    parentDirHandle
+  }
+}
+
+async function getRelativePath(root: FileSystemDirectoryHandle, entry: FileSystemFileHandle) {
+  // Check if handle exists inside our directory handle
+  const relativePaths = await root.resolve(entry);
+
+  // relativePath is an array of names, giving the relative path
+  if (Array.isArray(relativePaths) && relativePaths.length > 0) {
+    return relativePaths.join(posix.SEPARATOR)
+  }
+
+  return null
+}
+
+async function* getFilesRecursively(root: FileSystemDirectoryHandle, entry: FileSystemHandle = root): AsyncGenerator<AbosoluteFile> {
+  if (entry.kind === "file") {
+    const _file = await (entry as FileSystemFileHandle).getFile();
+    const file = _file as AbosoluteFile;
+    if (file) {
+      const absolutePath = posix.SEPARATOR + await getRelativePath(root, entry as FileSystemFileHandle);
+      if (absolutePath) file.absolutePath = absolutePath;
+      yield file;
+    }
+  } else if (entry.kind === "directory") {
+    for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
+      yield* getFilesRecursively(root, handle);
+    }
+  }
 }
 
 /** Origin Private File System - Virtual Filesystem Storage */
@@ -217,65 +288,44 @@ export async function createOPFSFileSystem() {
       throw new Error("OPFS not supported by the current browser");
     }
 
-    const INTERNAL_FS = createDefaultFileSystem<FileSystemHandle | FileSystemFileHandle | FileSystemDirectoryHandle>();
-    const files = await INTERNAL_FS.files();
-
+    const INTERNAL_FS = createDefaultFileSystem<AbosoluteFile>();
     const root = await navigator.storage.getDirectory();
-    files.set(posix.SEPARATOR, root);
 
-    const fs: IFileSystem<typeof INTERNAL_FS> = {
+    const fs: IFileSystem<AbosoluteFile> = {
       async files() {
-        return INTERNAL_FS;
+        const files = await INTERNAL_FS.files();
+        files.clear();
+
+        for await (const fileHandle of getFilesRecursively(root)) {
+          // @ts-ignore We manually set relativePath
+          INTERNAL_FS.set(fileHandle.absolutePath, fileHandle);
+        }
+
+        return files;
       },
       async get(path: string) {
-        const resPath = path.replace(/[:,]/g, "_");
-        console.log({
-          resPath,
-          files
-        })
-        const fileOrFolderHandle = await INTERNAL_FS.get(resPath);
-        if (fileOrFolderHandle.kind === "file") {
-          return await readFile(fileOrFolderHandle as FileSystemFileHandle);
+        const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
+        const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath));
+        if (fileHandle.kind === "file") {
+          return await readFile(fileHandle);
         } else {
           return null;
         }
       },
       async set(path: string, content: Uint8Array | string, importer?: string) {
-        const resPath = path.replace(/[:,]/g, "_");
-        const resolvedPath = resolve(resPath);
-        const dir = dirname(resolvedPath);
-
-        const parentDirs = dir.split(posix.SEPARATOR).filter(x => x.length > 0);
-        const len = parentDirs.length;
-
-        // Generate all the subdirectories in b/w
-        let accPath = parentDirs[0] !== posix.SEPARATOR ? "/" : "";
-        let parentDirHandle = root;
-        for (let i = 0; i < len; i++) {
-          const parentDir = parentDirs[i];
-          accPath += parentDir;
-
-          if (!files.has(accPath)) {
-            parentDirHandle = await parentDirHandle.getDirectoryHandle(parentDir, { "create": true });
-            files.set(accPath, parentDirHandle);
-          }
-
-          accPath += posix.SEPARATOR;
-        }
-
+        const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
         const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath), { "create": true });
         await writeFile(fileHandle, content);
-        files.set(resolvedPath, fileHandle);
       },
-      async delete(path: string) {
-        const resolvedPath = resolve(path);
-        const dirPath = dirname(resolvedPath);
-
-        const fileHandle = await INTERNAL_FS.get(resolvedPath) as FileSystemFileHandle; 
-        const folderHandle = await INTERNAL_FS.get(dirPath) as FileSystemDirectoryHandle; 
-
-        await folderHandle.removeEntry(fileHandle.name);
-        return await INTERNAL_FS.delete(resolvedPath)
+      async delete(path: string, { recursive = true } = {}) {
+        try {
+          const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path, null, { create: false });
+          await parentDirHandle.removeEntry(basename(resolvedPath), { recursive });
+        } catch (error) {
+          console.error(`Error occurred while deleting "${path}":`, error);
+          throw error;
+        }
+        return true;
       }
     }
 
@@ -289,6 +339,9 @@ export async function createOPFSFileSystem() {
  * Selects the OPFS File System if possible, otherwise fallback to the default Map based Virtual File System
  * @param type Virtual File System to use
  */
+export async function useFileSystem(type?: string): Promise<IFileSystem<Uint8Array>>;
+export async function useFileSystem(type: "DEFAULT"): Promise<IFileSystem<Uint8Array>>;
+export async function useFileSystem(type: "OPFS"): Promise<IFileSystem<AbosoluteFile>>;
 export async function useFileSystem(type: "OPFS" | "DEFAULT" = "DEFAULT") {
   try {
     switch (type) {
@@ -302,6 +355,10 @@ export async function useFileSystem(type: "OPFS" | "DEFAULT" = "DEFAULT") {
   }
 
   return createDefaultFileSystem();
+}
+
+interface AbosoluteFile extends File {
+  absolutePath: string
 }
 
 export type WriterableFileStreamData = BufferSource | Blob | DataView | Uint8Array | String | string;

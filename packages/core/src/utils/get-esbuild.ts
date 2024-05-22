@@ -19,10 +19,6 @@ export const { version: defaultVersion } = pkg;
  * @returns esbuild module
  */
 export async function getEsbuild(platform: Platform = PLATFORM_AUTO, version = defaultVersion): Promise<typeof ESBUILD> {
-  console.log({
-    version,
-    defaultVersion,
-  })
   try {
     switch (platform) {
       case "deno":

@@ -11,7 +11,7 @@ import { createConfig } from "./configs/config.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createState, getState, setState } from "./configs/state.ts";
 
-import { useFileSystem } from "./utils/filesystem.ts";
+import { useFileSystem, type IFileSystem } from "./utils/filesystem.ts";
 import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/cdn-format.ts";
 import { init } from "./init.ts";
@@ -61,7 +61,7 @@ export type BuildResultContext = (ESBUILD.BuildResult) & {
 };
 
 export const TheFileSystem = useFileSystem();
-export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildResult> {
+export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSystem<unknown>> = TheFileSystem): Promise<BuildResult> {
   if (!getState("initialized"))
     dispatchEvent(INIT_LOADING);
 

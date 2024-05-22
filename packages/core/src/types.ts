@@ -1,7 +1,7 @@
 import type { Platform } from "./configs/platform.ts";
 import type * as ESBUILD from "esbuild-wasm/esm/browser.d.ts";
 
-import type { useFileSystem } from "./utils/filesystem.ts";
+import type { IFileSystem, useFileSystem } from "./utils/filesystem.ts";
 import type { getState, setState } from "./configs/state.ts";
 
 export type { ESBUILD };
@@ -176,7 +176,7 @@ export interface PackageJson {
  * Local state available to all plugins
  */
 export type LocalState = {
-  filesystem?: Awaited<ReturnType<typeof useFileSystem>>,
+  filesystem?: IFileSystem<unknown>,
   
   /**
    * Versions
