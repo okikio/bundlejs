@@ -120,6 +120,7 @@ coverage/
 
 # build output
 dist/
+lib/
 
 # dependencies
 node_modules/
@@ -145,4 +146,11 @@ pnpm-debug.log*
 
 core.*
 
-packages/**/lib/*
+# generated types
+.astro/
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
