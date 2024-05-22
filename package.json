@@ -60,19 +60,19 @@
   },
   "homepage": "https://docs.bundlejs.com",
   "devDependencies": {
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/web": "^0.0.130",
-    "husky": "^8.0.3",
-    "pnpm": "^8.12.1",
-    "semantic-release": "^22.0.12",
-    "tsup": "^8.0.1",
-    "typedoc": "^0.25.4",
+    "@types/web": "^0.0.147",
+    "husky": "^9.0.11",
+    "pnpm": "^9.1.2",
+    "semantic-release": "^23.1.1",
+    "tsup": "^8.0.2",
+    "typedoc": "^0.25.13",
     "typedoc-plugin-extras": "^3.0.0",
-    "typedoc-plugin-inline-sources": "^1.0.1",
-    "typedoc-plugin-mdn-links": "^3.1.8",
-    "typescript": "5.3.3"
+    "typedoc-plugin-inline-sources": "^1.0.2",
+    "typedoc-plugin-mdn-links": "^3.1.26",
+    "typescript": "5.4.5"
   }
 }
