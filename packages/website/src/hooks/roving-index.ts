@@ -37,7 +37,7 @@ const onKeydown = e => {
   }
 };
 
-const mo = new MutationObserver((mutationList) => {
+const mo = "MutationObserver" in globalThis ? new MutationObserver((mutationList) => {
   mutationList
     .filter(x => x.removedNodes.length > 0)
     .forEach(mutation => {
@@ -61,7 +61,7 @@ const mo = new MutationObserver((mutationList) => {
           });
         });
     });
-});
+}) : null;
 
 export const rovingIndex = ({ element: rover, target: selector }) => {
   // this api allows empty or a query string
@@ -100,7 +100,7 @@ export const rovingIndex = ({ element: rover, target: selector }) => {
     rover.addEventListener("keydown", onKeydown);
   }
 
-  mo.observe(document, {
+  mo?.observe?.(document, {
     childList: true,
     subtree: true
   });

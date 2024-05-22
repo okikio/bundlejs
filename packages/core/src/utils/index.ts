@@ -1,5 +1,3 @@
-export * from "@bundle/utils/src/index.ts";
-
 export * from "./get-esbuild.ts";
 export * from "./create-notice.ts";
 export * from "./filesystem.ts";

@@ -9,7 +9,7 @@ import { bytes } from "@bundle/utils/utils/fmt.ts";
 import { compress as brotli, decompress as unbrotli } from "@bundle/compress/deno/brotli/mod.ts";
 import { compress as zstd, decompress as unzstd } from "@bundle/compress/deno/zstd/mod.ts";
 
-import { dirname, relative } from 'node:path';
+import { dirname } from 'node:path';
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 

@@ -1,5 +1,5 @@
 import { createEffect, Match, Switch, Show } from 'solid-js';
-import { ActionType, resolveValue, ToastBarProps } from '../types';
+import { ActionType, resolveValue, type ToastBarProps } from '../types';
 import { getToastYDirection as d, iconContainer, messageContainer, toastBarBase } from '../util';
 import { Error, Loader, Success } from '.';
 

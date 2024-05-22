@@ -1,4 +1,4 @@
-import { IconProps } from '../types';
+import type { IconProps } from '../types';
 
 export const Loader = (props: IconProps) => (
   <svg style={{ overflow: 'visible' }} viewBox="0 0 32 32" width="1.25rem" height="1.25rem">

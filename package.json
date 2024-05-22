@@ -12,7 +12,7 @@
     "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
     "build:all": "pnpm -r build",
     "semantic-release": "semantic-release",
-    "prepare": "[ \"$NODE_ENV\" = \"production\" ] || [ -n \"$CI\" ] && echo \"Skipping Husky Install...\" || husky install",
+    "prepare": "[ \"$NODE_ENV\" = \"production\" ] || [ -n \"$CI\" ] && echo \"Skipping Husky Install...\" || husky",
     "commitlint": "commitlint --edit"
   },
   "release": {

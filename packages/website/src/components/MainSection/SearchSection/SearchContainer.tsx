@@ -40,13 +40,17 @@ export function SearchContainer(props?: ComponentProps<"dialog">) {
   }
 
   onMount(() => {
-    document.addEventListener("click", onClick);
-    document.addEventListener("focusin", onFocus);
+    if ("document" in globalThis) {
+      document.addEventListener("click", onClick);
+      document.addEventListener("focusin", onFocus);
+    }
   });
 
   onCleanup(() => {
-    document.removeEventListener("click", onClick);
-    document.removeEventListener("focusin", onFocus);
+    if ("document" in globalThis) {
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("focusin", onFocus);
+    }
   });
 
   return (

@@ -16,7 +16,7 @@ import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = "cdn-url";
 
-const FAILED_PKGJSON_URLS = new Set<string>();
+const FAILED_MANIFEST_URLS = new Set<string>();
 
 /**
  * Resolution algorithm for the esbuild CDN plugin 
@@ -27,24 +27,45 @@ const FAILED_PKGJSON_URLS = new Set<string>();
 export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     let argPath = args.path;
+
+    // Conceptually package.json = manifest, but for naming reasons we'll just call it manifest
+    let { sideEffects: _sideEffects, ..._inheritedManifest } = args.pluginData?.manifest ?? {};
+
+    // Object.assign & deepMerge essentially do the same thing for flat objects, 
+    // except there are some instances where Object.assign is faster
+    let initialManifest: PackageJson = deepMerge(
+      structuredClone(rootPkg),
+
+      // If we've manually set the version of the dependency in the config, 
+      // then force all occurances of that dependency to use the version specified in the config
+      Object.assign(
+        structuredClone(_inheritedManifest),
+        rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
+        rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
+        rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
+      )
+    );
+
+    const initialDeps = Object.assign(
+      {},
+      initialManifest.devDependencies,
+      initialManifest.peerDependencies,
+      initialManifest.dependencies,
+    );
     
-    // Resolving imports from the package.json, if said import starts with "#" 
-    // If an import starts with "#" then it's a subpath-import
+    // Resolving subpath imports from the package.json, subpath imports are import that starts with "#" 
     // https://nodejs.org/api/packages.html#subpath-imports
     if (/^#/.test(argPath)) {
-      let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-      let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
-
       try {
         // Resolving imports & exports from the package.json
         // If an import starts with "#" then it's a subpath-import, and should be treated as so
-        const modernResolve = resolve(pkg, argPath, { browser: true, conditions: ["module"] }) ||
-          resolve(pkg, argPath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
-          resolve(pkg, argPath, { require: true });
+        const modernResolve = resolve(initialManifest, argPath, { browser: true, conditions: ["module"] }) ||
+          resolve(initialManifest, argPath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+          resolve(initialManifest, argPath, { require: true });
 
         if (modernResolve) {
           const resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
-          argPath = join(pkg.name + "@" + pkg.version, resolvedPath);
+          argPath = join(initialManifest.name + "@" + initialManifest.version, resolvedPath);
         }
         // deno-lint-ignore no-empty
       } catch (e) { }
@@ -58,94 +79,77 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       const NPM_CDN = getCDNStyle(origin) === "npm";
 
       // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-      const parsed = parsePackageName(_argPath);
-      let subpath = parsed.path;
+      const parsed = parsePackageName(_argPath, { defaultVersion: null });
+      const parsedSubpath = parsed.path;
 
-      let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-      let pkg: PackageJson = deepAssign({ ...rootPkg },
-        excludeSideEffects,
-        rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
-        rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
-        rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
-      );
-
-      let oldPkg = pkg;
-
-      // Are there an dependecies???? Well Goood.
-      const depsExists = "dependencies" in pkg || "devDependencies" in pkg || "peerDependencies" in pkg;
-      if (depsExists && !/\S+@\S+/.test(_argPath)) {
-        const {
-          devDependencies = {},
-          dependencies = {},
-          peerDependencies = {}
-        } = pkg;
-
-        const deps = Object.assign({}, devDependencies, peerDependencies, dependencies);
-        const keys = Object.keys(deps);
-
-        if (keys.includes(_argPath))
-          parsed.version = deps[_argPath];
+      // If the version of package isn't determinable from the path argument,
+      // check the inherited manifest for a potential version
+      let assumedVersion = parsed.version || "latest";
+      if (!parsed.version) {
+        if (parsed.name in initialDeps)
+          assumedVersion = initialDeps[parsed.name];
       }
 
-      let finalSubpath = subpath;
+      let manifest = structuredClone(initialManifest);
+      let resultSubpath = parsedSubpath;
 
       // If the CDN supports package.json and some other npm stuff, it counts as an npm CDN
       if (NPM_CDN) {
         try {
-          const ext = extname(subpath);
-          const isDir = ext.length === 0;
-          const dir = isDir ? subpath : "";
+          const ext = extname(parsedSubpath);
+          const isDirectory = ext.length === 0;
+          const subpath = isDirectory ? parsedSubpath : "";
+          let isSubpathDirectoryPackage = false;
 
-          const pkgVariants = [
-            isDir ? {
-              path: `${parsed.name}@${parsed.version}${subpath}/package.json`,
+          // If the subpath is a directory check to see if that subpath has a `package.json`,
+          // after which check if the parent directory has a `package.json`
+          const manifestVariants = [
+            isDirectory ? {
+              path: `${parsed.name}@${assumedVersion}${parsedSubpath}/package.json`,
               isDir: true
             } : null,
-            { path: `${parsed.name}@${parsed.version}/package.json` }
+            { path: `${parsed.name}@${assumedVersion}/package.json` }
           ].filter(x => x !== null);
 
-          let isDirPkgJSON = false;
-          const pkgVariantsLen = pkgVariants.length;
-          for (let i = 0; i < pkgVariantsLen; i++) {
-            const pkgMetadata = pkgVariants[i]!;
-            const { url } = getCDNUrl(pkgMetadata.path, origin);
-            const { href } = url;
+          const manifestVariantsLen = manifestVariants.length;
+          for (let i = 0; i < manifestVariantsLen; i++) {
+            const { path, isDir } = manifestVariants[i]!;
+            const { url } = getCDNUrl(path, origin);
+
+            // If the url was fetched before and failed, skip it 
+            if (FAILED_MANIFEST_URLS.has(url.href) && i < manifestVariantsLen - 1) 
+              continue;
 
             try {
-              if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
-                continue;
-              }
-
               // Strongly cache package.json files
               const res = await getRequest(url, true);
               if (!res.ok) throw new Error(await res.text());
 
-              pkg = await res.json();
-              isDirPkgJSON = pkgMetadata.isDir ?? false;
+              manifest = await res.json();
+              isSubpathDirectoryPackage = isDir ?? false;
               break;
             } catch (e) {
-              FAILED_PKGJSON_URLS.add(href);
+              FAILED_MANIFEST_URLS.add(url.href);
 
               // If after checking all the different file extensions none of them are valid
-              // Throw the first fetch error encountered, as that is generally the most accurate error
-              if (i >= pkgVariantsLen - 1)
+              // Throw the last fetch error encountered, as that is generally the most accurate error
+              if (i >= manifestVariantsLen - 1)
                 throw e;
             }
           }
 
-          const relativePath = subpath.replace(/^\//, "./");
-
+          const relativePath = parsedSubpath.replace(/^\//, "./");
+          
           let modernResolve: ReturnType<typeof resolve> | void;
           let legacyResolve: ReturnType<typeof legacy> | void;
-
-          let resolvedPath: string | void = subpath;
+          let resolvedPath: string | void = parsedSubpath;
 
           try {
             // Resolving imports & exports from the package.json
             // If an import starts with "#" then it's a subpath-import, and should be treated as so
-            modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
-              resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
-              resolve(pkg, relativePath, { require: true });
+            modernResolve = resolve(manifest, relativePath, { browser: true, conditions: ["module"] }) ||
+              resolve(manifest, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+              resolve(manifest, relativePath, { require: true });
 
             if (modernResolve) {
               resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
@@ -158,11 +162,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             // we can safely use legacy resolve, 
             // else, if the subpath doesn't have a package.json, then the subpath is literal, 
             // and we should just use the subpath as it is
-            if (isDirPkgJSON) {
+            if (isSubpathDirectoryPackage) {
               try {
                 // Resolving using main, module, etc... from package.json
-                legacyResolve = legacy(pkg, { browser: true }) ||
-                  legacy(pkg, { fields: ["unpkg", "bin"] });
+                legacyResolve = legacy(manifest, { browser: true }) ||
+                  legacy(manifest, { fields: ["unpkg", "bin"] });
 
                 if (legacyResolve) {
                   // Some packages have `browser` fields in their package.json which have some values set to false
@@ -171,7 +175,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
                     const values = Object.values(legacyResolve);
                     const validValues = values.filter(x => x);
                     if (validValues.length <= 0) {
-                      legacyResolve = legacy(pkg);
+                      legacyResolve = legacy(manifest);
                     }
                   }
 
@@ -194,11 +198,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
           }
 
           if (resolvedPath && typeof resolvedPath === "string") {
-            finalSubpath = resolvedPath.replace(/^(\.\/)/, "/");
+            resultSubpath = resolvedPath.replace(/^(\.\/)/, "/");
           }
 
-          if (dir && isDirPkgJSON) {
-            finalSubpath = `${dir}${finalSubpath}`;
+          if (subpath && isSubpathDirectoryPackage) {
+            resultSubpath = `${subpath}${resultSubpath}`;
           }
         } catch (e) {
           dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${_argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
@@ -208,25 +212,28 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
       // If the CDN is npm based then it should add the parsed version to the URL
       // e.g. https://unpkg.com/spring-easing@v1.0.0/
-      const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
-      const { url } = getCDNUrl(`${parsed.name}${version}${finalSubpath}`, origin);
+      const knownVersion = manifest.version || assumedVersion;
+      const cdnVersionFormat = NPM_CDN ? "@" + knownVersion : "";
+      const { url } = getCDNUrl(`${parsed.name}${cdnVersionFormat}${resultSubpath}`, origin);
 
-      const deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
-      const peerDeps = pkg.peerDependencies ?? {};
-      const peerDepsKeys = Object.keys(peerDeps);
-      for (const depKey of peerDepsKeys) {
-        peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
+      const peerDeps = manifest.peerDependencies ?? {};
+      const inheritedPeerDependencies = structuredClone(peerDeps);
+
+      // Force inherit peerDependencies, makes it easier to keep versions stable 
+      // and to avoid duplicates
+      for (const [name, version] of Object.entries(peerDeps)) {
+        inheritedPeerDependencies[name] = initialDeps[name] ?? version;
       }
 
       return {
         namespace: HTTP_NAMESPACE,
         path: (await determineExtension(url.toString())).url,
-        sideEffects: typeof pkg.sideEffects === "boolean" ? pkg.sideEffects : undefined,
+        sideEffects: typeof manifest.sideEffects === "boolean" ? manifest.sideEffects : undefined,
         pluginData: {
-          pkg: {
-            ...pkg,
-            peerDependencies: peerDeps
-          }
+          manifest: deepMerge(
+            structuredClone(manifest), 
+            { peerDependencies: inheritedPeerDependencies }
+          )
         }
       };
     }

@@ -1,6 +1,7 @@
 import { setDefaultOpts, defaultOpts, store, dispatch, defaultToasterOptions } from '../core';
-import { ActionType, Toast, ToasterProps, ToastPosition } from '../types';
-import { JSX } from 'solid-js';
+import type { Toast, ToasterProps, ToastPosition } from '../types';
+import type { JSX } from 'solid-js';
+import { ActionType } from '../types';
 
 export const generateID = (() => {
   let count = 0;

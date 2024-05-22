@@ -1,15 +1,15 @@
 /// <reference lib="webworker" />
-import type { ConfigOptions } from "../../configs/options";
-import type { BuildConfig, ESBUILD } from "@bundle/core";
+import type { ConfigOptions } from "../../configs/options.ts";
+import type { BuildConfig, ESBUILD } from "@bundle/core/src/index.ts";
 
 import { build, setFile, deleteFile, useFileSystem } from "@bundle/core/src/index.ts";
 import { deepMerge } from "@bundle/utils/src/index.ts";
 import { compress } from "@bundle/compress/src/index.ts";
 
-import { parseConfig } from "./parse-config";
-import { DefaultConfig } from "../../configs/options";
+import { parseConfig } from "./parse-config.ts";
+import { DefaultConfig } from "../../configs/options.ts";
 
-import { initOpts, ready } from "./utils/init";
+import { initOpts, ready } from "./utils/init.ts";
 
 const FileSystem = useFileSystem("OPFS");
 export async function bundle(fileName: string, content: string, _config = "export default {}") {

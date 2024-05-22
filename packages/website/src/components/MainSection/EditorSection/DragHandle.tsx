@@ -85,8 +85,10 @@ export function DragHandle(props?: ComponentProps<"button"> & {
 
   onCleanup(() => { 
     newProps.ref = ref = null;
-    document.removeEventListener("pointermove", drag);
-    document.removeEventListener("pointerup", stopDrag);
+    if ("document" in globalThis) {
+      document.removeEventListener("pointermove", drag);
+      document.removeEventListener("pointerup", stopDrag);
+    }
 
     if (props?.constrain) {
       observer?.unobserve?.(parentEl);
@@ -104,8 +106,10 @@ export function DragHandle(props?: ComponentProps<"button"> & {
     parentSize = parentEl.getBoundingClientRect()[sizeProp()];
 
     // Attach the listeners to `document`
-    document.addEventListener("pointermove", drag);
-    document.addEventListener("pointerup", stopDrag);
+    if ("document" in globalThis) {
+      document.addEventListener("pointermove", drag);
+      document.addEventListener("pointerup", stopDrag);
+    }
 
     if (props?.constrain) {
       observer?.observe?.(parentEl);

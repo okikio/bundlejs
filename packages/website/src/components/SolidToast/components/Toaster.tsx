@@ -1,10 +1,10 @@
 import { defaultContainerStyle } from '../core';
-import { ToasterProps } from '..';
+import type { ToasterProps } from '..';
 import { mergeContainerOptions } from '../util';
 import { createEffect, For, onCleanup } from 'solid-js';
 import { store, createTimers } from '../core';
 import { ToastContainer } from '.';
-import { Toast } from '../types';
+import type { Toast } from '../types';
 
 export const Toaster = (props: ToasterProps) => {
   createEffect(() => {

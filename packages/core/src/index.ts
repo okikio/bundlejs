@@ -3,7 +3,6 @@ export * from "./types.ts";
 export * from "./transform.ts";
 export * from "./build.ts";
 export * from "./context.ts";
-export * from "./compress.ts";
 
 export * from "./configs/config.ts";
 export * from "./configs/events.ts";

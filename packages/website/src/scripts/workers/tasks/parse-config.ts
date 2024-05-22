@@ -1,8 +1,8 @@
 /// <reference lib="webworker" />
-import { configModelResetValue } from "../../utils/get-initial";
+import { configModelResetValue } from "../../utils/get-initial.ts";
 
-import { transform } from "@bundle/core/src/index";
-import { initOpts, ready } from "./utils/init";
+import { transform } from "@bundle/core/src/index.ts";
+import { initOpts, ready } from "./utils/init.ts";
 
 const configs = new Map<string, string>();
 

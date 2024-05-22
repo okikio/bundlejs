@@ -1,6 +1,8 @@
 import type { Environment } from "monaco-editor";
 
-import CONFIG_DTS from "@bundle/core/src/index?dts";
+// import CONFIG_DTS from "@bundle/core/src/index.ts?dts";
+
+const CONFIG_DTS = ""
 import {
   editor as Editor,
   languages,

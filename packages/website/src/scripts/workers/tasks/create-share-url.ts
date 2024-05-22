@@ -1,12 +1,12 @@
 /// <reference lib="webworker" />
 
-import { createFile } from "./create-file";
+import { createFile } from "./create-file.ts";
 
-import { parseConfig } from "./parse-config";
-import { DefaultConfig } from "../../configs/options";
+import { parseConfig } from "./parse-config.ts";
+import { DefaultConfig } from "../../configs/options.ts";
 
-import { serialize } from "../../utils/serialize-javascript";
-import { configModelResetValue } from "../../utils/get-initial"; 
+import { serialize } from "../../utils/serialize-javascript.ts";
+import { configModelResetValue } from "../../utils/get-initial.ts"; 
 import { compressToURL } from "@bundle/utils/utils/lz-string.ts";
 import { deepDiff, deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 import ts from "typescript";

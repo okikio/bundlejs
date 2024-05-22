@@ -5,7 +5,7 @@ import { For, createResource, onMount, createEffect, on, onCleanup } from "solid
 import { getQuery } from "./SearchInput";
 import { SearchResult, ErrorResult } from "./Result";
 
-import { rovingIndex } from "../../../hooks/roving-index";
+import { rovingIndex } from "../../../hooks/roving-index.ts";
 import { getPackages } from "@bundle/utils/src/mod.ts";
 
 export function SearchResults() {
@@ -75,7 +75,7 @@ export function SearchResults() {
     data,
     (value) => {
       if (!value?.loading) {
-        if (searchContainerEl) {
+        if (searchContainerEl && 'document' in globalThis) {
           rovingIndex({
             element: searchContainerEl,
             target: "button.btn",

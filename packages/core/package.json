@@ -22,7 +22,6 @@
     },
     "./lib/*": "./lib/*",
     "./src/*": "./src/*",
-    "./deno/*": "./src/deno/*",
     "./plugins/*": "./src/plugins/*",
     "./util": "./src/utils/index.ts",
     "./utils/*": "./src/utils/*",
@@ -86,13 +85,13 @@
   "dependencies": {
     "@bundle/compress": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "esbuild": "^0.19.10",
-    "esbuild-wasm": "^0.19.10"
+    "esbuild": "^0.21.3",
+    "esbuild-wasm": "^0.21.3"
   },
   "devDependencies": {
-    "pnpm": "^8.12.1",
-    "tsup": "^8.0.1",
-    "tsx": "^4.6.2",
-    "vitest": "^1.0.4"
+    "pnpm": "^9.1.2",
+    "tsup": "^8.0.2",
+    "tsx": "^4.10.5",
+    "vitest": "^1.6.0"
   }
 }

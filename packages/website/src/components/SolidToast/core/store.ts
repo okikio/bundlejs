@@ -1,4 +1,5 @@
-import { State, Action, ActionType, Toast } from '../types';
+import type { State, Action, Toast } from '../types'; 
+import { ActionType } from '../types';
 import { createStore, produce as p } from 'solid-js/store';
 
 const [store, setStore] = createStore<State>({

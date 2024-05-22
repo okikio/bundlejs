@@ -1,5 +1,5 @@
 import { toast } from './core';
-export * from './types';
+export type * from './types';
 import { Toaster } from './components';
 
 export { toast, Toaster };

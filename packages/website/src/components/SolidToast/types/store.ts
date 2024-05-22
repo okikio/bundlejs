@@ -1,4 +1,4 @@
-import { Toast } from '.';
+import type { Toast } from '.';
 
 export enum ActionType {
   ADD_TOAST,

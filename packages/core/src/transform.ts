@@ -5,8 +5,8 @@ import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createConfig } from "./configs/config.ts";
 
 import { createNotice } from "./utils/create-notice.ts";
-import { init } from "./init.ts";
 import { INIT_LOADING, LOGGER_ERROR, dispatchEvent } from "./configs/events.ts";
+import { init } from "./init.ts";
 
 export type TransformConfig = CommonConfigOptions & {
   /* https://esbuild.github.io/api/#transform-api */
@@ -45,6 +45,7 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
 
   try {
     try {
+      // vite would automatically replace this, so I have to do it this way
       const key = "p.env.NODE_ENV".replace("p.", "process.");
       result = await transform(input, {
         define: {
