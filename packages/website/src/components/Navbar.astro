@@ -1,5 +1,4 @@
 ---
-import clsx from "clsx";
 import IconLogo from "~icons/local/logo";
 import IconTwitter from "~icons/mdi/twitter";
 import IconGitHub from "~icons/mdi/github";
@@ -35,8 +34,8 @@ function activeNav(regex: RegExp) {
     <div class="flex-grow"></div>
     <div class="menu">
       <div class="menu-items">
-        <Anchor href="/about" class={clsx("item", { active: activeNav(/\/about/) })}>About</Anchor>
-        <Anchor href="/faq" class={clsx("item", { active: activeNav(/\/faq/) })}>FAQ</Anchor>
+        <Anchor href="/about" class={"item " + (activeNav(/\/about/) ? "active" : "") })}>About</Anchor>
+        <Anchor href="/faq" class={"item " + (activeNav(/\/faq/) ? "active" : "" ) }>FAQ</Anchor>
 
         <div class="seperator"></div>
         <Anchor href="https://blog.okikio.dev/documenting-an-online-bundler-bundlejs" class="item">Docs</Anchor>

@@ -1,12 +1,9 @@
 import type { ComponentProps } from "solid-js";
-import type { ClassValue } from "clsx";
 
 import { splitProps, mergeProps } from "solid-js";
-
-import clsx from "clsx";
 import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
 
-export function Anchor(props?: ComponentProps<'a'> & { class?: ClassValue, external?: boolean }) {
+export function Anchor(props?: ComponentProps<'a'> & { external?: boolean }) {
   let [newProps, attrs] = splitProps(props, ['href', 'class', 'external', 'children']);
 
   let mergedProps = mergeProps({
@@ -17,7 +14,7 @@ export function Anchor(props?: ComponentProps<'a'> & { class?: ClassValue, exter
     <a
       custom-anchor
       href={mergedProps.href}
-      class={clsx({ "sm:whitespace-nowrap": mergedProps.external }, mergedProps.class)}
+      class={(mergedProps.external ? "sm:whitespace-nowrap" : "") + " " + mergedProps.class}
       {...Object.assign(mergedProps.external ? { target: "_blank", rel: "noopener" } : {}, attrs)}
     >
       {mergedProps.children}
