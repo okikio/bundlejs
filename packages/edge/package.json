@@ -62,7 +62,7 @@
     "@cloudflare/workers-types": "^4.20240512.0",
     "pnpm": "^9.1.2",
     "tsup": "^8.0.2",
-    "tsx": "^4.10.5",
+    "tsx": "^4.11.0",
     "wrangler": "3.57.1"
   }
 }
