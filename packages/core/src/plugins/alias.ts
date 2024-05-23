@@ -36,18 +36,21 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, FAILED_EXTENSION_CHECKS?: Set<string>) => {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
+export const ALIAS_RESOLVE = (aliases: Record<PropertyKey, string | undefined> = {}, host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, FAILED_EXTENSION_CHECKS?: Set<string>) => {
+  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     const path = args.path.replace(/^node\:/, "");
     const { path: argPath } = getCDNUrl(path);
 
     if (isAlias(argPath, aliases)) {
       const pkgDetails = parsePackageName(argPath);
       const aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, rootPkg)({
-        ...args,
-        path: aliasPath
-      });
+
+      if (aliasPath) {
+        return HTTP_RESOLVE(host, rootPkg)({
+          ...args,
+          path: aliasPath
+        });
+      }
     }
   };
 };
@@ -59,11 +62,11 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, rootPkg: Pa
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
+export function ALIAS<T>(state: StateArray<LocalState<T>>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
-
+  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const pkgJSON = config["package.json"];
+  
   const { polyfill = false, alias: aliases = {} } = config;
   const [get] = state;
 

@@ -1,7 +1,9 @@
-import { defineConfig } from "astro/config";
+import { defineConfig, squooshImageService } from 'astro/config';
 
-import { FileSystemIconLoader } from "unplugin-icons/loaders";
+import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import Icons from "unplugin-icons/vite";
+
+import { adapter, output } from "astro-auto-adapter";
 
 // import ServiceWorker from "astrojs-service-worker";
 import sitemap from "@astrojs/sitemap";
@@ -26,13 +28,13 @@ const SPECIAL_QUERY_RE = /[\?&](?:worker|sharedworker|raw|url)\b/;
 const dtsExtRE = /\?dts$/;
 
 // strip UTF-8 BOM
-export function stripBomTag(content) {
-  if (content.charCodeAt(0) === 0xfeff) {
-    return content.slice(1);
-  }
+// export function stripBomTag(content) {
+//   if (content.charCodeAt(0) === 0xfeff) {
+//     return content.slice(1);
+//   }
 
-  return content;
-}
+//   return content;
+// }
 
 // Based on https://medium.com/@martin_hotell/typescript-library-tips-rollup-your-types-995153cc81c7
 // ^ This was a great help
@@ -92,6 +94,11 @@ export default defineConfig({
       wrap: false
     }
   },
+  image: {
+    service: squooshImageService(),
+  },
+  output: output(),
+  adapter: await adapter(),
   integrations: [
     solid(),
     tailwind({

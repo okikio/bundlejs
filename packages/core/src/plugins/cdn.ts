@@ -140,9 +140,9 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
           const relativePath = parsedSubpath.replace(/^\//, "./");
           
-          let modernResolve: ReturnType<typeof resolve> | void;
-          let legacyResolve: ReturnType<typeof legacy> | void;
-          let resolvedPath: string | void = parsedSubpath;
+          let modernResolve: ReturnType<typeof resolve> | null = null;
+          let legacyResolve: ReturnType<typeof legacy> | null = null;
+          let resolvedPath: string | null = parsedSubpath;
 
           try {
             // Resolving imports & exports from the package.json

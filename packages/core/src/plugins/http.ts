@@ -5,11 +5,11 @@ import type { StateArray } from "../configs/state.ts";
 import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
 import { decode } from "@bundle/utils/utils/encode-decode.ts";
 
-import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl, inferLoader, setFile } from "../utils/index.ts";
+import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl, inferLoader, setFile, type IFileSystem } from "../utils/index.ts";
 import { LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
 import { isBareImport } from "@bundle/utils/utils/path.ts";
-import { urlJoin } from "@bundle/utils/utils/url.ts";
+import { toURLPath, urlJoin } from "@bundle/utils/utils/url.ts";
 import { CDN_RESOLVE } from "./cdn.ts";
 
 /** HTTP Plugin Namespace */
@@ -27,7 +27,7 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
-    if (/text\/html/.test(response.headers.get("content-type")))
+    if (response?.headers && /text\/html/.test(response.headers.get("content-type") ?? ""))
       throw new Error("Can't load HTML as a package");
 
     dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
@@ -37,8 +37,9 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
       url: response.url || url,
       content: new Uint8Array(await response.arrayBuffer()),
     };
-  } catch (err) {
-    throw new Error(`[getRequest] Failed at request (${url})\n${err.toString()}`, {
+  } catch (e) {
+    const err = e as Error | unknown;
+    throw new Error(`[getRequest] Failed at request (${url})\n${err?.toString()}`, {
       cause: err
     });
   }
@@ -54,13 +55,12 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export async function fetchAssets(path: string, content: Uint8Array, state: StateArray<LocalState>) {
+export async function fetchAssets<T>(path: string, content: Uint8Array, state: StateArray<LocalState<T>>) {
   // Regex for `new URL("./path.js", import.meta.url)`, 
   // I added support for comments so you can add comments and the regex
   // will ignore the comments
   const rgx = /new(?:\s|\n?)+URL\((?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*(?:(?!\`.*\$\{)['"`](.*)['"`]),(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*import\.meta\.url(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*\)/g;
   const parentURL = new URL("./", path).toString();
-  // const FileSystem = config.filesystem;
 
   const [getState] = state;
   const FileSystem = getState().filesystem;
@@ -73,8 +73,10 @@ export async function fetchAssets(path: string, content: Uint8Array, state: Stat
 
     // Create a virtual file system for storing assets
     // This is for building a package bundle analyzer 
-    if (FileSystem)
-      await setFile(FileSystem, url, content)
+    if (FileSystem) {
+      const path = toURLPath(url);
+      await setFile(FileSystem, path, content);
+    }
 
     return {
       path: assetURL, contents: asset,
@@ -131,7 +133,7 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
       // If after checking all the different file extensions none of them are valid
       // Throw the first fetch error encountered, as that is generally the most accurate error
       if (i >= endingVariantsLength - 1) {
-        dispatchEvent(LOGGER_ERROR, err ?? e);
+        dispatchEvent(LOGGER_ERROR, err ?? e as Error);
         throw err ?? e;
       }
     }
@@ -158,8 +160,8 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
         return {
           path: argPath,
           namespace: HTTP_NAMESPACE,
-          sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
-          pluginData: { pkg: args.pluginData?.pkg },
+          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+          pluginData: { manifest: args.pluginData?.manifest },
         };
       }
 
@@ -193,8 +195,8 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
         return {
           path: getCDNUrl(argPath, origin).url.toString(),
           namespace: HTTP_NAMESPACE,
-          sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
-          pluginData: { pkg: args.pluginData?.pkg },
+          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+          pluginData: { manifest: args.pluginData?.manifest },
         };
       }
     }
@@ -204,8 +206,8 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     return {
       path,
       namespace: HTTP_NAMESPACE,
-      sideEffects: typeof args.pluginData?.pkg?.sideEffects === "boolean" ? args.pluginData?.pkg?.sideEffects : undefined,
-      pluginData: { pkg: args.pluginData?.pkg },
+      sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+      pluginData: { manifest: args.pluginData?.manifest },
     };
   };
 }
@@ -217,7 +219,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): ESBUILD.Plugin {
   // Convert CDN values to URL origins
   const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const pkgJSON = config["package.json"];
@@ -262,8 +264,12 @@ export function HTTP(state: StateArray<LocalState>, config: BuildConfig): ESBUIL
         // await FileSystem.set(args.namespace + ":" + args.path, content);
 
         if (content) {
-          if (FileSystem)
-            await setFile(FileSystem, url, content)
+          // Create a virtual file system for storing assets
+          // This is for building a package bundle analyzer 
+          if (FileSystem) {
+            const path = toURLPath(url);
+            await setFile(FileSystem, path, content);
+          }
 
           const _assetResults =
             (await fetchAssets(url, content, state))
@@ -282,7 +288,7 @@ export function HTTP(state: StateArray<LocalState>, config: BuildConfig): ESBUIL
           return {
             contents: content,
             loader: inferLoader(url),
-            pluginData: { url, pkg: args.pluginData?.pkg },
+            pluginData: { url, manifest: args.pluginData?.manifest },
           };
         }
       });

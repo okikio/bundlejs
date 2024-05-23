@@ -12,7 +12,8 @@ import { getState, setState } from "./configs/state.ts";
  */
 export type InitOptions = ESBUILD.InitializeOptions & { platform?: Platform };
 
-export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]: Partial<[Platform, string]>, opts: ESBUILD.InitializeOptions = {}) {
+export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]: Partial<[Platform, string]>, opts?: Partial<ESBUILD.InitializeOptions> | null) {
+  opts ??= {};
   try {
     if (!getState("initialized")) {
       setState("initialized", true);

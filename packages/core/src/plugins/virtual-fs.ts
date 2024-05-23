@@ -15,9 +15,6 @@ export function VIRTUAL_FS<T = Uint8Array>(state: StateArray<LocalState<T>>, con
     name: VIRTUAL_FILESYSTEM_NAMESPACE,
     setup(build) {
       build.onResolve({ filter: /.*/ }, async (args) => {
-        console.log({
-          argsPath: args.path,
-        })
         const fs = (FileSystem ?? await TheFileSystem) as IFileSystem<T>;
         const content = await getFile<T, IFileSystem<T>>(fs, args.path, "buffer", args?.pluginData?.importer);
         if (content && content?.length > 0) {

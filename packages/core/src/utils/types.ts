@@ -1,6 +1,4 @@
-
-
-export interface AbosoluteFile extends File {
+export interface FileSystemFileHandleWithPath extends FileSystemFileHandle {
   absolutePath: string
 }
 

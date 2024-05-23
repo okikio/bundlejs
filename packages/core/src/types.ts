@@ -1,7 +1,7 @@
 import type { Platform } from "./configs/platform.ts";
 import type * as ESBUILD from "esbuild-wasm/esm/browser.d.ts";
 
-import type { IFileSystem, useFileSystem } from "./utils/filesystem.ts";
+import type { IFileSystem } from "./utils/filesystem.ts";
 import type { getState, setState } from "./configs/state.ts";
 
 export type { ESBUILD };
@@ -9,7 +9,7 @@ export type CommonConfigOptions = {
   /**
    * Configures how esbuild-wasm is initialized 
    */
-  init?: ESBUILD.InitializeOptions & { platform?: Platform, version?: string }
+  init?: ESBUILD.InitializeOptions & { platform?: Platform, version?: string } | null
 };
 
 /**

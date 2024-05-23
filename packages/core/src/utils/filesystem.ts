@@ -1,7 +1,9 @@
 import { decode, encode } from "@bundle/utils/utils/encode-decode.ts";
-import { dirname, basename, resolve, posix } from "@bundle/utils/utils/path.ts";
+import { dirname, basename, resolve, posix, join } from "@bundle/utils/utils/path.ts";
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
-import type { AbosoluteFile } from "./types.ts";
+import type { FileSystemFileHandleWithPath } from "./types.ts";
+
+export const ROOT_DIR = "root";
 
 export interface IFileSystem<T, Content = Uint8Array> {
   /** Direct Access to Virtual Filesystem Storage, if requred for some specific use case */
@@ -70,6 +72,12 @@ export async function getFile<T, F extends IFileSystem<T, Content>, Content = Ui
 export async function getFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, type: string = "buffer", importer?: string): Promise<string | Awaited<Content> | null> {
   const resolvedPath = getResolvedPath(path, importer);
 
+  console.log({
+    type: "setFile",
+    path,
+    resolvedPath,
+  })
+
   try {
     const file = await fs.get(resolvedPath);
     if (file === undefined) return null;
@@ -110,7 +118,6 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
  */
 export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: string, importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
-
   try {
     const file = await fs.get(resolvedPath);
     if (file === undefined) return false;
@@ -132,6 +139,7 @@ export function createDefaultFileSystem<T = Uint8Array, Content = Uint8Array>(Fi
 
       const parentDirs = dir.split(posix.SEPARATOR).filter(x => x.length > 0);
       const len = parentDirs.length;
+      FileSystem.set("/", null);
 
       // Generate all the subdirectories in b/w
       let accPath = parentDirs[0] !== posix.SEPARATOR ? "/" : "";
@@ -266,18 +274,59 @@ async function getRelativePath(root: FileSystemDirectoryHandle, entry: FileSyste
   return null
 }
 
-async function* getFilesRecursively(root: FileSystemDirectoryHandle, entry: FileSystemHandle = root): AsyncGenerator<AbosoluteFile> {
-  if (entry.kind === "file") {
-    const _file = await (entry as FileSystemFileHandle).getFile();
-    const file = _file as AbosoluteFile;
-    if (file) {
+export const enum ListFilter {
+  File = "file",
+  Directory = "directory",
+  Both = "both",
+}
+
+// Define the overloads with the correct return types
+function listFilesRecursively(
+  root: FileSystemDirectoryHandle,
+  entry?: FileSystemHandle | null,
+  opts?: { filter?: ListFilter.File, recursive?: boolean }
+): AsyncGenerator<FileSystemFileHandleWithPath>;
+function listFilesRecursively(
+  root: FileSystemDirectoryHandle,
+  entry?: FileSystemHandle | null,
+  opts?: { filter: ListFilter.Both, recursive?: boolean }
+): AsyncGenerator<FileSystemFileHandleWithPath | FileSystemHandle>;
+function listFilesRecursively(
+  root: FileSystemDirectoryHandle,
+  entry?: FileSystemHandle | null,
+  opts?: { filter: ListFilter.Directory, recursive?: boolean }
+): AsyncGenerator<FileSystemHandle>;
+function listFilesRecursively(
+  root: FileSystemDirectoryHandle,
+  entry?: FileSystemHandle | null,
+  opts?: { filter?: ListFilter, recursive?: boolean }
+): AsyncGenerator<FileSystemFileHandleWithPath>;
+async function* listFilesRecursively(
+  root: FileSystemDirectoryHandle,
+  entry?: FileSystemHandle | null,
+  opts: { filter?: ListFilter, recursive?: boolean } = {}
+): AsyncGenerator<FileSystemFileHandleWithPath> | AsyncGenerator<FileSystemHandle> | AsyncGenerator<FileSystemFileHandleWithPath | FileSystemHandle> {
+  const { filter = ListFilter.File, recursive = true } = opts;
+  const allowFiles = filter === ListFilter.File || filter === ListFilter.Both;
+  const allowDirectories = filter === ListFilter.Directory || filter === ListFilter.Both;
+  entry ??= root;
+
+  if (entry.kind === "file" && allowFiles) {
+    const fileHandle = entry as FileSystemFileHandleWithPath;
+    if (fileHandle) {
       const absolutePath = posix.SEPARATOR + await getRelativePath(root, entry as FileSystemFileHandle);
-      if (absolutePath) file.absolutePath = absolutePath;
-      yield file;
+      if (absolutePath) fileHandle.absolutePath = absolutePath;
+      yield fileHandle;
     }
   } else if (entry.kind === "directory") {
     for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
-      yield* getFilesRecursively(root, handle);
+      if (allowDirectories) {
+        yield handle;
+      }
+
+      if (recursive) {
+        yield* listFilesRecursively(root, handle, opts);
+      } 
     }
   }
 }
@@ -289,24 +338,37 @@ export async function createOPFSFileSystem() {
       throw new Error("OPFS not supported by the current browser");
     }
 
-    const INTERNAL_FS = createDefaultFileSystem<AbosoluteFile>();
-    const root = await navigator.storage.getDirectory();
+    const INTERNAL_FS = createDefaultFileSystem<FileSystemFileHandleWithPath>();
+    const initRoot = await navigator.storage.getDirectory();
+    const root = await initRoot.getDirectoryHandle(ROOT_DIR, { "create": true });
 
-    const fs: IFileSystem<AbosoluteFile> = {
+    const fs: IFileSystem<FileSystemFileHandleWithPath> = {
       async files() {
         const files = await INTERNAL_FS.files();
         files.clear();
 
-        for await (const fileHandle of getFilesRecursively(root)) {
-          // @ts-ignore We manually set relativePath
-          INTERNAL_FS.set(fileHandle.absolutePath, fileHandle);
+        for await (const fileHandle of listFilesRecursively(root)) {
+          const file = await fileHandle.getFile();
+          INTERNAL_FS.set(
+            fileHandle.absolutePath, 
+            new Uint8Array(await file.arrayBuffer())
+          );
         }
 
         return files;
       },
       async get(path: string) {
         const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
-        const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath));
+        const _basename = basename(resolvedPath);
+        const isRootDir = _basename === posix.SEPARATOR || _basename.length < 1;
+
+        let fileHandle: FileSystemDirectoryHandle | FileSystemFileHandle = parentDirHandle;
+        if (!isRootDir) {
+          try {
+            fileHandle = await parentDirHandle.getFileHandle(_basename);
+          } catch (e) { }
+        }
+
         if (fileHandle.kind === "file") {
           return await readFile(fileHandle);
         } else {
@@ -315,13 +377,48 @@ export async function createOPFSFileSystem() {
       },
       async set(path: string, content?: Uint8Array | string | null, type?: string) {
         const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
-        const fileHandle = await parentDirHandle.getFileHandle(basename(resolvedPath), { "create": true });
-        if (content) await writeFile(fileHandle, content);
+        const _basename = basename(resolvedPath);
+        const isRootDir = _basename === posix.SEPARATOR || _basename.length < 1;
+
+        let fileHandle: FileSystemDirectoryHandle | FileSystemFileHandle = parentDirHandle;
+        if (!isRootDir) {
+          try {
+            fileHandle = await parentDirHandle.getFileHandle(_basename, { "create": true });
+          } catch (e) { }
+        }
+
+        if (content && fileHandle.kind === "file") 
+          await writeFile(fileHandle, content);
       },
-      async delete(path: string, { recursive = true } = {}) {
+      async delete(path: string) {
         try {
           const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path, null, { create: false });
-          await parentDirHandle.removeEntry(basename(resolvedPath), { recursive });
+          const _basename = basename(resolvedPath);
+          const isRootDir = _basename === posix.SEPARATOR || _basename.length < 1;
+
+          let fileHandle: FileSystemDirectoryHandle | FileSystemFileHandle = parentDirHandle;
+          if (!isRootDir) {
+            try {
+              fileHandle = await parentDirHandle.getFileHandle(_basename);
+            } catch (e) {}
+          }
+          
+          if (!isRootDir) {
+            await parentDirHandle.removeEntry(_basename, { recursive: true });
+          }
+          
+          // If you reach the root folder delete all the child entries, 
+          // we need the root folder to always exist
+          else if (fileHandle.kind === "directory" && isRootDir) {
+            const list = listFilesRecursively(root, fileHandle, {
+              filter: ListFilter.Both,
+              recursive: false
+            });
+
+            for await (const entry of list) {
+              await parentDirHandle.removeEntry(entry.name, { recursive: true });
+            }
+          }
         } catch (error) {
           console.error(`Error occurred while deleting "${path}":`, error);
           throw error;
@@ -341,7 +438,7 @@ export async function createOPFSFileSystem() {
  * @param type Virtual File System to use
  */
 export async function useFileSystem(type?: "DEFAULT"): Promise<IFileSystem<Uint8Array>>;
-export async function useFileSystem(type?: "OPFS"): Promise<IFileSystem<AbosoluteFile>>;
+export async function useFileSystem(type?: "OPFS"): Promise<IFileSystem<FileSystemFileHandleWithPath>>;
 export async function useFileSystem(type: string = "DEFAULT") {
   try {
     switch (type) {

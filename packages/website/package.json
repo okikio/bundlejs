@@ -22,6 +22,7 @@
     "@dprint/formatter": "^0.3.0",
     "@okikio/sharedworker": "^1.0.7",
     "@typescript/vfs": "^1.5.0",
+    "astro-auto-adapter": "^2.1.0",
     "comlink": "^4.4.1",
     "monaco-editor": "^0.48.0",
     "solid-js": "^1.8.17",

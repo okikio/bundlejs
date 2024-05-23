@@ -17,7 +17,7 @@ export async function bundle(fileName: string, content: string, _config = "expor
   const start = performance.now();
 
   try {
-  // await deleteFile(fs, "/index.tsx");
+  // await deleteFile(fs, "/");
   } catch (e) {
     console.log({ e })
   }
