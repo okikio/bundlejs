@@ -1,8 +1,8 @@
 /// <reference lib="webworker" />
 import type { ConfigOptions } from "../../configs/options.ts";
-import type { BuildConfig, ESBUILD } from "@bundle/core/src/index.ts";
+import type { BuildConfig, ESBUILD, IFileSystem } from "@bundle/core/src/index.ts";
 
-import { build, setFile, deleteFile, useFileSystem } from "@bundle/core/src/index.ts";
+import { build, setFile, deleteFile, useFileSystem, getFile } from "@bundle/core/src/index.ts";
 import { deepMerge } from "@bundle/utils/src/index.ts";
 import { compress } from "@bundle/compress/src/index.ts";
 
@@ -10,6 +10,7 @@ import { parseConfig } from "./parse-config.ts";
 import { DefaultConfig } from "../../configs/options.ts";
 
 import { initOpts, ready } from "./utils/init.ts";
+import type { FileSystemFileHandleWithPath } from "@bundle/core/src/utils/types.js";
 
 const FileSystem = useFileSystem("OPFS");
 export async function bundle(fileName: string, content: string, _config = "export default {}") {
@@ -21,10 +22,11 @@ export async function bundle(fileName: string, content: string, _config = "expor
   } catch (e) {
     console.log({ e })
   }
-  console.log({
-    content
-  })
   await setFile(fs, "/index.tsx", content);
+  console.log({
+    content: await getFile(fs, "/index.tsx", "string")
+  })
+
 
   const newConfig = await parseConfig(_config);
   const config = deepMerge(structuredClone(DefaultConfig), newConfig) as ConfigOptions;
@@ -34,9 +36,10 @@ export async function bundle(fileName: string, content: string, _config = "expor
   const buildConfig = config as BuildConfig;
   const result = await build({
     entryPoints: ["/index.tsx"],
+    
     ...buildConfig,
     init: initOpts,
-  }, FileSystem);
+  }, Promise.resolve(fs));
 
   console.log({ result })
 

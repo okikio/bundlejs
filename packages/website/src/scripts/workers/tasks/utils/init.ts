@@ -6,8 +6,8 @@ import type { ESBUILD } from "@bundle/core/src/index.ts";
 
 export let initOpts: ESBUILD.InitializeOptions | null = null;
 export const ready = (async () => {
-  initOpts = { worker: false };
   const fs = await useFileSystem("OPFS");
+  initOpts = { worker: false };
   console.log({
     writeToOPFS: true
   })
@@ -19,6 +19,7 @@ export const ready = (async () => {
 
   // console.log({
   //   contents: await getFile(fs, "/cool/text_file.ts", "string"),
+  //   contents: await getFile(fs, ".", "string"),
   // })
 
   // const files = (await fs.files());

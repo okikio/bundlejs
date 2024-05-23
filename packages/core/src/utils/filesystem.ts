@@ -69,19 +69,20 @@ export function getResolvedPath(path: string, importer?: string) {
  */
 export async function getFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, type: "string", importer?: string): Promise<string | null>;
 export async function getFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, type: "buffer", importer?: string): Promise<Awaited<Content> | null>;
+export async function getFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, type?: string, importer?: string): Promise<string | Awaited<Content> | null>
 export async function getFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, type: string = "buffer", importer?: string): Promise<string | Awaited<Content> | null> {
   const resolvedPath = getResolvedPath(path, importer);
-
-  console.log({
-    type: "setFile",
-    path,
-    resolvedPath,
-  })
-
   try {
     const file = await fs.get(resolvedPath);
     if (file === undefined) return null;
     if (!isValid(file)) return null;
+
+    console.log({
+      type: "getFile",
+      path,
+      resolvedPath,
+      file,
+    })
 
     if (type === "string" && ArrayBuffer.isView(file)) return decode(file);
     return file;
@@ -101,8 +102,8 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
   const resolvedPath = getResolvedPath(path, importer);
 
   try {
-    if (!isValid(content)) await fs.set(resolvedPath, null, 'folder');
-    await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content!), 'file');
+    if (!isValid(content)) return await fs.set(resolvedPath, null, 'folder');
+    return await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content!), 'file');
   } catch (e) {
     throw new Error(`Error occurred while writing to "${resolvedPath}": ${e}`, { cause: e });
   }
