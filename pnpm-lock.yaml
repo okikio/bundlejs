@@ -26,9 +26,6 @@ importers:
       husky:
         specifier: ^9.0.11
         version: 9.0.11
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       semantic-release:
         specifier: ^23.1.1
         version: 23.1.1(typescript@5.4.5)
@@ -90,9 +87,6 @@ importers:
       jsdom:
         specifier: ^24.0.0
         version: 24.0.0
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -115,9 +109,6 @@ importers:
         specifier: workspace:^
         version: link:../utils
     devDependencies:
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -143,9 +134,6 @@ importers:
         specifier: ^0.21.3
         version: 0.21.3
     devDependencies:
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -174,9 +162,6 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20240512.0
         version: 4.20240512.0
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -196,9 +181,6 @@ importers:
       iconv-lite:
         specifier: ^0.6.3
         version: 0.6.3
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       qs:
         specifier: ^6.12.1
         version: 6.12.1
@@ -257,9 +239,6 @@ importers:
       '@types/web':
         specifier: ^0.0.147
         version: 0.0.147
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -345,15 +324,9 @@ importers:
       astro:
         specifier: 4.8.7
         version: 4.8.7(@types/node@20.12.12)(sass@1.77.2)(typescript@5.4.5)
-      classix:
-        specifier: ^2.1.37
-        version: 2.1.37
       esbuild-wasm:
         specifier: ^0.21.3
         version: 0.21.3
-      pnpm:
-        specifier: ^9.1.2
-        version: 9.1.2
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
@@ -2321,9 +2294,6 @@ packages:
   ci-info@4.0.0:
     resolution: {integrity: sha512-TdHqgGf9odd8SXNuxtUBVx8Nv+qZOejE6qyqiy5NtbYYQOeFa6zmHkxlPzmaLxWWHsU6nJmB7AETdVPi+2NBUg==}
     engines: {node: '>=8'}
-
-  classix@2.1.37:
-    resolution: {integrity: sha512-mTlsDSW/AHxHNggs+dNpI2kYGyK0tawAupR0B6vQYU9i8WTAoaa6bFGKIwwiHfmfCZdrsrtlCULic7p/9ZPuVQ==}
 
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -4450,11 +4420,6 @@ packages:
 
   pkg-types@1.1.1:
     resolution: {integrity: sha512-ko14TjmDuQJ14zsotODv7dBlwxKhUKQEhuhmbqo1uCi9BB0Z2alo/wAXg6q1dTR5TyuqYyWhjtfe/Tsh+X28jQ==}
-
-  pnpm@9.1.2:
-    resolution: {integrity: sha512-En3IO56hDDK+ZdIqjvtKZfuVLo/vvf3tOb3DyX78MtMbSLAEIN8sEYes4oySHJAvDLWhNKTQMri1KVy/osaB4g==}
-    engines: {node: '>=18.12'}
-    hasBin: true
 
   possible-typed-array-names@1.0.0:
     resolution: {integrity: sha512-d7Uw+eZoloe0EHDIYoe+bQ5WXnGMOpmiZFTuMWCwpjzzkL2nTjcKiAk4hh8TjnGye2TwWOk3UXucZ+3rbmBa8Q==}
@@ -7715,8 +7680,6 @@ snapshots:
 
   ci-info@4.0.0: {}
 
-  classix@2.1.37: {}
-
   clean-stack@2.2.0: {}
 
   clean-stack@5.2.0:
@@ -10187,8 +10150,6 @@ snapshots:
       confbox: 0.1.7
       mlly: 1.7.0
       pathe: 1.1.2
-
-  pnpm@9.1.2: {}
 
   possible-typed-array-names@1.0.0: {}
 
