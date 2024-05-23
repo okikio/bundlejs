@@ -1,22 +1,33 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    // Enable strict mode. This enables a few options at a time, see https://www.typescriptlang.org/tsconfig#strict for a list.
+    "strict": true,
+    "strictNullChecks": true,
     // Enable top-level await, and other modern ESM features.
     "target": "ESNext",
     "module": "ESNext",
-    // Enable node-style module resolution, for things like npm package imports.
-    "moduleResolution": "bundler",
+    // Enable module resolution without file extensions on relative paths, for things like npm package imports.
+    "moduleResolution": "Bundler",
+    // Allow importing TypeScript files using their native extension (.ts(x)).
+    "allowImportingTsExtensions": true,
     // Enable JSON imports.
     "resolveJsonModule": true,
-    // Enable stricter transpilation for better output.
-    "isolatedModules": true,
-    // Remove CJS module errors
-    "allowSyntheticDefaultImports": true,
-    // Allow importing `.ts` files directly
-    "allowImportingTsExtensions": true,
-    // Emit only declaration files
-    "emitDeclarationOnly": true,
-    "declaration": true,
+    // Enforce the usage of type-only imports when needed, which helps avoiding bundling issues.
     "verbatimModuleSyntax": true,
+    // Ensure that each file can be transpiled without relying on other imports.
+    // This is redundant with the previous option, however it ensures that it's on even if someone disable `verbatimModuleSyntax`
+    "isolatedModules": true,
+    // Report an error when importing a file using a casing different from another import of the same file.
+    "forceConsistentCasingInFileNames": true,
+    // Properly support importing CJS modules in ESM
+    "esModuleInterop": true,
+    // Skip typechecking libraries and .d.ts files
+    "skipLibCheck": true,
+    // Allow JavaScript files to be imported
+    "allowJs": true,
+    // No emit only declaration files
+    "noEmit": true,
     // Add support for Web Workers
     "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"]
   }

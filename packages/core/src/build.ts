@@ -73,13 +73,16 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
   });
 
   const { platform, version, ...initOpts } = CONFIG.init ?? {};
-  const { build: bundle } = await init([platform, version], initOpts);
+  const { build: bundle } = await init([platform, version], initOpts) ?? {};
   const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
   let result: ESBUILD.BuildResult;
 
   try {
+    if (!bundle) 
+      throw new Error("Initialization failed, couldn't access esbuild build function");
+
     try {
       result = await bundle({
         entryPoints: CONFIG?.entryPoints ?? [],
@@ -108,15 +111,16 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
         ...esbuildOpts,
       });
     } catch (e) {
-      if (e.errors) {
+      const fail = e as ESBUILD.BuildFailure;
+      if (fail.errors) {
         // Log errors with added color info. to the virtual console
-        const ansiMsgs = await createNotice(e.errors, "error", false) ?? [];
+        const ansiMsgs = await createNotice(fail.errors, "error", false) ?? [];
         dispatchEvent(LOGGER_ERROR, new Error(ansiMsgs.join("\n")));
 
         const message = (ansiMsgs.length > 1 ? `${ansiMsgs.length} error(s) ` : "") + "(if you are having trouble solving this issue, please create a new issue in the repo, https://github.com/okikio/bundlejs)";
         dispatchEvent(LOGGER_ERROR, new Error(message));
 
-        const htmlMsgs = await createNotice(e.errors, "error") ?? [];
+        const htmlMsgs = await createNotice(fail.errors, "error") ?? [];
         throw { msgs: htmlMsgs };
       } else throw e;
     }
@@ -127,8 +131,9 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
       ...result
     });
   } catch (e) {
-    if (!("msgs" in e)) {
-      dispatchEvent(BUILD_ERROR, e);
+    const err = e as Error;
+    if (!("msgs" in err)) {
+      dispatchEvent(BUILD_ERROR, err);
     }
 
     throw e;
@@ -201,8 +206,9 @@ export async function formatBuildResult(ctx: BuildResultContext) {
       ...ctx
     };
   } catch (e) {
-    if (!("msgs" in e)) {
-      dispatchEvent(BUILD_ERROR, e);
+    const err = e as Error;
+    if (!("msgs" in err)) {
+      dispatchEvent(BUILD_ERROR, err);
     }
 
     throw e;

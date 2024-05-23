@@ -175,8 +175,8 @@ export interface PackageJson {
 /**
  * Local state available to all plugins
  */
-export type LocalState = {
-  filesystem?: IFileSystem<unknown>,
+export interface LocalState<T = unknown> {
+  filesystem?: IFileSystem<T>,
   
   /**
    * Versions
@@ -194,7 +194,7 @@ export type LocalState = {
    */
   GLOBAL?: [typeof getState, typeof setState],
 
-  [key: string]: unknown
+  [key: PropertyKey]: unknown
 }
 
 export type BuildConfig = CommonConfigOptions & {

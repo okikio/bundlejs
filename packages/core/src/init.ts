@@ -45,8 +45,9 @@ export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]
     }
 
     return getState("esbuild");
-  } catch (error) {
-    dispatchEvent(INIT_ERROR, error);
+  } catch (e) {
+    const error = e as Error | unknown;
+    dispatchEvent(INIT_ERROR, error as Error);
     console.error(error);
   }
 }

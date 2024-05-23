@@ -1,35 +1,54 @@
 import type { ESBUILD } from "../types.ts";
 
-/**
- * Holds global state 
- */
-const STATE = {
+export interface GlobalState {
   /**
    * Registers if esbuild has been initialized
    */
-  initialized: false as boolean,
+  initialized: boolean;
 
   /**
-   * Assets are files during the build process that esbuild can't handle natively, 
+   * Assets are files during the build process that esbuild can't handle natively,
    * e.g. fetching web workers using the `new URL("...", import.meta.url)`
    */
-  assets: [] as ESBUILD.OutputFile[],
+  assets: ESBUILD.OutputFile[];
 
   /**
    * Instance of esbuild being used
    */
-  esbuild: null as typeof ESBUILD
+  esbuild: typeof ESBUILD | null;
+
+  [key: PropertyKey]: unknown;
+}
+
+/**
+ * Holds global state
+ */
+const STATE: GlobalState = {
+  initialized: false,
+  assets: [],
+  esbuild: null,
 };
 
 /**
  * Gets state or if there is no name returns STATE object
  */
-export function getState<T extends keyof typeof STATE>(name?: T) {
-  return STATE[name];
+export function getState<T extends keyof State, State extends Record<PropertyKey, unknown> = GlobalState>(
+  name?: T,
+  state: State = STATE as unknown as State
+): State[T] | null {
+  return name && name in state ? state[name] : null;
 }
 
-export function setState<T extends keyof typeof STATE>(name: T, value: typeof STATE[T]) {
-  return (STATE[name] = value);
+/**
+ * Sets state value
+ */
+export function setState<T extends keyof State, State extends Record<PropertyKey, unknown> = GlobalState>(
+  name: T,
+  value: State[T],
+  state: State = STATE as unknown as State
+): State[T] {
+  state[name] = value;
+  return value;
 }
 
 export type Getter<T> = () => T;
@@ -46,11 +65,14 @@ export function createState<T>(initial?: T) {
   return [
     () => result,
     (value?: T) => {
-      if (typeof value === "object" && !Array.isArray(value) && value !== null) {
-        Object.assign(result, value);
-      } else {
-        result = value ?? initial;
-      }
+      if (
+        typeof value === "object" && 
+        !Array.isArray(value) && 
+        value !== null
+      ) {
+        Object.assign(result as {}, value);
+      } else result = value ?? initial;
+
       return result;
     }
   ] as StateArray<T>;
