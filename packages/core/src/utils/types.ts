@@ -72,3 +72,22 @@ export interface FileSystemFileHandle extends FileSystemHandle {
   createWritable?(options?: FileSystemCreateWritableOptions): Promise<FileSystemWritableFileStream>;
   getFile(): Promise<File>;
 }
+
+/**
+ * Available only in secure contexts.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle)
+ */
+export interface FileSystemDirectoryHandle extends FileSystemHandle {
+  readonly kind: "directory";
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle/getDirectoryHandle) */
+  getDirectoryHandle(name: string, options?: FileSystemGetDirectoryOptions): Promise<FileSystemDirectoryHandle>;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle/getFileHandle) */
+  getFileHandle(name: string, options?: FileSystemGetFileOptions): Promise<FileSystemFileHandle>;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle/removeEntry) */
+  removeEntry(name: string, options?: FileSystemRemoveOptions): Promise<void>;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle/resolve) */
+  resolve(possibleDescendant: FileSystemHandle): Promise<string[] | null>;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FileSystemDirectoryHandle/values) */
+  values(): AsyncIterable<FileSystemHandle>;
+}

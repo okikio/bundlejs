@@ -140,8 +140,8 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
   }
 }
 
-export async function formatBuildResult(ctx: BuildResultContext) {
-  const { config: CONFIG, state: STATE } = ctx;
+export async function formatBuildResult(_ctx: BuildResultContext) {
+  const { config: CONFIG, state: STATE, ...ctx } = _ctx;
   const [get] = STATE;
 
   try {
@@ -149,7 +149,7 @@ export async function formatBuildResult(ctx: BuildResultContext) {
     let outputs: ESBUILD.OutputFile[] = [];
     let contents: ESBUILD.OutputFile[] = [];
 
-    if (ctx.warnings) {
+    if (ctx.warnings?.length > 0) {
       // Log errors with added color info. to the virtual console
       const ansiMsgs = await createNotice(ctx.warnings, "warning", false) ?? [];
       dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
@@ -193,6 +193,8 @@ export async function formatBuildResult(ctx: BuildResultContext) {
     // console.log({ contentsLen: contents.length })
 
     return {
+      config: CONFIG,
+
       /** 
        * The output and asset files without unnecessary croft, e.g. `.map` sourcemap files 
        */
@@ -203,7 +205,10 @@ export async function formatBuildResult(ctx: BuildResultContext) {
        */
       outputs,
 
-      ...ctx
+
+      files: (await get().filesystem?.files()) || null,
+
+      ...ctx,
     };
   } catch (e) {
     const err = e as Error;

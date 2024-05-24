@@ -79,10 +79,10 @@ function activeNav(regex: RegExp) {
 
 <script>
   let nav = document.querySelector("nav");
-  let navToggle = nav.querySelector("[data-nav-toggle]");
+  let navToggle = nav?.querySelector("[data-nav-toggle]");
 
-  navToggle.addEventListener("click", function () {
-    nav.classList.toggle("open");
+  navToggle?.addEventListener("click", function () {
+    nav?.classList.toggle("open");
   });
 </script>
 

@@ -3,11 +3,11 @@ import type { ComponentProps } from "solid-js";
 import { splitProps, mergeProps } from "solid-js";
 import IconArrowUpRight from "~icons/fluent/arrow-up-right-24-regular";
 
-export function Anchor(props?: ComponentProps<'a'> & { external?: boolean }) {
+export function Anchor(props: ComponentProps<'a'> & { external?: boolean } = {}) {
   let [newProps, attrs] = splitProps(props, ['href', 'class', 'external', 'children']);
 
   let mergedProps = mergeProps({
-    external: /^(http|mailto)/.test(newProps.href)
+    external: newProps.href && /^(http|mailto)/.test(newProps.href)
   }, newProps);
 
   return (

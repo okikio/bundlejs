@@ -73,11 +73,12 @@ export async function newRequest(
       // If the request is successful, break out of the retry loop
       break;
     } catch (error) {
-      console.error(`Attempt ${attempt + 1} to fetch ${request.toString()} failed: ${error.message}`);
+      const err = error as Error;
+      console.error(`Attempt ${attempt + 1} to fetch ${url} failed: ${err?.message}`);
 
       // If the last attempt also fails, return a Response object with an error state
       if (attempt === retry - 1) 
-        return networkResponse;
+        return networkResponse!;
     }
   }
 
@@ -87,27 +88,29 @@ export async function newRequest(
       // Check if the environment supports the Cache API and a cache object is provided
       if (SUPPORTS_CACHE_API && cache) {
         // Store the response in the provided cache object
-        await cache.put(request, networkResponse.clone());
+        await cache.put(request, networkResponse!.clone());
       } else {
         // Fallback to a simple in-memory cache if Cache API is not supported
-        CACHE.set(url, networkResponse.clone());
+        CACHE.set(url, networkResponse!.clone());
       }
-    } catch (cacheError) {
-      console.error(`Failed to cache response for ${request.toString()}: ${cacheError.message}`);
+    } catch (err) {
+      const cacheError = err as Error;
+      console.error(`Failed to cache response for ${url}: ${cacheError?.message}`);
     }
   }
 
   // Clone the response if the clone option is set to true
   if (clone) {
     try {
-      return networkResponse.clone();
-    } catch (cloneError) {
-      console.error(`Failed to clone response for ${request.toString()}: ${cloneError.message}`);
+      return networkResponse!.clone();
+    } catch (err) {
+      const cloneError = err as Error;
+      console.error(`Failed to clone response for ${url}: ${cloneError?.message}`);
     }
   }
 
   // Return the original network response if cloning is not required or cloning fails
-  return networkResponse;
+  return networkResponse!;
 };
 
 /**

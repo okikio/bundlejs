@@ -4,24 +4,51 @@ import type { wrap } from "comlink";
 
 import { createStore } from "solid-js/store";
 
-export const initial = {
-  editorBtnsOpen: false,
+export interface UnifiedWebBundleConfig {
+  editorBtnsOpen: boolean,
   workers: {
-    tasks: null as ReturnType<typeof wrap<typeof Tasks>>
+    tasks: ReturnType<typeof wrap<typeof Tasks>> | null,
   },
+
   monaco: {
-    editor: null as MonacoEditor.IStandaloneCodeEditor,
+    editor: MonacoEditor.IStandaloneCodeEditor | null,
     initialValue: {
-      input: null as string,
-      output: null as string,
-      config: null as string,
+      input: string | null,
+      output: string | null,
+      config: string | null,
     },
     models: {
-      input: null as MonacoEditor.ITextModel,
-      output: null as MonacoEditor.ITextModel,
-      config: null as MonacoEditor.ITextModel,
+      input: MonacoEditor.ITextModel | null,
+      output: MonacoEditor.ITextModel | null,
+      config: MonacoEditor.ITextModel | null,
     },
-    languages: null as typeof languages,
+    languages: typeof languages | null,
+    loading: boolean
+  },
+
+  bundleSize: string | "...",
+  bundling: boolean,
+}
+
+export const initial: UnifiedWebBundleConfig = {
+  editorBtnsOpen: false,
+  workers: {
+    tasks: null,
+  },
+  
+  monaco: {
+    editor: null,
+    initialValue: {
+      input: null,
+      output: null,
+      config: null,
+    },
+    models: {
+      input: null,
+      output: null,
+      config: null,
+    },
+    languages: null,
     loading: true
   },
 

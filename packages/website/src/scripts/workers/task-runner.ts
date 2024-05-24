@@ -1,11 +1,11 @@
 /// <reference lib="webworker" />
-import type { addLogs } from "../../components/MainSection/EditorSection/Console";
+import type { addLogs } from "../../components/MainSection/EditorSection/Console.tsx";
 
-import { format } from "./tasks/format";
-import { createFile } from "./tasks/create-file";
-import { createShareURL, createShareURLParams } from "./tasks/create-share-url";
-import { bundle } from "./tasks/build";
-import { parseConfig } from "./tasks/parse-config";
+import { format } from "./tasks/format.ts";
+import { createFile } from "./tasks/create-file.ts";
+import { createShareURL, createShareURLParams } from "./tasks/create-share-url.ts";
+import { bundle } from "./tasks/build.ts";
+import { parseConfig } from "./tasks/parse-config.ts";
 
 import {
   addEventListener,

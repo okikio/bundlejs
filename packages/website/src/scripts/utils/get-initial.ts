@@ -1,5 +1,5 @@
 import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
-import { EasyDefaultConfig } from "../configs/options";
+import { EasyDefaultConfig } from "../configs/options.ts";
 import { parseShareURLQuery } from "@bundle/query-string/src/parse-query.ts";
 export function generateConfigValue(config: string | Record<string, unknown>) {
   return [

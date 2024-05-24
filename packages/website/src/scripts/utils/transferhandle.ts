@@ -1,20 +1,29 @@
 import type { TransferHandler } from "comlink";
 import * as Comlink from "comlink";
 
-import type { TypeTransferable } from "transferables";
-import { getTransferables, hasTransferables } from "transferables";
+import { 
+  getTransferables, 
+  hasTransferables, 
+  isSupported,
+} from "@okikio/transferables";
+
+const support = await isSupported();
 
 /**
  * Internal transfer handle to handle objects marked to proxy.
  */
 const transferableTransferHandler: TransferHandler<object, object> = {
   canHandle(obj): obj is object {
-    return hasTransferables(obj, true);
+    return hasTransferables(obj, support.streams);
   },
   serialize(obj) {
+    const transferables: Transferable[] = getTransferables(obj, support.streams);
+    console.log({
+      obj, transferables
+    })
     return [
       obj,
-      getTransferables(obj, true) as unknown as Transferable[],
+      transferables,
     ];
   },
   deserialize(obj) {

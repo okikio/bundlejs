@@ -17,6 +17,7 @@ export async function createFile(fileName: string, content: string) {
     target: ts.ScriptTarget.Latest,
     module: ts.ModuleKind.ESNext,
     "lib": [
+      "esnext",
       "es2022",
       "es2021",
       "dom"
@@ -25,6 +26,10 @@ export async function createFile(fileName: string, content: string) {
 
   const libs = knownLibFilesForCompilerOptions(compilerOpts, ts);
   const fsMap = new Map<string, string>();  
+
+  console.log({
+    libs,
+  })
   for (const path of libs) {
     fsMap.set(`/${path}`, libFiles[path]);
   }
@@ -34,7 +39,7 @@ export async function createFile(fileName: string, content: string) {
   const system = createSystem(fsMap);
   const env = createVirtualTypeScriptEnvironment(system, [...fsMap.keys()], ts, compilerOpts);
   const program = env.languageService.getProgram();
-  return program.getSourceFile(fileName);
+  return program?.getSourceFile(fileName);
 }
 
 export default createFile;

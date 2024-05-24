@@ -5,8 +5,6 @@ import { createDetailsEffect } from "../hooks/details";
 
 import IconChevronRightArrow from "~icons/fluent/chevron-right-24-regular";
 
-
-
 export function Details(props: ComponentProps<"details"> & {
   children?: JSX.Element;
   summary?: JSX.Element | string;
@@ -20,9 +18,9 @@ export function Details(props: ComponentProps<"details"> & {
     contentClass: "pl-4 pr-2 py-4",
   }, newProps);
 
-  let ref: HTMLDetailsElement;
-  let summaryRef: HTMLElement;
-  let contentRef: HTMLDivElement;
+  let ref: HTMLDetailsElement | undefined;
+  let summaryRef: HTMLElement | undefined;
+  let contentRef: HTMLDivElement | undefined;
 
   const {
     onClick: _onClick,

@@ -1,7 +1,10 @@
+import type { 
+  FileSystemFileHandleWithPath,
+  FileSystemDirectoryHandle as IFileSystemDirectoryHandle
+} from "./types.ts";
 import { decode, encode } from "@bundle/utils/utils/encode-decode.ts";
-import { dirname, basename, resolve, posix, join } from "@bundle/utils/utils/path.ts";
+import { dirname, basename, resolve, posix } from "@bundle/utils/utils/path.ts";
 import { LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
-import type { FileSystemFileHandleWithPath } from "./types.ts";
 
 export const ROOT_DIR = "root";
 
@@ -16,6 +19,14 @@ export interface IFileSystem<T, Content = Uint8Array> {
    * @returns file from file system storage as a Uint8Array buffer
    */
   get: (path: string) => Promise<Content | null | undefined>,
+
+  /**
+   * Determine if file from virtual file system storage exists
+   * 
+   * @param path path of file in virtual file system storage
+   * @returns file from file system storage as a Uint8Array buffer
+   */
+  has: (path: string) => Promise<boolean>,
 
   /**
    * Writes file to filesystem in either string or uint8array buffer format
@@ -77,17 +88,26 @@ export async function getFile<T, F extends IFileSystem<T, Content>, Content = Ui
     if (file === undefined) return null;
     if (!isValid(file)) return null;
 
-    console.log({
-      type: "getFile",
-      path,
-      resolvedPath,
-      file,
-    })
-
     if (type === "string" && ArrayBuffer.isView(file)) return decode(file);
     return file;
   } catch (e) { }
   return null;
+}
+
+/**
+ * Determines if file from virtual file system storage in either string or uint8array exists
+ * 
+ * @param fs virtual file system 
+ * @param path path of file in virtual file system storage
+ * @param importer an absolute path to use to determine a relative file path
+ * @returns file from file system storage in either string format or as a Uint8Array buffer
+ */
+export async function hasFile<T, F extends IFileSystem<T, Content>, Content = Uint8Array>(fs: F, path: string, importer?: string): Promise<boolean> {
+  const resolvedPath = getResolvedPath(path, importer);
+  try {
+    return await fs.has(resolvedPath);
+  } catch (e) { }
+  return false;
 }
 
 /**
@@ -100,9 +120,12 @@ export async function getFile<T, F extends IFileSystem<T, Content>, Content = Ui
  */
 export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, content?: Uint8Array | string, importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
-
   try {
-    if (!isValid(content)) return await fs.set(resolvedPath, null, 'folder');
+    if (!isValid(content)) {
+      // return await fs.set(resolvedPath, null, 'folder');
+      return;
+    }
+
     return await fs.set(resolvedPath, content instanceof Uint8Array ? content : encode(content!), 'file');
   } catch (e) {
     throw new Error(`Error occurred while writing to "${resolvedPath}": ${e}`, { cause: e });
@@ -120,8 +143,8 @@ export async function setFile<T, F extends IFileSystem<T>>(fs: F, path: string, 
 export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: string, importer?: string) {
   const resolvedPath = getResolvedPath(path, importer);
   try {
-    const file = await fs.get(resolvedPath);
-    if (file === undefined) return false;
+    const exists = await fs.has(resolvedPath);
+    if (!exists) return false;
 
     return await fs.delete(resolvedPath);
   } catch (e) {
@@ -152,6 +175,9 @@ export function createDefaultFileSystem<T = Uint8Array, Content = Uint8Array>(Fi
       }
 
       FileSystem.set(resolvedPath, content);
+    },
+    async has(path: string) {
+      return FileSystem.has(path);
     },
     async delete(path: string) {
       return FileSystem.delete(resolve(path))
@@ -320,7 +346,7 @@ async function* listFilesRecursively(
       yield fileHandle;
     }
   } else if (entry.kind === "directory") {
-    for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
+    for await (const handle of (entry as IFileSystemDirectoryHandle).values()) {
       if (allowDirectories) {
         yield handle;
       }
@@ -335,7 +361,11 @@ async function* listFilesRecursively(
 /** Origin Private File System - Virtual Filesystem Storage */
 export async function createOPFSFileSystem() {
   try {
-    if (!("navigator" in globalThis) || !globalThis?.navigator?.storage) {
+    if (!(
+      "navigator" in globalThis && 
+      "storage" in globalThis.navigator && 
+      typeof globalThis?.navigator?.storage?.getDirectory === 'function'
+    )) {
       throw new Error("OPFS not supported by the current browser");
     }
 
@@ -375,6 +405,27 @@ export async function createOPFSFileSystem() {
         } else {
           return null;
         }
+      },
+      async has(path: string) {
+        const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
+        const _basename = basename(resolvedPath);
+        const isRootDir = _basename === posix.SEPARATOR || _basename.length < 1;
+
+        if (!isRootDir) {
+          try {
+            await parentDirHandle.getFileHandle(_basename);
+            return true;
+          } catch (e) { }
+
+          try {
+            await parentDirHandle.getDirectoryHandle(_basename);
+            return true;
+          } catch (e) { }
+
+          return false;
+        }
+
+        return true;
       },
       async set(path: string, content?: Uint8Array | string | null, type?: string) {
         const { parentDirHandle, resolvedPath } = await traverseFileSystem(root, path);
@@ -441,6 +492,7 @@ export async function createOPFSFileSystem() {
 export async function useFileSystem(type?: "DEFAULT"): Promise<IFileSystem<Uint8Array>>;
 export async function useFileSystem(type?: "OPFS"): Promise<IFileSystem<FileSystemFileHandleWithPath>>;
 export async function useFileSystem(type: string = "DEFAULT") {
+  
   try {
     switch (type) {
       case "DEFAULT":

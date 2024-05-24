@@ -7,14 +7,14 @@ import {
   editor as Editor,
   languages,
   Uri
-} from "./monaco-editor-slim";
+} from "./monaco-editor-slim.ts";
 
-import { getResolvedPackage } from "@bundle/utils/src/mod.ts";
+import { getResolvedPackage } from "@bundle/utils/utils/npm-search.ts";
 
 import GithubLight from "../utils/github-light";
 import GithubDark from "../utils/github-dark";
 
-import { EDITOR_WORKER, TS_WORKER } from "../index";
+import { EDITOR_WORKER, TS_WORKER } from "..";
 import { mediaTheme, themeGet } from "../theme";
 
 import { toLocaleDateString } from "../utils/locale-date-string";
@@ -95,7 +95,7 @@ export function build(inputEl: HTMLDivElement) {
       useShadows: false,
       vertical: "auto",
     },
-    lightbulb: { enabled: true },
+    lightbulb: { enabled: Editor.ShowLightbulbIconMode.On },
     wordWrap: "on",
     roundedSelection: true,
     scrollBeyondLastLine: true,
@@ -120,7 +120,7 @@ export function build(inputEl: HTMLDivElement) {
 
   document?.addEventListener("theme-change", () => {
     const theme = themeGet(html);
-    Editor.setTheme(theme == "system" ? mediaTheme() : theme);
+    Editor.setTheme(theme === "system" ? mediaTheme() : theme);
   });
 
   languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -141,13 +141,16 @@ export function build(inputEl: HTMLDivElement) {
     target: languages.typescript.ScriptTarget.Latest,
     module: languages.typescript.ModuleKind.ESNext,
     noEmit: true,
-    lib: ["es2021", "dom", "dom.iterable", "webworker", "esnext", "node"],
+
+    lib: ["es2022", "dom", "dom.iterable", "webworker", "esnext", "node"],
     exclude: ["node_modules"],
-    resolveJsonModule: true,
+
     allowNonTsExtensions: true,
     esModuleInterop: true,
     noResolve: true,
+
     allowSyntheticDefaultImports: true,
+    resolveJsonModule: true,
     isolatedModules: true,
 
     experimentalDecorators: true,

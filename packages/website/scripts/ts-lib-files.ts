@@ -1,29 +1,11 @@
-import { globToRegExp, normalizeGlob, dirname, basename, join, relative } from "@bundle/utils/utils/path.ts"; 
+import { globToRegExp, normalizeGlob, basename, join, relative } from "@bundle/utils/utils/path.ts"; 
 import { bytes } from "@bundle/utils/utils/fmt.ts";
+
 import { promises as fs } from "node:fs";
 import process from "node:process";
+
 const encoder = new TextEncoder();
 
-// export async function generateLibs(src = "./node_modules/typescript/lib/*.d.ts", target = "src/scripts/ts-libs.json") {
-//   console.log(`\n- Source file: ${src}`);
-
-//   const files = await glob([src]);
-//   console.log(files);
-//   const res = await Promise.all(
-//     files.map(async (path) => [basename(path), (await fs.readFile(path, "utf-8")).trim()])
-//   );
-//   const json = Object.fromEntries(res);
-
-//   console.log(`- Writing output to file (${target})`);
-//   await fs.writeFile(target, encoder.encode(JSON.stringify(json)));
-
-//   const outputFile = await fs.stat(target);
-//   console.log(
-//     `- Output file (${target}), final size is: ${bytes.format(outputFile.size)}\n`
-//   );
-// }
-
-// await generateLibs();
 // @ts-ignore Deno.cwd isn't refined so relative doesn't quite work as expected
 globalThis.Deno ??= {
   cwd(){ return process.cwd(); }

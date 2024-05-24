@@ -1,4 +1,4 @@
-export const toLocaleDateString = (date: string | number | Date) => {
+export function toLocaleDateString(date: string | number | Date) {
   return new Date(date)
     .toLocaleDateString(undefined, {
       year: "numeric",

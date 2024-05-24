@@ -11,21 +11,21 @@ export function createDetailsEffect() {
   const [isExpanding, setIsExpanding] = createSignal(false);
   const [isOpen, setIsOpen] = createSignal(false);
 
-  let animation: Animation = null;
-  let contentAnimation: Animation = null;
+  let animation: Animation | null = null;
+  let contentAnimation: Animation | null = null;
 
-  let ref: HTMLDetailsElement;
-  let summaryRef: HTMLElement;
-  let contentRef: HTMLDivElement;
-  let anchorRef: HTMLAnchorElement;
+  let ref: HTMLDetailsElement | null | undefined;
+  let summaryRef: HTMLElement | null | undefined;
+  let contentRef: HTMLDivElement | null | undefined;
+  let anchorRef: HTMLAnchorElement | null | undefined;
 
   function onMount(_ref?: HTMLDetailsElement, _summaryRef?: HTMLElement, _contentRef?: HTMLDivElement) {
     ref = _ref;
     summaryRef = _summaryRef;
     contentRef = _contentRef;
-    anchorRef = _summaryRef?.querySelector?.("a");
+    anchorRef = _summaryRef?.querySelector?.("a") ?? undefined;
 
-    setIsOpen(ref.open);
+    if (ref) setIsOpen(ref.open);
 
     createEffect(() => {
       if (!ref) return;
@@ -52,7 +52,7 @@ export function createDetailsEffect() {
     if (
       e?.target &&
       (
-        anchorRef == (e?.target as HTMLElement) ||
+        anchorRef === (e?.target as HTMLElement) ||
         anchorRef?.contains?.((e?.target as HTMLElement))
       ) || 
       !ref
@@ -68,7 +68,6 @@ export function createDetailsEffect() {
 
     // Check if the element is being openned or is already open
     else if (isExpanding() || ref?.open) animate("shrink");
-    
   }
 
   function animate(mode: "open" | "shrink") {
@@ -88,6 +87,8 @@ export function createDetailsEffect() {
       // Set the element as "being closed"
       setIsClosing(true);
     }
+
+    if (!contentRef || !summaryRef) return;
 
     const contentValue = isOpenMode ? contentRef.offsetHeight : 0;
 
@@ -124,8 +125,10 @@ export function createDetailsEffect() {
     };
 
     animation.onfinish = () => {
-      ref.open = isOpenMode;
-      setIsOpen(ref.open);
+      if (ref) {
+        ref.open = isOpenMode;
+        setIsOpen(ref.open);
+      }
 
       // Clear the stored animations
       animation = null;
@@ -136,7 +139,9 @@ export function createDetailsEffect() {
       setIsExpanding(false);
 
       // Remove the overflow hidden and the fixed height
-      ref.style.height = ref.style.overflow = "";
+      if (ref) {
+        ref.style.height = ref.style.overflow = "";
+      }
     };
   }
 

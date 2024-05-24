@@ -30,7 +30,8 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (response?.headers && /text\/html/.test(response.headers.get("content-type") ?? ""))
       throw new Error("Can't load HTML as a package");
 
-    dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
+    if (fetchOpts?.method !== "HEAD") 
+      dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever

@@ -216,13 +216,22 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       const cdnVersionFormat = NPM_CDN ? "@" + knownVersion : "";
       const { url } = getCDNUrl(`${parsed.name}${cdnVersionFormat}${resultSubpath}`, origin);
 
-      const peerDeps = manifest.peerDependencies ?? {};
-      const inheritedPeerDependencies = structuredClone(peerDeps);
+      const peerDeps = Object.assign(
+        initialManifest.peerDependencies ?? {}, 
+        manifest.peerDependencies ?? {},
+        {
+          // Some packages rely on cyclic dependencies, e.g. https://x.com/jsbundle/status/1792325771354149261
+          // so we create a new field in peerDependencies and place the current package and it's version,
+          // the algorithm should then be able to use the correct version if a dependency is cyclic
+          [parsed.name]: NPM_CDN ? knownVersion : (initialDeps[parsed.name] ?? "latest")
+        }
+      );
+      const inheritPeerDependencies = structuredClone(peerDeps);
 
       // Force inherit peerDependencies, makes it easier to keep versions stable 
       // and to avoid duplicates
       for (const [name, version] of Object.entries(peerDeps)) {
-        inheritedPeerDependencies[name] = initialDeps[name] ?? version;
+        inheritPeerDependencies[name] = initialDeps[name] ?? version;
       }
 
       return {
@@ -232,7 +241,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
         pluginData: {
           manifest: deepMerge(
             structuredClone(manifest), 
-            { peerDependencies: inheritedPeerDependencies }
+            { peerDependencies: inheritPeerDependencies }
           )
         }
       };

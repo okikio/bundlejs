@@ -269,6 +269,9 @@ importers:
       '@okikio/sharedworker':
         specifier: ^1.0.7
         version: 1.0.7
+      '@okikio/transferables':
+        specifier: npm:@jsr/okikio__transferables@^1.0.2
+        version: '@jsr/okikio__transferables@1.0.2'
       '@typescript/vfs':
         specifier: ^1.5.0
         version: 1.5.0
@@ -1440,6 +1443,9 @@ packages:
   '@jsdevtools/ez-spawn@3.0.4':
     resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
     engines: {node: '>=10'}
+
+  '@jsr/okikio__transferables@1.0.2':
+    resolution: {integrity: sha512-xz7RmslHsTt/Cy7GPnDurV1aKuUuVaR3FOIcKtLMuY8e+yEMVnwkPqaFWvsO/WbfeUQQnygo5C7g1/oLURrPsA==, tarball: https://npm.jsr.io/~/11/@jsr/okikio__transferables/1.0.2.tgz}
 
   '@jsr/opentf__obj-diff@0.11.0':
     resolution: {integrity: sha512-wMBiQxgmypJrsUOFsDJ7Sd6ReDP7H53p/2g3/7DgP9OaIvGPjrUcsJhgTTF06w2ou8xq1TBLHyW5OtxaKBe2Kg==, tarball: https://npm.jsr.io/~/11/@jsr/opentf__obj-diff/0.11.0.tgz}
@@ -6674,6 +6680,8 @@ snapshots:
       cross-spawn: 7.0.3
       string-argv: 0.3.2
       type-detect: 4.0.8
+
+  '@jsr/okikio__transferables@1.0.2': {}
 
   '@jsr/opentf__obj-diff@0.11.0':
     dependencies:
