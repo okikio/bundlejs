@@ -52,9 +52,13 @@ export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
   if (/^skypack\:/.test(importStr))
     cdn = "https://cdn.skypack.dev";
 
-  // `esm.sh:` or `esm:` --> `https://cdn.esm.sh`
+  // `jsr:` --> `https://esm.sh`
+  else if (/^(jsr)\:/.test(importStr))
+    cdn = `https://esm.sh/jsr`;
+
+  // `esm.sh:` or `esm:` --> `https://esm.sh`
   else if (/^(esm\.sh|esm)\:/.test(importStr))
-    cdn = "https://cdn.esm.sh";
+    cdn = "https://esm.sh";
 
   // `unpkg:` --> `https://unpkg.com`
   else if (/^unpkg\:/.test(importStr))
@@ -84,8 +88,8 @@ export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
  */
 export const getPureImportPath = (importStr: string) =>
   importStr
-    .replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github)\:/, "")
-    .replace(/^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "")
+    .replace(/^(skypack|esm|esm\.sh|unpkg|jsdelivr|jsdelivr\.gh|esm\.run|deno|github|jsr)\:/, "")
+    .replace(/^(https?:\/\/)?(cdn\.skypack\.dev|(cdn\.)?esm\.sh|(cdn\.)?esm\.sh\/jsr|cdn\.jsdelivr\.net\/npm|unpkg\.com|cdn\.jsdelivr\.net\/gh|raw\.githubusercontent\.com|deno\.land\/x)/, "")
     .replace(/^\//, "");
 
 /**
