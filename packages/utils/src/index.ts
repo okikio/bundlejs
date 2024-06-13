@@ -22,3 +22,5 @@ export * as assert from "./utils/assert.ts";
 export * as fmt from "./utils/fmt.ts";
 export * as encoding from "./utils/encoding.ts"
 export * as outdent from "./utils/outdent.ts";
+
+export * as mediaTypes from "./utils/media-types.ts";
