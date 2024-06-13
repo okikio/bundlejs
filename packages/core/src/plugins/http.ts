@@ -8,7 +8,7 @@ import { decode } from "@bundle/utils/utils/encode-decode.ts";
 import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl, inferLoader, setFile, type IFileSystem } from "../utils/index.ts";
 import { LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
 
-import { isBareImport } from "@bundle/utils/utils/path.ts";
+import { isBareImport, isAbsolute } from "@bundle/utils/utils/path.ts";
 import { toURLPath, urlJoin } from "@bundle/utils/utils/url.ts";
 import { CDN_RESOLVE } from "./cdn.ts";
 
@@ -36,6 +36,7 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
       url: response.url || url,
+      contentType: response?.headers?.get?.("content-type"),
       content: new Uint8Array(await response.arrayBuffer()),
     };
   } catch (e) {
@@ -113,6 +114,7 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
   const argPath = (suffix = "") => path + suffix;
   let url = path;
   let content: Uint8Array | undefined;
+  let contentType: string | null = null;
 
   let err: Error | undefined;
   for (let i = 0; i < endingVariantsLength; i++) {
@@ -122,7 +124,7 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
     try {
       if (FAILED_EXT_URLS.has(testingUrl)) continue;
 
-      ({ url, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
+      ({ url, contentType, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
       break;
     } catch (e) {
       FAILED_EXT_URLS.add(testingUrl);
@@ -140,7 +142,7 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
     }
   }
 
-  return headersOnly ? { url } : { url, content };
+  return headersOnly ? { url, contentType } : { url, contentType, content };
 }
 
 /**
@@ -155,7 +157,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     const argPath = args.path; //.replace(/\/$/, "/index");
 
     // If the import path isn't relative do this...
-    if (!argPath.startsWith(".")) {
+    if (!argPath.startsWith(".") && !isAbsolute(argPath)) {
       // If the import is an http import load the content via the http plugins loader
       if (/^https?:\/\//.test(argPath)) {
         return {
@@ -203,7 +205,13 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     }
 
     // For relative imports
-    const path = urlJoin(args.pluginData?.url, "../", argPath);
+    let path = urlJoin(args.pluginData?.url, "../", argPath);
+    if (isAbsolute(argPath)) {
+      const _url = new URL(args.pluginData?.url);
+      _url.pathname = argPath;
+      path = _url.toString();
+    }
+
     return {
       path,
       namespace: HTTP_NAMESPACE,
@@ -258,7 +266,8 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
         let content: Uint8Array | undefined, url: string;
-        ({ content, url } = await determineExtension(args.path, false));
+        let contentType: string | null = null;
+        ({ content, contentType, url } = await determineExtension(args.path, false));
 
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
@@ -288,7 +297,7 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
           set({ assets: assets.concat(_assetResults) });
           return {
             contents: content,
-            loader: inferLoader(url),
+            loader: inferLoader(url, contentType),
             pluginData: { url, manifest: args.pluginData?.manifest },
           };
         }
