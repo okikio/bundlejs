@@ -8,7 +8,7 @@ import { decode } from '../util/encode-decode';
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle, getPureImportPath } from '../util/util-cdn';
 import { inferLoader } from '../util/loader';
 
-import { urlJoin, extname, isBareImport } from "../util/path";
+import { urlJoin, extname, isBareImport, isAbsolute } from "../util/path";
 import { CDN_RESOLVE } from './cdn';
 
 /** HTTP Plugin Namespace */
@@ -34,6 +34,7 @@ export async function fetchPkg(url: string, logger = console.log, fetchOpts?: Re
         return {
             // Deno doesn't have a `response.url` which is odd but whatever
             url: response.url || url,
+            contentType: response.headers.get("content-type"),
             content: new Uint8Array(await response.arrayBuffer()),
         };
     } catch (err) {
@@ -103,6 +104,7 @@ export async function determineExtension(path: string, headersOnly: true | false
     const argPath = (suffix = "") => path + suffix;
     let url = path;
     let content: Uint8Array | undefined;
+    let contentType: string | null = null;
 
     let err: Error | undefined;
     for (let i = 0; i < endingVariantsLength; i++) {
@@ -114,7 +116,7 @@ export async function determineExtension(path: string, headersOnly: true | false
                 continue;
             }
 
-            ({ url, content } = await fetchPkg(testingUrl, logger, headersOnly ? { method: "HEAD" } : undefined));
+            ({ url, contentType, content } = await fetchPkg(testingUrl, logger, headersOnly ? { method: "HEAD" } : undefined));
             break;
         } catch (e) {
             FAILED_EXT_URLS.add(testingUrl);
@@ -132,7 +134,7 @@ export async function determineExtension(path: string, headersOnly: true | false
         }
     }
 
-    return headersOnly ? { url } : { url, content };
+    return headersOnly ? { url, contentType } : { url, content, contentType };
 }
 
 /**
@@ -147,7 +149,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
         const argPath = args.path; //.replace(/\/$/, "/index");
 
         // If the import path isn't relative do this...
-        if (!argPath.startsWith(".")) {
+        if (!argPath.startsWith(".") && !isAbsolute(argPath)) {
             // If the import is an http import load the content via the http plugins loader
             if (/^https?:\/\//.test(argPath)) {
                 return {
@@ -195,7 +197,13 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
         }
 
         // For relative imports
-        const path = urlJoin(args.pluginData?.url, "../", argPath);
+        let path = urlJoin(args.pluginData?.url, "../", argPath);
+        if (isAbsolute(argPath)) { 
+            const _url = new URL(args.pluginData?.url);
+            _url.pathname = argPath;
+            path = _url.toString();
+        }
+
         return {
             path,
             namespace: HTTP_NAMESPACE,
@@ -245,7 +253,8 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                 // Some typescript files don't have file extensions but you can't fetch a file without their file extension
                 // so bundle tries to solve for that
                 let content: Uint8Array | undefined, url: string;
-                ({ content, url } = await determineExtension(args.path, false, logger));
+                let contentType: string | null = null;
+                ({ content, contentType, url } = await determineExtension(args.path, false, logger));
 
                 // Create a virtual file system for storing node modules
                 // This is for building a package bundle analyzer 
@@ -272,7 +281,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
                     assets = assets.concat(_assetResults); 
                     return {
                         contents: content,
-                        loader: inferLoader(url),
+                        loader: inferLoader(url, contentType),
                         pluginData: { url, pkg: args.pluginData?.pkg },
                     };
                 }

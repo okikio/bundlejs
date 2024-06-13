@@ -75,10 +75,13 @@ let config: Record<string, unknown> | undefined = {
 };
 
 const getFormatter = async () => {
+    let formatter: Awaited<ReturnType<typeof createFromBuffer>>;
     try {
+        if (formatter) return;
         const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
-        const response = getRequest(url);
-        const formatter = await createStreaming(response);
+        // const url = new URL("https://plugins.dprint.dev/typescript-0.91.1.wasm").toString();
+        const response = await getRequest(url);
+        formatter = await createStreaming(response);
         formatter.setConfig({}, config);
         return formatter;
     } catch (err) {

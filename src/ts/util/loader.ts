@@ -1,13 +1,23 @@
 import type { Loader } from 'esbuild';
 import { extname } from './path';
 
+import { extension } from "../deno/media-types/mod";
+
 /** Based on https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts */ 
 export const RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".css", ".json"];
+
+export const _knownExtensions = [
+    // Remove period `.tsx` -> `tsx`
+    ...RESOLVE_EXTENSIONS.map(x => x.slice(1)),
+    "mjs", "cjs", "mts", "cts", "scss",
+    "png", "jpeg", "ttf", "svg",
+    "html", "txt", "wasm"
+]
 
 /**
  * Based on the file extention determine the esbuild loader to use
  */
-export const inferLoader = (urlStr: string): Loader => {
+export const inferLoader = (urlStr: string, contentType?: string | null): Loader => {
     const ext = extname(urlStr);
     if (RESOLVE_EXTENSIONS.includes(ext))
         // Resolve all .js and .jsx files to .ts and .tsx files
@@ -21,6 +31,12 @@ export const inferLoader = (urlStr: string): Loader => {
     if (ext == ".png" || ext == ".jpeg" || ext == ".ttf") return "dataurl";
     if (ext == ".svg" || ext == ".html" || ext == ".txt") return "text";
     if (ext == ".wasm") return "file";
+
+    if (contentType) {
+        const _ext = extension(contentType);
+        if (_ext && _knownExtensions.includes(_ext)) 
+            return inferLoader(urlStr + `.${_ext}`);
+    }
 
     return ext.length ? "text" : "ts";
 }

@@ -470,7 +470,7 @@ task("service-worker", async () => {
 
 // Other assets
 task("assets", () => {
-    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`], {
+    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`, "node_modules/@dprint/typescript/plugin.wasm"], {
         dest: destFolder,
     });
 });
