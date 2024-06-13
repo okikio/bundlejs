@@ -11,12 +11,12 @@
     "@octokit/core": "^6.1.2",
     "@octokit/plugin-throttling": "^9.3.0",
     "@octokit/rest": "^20.1.1",
-    "@upstash/redis": "^1.31.1",
-    "esbuild": "^0.21.3",
-    "esbuild-wasm": "^0.21.3",
+    "@upstash/redis": "^1.31.5",
+    "esbuild": "^0.21.5",
+    "esbuild-wasm": "^0.21.5",
     "json5": "^2.2.3",
     "octokit": "^4.0.2",
     "resolve.exports": "^2.0.2",
-    "tsx": "^4.10.5"
+    "tsx": "^4.15.4"
   }
 }

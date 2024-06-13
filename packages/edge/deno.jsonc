@@ -17,7 +17,8 @@
 
     "@upstash/redis": "npm:@upstash/redis",
     "@std/path": "jsr:@std/path",
-    "@std/encoding": "jsr:@std/encoding"
+    "@std/encoding": "jsr:@std/encoding",
+    "@std/media-types": "jsr:@std/media-types"
   },
   "tasks": {
     "dev": "deno run -A --watch mod.ts"

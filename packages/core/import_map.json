@@ -8,6 +8,8 @@
     "esbuild": "https://deno.land/x/esbuild/mod.js",
 
     "resolve.exports": "npm:resolve.exports",
-    "velo": "https://deno.land/x/velo@1.0.0/mod.ts"
+    "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
+
+    "@std/media-types": "jsr:@std/media-types"
   }
 }
