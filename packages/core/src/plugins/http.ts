@@ -13,7 +13,7 @@ import { parsePackageName } from "../utils/parse-package-name.ts";
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle } from "../utils/util-cdn.ts";
 import { inferLoader } from "../utils/loader.ts";
 
-import { urlJoin, isBareImport } from "../utils/path.ts";
+import { urlJoin, isBareImport, isAbsolute } from "../utils/path.ts";
 import { setFile } from "../util.ts";
 
 /** HTTP Plugin Namespace */
@@ -31,11 +31,15 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
     if (!response.ok)
       throw new Error(`Couldn't load ${response.url || url} (${response.status} code)`);
 
+    if (response?.headers && /text\/html/.test(response.headers.get("content-type") ?? ""))
+      throw new Error("Can't load HTML as a package");
+
     dispatchEvent(LOGGER_INFO, `Fetch ${fetchOpts?.method === "HEAD" ? `(test)` : ""} ${response.url || url}`);
 
     return {
       // Deno doesn't have a `response.url` which is odd but whatever
       url: response.url || url,
+      contentType: response?.headers?.get?.("content-type"),
       content: new Uint8Array(await response.arrayBuffer()),
     };
   } catch (err) {
@@ -108,6 +112,7 @@ export async function determineExtension(path: string, headersOnly: true | false
   const argPath = (suffix = "") => path + suffix;
   let url = path;
   let content: Uint8Array | undefined;
+  let contentType: string | null = null;
 
   let err: Error | undefined;
   for (let i = 0; i < endingVariantsLength; i++) {
@@ -119,7 +124,7 @@ export async function determineExtension(path: string, headersOnly: true | false
         continue;
       }
 
-      ({ url, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
+      ({ url, contentType, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
       break;
     } catch (e) {
       FAILED_EXT_URLS.add(testingUrl);
@@ -137,7 +142,7 @@ export async function determineExtension(path: string, headersOnly: true | false
     }
   }
 
-  return headersOnly ? { url } : { url, content };
+  return headersOnly ? { url, contentType } : { url, contentType, content };
 }
 
 /**
@@ -152,7 +157,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     const argPath = args.path; //.replace(/\/$/, "/index");
 
     // If the import path isn't relative do this...
-    if (!argPath.startsWith(".")) {
+    if (!argPath.startsWith(".") && !isAbsolute(argPath)) {
       // If the import is an http import load the content via the http plugins loader
       if (/^https?:\/\//.test(argPath)) {
         return {
@@ -200,7 +205,13 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     }
 
     // For relative imports
-    const path = urlJoin(args.pluginData?.url, "../", argPath);
+    let path = urlJoin(args.pluginData?.url, "../", argPath);
+    if (isAbsolute(argPath)) {
+      const _url = new URL(args.pluginData?.url);
+      _url.pathname = argPath;
+      path = _url.toString();
+    }
+
     return {
       path,
       namespace: HTTP_NAMESPACE,
@@ -255,7 +266,8 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
         let content: Uint8Array | undefined, url: string;
-        ({ content, url } = await determineExtension(args.path, false));
+        let contentType: string | null;
+        ({ content, contentType, url } = await determineExtension(args.path, false));
 
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
@@ -281,7 +293,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
           set({ assets: assets.concat(_assetResults) });
           return {
             contents: content,
-            loader: inferLoader(url),
+            loader: inferLoader(url, contentType),
             pluginData: { url, pkg: args.pluginData?.pkg },
           };
         }
