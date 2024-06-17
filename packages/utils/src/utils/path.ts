@@ -1,6 +1,6 @@
-import { isAbsolute } from "@std/path";
+import { isAbsolute } from "@std/path/posix";
 
-export * from "@std/path";
+export * from "@std/path/posix";
 export * as posix from "@std/path/posix";
 export * as windows from "@std/path/windows";
 

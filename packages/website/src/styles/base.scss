@@ -19,22 +19,6 @@ body {
   line-height: 1.5;
 }
 
-.giscus,
-.giscus-frame {
-  width: 100%;
-  border: none;
-  color-scheme: light;
-  min-height: 150px;
-}
-
-.dark {
-  .giscus,
-  .giscus-frame {
-    color-scheme: none;
-    @apply rounded-md;
-  }
-}
-
 textarea,
 form,
 input,

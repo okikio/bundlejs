@@ -59,9 +59,9 @@
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240605.0",
+    "@cloudflare/workers-types": "^4.20240614.0",
     "tsup": "^8.1.0",
-    "tsx": "^4.15.4",
-    "wrangler": "3.60.2"
+    "tsx": "^4.15.6",
+    "wrangler": "3.60.3"
   }
 }

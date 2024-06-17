@@ -109,7 +109,15 @@ export default defineConfig({
   ],
   vite: {
     worker: { format: "es" },
-    ssr: { external: ["svgo"] },
+    ssr: { external: ["svgo", "esbuild"] },
+    optimizeDeps: {
+      exclude: ["esbuild"]
+    },
+    build: {
+      rollupOptions: {
+        external: ["esbuild"]
+      },
+    },
     plugins: [
       // DTS(),
       Icons({

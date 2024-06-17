@@ -11,6 +11,7 @@
     "moduleResolution": "Bundler",
     // Allow importing TypeScript files using their native extension (.ts(x)).
     "allowImportingTsExtensions": true,
+    "allowArbitraryExtensions": true,
     // Enable JSON imports.
     "resolveJsonModule": true,
     // Enforce the usage of type-only imports when needed, which helps avoiding bundling issues.

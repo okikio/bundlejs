@@ -1,10 +1,6 @@
-let weights = Array.from(Array(9), (_, i) => (i + 1) * 100);
-let fontWeight = {};
-weights.forEach((val) => {
-  fontWeight[val] = val;
-});
+import type { Config } from "tailwindcss";
 
-module.exports = {
+export default {
   darkMode: "class",
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 
@@ -36,7 +32,13 @@ module.exports = {
         'coarse': { 'raw': '(pointer: coarse)' },
         'fine': { 'raw': '(pointer: fine)' },
       },
-      fontWeight,
+      // @ts-ignore
+      fontWeight: Object.fromEntries(
+        Array.from({ length: 9 }, (_, i) => { 
+          const val = (i + 1) * 100;
+          return [val, val];
+        })
+      ),
       fontFamily: {
         manrope: [
           "Manrope",
@@ -56,9 +58,9 @@ module.exports = {
         "center-container-dark": "#121212",
       },
       container: {
-        center: "true",
+        center: true,
       }
     },
   },
   plugins: [],
-};
+} satisfies Config;

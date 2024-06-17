@@ -40,33 +40,9 @@ export const themeGet = (html: HTMLHtmlElement) => {
   return getTheme();
 };
 
-/**
- * Send a message to Giscus
- * @param message 
- * @returns 
- */
-function sendMessage<T>(message: T) {
-  try {
-    const iframe = document.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
-    if (!iframe) return;  
-    iframe.contentWindow?.postMessage?.({ giscus: message }, "*");
-  } catch (e) {
-    console.warn(e);
-  }
-}
-
 // Set theme in localStorage, as well as in the html tag
 export const themeSet = (theme: string, html: HTMLHtmlElement) => {
   const themeColor = theme == "system" ? mediaTheme() : theme;
-  sendMessage({
-    setConfig: {
-      theme: ({ 
-        "dark": new URL("/giscus/dark.css", import.meta.url).href,
-        "light": new URL("/giscus/light.css", import.meta.url).href,
-      })[themeColor]
-    }
-  });
-
   html?.setAttribute?.("data-theme", theme);
   html?.classList?.toggle?.("dark", themeColor == "dark");
   setTheme(theme);
