@@ -97,6 +97,7 @@ export default defineConfig({
   image: {
     service: squooshImageService(),
   },
+  compressHTML: true,
   output: output(),
   adapter: await adapter(),
   integrations: [

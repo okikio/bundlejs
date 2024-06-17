@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "build:ts-libs": "tsx ./scripts/ts-lib-files.ts",
-    "build": "pnpm build:ts-libs && astro build",
+    "build:website": "astro build",
+    "build": "pnpm build:ts-libs && pnpm build:website",
     "dev": "astro dev",
     "start": "astro dev",
     "preview": "astro preview",
