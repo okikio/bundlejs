@@ -6,7 +6,7 @@ export interface Props extends ComponentProps<"div"> {
   class?: string;
 }
 
-export function Container(props?: Props) {
+export function Container(props: Props = {}) {
   const [newProps, attrs] = splitProps(props, ["max", "class", "children"]);
   const mergedProps = mergeProps({
     max: "md",

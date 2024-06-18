@@ -1,17 +1,16 @@
 import type { ComponentProps } from "solid-js";
 
-import { toLocaleDateString } from "../../../scripts/utils/locale-date-string";
+import { toLocaleDateString } from "../../../scripts/utils/locale-date-string.ts";
+import { state } from "../../../scripts/utils/store.ts";
 
-import { state } from "../../../scripts/utils/store";
+import toast from "../../SolidToast/index.tsx";
+import { createTextSwitch } from "../../../hooks/text-switch.tsx";
 
-import toast from "../../SolidToast/index";
-import { createTextSwitch } from "../../../hooks/text-switch";
+import Anchor from "../../../components/Anchor.tsx";
+import Button from "../../../components/Button.tsx";
+import { inputModelResetValue } from "../../../scripts/utils/get-initial.ts";
 
-import Anchor from "../../../components/Anchor";
-import Button from "../../../components/Button";
-import { inputModelResetValue } from "../../../scripts/utils/get-initial";
-
-export interface SearchResultProps extends ComponentProps<"div"> {
+export interface SearchResultProps {
   type?: string;
   name?: string;
   description?: string;
@@ -20,7 +19,7 @@ export interface SearchResultProps extends ComponentProps<"div"> {
   version?: string;
 }
 
-export function SearchResult(props?: SearchResultProps) {
+export function SearchResult(props?: ComponentProps<"div"> & SearchResultProps) {
   const _name = props?.name;
   const _description = props?.description;
   const _date = props?.date ? toLocaleDateString(props?.date) : null;
@@ -35,6 +34,7 @@ export function SearchResult(props?: SearchResultProps) {
 
   // When user clicks the "Add Module button" give the user some feedback
   async function onClick() {
+    if (!state?.monaco?.models?.input) return;
     toast.success(`Added ${_package}`);
     await BtnText.switch("next");
 
@@ -84,7 +84,7 @@ export function SearchResult(props?: SearchResultProps) {
   );
 }
 
-export function ErrorResult(props?: SearchResultProps) {
+export function ErrorResult(props?: ComponentProps<"div"> & SearchResultProps) {
   const _name = props?.name ?? "No results...";
   const _description = props?.description ?? "";
 
@@ -95,7 +95,9 @@ export function ErrorResult(props?: SearchResultProps) {
           <div class="text-center">{_name}</div>
         </h2>
 
-        <p class={"text-center" + (_description == "" ? " hidden" : "")}>{_description}</p>
+        <p class={"text-center" + (_description === "" ? " hidden" : "")}>
+          {_description}
+        </p>
       </div>
     </div>
   );

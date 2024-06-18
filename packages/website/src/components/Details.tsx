@@ -37,7 +37,7 @@ export function Details(props: ComponentProps<"details"> & {
   let lastUrl = globalThis?.location?.href;
   createEffect(() => {
     if (isExpanding() || isOpen()) {
-      if (typeof ref?.id == "string") {
+      if (typeof ref?.id === "string") {
         lastUrl = globalThis.location.href;
         globalThis.location.hash = `#${ref.id}`;
       }
@@ -51,7 +51,7 @@ export function Details(props: ComponentProps<"details"> & {
   return (
     <details custom-details ref={ref} {...attrs}>
       <summary ref={summaryRef} onClick={_onClick} custom-summary>
-        {typeof mergedProps.summary == "string" ? (<p class={mergedProps.summaryClass}>{mergedProps.summary}</p>) : mergedProps.summary}
+        {typeof mergedProps.summary === "string" ? (<p class={mergedProps.summaryClass}>{mergedProps.summary}</p>) : mergedProps.summary}
         <IconChevronRightArrow astro-icon />
       </summary>
       <div class={"content " + mergedProps.contentClass} ref={contentRef} custom-content>

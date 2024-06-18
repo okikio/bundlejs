@@ -42,9 +42,9 @@ export const themeGet = (html: HTMLHtmlElement) => {
 
 // Set theme in localStorage, as well as in the html tag
 export const themeSet = (theme: string, html: HTMLHtmlElement) => {
-  const themeColor = theme == "system" ? mediaTheme() : theme;
+  const themeColor = theme === "system" ? mediaTheme() : theme;
   html?.setAttribute?.("data-theme", theme);
-  html?.classList?.toggle?.("dark", themeColor == "dark");
+  html?.classList?.toggle?.("dark", themeColor === "dark");
   setTheme(theme);
   document?.dispatchEvent?.(ThemeChange);
 };

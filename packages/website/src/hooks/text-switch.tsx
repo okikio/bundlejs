@@ -38,8 +38,8 @@ export function createTextSwitch([initial, next]: TextSwitchProps) {
         arr.push(
           ref.animate({
             transform: [
-              `translateY(${dir == "next" ? 0 : -100}%)`,
-              `translateY(${dir == "next" ? -100 : -200}%)`
+              `translateY(${dir === "next" ? 0 : -100}%)`,
+              `translateY(${dir === "next" ? -100 : -200}%)`
             ]
           }, {
             duration: 500,

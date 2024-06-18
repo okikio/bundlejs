@@ -42,7 +42,7 @@ export function createDetailsEffect() {
     const { hash } = globalThis.location;
 
     if (ref && hash && hash.length) {
-      if (ref.open != true && ref.id == hash.slice(1)) {
+      if (ref.open != true && ref.id === hash.slice(1)) {
         onClick();
       }
     }
@@ -71,7 +71,7 @@ export function createDetailsEffect() {
   }
 
   function animate(mode: "open" | "shrink") {
-    const isOpenMode = mode == "open";
+    const isOpenMode = mode === "open";
     if (!ref) return;
     if (isOpenMode) {
       // Apply a fixed height on the element

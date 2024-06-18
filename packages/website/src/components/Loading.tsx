@@ -8,7 +8,7 @@ export interface LoadingProps extends ComponentProps<"div"> {
   "background"?: boolean;
 }
 
-export function Loading(props?: LoadingProps) {
+export function Loading(props: LoadingProps = {}) {
   const [newProps, attrs] = splitProps(props, ["size", "show", "children", "background"]);
   const mergedProps = mergeProps({
     size: "md",

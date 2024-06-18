@@ -10,5 +10,6 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "types": ["unplugin-icons/types/solid", "node"]
-  }
+  },
+  "exclude": ["node_modules"]
 }

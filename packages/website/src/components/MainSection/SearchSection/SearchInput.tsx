@@ -1,26 +1,28 @@
 import { createSignal } from "solid-js";
+import { useSearchContext } from "./search-context.ts";
 
-import { ToolTip } from "../../../hooks/tooltip";
-import Button from "../../Button";
+import { ToolTip } from "../../../hooks/tooltip.tsx";
+import Button from "../../Button.tsx";
 
 import IconSearch from "~icons/fluent/search-24-filled";
 import IconClear from "~icons/fluent/dismiss-24-filled";
 
 import { debounce } from "@bundle/utils/src/mod.ts";
 
-export const [getQuery, setQuery] = createSignal("");
 export function SearchInput() { 
-  let ref: HTMLInputElement;
+  let ref: HTMLInputElement | undefined | null;
+  const [ctx, { setInput }] = useSearchContext();
 
   function onClear() { 
-    ref.value = "";
-    setQuery("");
+    if (ref) {
+      ref.value = "";
+      setInput("");
+    }
   }
 
   const onKeyUp = debounce((e?: KeyboardEvent) => {
     e?.stopPropagation?.();
-    const { value } = ref;
-    setQuery(value);
+    if (ref) setInput(ref?.value);
   }, 250);
 
   return (
@@ -32,12 +34,11 @@ export function SearchInput() {
       <input 
         id="input" 
         type="text" 
-        // @ts-ignore 
         autocorrect="off" 
         autocomplete="off" 
         placeholder="Type a package name..." 
         onKeyUp={onKeyUp} 
-        ref={ref} 
+        ref={(el) => (ref = el)} 
       /> 
 
       <ToolTip content="Clear Search Input and Results"> 

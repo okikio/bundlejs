@@ -33,7 +33,7 @@ export function EditorSection(props?: ComponentProps<"div">) {
 
       <div class="core">
         <Editor />
-        <DragHandle direction={direction()} constrain={direction() == "x"} />
+        <DragHandle direction={direction()} constrain={direction() === "x"} />
         <Console />
       </div>
 

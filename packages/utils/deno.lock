@@ -4,6 +4,7 @@
     "specifiers": {
       "jsr:@opentf/obj-diff@^0.11.0": "jsr:@opentf/obj-diff@0.11.0",
       "jsr:@opentf/std@0.12.0": "jsr:@opentf/std@0.12.0",
+      "jsr:@std/semver@^0.224.0": "jsr:@std/semver@0.224.3",
       "npm:jsr": "npm:jsr@0.12.4"
     },
     "jsr": {
@@ -15,6 +16,9 @@
       },
       "@opentf/std@0.12.0": {
         "integrity": "a78ec5cee300c4379dda0e92458ae372a9e871daef7b2aa2a53cb2314a276980"
+      },
+      "@std/semver@0.224.3": {
+        "integrity": "7bb34b5ad46de2c0c73de0ca3e30081ef64b4361f66abd57c84ff1011c6a1233"
       }
     },
     "npm": {
@@ -43,7 +47,6 @@
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@cross/deepmerge@^1.0.0",
       "jsr:@opentf/obj-diff@^0.11.0",
       "jsr:@std/assert@^0.225.2",
       "jsr:@std/async@^0.224.0",
@@ -51,6 +54,7 @@
       "jsr:@std/encoding@^0.224.1",
       "jsr:@std/fmt@^0.225.1",
       "jsr:@std/html@^0.224.0",
+      "jsr:@std/media-types@^0.224.1",
       "jsr:@std/path@^0.225.1",
       "jsr:@std/semver@^0.224.0",
       "jsr:@std/url@^0.224.0",
@@ -59,22 +63,22 @@
     "packageJson": {
       "dependencies": [
         "npm:@jsr/opentf__obj-diff@^0.11.0",
-        "npm:@jsr/std__assert@^0.225.2",
-        "npm:@jsr/std__async@^0.224.0",
-        "npm:@jsr/std__collections@^0.224.2",
-        "npm:@jsr/std__encoding@^0.224.1",
-        "npm:@jsr/std__fmt@^0.225.1",
-        "npm:@jsr/std__html@^0.224.0",
-        "npm:@jsr/std__path@^0.225.1",
-        "npm:@jsr/std__semver@^0.224.0",
-        "npm:@jsr/std__url@^0.224.0",
-        "npm:@types/web@^0.0.128",
+        "npm:@jsr/std__assert@1.0.0-rc.2",
+        "npm:@jsr/std__async@1.0.0-rc.1",
+        "npm:@jsr/std__collections@1.0.0-rc.1",
+        "npm:@jsr/std__encoding@1.0.0-rc.2",
+        "npm:@jsr/std__fmt@^0.225.4",
+        "npm:@jsr/std__html@1.0.0-rc.1",
+        "npm:@jsr/std__media-types@1.0.0-rc.1",
+        "npm:@jsr/std__path@1.0.0-rc.2",
+        "npm:@jsr/std__semver@^0.224.3",
+        "npm:@jsr/std__url@1.0.0-rc.1",
+        "npm:@types/web@^0.0.149",
         "npm:json5@^2.2.3",
-        "npm:pnpm@^8.12.1",
         "npm:resolve.exports@^2.0.2",
-        "npm:tsup@^8.0.1",
-        "npm:tsx@^4.6.2",
-        "npm:vitest@^1.0.4"
+        "npm:tsup@^8.1.0",
+        "npm:tsx@^4.15.6",
+        "npm:vitest@^1.6.0"
       ]
     }
   }

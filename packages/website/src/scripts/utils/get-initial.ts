@@ -5,7 +5,7 @@ export function generateConfigValue(config: string | Record<string, unknown>) {
   return [
     "// Configure",
     "import type { ConfigOptions } from \"@bundle/core\";",
-    `export default ${typeof config == "string" ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
+    `export default ${typeof config === "string" ? config : JSON.stringify(config, null, "\t")} as ConfigOptions;`
   ].join("\n");
 }
 

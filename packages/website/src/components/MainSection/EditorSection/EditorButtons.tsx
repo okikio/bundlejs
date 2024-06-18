@@ -1,8 +1,8 @@
 import type { Placement } from "tippy.js";
 import { createSignal, onCleanup, onMount } from "solid-js";
 
-import toast from "../../SolidToast/index";
-import Button from "../../Button";
+import toast from "../../SolidToast/index.tsx";
+import Button from "../../Button.tsx";
 
 import IconMore from "~icons/fluent/more-24-regular";
 import IconDelete from "~icons/fluent/delete-24-regular";
@@ -12,18 +12,19 @@ import IconCopy from "~icons/fluent/copy-24-regular";
 import IconDownload from "~icons/fluent/arrow-download-24-regular";
 import IconCodeWrap from "~icons/fluent/text-wrap-24-regular";
 
-import { state, setState } from "../../../scripts/utils/store";
-import { SingletonToolTip } from "../../../hooks/tooltip";
+import { state, setState } from "../../../scripts/utils/store.ts";
+import { SingletonToolTip } from "../../../hooks/tooltip.tsx";
 
-import { taskRunner } from "../../../scripts/index";
+import { taskRunner } from "../../../scripts/index.ts";
 
 export function EditorButtons() {
-  let shellRef: HTMLDivElement = null;
+  let shellRef: HTMLDivElement | undefined | null;
 
   function getModelType() {
+    if (!state?.monaco?.editor) return null;
     if (!state.monaco.loading) {
-      if (state.monaco.editor.getModel() == state.monaco.models.input) return "input";
-      else if (state.monaco.editor.getModel() == state.monaco.models.output) return "output";
+      if (state.monaco.editor.getModel() === state.monaco.models.input) return "input";
+      else if (state.monaco.editor.getModel() === state.monaco.models.output) return "output";
       else return "config";
     }
 
@@ -31,8 +32,9 @@ export function EditorButtons() {
   }
 
   function resetEditor(editorModel = "input") {
+    if (!state?.monaco?.editor) return null;
     if (!state.monaco.loading) {
-      let resetValue: string;
+      let resetValue: string | null;
       switch (editorModel) {
         case "input":
           resetValue = state.monaco.initialValue.input;
@@ -45,7 +47,7 @@ export function EditorButtons() {
           break;
       }
 
-      state.monaco.editor.setValue(resetValue);
+      state.monaco.editor.setValue(resetValue ?? "");
     }
   }
 
@@ -78,25 +80,28 @@ export function EditorButtons() {
     URL.revokeObjectURL(blobUrl);
   }
 
-  const media = ("visualViewport" in globalThis) && globalThis?.matchMedia("(max-width: 410px)");
-  const [placement, setPlacement] = createSignal<Placement>(media?.matches ? "bottom" : "top");
+  const media = ("visualViewport" in globalThis) && globalThis?.matchMedia?.("(max-width: 410px)");
+  const [placement, setPlacement] = createSignal<Placement>(
+    (media as MediaQueryList)?.matches ? "bottom" : "top"
+  );
   function mediaQueryRun(e?: MediaQueryListEvent) {
     setPlacement(e?.matches ? "bottom" : "top");
   }
 
   onMount(() => {
     mediaQueryRun(media as unknown as MediaQueryListEvent);
-    media?.addEventListener?.("change", mediaQueryRun);
+    (media as MediaQueryList)?.addEventListener?.("change", mediaQueryRun);
   });
 
   onCleanup(() => {
-    media?.removeEventListener?.("change", mediaQueryRun);
+    (media as MediaQueryList)?.removeEventListener?.("change", mediaQueryRun);
+    shellRef = null;
   });
 
   return (
     <div class="editor-btn-container">
       <div
-        ref={shellRef}
+        ref={(el) => (shellRef = el)}
         class="editor-btn-shell"
         switch-mode={state.editorBtnsOpen}
       >
@@ -121,6 +126,7 @@ export function EditorButtons() {
               tabIndex={state.editorBtnsOpen ? 0 : -1}
               class="umami--click--clear-editor-button"
               onClick={() => {
+                if (!state?.monaco?.editor) return;
                 if (!state.monaco.loading) {
                   state.monaco.editor?.setValue("");
                   toast("Cleared Editor");
@@ -135,25 +141,24 @@ export function EditorButtons() {
               format-btn
               tabIndex={state.editorBtnsOpen ? 0 : -1}
               class="umami--click--format-editor-button"
-              onClick={() => {
+              onClick={async () => {
+                if (!state?.monaco?.editor || !taskRunner) return;
                 if (!state.monaco.loading) {
-                  (async () => {
-                    const model = state.monaco.editor.getModel();
-                    if (/^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
-                      try {
-                        const formattedCode = await taskRunner.format(model.uri.authority, model.getValue());
-                        state.monaco.editor.setValue(formattedCode);
-                        toast(`Formatted ${getModelType()} code editor`);
-                      } catch (e) {
-                        console.warn(e);
-                        toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
+                  const model = state?.monaco?.editor?.getModel();
+                  if (model && /^(js|javascript|ts|typescript)$/.test(model.getLanguageId())) {
+                    try {
+                      const formattedCode = await taskRunner?.format?.(model.uri.authority, model.getValue());
+                      state?.monaco?.editor?.setValue?.(formattedCode);
+                      toast(`Formatted ${getModelType()} code editor`);
+                    } catch (e) {
+                      console.warn(e);
+                      toast.error(`Error formatting ${getModelType()} code, falling back to built-in formatter.`);
 
-                        await state.monaco.editor.getAction("editor.action.formatDocument").run();
-                      }
-                    } else {
-                      await state.monaco.editor.getAction("editor.action.formatDocument").run();
+                      await state?.monaco?.editor?.getAction?.("editor.action.formatDocument")?.run?.();
                     }
-                  })();
+                  } else {
+                    await state?.monaco?.editor?.getAction?.("editor.action.formatDocument")?.run?.();
+                  }
                 }
               }}>
               <IconFormat />
@@ -168,6 +173,7 @@ export function EditorButtons() {
               onClick={() => {
                 if (!state.monaco.loading) {
                   const modelType = getModelType();
+                  if (!modelType) return;
 
                   resetEditor(modelType);
                   toast(`Reset ${modelType}`);
@@ -183,12 +189,15 @@ export function EditorButtons() {
               tabIndex={state.editorBtnsOpen ? 0 : -1}
               class="umami--click--copy-editor-button"
               onClick={() => {
+                if (!state?.monaco?.editor) return;
                 if (!state.monaco.loading) {
-                  const range = state.monaco.editor.getModel().getFullModelRange();
-                  state.monaco.editor.setSelection(range);
-                  state.monaco.editor
-                    .getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
-                    .run();
+                  const range = state?.monaco?.editor?.getModel?.()?.getFullModelRange?.();
+                  if (!range) return;
+
+                  state?.monaco?.editor?.setSelection?.(range);
+                  state?.monaco?.editor
+                    ?.getAction("editor.action.clipboardCopyWithSyntaxHighlightingAction")
+                    ?.run();
                   toast(`Copy ${getModelType()}`);
                 }
               }}>
@@ -202,10 +211,13 @@ export function EditorButtons() {
               tabIndex={state.editorBtnsOpen ? 0 : -1}
               class="umami--click--download-editor-button"
               onClick={() => {
+                if (!state?.monaco?.editor) return;
                 if (!state.monaco.loading) {
-                  const model = state.monaco.editor.getModel();
+                  const model = state?.monaco?.editor?.getModel?.();
+                  if (!model) return;
+
                   const blob = new Blob([model.getValue()], {
-                    type: `${model.getLanguageId() == "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
+                    type: `${model.getLanguageId() === "typescript" ? "text/javascript" : "application/json"};charset=utf-8`
                   });
 
                   downloadBlob(blob, model?.uri?.authority ?? "download.ts");
@@ -222,10 +234,11 @@ export function EditorButtons() {
               tabIndex={state.editorBtnsOpen ? 0 : -1}
               class="umami--click--codewrap-editor-button"
               onClick={() => {
+                if (!state?.monaco?.editor) return;
                 if (!state.monaco.loading) {
                   const wordWrap = state.monaco.editor.getRawOptions()["wordWrap"];
-                  state.monaco.editor.updateOptions({ wordWrap: wordWrap == "on" ? "off" : "on" });
-                  toast(`${wordWrap == "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
+                  state.monaco.editor.updateOptions({ wordWrap: wordWrap === "on" ? "off" : "on" });
+                  toast(`${wordWrap === "on" ? "Unwrap" : "Wrap"} ${getModelType()}`);
                 }
               }}>
               <IconCodeWrap />

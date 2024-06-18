@@ -94,7 +94,7 @@ export function ToolTip(props?: ComponentProps<any> & { mobile?: string, as?: ke
       {...attrs}
       ref={(el: HTMLElement) => {
         ref = el;
-        typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
+        typeof mergedProps.ref === "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
       }}
     />
   );
@@ -141,7 +141,7 @@ export function SingletonToolTip(props?: ComponentProps<any> & { tooltip?: Creat
       {...attrs}
       ref={(el: HTMLElement) => {
         ref = el;
-        typeof mergedProps.ref == "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
+        typeof mergedProps.ref === "function" ? mergedProps.ref(el) : (mergedProps.ref = ref);
       }}
     />
   );

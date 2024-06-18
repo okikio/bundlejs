@@ -1,26 +1,31 @@
 import { onCleanup, createEffect, createResource } from "solid-js";
-import { debounce } from "@bundle/utils/src/mod.ts";
+import { debounce } from "@bundle/utils/utils/async.ts";
 
-import Loading from "../../Loading";
-import EditorButtons from "./EditorButtons";
+import Loading from "../../Loading.tsx";
+import EditorButtons from "./EditorButtons.tsx";
 
-import { state, setState, initial } from "../../../scripts/utils/store";
+import { state, setState, initial } from "../../../scripts/utils/store.ts";
 
-import { getShareURLValues } from "../../../scripts/utils/get-initial";
-import { createShareURL } from "../../../scripts/utils/share";
+import { getShareURLValues } from "../../../scripts/utils/get-initial.ts";
+import { createShareURL } from "../../../scripts/utils/share.tsx";
 
-const { configValue: configInitialValue } = "visualViewport" in globalThis && getShareURLValues();
-const [monaco] = "visualViewport" in globalThis ? createResource(() => {
-  return import("../../../scripts/modules/monaco");
+const { configValue: configInitialValue } = "document" in globalThis ? getShareURLValues() : { configValue : null };
+const [monaco] = "document" in globalThis ? createResource(() => {
+  return import("../../../scripts/modules/monaco.ts");
 }) : [];
 
 export function Editor() {
-  let ref: HTMLDivElement = null;
-  let loadingRef: HTMLDivElement = null;
+  let ref: HTMLDivElement | undefined | null;
+  let loadingRef: HTMLDivElement | undefined | null;
 
   createEffect(() => {
+    if (!monaco || !ref) return;
     if (monaco?.loading) return;
-    const { build, languages, inputModelResetValue, outputModelResetValue } = monaco();
+
+    const monacoModule = monaco?.();
+    if (!monacoModule) return;
+
+    const { build, languages, inputModelResetValue, outputModelResetValue } = monacoModule;
     const [editor, input, output, config, getModelType] = build(ref);
 
     setState("monaco", {
@@ -43,12 +48,12 @@ export function Editor() {
     editor.onDidChangeModelContent(
       debounce(async () => {
         const modelType = getModelType();
-        if (modelType == "output") return;
+        if (modelType === "output") return;
 
         // const config = "{}";
         // try {
         //   // Set the max log limit for the virtual console, using the esbuild logLimit config option 
-        //   if (modelType == "config") {
+        //   if (modelType === "config") {
         //     // let config = JSON.parse(editor.getValue()) as BundleConfigOptions;
         //     // if (config?.esbuild?.logLimit) {
         //     //   SET_MAX_LOGS(config?.esbuild?.logLimit);
@@ -60,22 +65,25 @@ export function Editor() {
           shareUrl: await createShareURL()
         });
 
-        globalThis.history.replaceState(null, null, await createShareURL());
+        globalThis.history.replaceState(null, "", await createShareURL());
       }, 1000)
     );
   });
 
   onCleanup(() => {
-    state.monaco.editor?.dispose?.();
-    setState(initial);
+    state?.monaco?.editor?.dispose?.();
+    setState?.(initial);
+
+    loadingRef = null;
+    ref = null;
   });
 
   return (
     <div class="editor-container">
-      <div ref={ref} id="editor" custom-code-editor />
+      <div ref={(el) => (ref = el)} id="editor" custom-code-editor />
       <EditorButtons />
 
-      <Loading ref={loadingRef} show={state.monaco.loading} />
+      <Loading ref={(el) => (loadingRef = el)} show={state.monaco.loading} />
     </div>
   );
 }

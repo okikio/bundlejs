@@ -20,7 +20,7 @@ export function Tabs() {
   function isTarget(el: HTMLElement, target: EventTarget) {
     return target &&
       (
-        el == (target as HTMLElement) ||
+        el === (target as HTMLElement) ||
         el?.contains?.(target as HTMLElement)
       );
   }

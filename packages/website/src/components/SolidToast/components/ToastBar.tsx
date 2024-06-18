@@ -110,7 +110,7 @@ export const ToastBar = (props: ToastBarProps) => {
             class="cancel-button"
             aria-label="Dismiss"
             onClick={(e) => {
-              if (typeof props?.toast?.dismissClick == "function")
+              if (typeof props?.toast?.dismissClick === "function")
                 props?.toast?.dismissClick?.(e);
 
               dispatch({

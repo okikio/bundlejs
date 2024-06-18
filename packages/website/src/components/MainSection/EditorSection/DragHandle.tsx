@@ -26,7 +26,7 @@ export function DragHandle(props?: ComponentProps<"button"> & {
   // Size of parent element
   let parentSize = 0;
 
-  const [dirIsX, setDirIsX] = createSignal(props?.direction == "x");
+  const [dirIsX, setDirIsX] = createSignal(props?.direction === "x");
 
   const [sizeProp, setSizeProp] = createSignal(dirIsX() ? "width" : "height");
   const [mouseDir, setMouseDir] = createSignal(dirIsX() ? "clientX" : "clientY");
@@ -68,7 +68,7 @@ export function DragHandle(props?: ComponentProps<"button"> & {
   createEffect(() => { 
     targetEl?.style?.removeProperty?.(sizeProp());
 
-    setDirIsX(props?.direction == "x");
+    setDirIsX(props?.direction === "x");
 
     setSizeProp(dirIsX() ? "width" : "height");
     setMouseDir(dirIsX() ? "clientX" : "clientY");

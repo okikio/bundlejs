@@ -102,7 +102,7 @@ export function build(inputEl: HTMLDivElement) {
     smoothScrolling: true,
     theme: (() => {
       const theme = themeGet(html);
-      return theme == "system" ? mediaTheme() : theme;
+      return theme === "system" ? mediaTheme() : theme;
     })(),
     automaticLayout: true,
     language: "typescript",
@@ -113,8 +113,8 @@ export function build(inputEl: HTMLDivElement) {
   editor.setModel(inputModel);
 
   function getModelType() {
-    if (editor.getModel() == inputModel) return "input";
-    else if (editor.getModel() == outputModel) return "output";
+    if (editor.getModel() === inputModel) return "input";
+    else if (editor.getModel() === outputModel) return "output";
     else return "config";
   }
 
@@ -180,11 +180,11 @@ export function build(inputEl: HTMLDivElement) {
   languages.registerHoverProvider("typescript", {
     provideHover(model, position) {
       const content = model.getLineContent(position.lineNumber);
-      if (typeof content != "string" || content.length == 0) return;
+      if (typeof content != "string" || content.length === 0) return;
 
       const matches = Array.from(content.matchAll(IMPORTS_REXPORTS_REQUIRE_REGEX)) ?? [];
       if (matches.length <= 0) return;
-      if (model == configModel && content.match("@bundle/core")) return;
+      if (model === configModel && content.match("@bundle/core")) return;
 
       const matchArr = matches.map(([, pkg]) => pkg);
       let pkg = matchArr[0];

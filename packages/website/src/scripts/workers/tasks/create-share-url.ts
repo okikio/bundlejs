@@ -33,8 +33,8 @@ export async function _createShareURL(
   let BackToBackImportExport = true;
 
   source.forEachChild((node: ts.ImportDeclaration | ts.ExportDeclaration) => {
-    const isImport = node.kind == ts.SyntaxKind.ImportDeclaration;
-    const isExport = node.kind == ts.SyntaxKind.ExportDeclaration;
+    const isImport = node.kind === ts.SyntaxKind.ImportDeclaration;
+    const isExport = node.kind === ts.SyntaxKind.ExportDeclaration;
     if (!BackToBackImportExport) return;
 
     BackToBackImportExport =
@@ -74,7 +74,7 @@ export async function _createShareURL(
   let treeshake = "";
   ImportExportStatements.forEach((v) => {
     modules +=
-      (v.kind == "import" ? "(import)" : "") +
+      (v.kind === "import" ? "(import)" : "") +
       v.module.replace(/^["']|["']$/g, "") +
       ",";
 

@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.3.0
-        version: 19.3.0(@types/node@20.14.3)(typescript@5.4.5)
+        version: 19.3.0(@types/node@20.14.4)(typescript@5.4.5)
       '@commitlint/config-conventional':
         specifier: ^19.2.2
         version: 19.2.2
@@ -95,13 +95,13 @@ importers:
         version: 4.15.6
       vite:
         specifier: ^5.3.1
-        version: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
+        version: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
       vite-plugin-solid:
         specifier: ^2.10.2
-        version: 2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))
+        version: 2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
   packages/compress:
     dependencies:
@@ -117,7 +117,7 @@ importers:
         version: 4.15.6
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
   packages/core:
     dependencies:
@@ -142,7 +142,7 @@ importers:
         version: 4.15.6
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
   packages/edge:
     dependencies:
@@ -195,7 +195,7 @@ importers:
         version: 4.15.6
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
   packages/utils:
     dependencies:
@@ -250,7 +250,7 @@ importers:
         version: 4.15.6
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
   packages/website:
     dependencies:
@@ -302,49 +302,46 @@ importers:
     devDependencies:
       '@astrojs/cloudflare':
         specifier: ^10.4.1
-        version: 10.4.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 10.4.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@astrojs/deno':
         specifier: ^5.0.1
-        version: 5.0.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 5.0.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@astrojs/mdx':
         specifier: ^3.1.1
-        version: 3.1.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 3.1.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@astrojs/netlify':
         specifier: ^5.3.1
-        version: 5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@astrojs/node':
         specifier: ^8.3.1
-        version: 8.3.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 8.3.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@astrojs/sitemap':
         specifier: ^3.1.6
         version: 3.1.6
       '@astrojs/solid-js':
         specifier: ^4.4.0
-        version: 4.4.0(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))
+        version: 4.4.0(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))
       '@astrojs/tailwind':
         specifier: ^5.1.0
-        version: 5.1.0(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))(tailwindcss@3.4.4)
+        version: 5.1.0(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))(tailwindcss@3.4.4)
       '@astrojs/vercel':
         specifier: ^7.7.1
-        version: 7.7.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 7.7.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       '@iconify-json/fluent':
         specifier: ^1.1.57
         version: 1.1.57
       '@iconify-json/mdi':
         specifier: ^1.1.66
         version: 1.1.66
-      '@iconify/json':
-        specifier: ^2.2.220
-        version: 2.2.220
       '@types/node':
-        specifier: ^20.14.3
-        version: 20.14.3
+        specifier: ^20.14.4
+        version: 20.14.4
       astro:
         specifier: 4.10.3
-        version: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+        version: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       astro-auto-adapter:
         specifier: ^2.1.0
-        version: 2.1.0(@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
+        version: 2.1.0(@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
       esbuild-wasm:
         specifier: ^0.21.5
         version: 0.21.5
@@ -371,7 +368,7 @@ importers:
         version: 0.19.0
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6)
+        version: 1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6)
 
 packages:
 
@@ -1124,9 +1121,6 @@ packages:
   '@iconify-json/mdi@1.1.66':
     resolution: {integrity: sha512-7KPF2RVUUWav/hXCM8Ti/smqu3cmgePJpiX9CSkldiL+80+eBRBeKlc4vPOc9jhAItlqIU1vKsbKoPP0JIfgbg==}
 
-  '@iconify/json@2.2.220':
-    resolution: {integrity: sha512-EpKZAK99E5qmgeOS5XOxzlzPaYXOkhLneypLFvbKIU3/KGmxGS/k6pgaEX6wTId4oF2HPGBDJnXyvckHiOHQiA==}
-
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
@@ -1798,8 +1792,8 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
-  '@types/node@20.14.3':
-    resolution: {integrity: sha512-Nuzqa6WAxeGnve6SXqiPAM9rA++VQs+iLZ1DDd56y0gdvygSZlQvZuvdFPR3yLqkVxPu4WrO02iDEyH1g+wazw==}
+  '@types/node@20.14.4':
+    resolution: {integrity: sha512-1ChboN+57suCT2t/f8lwtPY/k3qTpuD/qnqQuYoBg6OQOcPyaw7PiZVdGpaZYAvhDDtqrt0oAaM8+oSu1xsUGw==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -2658,8 +2652,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.4.803:
-    resolution: {integrity: sha512-61H9mLzGOCLLVsnLiRzCbc63uldP0AniRYPV3hbGVtONA1pI7qSGILdbofR7A8TMbOypDocEAjH/e+9k1QIe3g==}
+  electron-to-chromium@1.4.805:
+    resolution: {integrity: sha512-8W4UJwX/w9T0QSzINJckTKG6CYpAUTqsaWcWIsdud3I1FYJcMgW9QqT1/4CBff/pP/TihWh13OmiyY8neto6vw==}
 
   emoji-regex@10.3.0:
     resolution: {integrity: sha512-QpLs9D9v9kArv4lfDEgg1X/gN5XLnf/A6l9cs8SPZLRZR3ZkY9+kwIQTxm+fsSej5UMYGE8fdoaZVIBlqG0XTw==}
@@ -5630,12 +5624,12 @@ snapshots:
 
   '@antfu/utils@0.7.8': {}
 
-  '@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
       '@astrojs/internal-helpers': 0.3.0
       '@astrojs/underscore-redirects': 0.3.3
       '@cloudflare/workers-types': 4.20240614.0
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       esbuild: 0.19.12
       estree-walker: 3.0.3
       magic-string: 0.30.10
@@ -5649,9 +5643,9 @@ snapshots:
 
   '@astrojs/compiler@2.8.0': {}
 
-  '@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       esbuild: 0.19.12
 
   '@astrojs/internal-helpers@0.3.0': {}
@@ -5681,12 +5675,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@3.1.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/mdx@3.1.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
       '@astrojs/markdown-remark': 5.1.0
       '@mdx-js/mdx': 3.0.1
       acorn: 8.12.0
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       es-module-lexer: 1.5.3
       estree-util-visit: 2.0.0
       github-slugger: 2.0.0
@@ -5702,18 +5696,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
       '@astrojs/underscore-redirects': 0.3.3
       '@netlify/functions': 2.7.0(@opentelemetry/api@1.9.0)
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       esbuild: 0.19.12
     transitivePeerDependencies:
       - '@opentelemetry/api'
 
-  '@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       send: 0.18.0
       server-destroy: 1.0.1
     transitivePeerDependencies:
@@ -5729,18 +5723,18 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.23.8
 
-  '@astrojs/solid-js@4.4.0(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))':
+  '@astrojs/solid-js@4.4.0(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))':
     dependencies:
       solid-js: 1.8.17
-      vite-plugin-solid: 2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))
+      vite-plugin-solid: 2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))
     transitivePeerDependencies:
       - '@testing-library/jest-dom'
       - supports-color
       - vite
 
-  '@astrojs/tailwind@5.1.0(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))(tailwindcss@3.4.4)':
+  '@astrojs/tailwind@5.1.0(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))(tailwindcss@3.4.4)':
     dependencies:
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       autoprefixer: 10.4.19(postcss@8.4.38)
       postcss: 8.4.38
       postcss-load-config: 4.0.2(postcss@8.4.38)
@@ -5762,13 +5756,13 @@ snapshots:
 
   '@astrojs/underscore-redirects@0.3.3': {}
 
-  '@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))':
+  '@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))':
     dependencies:
       '@astrojs/internal-helpers': 0.4.0
       '@vercel/analytics': 1.3.1
       '@vercel/edge': 1.1.1
       '@vercel/nft': 0.27.2
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
       esbuild: 0.21.5
       fast-glob: 3.3.2
       set-cookie-parser: 2.6.0
@@ -5962,11 +5956,11 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commitlint/cli@19.3.0(@types/node@20.14.3)(typescript@5.4.5)':
+  '@commitlint/cli@19.3.0(@types/node@20.14.4)(typescript@5.4.5)':
     dependencies:
       '@commitlint/format': 19.3.0
       '@commitlint/lint': 19.2.2
-      '@commitlint/load': 19.2.0(@types/node@20.14.3)(typescript@5.4.5)
+      '@commitlint/load': 19.2.0(@types/node@20.14.4)(typescript@5.4.5)
       '@commitlint/read': 19.2.1
       '@commitlint/types': 19.0.3
       execa: 8.0.1
@@ -6013,7 +6007,7 @@ snapshots:
       '@commitlint/rules': 19.0.3
       '@commitlint/types': 19.0.3
 
-  '@commitlint/load@19.2.0(@types/node@20.14.3)(typescript@5.4.5)':
+  '@commitlint/load@19.2.0(@types/node@20.14.4)(typescript@5.4.5)':
     dependencies:
       '@commitlint/config-validator': 19.0.3
       '@commitlint/execute-rule': 19.0.0
@@ -6021,7 +6015,7 @@ snapshots:
       '@commitlint/types': 19.0.3
       chalk: 5.3.0
       cosmiconfig: 9.0.0(typescript@5.4.5)
-      cosmiconfig-typescript-loader: 5.0.0(@types/node@20.14.3)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5)
+      cosmiconfig-typescript-loader: 5.0.0(@types/node@20.14.4)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -6307,11 +6301,6 @@ snapshots:
   '@iconify-json/mdi@1.1.66':
     dependencies:
       '@iconify/types': 2.0.0
-
-  '@iconify/json@2.2.220':
-    dependencies:
-      '@iconify/types': 2.0.0
-      pathe: 1.1.2
 
   '@iconify/types@2.0.0': {}
 
@@ -6891,7 +6880,7 @@ snapshots:
 
   '@types/conventional-commits-parser@5.0.0':
     dependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
 
   '@types/cookie@0.6.0': {}
 
@@ -7046,11 +7035,11 @@ snapshots:
 
   '@types/node-forge@1.3.11':
     dependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
 
   '@types/node@17.0.45': {}
 
-  '@types/node@20.14.3':
+  '@types/node@20.14.4':
     dependencies:
       undici-types: 5.26.5
 
@@ -7058,7 +7047,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
 
   '@types/semver@7.5.8': {}
 
@@ -7266,16 +7255,16 @@ snapshots:
 
   astring@1.8.6: {}
 
-  astro-auto-adapter@2.1.0(@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)))(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)):
+  astro-auto-adapter@2.1.0(@astrojs/cloudflare@10.4.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/deno@5.0.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/netlify@5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/node@8.3.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(@astrojs/vercel@7.7.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)))(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)):
     dependencies:
-      '@astrojs/cloudflare': 10.4.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
-      '@astrojs/deno': 5.0.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
-      '@astrojs/netlify': 5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
-      '@astrojs/node': 8.3.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
-      '@astrojs/vercel': 7.7.1(astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5))
-      astro: 4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5)
+      '@astrojs/cloudflare': 10.4.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
+      '@astrojs/deno': 5.0.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
+      '@astrojs/netlify': 5.3.1(@opentelemetry/api@1.9.0)(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
+      '@astrojs/node': 8.3.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
+      '@astrojs/vercel': 7.7.1(astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5))
+      astro: 4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5)
 
-  astro@4.10.3(@types/node@20.14.3)(sass@1.77.6)(typescript@5.4.5):
+  astro@4.10.3(@types/node@20.14.4)(sass@1.77.6)(typescript@5.4.5):
     dependencies:
       '@astrojs/compiler': 2.8.0
       '@astrojs/internal-helpers': 0.4.0
@@ -7334,8 +7323,8 @@ snapshots:
       tsconfck: 3.1.0(typescript@5.4.5)
       unist-util-visit: 5.0.0
       vfile: 6.0.1
-      vite: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
-      vitefu: 0.2.5(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))
+      vite: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
+      vitefu: 0.2.5(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))
       which-pm: 2.2.0
       yargs-parser: 21.1.1
       zod: 3.23.8
@@ -7434,7 +7423,7 @@ snapshots:
   browserslist@4.23.1:
     dependencies:
       caniuse-lite: 1.0.30001636
-      electron-to-chromium: 1.4.803
+      electron-to-chromium: 1.4.805
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.1)
 
@@ -7673,9 +7662,9 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig-typescript-loader@5.0.0(@types/node@20.14.3)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5):
+  cosmiconfig-typescript-loader@5.0.0(@types/node@20.14.4)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5):
     dependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
       cosmiconfig: 9.0.0(typescript@5.4.5)
       jiti: 1.21.6
       typescript: 5.4.5
@@ -7991,7 +7980,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.4.803: {}
+  electron-to-chromium@1.4.805: {}
 
   emoji-regex@10.3.0: {}
 
@@ -11211,13 +11200,13 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  vite-node@1.6.0(@types/node@20.14.3)(sass@1.77.6):
+  vite-node@1.6.0(@types/node@20.14.4)(sass@1.77.6):
     dependencies:
       cac: 6.7.14
       debug: 4.3.5
       pathe: 1.1.2
       picocolors: 1.0.1
-      vite: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
+      vite: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -11228,7 +11217,7 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-solid@2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6)):
+  vite-plugin-solid@2.10.2(solid-js@1.8.17)(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6)):
     dependencies:
       '@babel/core': 7.24.7
       '@types/babel__core': 7.20.5
@@ -11236,26 +11225,26 @@ snapshots:
       merge-anything: 5.1.7
       solid-js: 1.8.17
       solid-refresh: 0.6.3(solid-js@1.8.17)
-      vite: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
-      vitefu: 0.2.5(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6))
+      vite: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
+      vitefu: 0.2.5(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6))
     transitivePeerDependencies:
       - supports-color
 
-  vite@5.3.1(@types/node@20.14.3)(sass@1.77.6):
+  vite@5.3.1(@types/node@20.14.4)(sass@1.77.6):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.38
       rollup: 4.18.0
     optionalDependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
       fsevents: 2.3.3
       sass: 1.77.6
 
-  vitefu@0.2.5(vite@5.3.1(@types/node@20.14.3)(sass@1.77.6)):
+  vitefu@0.2.5(vite@5.3.1(@types/node@20.14.4)(sass@1.77.6)):
     optionalDependencies:
-      vite: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
+      vite: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
 
-  vitest@1.6.0(@types/node@20.14.3)(jsdom@24.1.0)(sass@1.77.6):
+  vitest@1.6.0(@types/node@20.14.4)(jsdom@24.1.0)(sass@1.77.6):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -11274,11 +11263,11 @@ snapshots:
       strip-literal: 2.1.0
       tinybench: 2.8.0
       tinypool: 0.8.4
-      vite: 5.3.1(@types/node@20.14.3)(sass@1.77.6)
-      vite-node: 1.6.0(@types/node@20.14.3)(sass@1.77.6)
+      vite: 5.3.1(@types/node@20.14.4)(sass@1.77.6)
+      vite-node: 1.6.0(@types/node@20.14.4)(sass@1.77.6)
       why-is-node-running: 2.2.2
     optionalDependencies:
-      '@types/node': 20.14.3
+      '@types/node': 20.14.4
       jsdom: 24.1.0
     transitivePeerDependencies:
       - less

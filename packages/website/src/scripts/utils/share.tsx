@@ -1,17 +1,19 @@
-import { copyToClipboard } from "./copy-to-clipboard";
-import { state } from "./store";
-import { taskRunner } from "../index";
-import toast from "../../components/SolidToast";
+import { copyToClipboard } from "./copy-to-clipboard.ts";
+import { state } from "./store.ts";
+import { taskRunner } from "../index.ts";
+import toast from "../../components/SolidToast/index.tsx";
 
 export async function createShareURL() {
+  if (!state?.monaco?.models || !taskRunner) return;
   if (!state.monaco.loading) {
     const { input, config } = state.monaco.models;
+    if (!input || !config) return;
 
     try {
       return await taskRunner.createShareURL(
-        input.uri.authority,
-        input.getValue(),
-        config.getValue()
+        input?.uri.authority,
+        input?.getValue(),
+        config?.getValue()
       );
     } catch (e) {
       console.warn(e);
@@ -20,8 +22,10 @@ export async function createShareURL() {
 }
 
 export async function createShareURLQuery() {
+  if (!state?.monaco?.models || !taskRunner) return;
   if (!state.monaco.loading) {
     const { input, config } = state.monaco.models;
+    if (!input || !config) return;
 
     try {
       return await taskRunner.createShareURLParams(
@@ -36,23 +40,25 @@ export async function createShareURLQuery() {
 }
 
 export async function share() {
+  if (!state?.monaco?.models || !taskRunner) return;
   if (!state.monaco.loading) {
     try {
       await toast.promise(
         (async () => {
-          if (navigator.share) {
-            await navigator.share({
+          if ("share" in globalThis?.navigator) {
+            await globalThis?.navigator?.share?.({
               title: "bundlejs",
               text: "",
               url: await createShareURL(),
             });
           } else {
-            await copyToClipboard(await createShareURL());
+            const sharedUrl = (await createShareURL())!;
+            await copyToClipboard(sharedUrl);
           }
         })(),
         {
           loading: "Sharing...",
-          success: () => <>{navigator.share ? "Shared!" : "Copied!"}</>,
+          success: () => <>{"share" in globalThis?.navigator ? "Shared!" : "Copied!"}</>,
           error: "Share Error",
         }
       );
