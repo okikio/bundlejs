@@ -60,12 +60,11 @@ export function SearchResults() {
     on(
       () => ctx.loading,
       async (loading) => {
-        console.log("Loading Effect");
         if (!("document" in globalThis)) return;
 
         // Start a transition when the loading state changes
         startTransition(async () => {
-        if (isPending()) await delay(+(animOpts.duration ?? 300));
+          if (isPending()) await delay(+(animOpts.duration ?? 300));
           const anim = heightRef?.animate?.({ 
             opacity: loading ? "0" : "1", 
           }, animOpts);
@@ -88,13 +87,10 @@ export function SearchResults() {
         }
 
         const last = contentRef?.getBoundingClientRect?.();
-        console.log({
-          last,
-        });
         if (!last) return;
 
         startTransition(async () => {
-        if (isPending()) await delay(+(animOpts.duration ?? 300));
+          if (isPending()) await delay(+(animOpts.duration ?? 300));
 
           const heightAnim = ref?.animate?.({ height: `${last?.height}px` }, animOpts);
 
@@ -130,6 +126,7 @@ export function SearchResults() {
         if (!last) return;
 
         startTransition(async () => {
+          if (isPending()) await delay(+(animOpts.duration ?? 300));
           const heightAnim = ref?.animate?.({ height: `${last?.height}px` }, animOpts);
 
           const overflow = heightRef?.style?.overflow;
