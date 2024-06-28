@@ -1,1 +1,7 @@
-export { default } from "../../tsup.config.ts"
+import { defineConfig } from 'tsup';
+import extendsConfig from "../../tsup.config.ts";
+
+export default defineConfig({
+  ...extendsConfig,
+  entry: ["src/index.ts", "src/mod.ts"]
+})

@@ -67,8 +67,8 @@
   "dependencies": {
     "@opentf/obj-diff": "npm:@jsr/opentf__obj-diff@^0.11.0",
     "@std/assert": "npm:@jsr/std__assert@1.0.0-rc.2",
-    "@std/async": "npm:@jsr/std__async@1.0.0-rc.1",
-    "@std/collections": "npm:@jsr/std__collections@1.0.0-rc.1",
+    "@std/async": "npm:@jsr/std__async@1.0.0-rc.2",
+    "@std/collections": "npm:@jsr/std__collections@1.0.1",
     "@std/encoding": "npm:@jsr/std__encoding@1.0.0-rc.2",
     "@std/fmt": "npm:@jsr/std__fmt@^0.225.4",
     "@std/html": "npm:@jsr/std__html@1.0.0-rc.1",
@@ -95,9 +95,9 @@
     "resolve.exports": "^2"
   },
   "devDependencies": {
-    "@types/web": "^0.0.149",
+    "@types/web": "^0.0.150",
     "tsup": "^8.1.0",
-    "tsx": "^4.15.6",
+    "tsx": "^4.15.7",
     "vitest": "^1.6.0"
   }
 }

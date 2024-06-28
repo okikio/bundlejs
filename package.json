@@ -64,15 +64,15 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/web": "^0.0.149",
+    "@types/web": "^0.0.150",
     "husky": "^9.0.11",
     "semantic-release": "^24.0.0",
     "tsup": "^8.1.0",
-    "typedoc": "^0.25.13",
+    "typedoc": "^0.26.3",
     "typedoc-plugin-extras": "^3.0.0",
     "typedoc-plugin-inline-sources": "^1.0.2",
-    "typedoc-plugin-mdn-links": "^3.1.30",
-    "typescript": "5.4.5"
+    "typedoc-plugin-mdn-links": "^3.2.1",
+    "typescript": "5.5.2"
   },
   "packageManager": "pnpm@9.3.0+sha512.ee7b93e0c2bd11409c6424f92b866f31d3ea1bef5fbe47d3c7500cdc3c9668833d2e55681ad66df5b640c61fa9dc25d546efa54d76d7f8bf54b13614ac293631"
 }

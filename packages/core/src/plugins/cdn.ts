@@ -104,11 +104,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
           // If the subpath is a directory check to see if that subpath has a `package.json`,
           // after which check if the parent directory has a `package.json`
           const manifestVariants = [
+            { path: `${parsed.name}@${assumedVersion}/package.json` },
             isDirectory ? {
               path: `${parsed.name}@${assumedVersion}${parsedSubpath}/package.json`,
               isDir: true
-            } : null,
-            { path: `${parsed.name}@${assumedVersion}/package.json` }
+            } : null
           ].filter(x => x !== null);
 
           const manifestVariantsLen = manifestVariants.length;
