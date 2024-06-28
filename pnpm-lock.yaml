@@ -18,7 +18,7 @@ importers:
         specifier: ^0.91.1
         version: 0.91.1
       '@okikio/animate':
-        specifier: ^2.4.0
+        specifier: beta
         version: 2.4.0
       '@okikio/emitter':
         specifier: ^2.1.7
@@ -192,6 +192,9 @@ importers:
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
+      pnpm:
+        specifier: ^9.4.0
+        version: 9.4.0
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
@@ -5132,6 +5135,11 @@ packages:
   plugin-error@2.0.1:
     resolution: {integrity: sha512-zMakqvIDyY40xHOvzXka0kUvf40nYIuwRE8dWhti2WtjQZ31xAgBZBhxsK7vK3QbRXS1Xms/LO7B5cuAsfB2Gg==}
     engines: {node: '>=10.13.0'}
+
+  pnpm@9.4.0:
+    resolution: {integrity: sha512-9Um4pSydK4U2di+ZwHIiBe/Fr5E+d4NdvMw7CwssqefcgCK3gGLBcpHEjoh0nHDOiOtadPH6jEv14Yu0bIvYOg==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   portscanner@2.2.0:
     resolution: {integrity: sha512-IFroCz/59Lqa2uBvzK3bKDbDDIEaAY8XJ1jFxcLWTqosrsc32//P4VuSB2vZXoHiHqOmx8B5L5hnKOxL/7FlPw==}
@@ -12128,6 +12136,8 @@ snapshots:
   plugin-error@2.0.1:
     dependencies:
       ansi-colors: 1.1.0
+
+  pnpm@9.4.0: {}
 
   portscanner@2.2.0:
     dependencies:
