@@ -143,11 +143,11 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                     const dir = isDir ? subpath : "";
 
                     const pkgVariants = [
+                        { path: `${parsed.name}@${parsed.version}/package.json` },
                         isDir ? {
                             path: `${parsed.name}@${parsed.version}${subpath}/package.json`,
                             isDir: true
-                        } : null,
-                        { path: `${parsed.name}@${parsed.version}/package.json` }
+                        } : null
                     ].filter(x => x !== null);
 
                     let isDirPkgJSON = false;
@@ -279,7 +279,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                 pluginData: {
                     pkg: {
                         ...pkg,
-                        peerDependencies: peerDeps
+                        peerDependencies: peerDeps,
+                        // inheritedDeps:
                     }
                 }
             };
