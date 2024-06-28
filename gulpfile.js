@@ -432,7 +432,7 @@ task("service-worker", async () => {
                 {
                     // Match any request that ends with .png, .jpg, .jpeg, .svg, etc....
                     urlPattern:
-                        /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$|^https:\/\/(?:cdn\.polyfill\.io)/,
+                        /workbox\-(.*).js|\.(?:png|jpg|jpeg|svg|webp|map|wasm|json|ts|css)$)/,
 
                     // Apply a stale-while-revalidate strategy.
                     handler: "StaleWhileRevalidate",

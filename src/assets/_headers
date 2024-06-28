@@ -7,7 +7,7 @@
   Cache-Control: max-age=480, stale-while-revalidate=360, public
   Accept-CH: DPR, Viewport-Width, Width
   X-UA-Compatible: IE=edge
-  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com data:; script-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com https://cdn.polyfill.io 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com; frame-ancestors 'self' https:;
+  Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com https://api.producthunt.com https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com data:; script-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:; block-all-mixed-content; upgrade-insecure-requests; base-uri 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self' https://res.cloudinary.com; form-action 'self'; frame-src 'self' https://opencollective.com https://*.bundlejs.com https://bundlejs.com https://bundlesize.com; frame-ancestors 'self' https:;
   Permissions-Policy: geolocation=(), microphone=(), usb=(), sync-xhr=(self), camera=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=()
   Link: </js/main.min.js>; rel=modulepreload; importance=high
 
@@ -15,7 +15,6 @@
   Link: </css/app.min.css>; rel=preload; as=style
   Link: </js/main.min.js>; rel=modulepreload; importance=high
   # Link: </js/theme.min.js>; rel=modulepreload; importance=high
-  # Link: <https://cdn.polyfill.io/v3/polyfill.min.js?features=requestIdleCallback>; rel=preload; as=script
   # Link: </js/main.min.js>; rel=modulepreload
 
 /
