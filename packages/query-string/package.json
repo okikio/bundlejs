@@ -67,12 +67,15 @@
   "dependencies": {
     "@bundle/utils": "workspace:^"
   },
+  "peerDependencies": {
+    "@bundle/utils": "^"
+  },
   "devDependencies": {
     "iconv-lite": "^0.6.3",
     "qs": "^6.12.1",
     "query-string": "^9.0.0",
     "tsup": "^8.1.0",
-    "tsx": "^4.15.7",
+    "tsx": "^4.15.9",
     "vitest": "^1.6.0"
   }
 }

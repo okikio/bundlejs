@@ -4,17 +4,19 @@ import type { addLogs } from "../../components/MainSection/EditorSection/Console
 import { format } from "./tasks/format.ts";
 import { createFile } from "./tasks/create-file.ts";
 import { createShareURL, createShareURLParams } from "./tasks/create-share-url.ts";
-import { bundle } from "./tasks/build.ts";
+
 import { parseConfig } from "./tasks/parse-config.ts";
+import { ready } from "./tasks/utils/init.ts";
+import { bundle } from "./tasks/build.ts";
 
 import {
   addEventListener,
   INIT_COMPLETE,
   LOGGER_INFO,
-} from "@bundle/core/src/index.ts";
+} from "@bundle/core/src/configs/events.ts";
 import * as Comlink from "comlink";
 
-import "../utils/transferhandle";
+import "../utils/transferhandle.ts";
 
 export const TaskRunner = {
   format,
@@ -27,7 +29,7 @@ export const TaskRunner = {
 
 export const connect = async (port: MessagePort | typeof globalThis) => {
   Comlink.expose(TaskRunner, port);
-
+  
   const addLog = Comlink.wrap<typeof addLogs>(port);
   addEventListener(INIT_COMPLETE, () => {
     addLog({ type: "info", detail: "Initialized 🚀✨" });

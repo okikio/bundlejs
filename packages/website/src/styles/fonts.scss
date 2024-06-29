@@ -1,10 +1,5 @@
 // Generate CLS less font fallback https://deploy-preview-15--upbeat-shirley-608546.netlify.app/perfect-ish-font-fallback/?font=Manrope 
-@use "./fonts/manrope";
-@use "./fonts/material-icons";
-// @import "./components/_variables";
-
-// "Material Symbols Outlined", "Material Symbols Sharp", 
-$icon-font: "Material Symbols Rounded", "Material Icons-fallback";
+@import '@fontsource-variable/manrope';
 
 @font-face {
   font-family: "Manrope-fallback";
@@ -12,35 +7,3 @@ $icon-font: "Material Symbols Rounded", "Material Icons-fallback";
   ascent-override: 105%;
   src: local("Arial");
 }
-
-@font-face {
-  font-family: "Material Icons-fallback";
-  size-adjust: 182.39999999999998%;
-  ascent-override: 105%;
-  src: local("Arial");
-}
-
-// .icon {
-//   -webkit-font-feature-settings: "liga" off, "dlig";
-//   -moz-font-feature-settings: "liga=0, dlig=1";
-//   font-feature-settings: "liga", "dlig";
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-//   text-rendering: optimizeLegibility;
-//   font-family: $icon-font;
-//   vertical-align: middle;
-//   letter-spacing: normal;
-//   display: inline-block;
-//   text-decoration: none;
-//   text-transform: none;
-//   white-space: nowrap;
-//   font-weight: normal;
-//   position: relative;
-//   font-style: normal;
-//   word-wrap: normal;
-//   font-size: 24px;
-//   line-height: 1;
-//   direction: ltr;
-//   height: 1em;
-//   width: 1em;
-// }

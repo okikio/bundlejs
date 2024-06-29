@@ -14,7 +14,7 @@ export async function parseConfig(input = configModelResetValue) {
 
     await ready;
 
-    const { code } = await transform(input, {
+    const transformOutput = await transform(input, {
       init: initOpts,
       esbuild: {
         loader: "ts",
@@ -23,6 +23,8 @@ export async function parseConfig(input = configModelResetValue) {
         treeShaking: true
       }
     });
+
+    const code = transformOutput?.code;
     
     const result = await Function("\"use strict\";return (async function () { \"use strict\";" + code + "return await (std_global?.default ?? std_global); })()")();
     configs.set(input, result);

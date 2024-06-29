@@ -49,7 +49,8 @@ export const themeSet = (theme: string, html: HTMLHtmlElement) => {
   document?.dispatchEvent?.(ThemeChange);
 };
 
-export const runTheme = (html: HTMLHtmlElement) => {
+export const runTheme = (html: HTMLHtmlElement | null) => {
+  if (!html) return;
   try {
     const theme = getTheme();
     if (theme === null) {

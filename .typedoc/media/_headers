@@ -12,8 +12,6 @@
   Link: </fonts/FluentSystemIcons-Regular.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous
   Link: <https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap>; rel=preload; as=style
   Link: <https://fonts.gstatic.com/s/lexend/v7/~CggKBkxleGVuZBAHIAU=.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
-  # Link: <https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap>; rel=preload; as=style
-  # Link: <https://fonts.gstatic.com/s/manrope/v4/xn7gYHE41ni1AdIRggexSg.woff2>; rel=preload; as=font; type=font/woff2; crossorigin=anonymous
 
 /*.css
   Cache-Control: public, max-age=604800, stale-while-revalidate=480

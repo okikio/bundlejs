@@ -22,6 +22,7 @@ export async function bundle(fileName: string, content: string, _config = "expor
   } catch (e) {
     console.log({ e })
   }
+  
   await setFile(fs, "/index.tsx", content);
   console.log({
     entries: Array.from(

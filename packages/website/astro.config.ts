@@ -1,4 +1,4 @@
-import { defineConfig, squooshImageService } from 'astro/config';
+import { defineConfig, squooshImageService, envField } from 'astro/config';
 
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import Icons from "unplugin-icons/vite";
@@ -108,6 +108,17 @@ export default defineConfig({
     sitemap(),
     mdx(),
   ],
+  experimental: {
+    env: {
+      schema: {
+        PROD: envField.boolean({
+          context: 'client',
+          access: 'public',
+          default: false
+        }),
+      }
+    }
+  },
   vite: {
     worker: { format: "es" },
     ssr: { external: ["svgo", "esbuild"] },

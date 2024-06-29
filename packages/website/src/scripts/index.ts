@@ -1,7 +1,7 @@
-import type { TaskRunner as Tasks } from "./workers/task-runner";
+import type { TaskRunner as Tasks } from "./workers/task-runner.ts";
 
-import { setState } from "./utils/store";
-import { USE_SHAREDWORKER } from "../env";
+import { setState } from "./utils/store.ts";
+import { USE_SHAREDWORKER } from "../env.ts";
 import { SharedWorkerPolyfill as SharedWorker } from "@okikio/sharedworker";
 
 import * as Comlink from "comlink";

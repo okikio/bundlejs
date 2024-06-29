@@ -35,18 +35,18 @@ const {
 <meta name="twitter:site" content="@jsbundle" />
 <meta name="twitter:creator" content="@okikio_dev" />
 
-<meta property="image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
-<meta property="og:image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
-<meta name="twitter:image" content={Astro.site.origin.toString() + "/favicon/social-preview.png" } />
+<meta property="image" content={Astro.site?.origin.toString() + "/favicon/social-preview.png" } />
+<meta property="og:image" content={Astro.site?.origin.toString() + "/favicon/social-preview.png" } />
+<meta name="twitter:image" content={Astro.site?.origin.toString() + "/favicon/social-preview.png" } />
 
-<meta name="twitter:url" property="og:site_name" content={Astro.site.origin.toString()} />
+<meta name="twitter:url" property="og:site_name" content={Astro.site?.origin.toString()} />
 
 <link rel="canonical" href={Astro.request.url.toString()} />
 <meta itemprop="url" content={Astro.request.url.toString()} />
 <meta name="shortlink" content={Astro.request.url.toString()} />
 <meta property="og:url" content={Astro.request.url.toString()} />
 
-<link rel="search" href={Astro.site.origin.toString() + "/open-search.xml" }
+<link rel="search" href={Astro.site?.origin.toString() + "/open-search.xml" }
   type="application/opensearchdescription+xml" title="bundlejs">
 
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
@@ -77,15 +77,13 @@ const {
 <!-- Theme set-->
 <script>
   // @ts-ignore
-  import { runTheme } from "../scripts/theme";
+  import { runTheme } from "../scripts/theme.ts";
   const html = document.querySelector('html');
   runTheme(html);
 
   setTimeout(() => {
     html?.classList?.add?.("dom-loaded");
   }, 100);
-
-  import "../scripts/measure";
 </script>
 
 <script type="application/ld+json" set:html={JSON.stringify({ "@context" :"https://schema.org", "@graph" :[ { "@type"

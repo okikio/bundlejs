@@ -36,8 +36,8 @@ importers:
         specifier: ^0.26.3
         version: 0.26.3(typescript@5.5.2)
       typedoc-plugin-extras:
-        specifier: ^3.0.0
-        version: 3.0.0(typedoc@0.26.3(typescript@5.5.2))
+        specifier: ^3.1.0
+        version: 3.1.0(typedoc@0.26.3(typescript@5.5.2))
       typedoc-plugin-inline-sources:
         specifier: ^1.0.2
         version: 1.0.2(typedoc@0.26.3(typescript@5.5.2))
@@ -69,8 +69,8 @@ importers:
         specifier: ^5.0.7
         version: 5.0.7
       solid-js:
-        specifier: ^1.8.17
-        version: 1.8.17
+        specifier: ^1.8.18
+        version: 1.8.18
       webcola:
         specifier: ^3.4.0
         version: 3.4.0
@@ -91,14 +91,14 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       vite:
         specifier: ^5.3.2
         version: 5.3.2(@types/node@20.14.9)(sass@1.77.6)
       vite-plugin-solid:
         specifier: ^2.10.2
-        version: 2.10.2(solid-js@1.8.17)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
+        version: 2.10.2(solid-js@1.8.18)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(jsdom@24.1.0)(sass@1.77.6)
@@ -113,8 +113,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(jsdom@24.1.0)(sass@1.77.6)
@@ -138,8 +138,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(jsdom@24.1.0)(sass@1.77.6)
@@ -166,8 +166,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       wrangler:
         specifier: 3.62.0
         version: 3.62.0(@cloudflare/workers-types@4.20240620.0)
@@ -191,8 +191,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(jsdom@24.1.0)(sass@1.77.6)
@@ -246,8 +246,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(jsdom@24.1.0)(sass@1.77.6)
@@ -269,6 +269,9 @@ importers:
       '@dprint/formatter':
         specifier: ^0.3.0
         version: 0.3.0
+      '@fontsource-variable/manrope':
+        specifier: ^5.0.20
+        version: 5.0.20
       '@okikio/sharedworker':
         specifier: ^1.0.7
         version: 1.0.7
@@ -285,8 +288,8 @@ importers:
         specifier: ^0.50.0
         version: 0.50.0
       solid-js:
-        specifier: ^1.8.17
-        version: 1.8.17
+        specifier: ^1.8.18
+        version: 1.8.18
       spring-easing:
         specifier: ^2.3.3
         version: 2.3.3
@@ -317,7 +320,7 @@ importers:
         version: 3.1.6
       '@astrojs/solid-js':
         specifier: ^4.4.0
-        version: 4.4.0(solid-js@1.8.17)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
+        version: 4.4.0(solid-js@1.8.18)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
       '@astrojs/tailwind':
         specifier: ^5.1.0
         version: 5.1.0(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2))(tailwindcss@3.4.4)
@@ -358,8 +361,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(typescript@5.5.2)
       tsx:
-        specifier: ^4.15.7
-        version: 4.15.7
+        specifier: ^4.15.9
+        version: 4.15.9
       typescript:
         specifier: 5.5.2
         version: 5.5.2
@@ -1115,6 +1118,9 @@ packages:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
 
+  '@fontsource-variable/manrope@5.0.20':
+    resolution: {integrity: sha512-LKL0aM0DxYj8i/zUTb5Nru0mS3YoezPZaeWY7aIxEKVX1xVBLpPHlFq0NoK2iUXhL6HoD0XMYwc6KVa8I/ayKg==}
+
   '@grpc/grpc-js@1.10.10':
     resolution: {integrity: sha512-HPa/K5NX6ahMoeBv15njAc/sfF4/jmiXLar9UlC2UfHFKZzsCVLc3wbe7+7qua7w9VPh2/L6EBxyAV7/E8Wftg==}
     engines: {node: '>=12.10.0'}
@@ -1712,8 +1718,8 @@ packages:
     peerDependencies:
       semantic-release: '>=20.1.0'
 
-  '@shikijs/core@1.9.1':
-    resolution: {integrity: sha512-EmUful2MQtY8KgCF1OkBtOuMcvaZEvmdubhW0UHCGXi21O9dRLeADVCj+k6ZS+de7Mz9d2qixOXJ+GLhcK3pXg==}
+  '@shikijs/core@1.10.0':
+    resolution: {integrity: sha512-BZcr6FCmPfP6TXaekvujZcnkFmJHZ/Yglu97r/9VjzVndQA56/F4WjUKtJRQUnK59Wi7p/UTAOekMfCJv7jnYg==}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -2124,8 +2130,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.20.12
 
-  babel-preset-solid@1.8.17:
-    resolution: {integrity: sha512-s/FfTZOeds0hYxYqce90Jb+0ycN2lrzC7VP1k1JIn3wBqcaexDKdYi6xjB+hMNkL+Q6HobKbwsriqPloasR9LA==}
+  babel-preset-solid@1.8.18:
+    resolution: {integrity: sha512-ky0FA4cCS9dk+xYBBItHoxtbRnaDIOGpmHLFqKPaR81hpMbJBOiLOZia2hT0JBwx4zn/D2OjMRvRr6kqtRMoUw==}
     peerDependencies:
       '@babel/core': ^7.0.0
 
@@ -4795,8 +4801,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shiki@1.9.1:
-    resolution: {integrity: sha512-8PDkgb5ja3nfujTjvC4VytL6wGOGCtFAClUb2r3QROevYXxcq+/shVJK5s6gy0HZnjaJgFxd6BpPqpRfqne5rA==}
+  shiki@1.10.0:
+    resolution: {integrity: sha512-YD2sXQ+TMD/F9BimV9Jn0wj35pqOvywvOG/3PB6hGHyGKlM7TJ9tyJ02jOb2kF8F0HfJwKNYrh3sW7jEcuRlXA==}
 
   shimmer@1.2.1:
     resolution: {integrity: sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==}
@@ -4842,8 +4848,8 @@ packages:
     resolution: {integrity: sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg==}
     engines: {node: '>=14.16'}
 
-  solid-js@1.8.17:
-    resolution: {integrity: sha512-E0FkUgv9sG/gEBWkHr/2XkBluHb1fkrHywUgA6o6XolPDCJ4g1HaLmQufcBBhiF36ee40q+HpG/vCZu7fLpI3Q==}
+  solid-js@1.8.18:
+    resolution: {integrity: sha512-cpkxDPvO/AuKBugVv6xKFd1C9VC0XZMu4VtF56IlHoux8HgyW44uqNSWbozMnVcpIzHIhS3vVXPAVZYM26jpWw==}
 
   solid-refresh@0.6.3:
     resolution: {integrity: sha512-F3aPsX6hVw9ttm5LYlth8Q15x6MlI/J3Dn+o3EQyRTtTxidepSTwAYdozt01/YA+7ObcciagGEyXIopGZzQtbA==}
@@ -5174,8 +5180,8 @@ packages:
       typescript:
         optional: true
 
-  tsx@4.15.7:
-    resolution: {integrity: sha512-u3H0iSFDZM3za+VxkZ1kywdCeHCn+8/qHQS1MNoO2sONDgD95HlWtt8aB23OzeTmFP9IU4/8bZUdg58Uu5J4cg==}
+  tsx@4.15.9:
+    resolution: {integrity: sha512-OEw8VSS5Ug88pj3YhOic1Zmg+mKOuJOcBdpxl402C0D4TjRxu/LTIrr+slbc8nKQA+b7YC9SoHTZAEeQQPBwFw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5215,10 +5221,10 @@ packages:
     resolution: {integrity: sha512-8WbVAQAUlENo1q3c3zZYuy5k9VzBQvp8AX9WOtbvyWlLM1v5JaSRmjubLjzHF4JFtptjH/5c/i95yaElvcjC0A==}
     engines: {node: '>= 0.4'}
 
-  typedoc-plugin-extras@3.0.0:
-    resolution: {integrity: sha512-eiAe3qtm2WbV5owdncpt0zHZPqsNZH2mzNGILPd4zqrvEZie3Et9es4cpGZ+8lHO/SI0pVKwsAj7IuMxPNOdYg==}
+  typedoc-plugin-extras@3.1.0:
+    resolution: {integrity: sha512-8tNeq2fgl2HCUZ6eZuAoLLKEvB/WrRS4He9MtTfo3X3Pa8Iw3TS5D0g8krDhUXUk1uHpXVAVHm8rSOMS2mdJRw==}
     peerDependencies:
-      typedoc: 0.25.x
+      typedoc: 0.26.x
 
   typedoc-plugin-inline-sources@1.0.2:
     resolution: {integrity: sha512-J1L2Ky6t5EeAI2fTqhcRii/ntxYN6lSPyKiaTKc/MIHgMTDh81elRvXPZFmvy+xMY9EEE9nlkUujfLGNo5c5Tw==}
@@ -5343,8 +5349,8 @@ packages:
       vue-template-es2015-compiler:
         optional: true
 
-  unplugin@1.10.1:
-    resolution: {integrity: sha512-d6Mhq8RJeGA8UfKCu54Um4lFA0eSaRa3XxdAJg8tIdxbu1ubW0hBCZUL7yI2uGyYCRndvbK8FLHzqy2XKfeMsg==}
+  unplugin@1.10.2:
+    resolution: {integrity: sha512-KuPqnjU4HBcrSwmQatfdc5hU4xzaQrhoKqCKylwmLnbBvqj5udXL8cHrkOuYDoI4ESCwJIiAIKMujroIUKLgow==}
     engines: {node: '>=14.0.0'}
 
   update-browserslist-db@1.0.16:
@@ -5640,8 +5646,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  yocto-queue@1.0.0:
-    resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
+  yocto-queue@1.1.0:
+    resolution: {integrity: sha512-cMojmlnwkAgIXqga+2sXshlgrrcI0QEPJ5n58pEvtuFo4PaekfomlCudArDD7hj8Hkswjl0/x4eu4q+Xa0WFgQ==}
     engines: {node: '>=12.20'}
 
   yoctocolors@2.0.2:
@@ -5719,7 +5725,7 @@ snapshots:
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
       remark-smartypants: 3.0.1
-      shiki: 1.9.1
+      shiki: 1.10.0
       unified: 11.0.5
       unist-util-remove-position: 5.0.0
       unist-util-visit: 5.0.0
@@ -5780,10 +5786,10 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.23.8
 
-  '@astrojs/solid-js@4.4.0(solid-js@1.8.17)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))':
+  '@astrojs/solid-js@4.4.0(solid-js@1.8.18)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))':
     dependencies:
-      solid-js: 1.8.17
-      vite-plugin-solid: 2.10.2(solid-js@1.8.17)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
+      solid-js: 1.8.18
+      vite-plugin-solid: 2.10.2(solid-js@1.8.18)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
     transitivePeerDependencies:
       - '@testing-library/jest-dom'
       - supports-color
@@ -6356,6 +6362,8 @@ snapshots:
     optional: true
 
   '@fastify/busboy@2.1.1': {}
+
+  '@fontsource-variable/manrope@5.0.20': {}
 
   '@grpc/grpc-js@1.10.10':
     dependencies:
@@ -7029,7 +7037,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@shikijs/core@1.9.1': {}
+  '@shikijs/core@1.10.0': {}
 
   '@sinclair/typebox@0.27.8': {}
 
@@ -7500,7 +7508,7 @@ snapshots:
       prompts: 2.4.2
       rehype: 13.0.1
       semver: 7.6.2
-      shiki: 1.9.1
+      shiki: 1.10.0
       string-width: 7.1.0
       strip-ansi: 7.1.0
       tsconfck: 3.1.1(typescript@5.5.2)
@@ -7556,7 +7564,7 @@ snapshots:
       html-entities: 2.3.3
       validate-html-nesting: 1.2.2
 
-  babel-preset-solid@1.8.17(@babel/core@7.24.7):
+  babel-preset-solid@1.8.18(@babel/core@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       babel-plugin-jsx-dom-expressions: 0.37.23(@babel/core@7.24.7)
@@ -10016,11 +10024,11 @@ snapshots:
 
   p-limit@4.0.0:
     dependencies:
-      yocto-queue: 1.0.0
+      yocto-queue: 1.1.0
 
   p-limit@5.0.0:
     dependencies:
-      yocto-queue: 1.0.0
+      yocto-queue: 1.1.0
 
   p-locate@2.0.0:
     dependencies:
@@ -10695,9 +10703,9 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shiki@1.9.1:
+  shiki@1.10.0:
     dependencies:
-      '@shikijs/core': 1.9.1
+      '@shikijs/core': 1.10.0
 
   shimmer@1.2.1: {}
 
@@ -10742,18 +10750,18 @@ snapshots:
 
   slash@5.1.0: {}
 
-  solid-js@1.8.17:
+  solid-js@1.8.18:
     dependencies:
       csstype: 3.1.3
       seroval: 1.0.7
       seroval-plugins: 1.0.7(seroval@1.0.7)
 
-  solid-refresh@0.6.3(solid-js@1.8.17):
+  solid-refresh@0.6.3(solid-js@1.8.18):
     dependencies:
       '@babel/generator': 7.24.7
       '@babel/helper-module-imports': 7.24.7
       '@babel/types': 7.24.7
-      solid-js: 1.8.17
+      solid-js: 1.8.18
     transitivePeerDependencies:
       - supports-color
 
@@ -11090,7 +11098,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  tsx@4.15.7:
+  tsx@4.15.9:
     dependencies:
       esbuild: 0.21.5
       get-tsconfig: 4.7.5
@@ -11146,7 +11154,7 @@ snapshots:
       typed-array-buffer: 1.0.2
       typed-array-byte-offset: 1.0.2
 
-  typedoc-plugin-extras@3.0.0(typedoc@0.26.3(typescript@5.5.2)):
+  typedoc-plugin-extras@3.1.0(typedoc@0.26.3(typescript@5.5.2)):
     dependencies:
       typedoc: 0.26.3(typescript@5.5.2)
 
@@ -11163,7 +11171,7 @@ snapshots:
       lunr: 2.3.9
       markdown-it: 14.1.0
       minimatch: 9.0.5
-      shiki: 1.9.1
+      shiki: 1.10.0
       typescript: 5.5.2
       yaml: 2.4.5
 
@@ -11276,11 +11284,11 @@ snapshots:
       debug: 4.3.5
       kolorist: 1.8.0
       local-pkg: 0.5.0
-      unplugin: 1.10.1
+      unplugin: 1.10.2
     transitivePeerDependencies:
       - supports-color
 
-  unplugin@1.10.1:
+  unplugin@1.10.2:
     dependencies:
       acorn: 8.12.0
       chokidar: 3.6.0
@@ -11348,14 +11356,14 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-solid@2.10.2(solid-js@1.8.17)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6)):
+  vite-plugin-solid@2.10.2(solid-js@1.8.18)(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6)):
     dependencies:
       '@babel/core': 7.24.7
       '@types/babel__core': 7.20.5
-      babel-preset-solid: 1.8.17(@babel/core@7.24.7)
+      babel-preset-solid: 1.8.18(@babel/core@7.24.7)
       merge-anything: 5.1.7
-      solid-js: 1.8.17
-      solid-refresh: 0.6.3(solid-js@1.8.17)
+      solid-js: 1.8.18
+      solid-refresh: 0.6.3(solid-js@1.8.18)
       vite: 5.3.2(@types/node@20.14.9)(sass@1.77.6)
       vitefu: 0.2.5(vite@5.3.2(@types/node@20.14.9)(sass@1.77.6))
     transitivePeerDependencies:
@@ -11602,7 +11610,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  yocto-queue@1.0.0: {}
+  yocto-queue@1.1.0: {}
 
   yoctocolors@2.0.2: {}
 

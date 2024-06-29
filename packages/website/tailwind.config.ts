@@ -41,7 +41,7 @@ export default {
       ),
       fontFamily: {
         manrope: [
-          "Manrope",
+          "Manrope Variable",
           "Manrope-fallback",
           "Century Gothic",
           "sans-serif",
