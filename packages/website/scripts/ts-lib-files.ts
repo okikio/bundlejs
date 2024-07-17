@@ -1,4 +1,4 @@
-import { globToRegExp, normalizeGlob, basename, join, relative } from "@bundle/utils/utils/path.ts"; 
+import { globToRegExp, normalizeGlob, basename, join, relative } from "@bundle/utils/utils/path.ts";
 import { bytes } from "@bundle/utils/utils/fmt.ts";
 
 import { promises as fs } from "node:fs";
@@ -6,9 +6,9 @@ import process from "node:process";
 
 const encoder = new TextEncoder();
 
-// @ts-ignore Deno.cwd isn't refined so relative doesn't quite work as expected
+// @ts-ignore Deno.cwd isn't defined so relative doesn't quite work as expected
 globalThis.Deno ??= {
-  cwd(){ return process.cwd(); }
+  cwd() { return process.cwd(); }
 }
 
 /**
