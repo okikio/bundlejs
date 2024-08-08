@@ -192,7 +192,9 @@ main {
       padding-block: 0;
     }
 
-    word-wrap: break-word;
+    & {
+      word-wrap: break-word;
+    }
 
     @supports (padding-top: env(safe-area-inset-top, 0)) {
       padding-right: calc(theme("spacing.5") + env(safe-area-inset-right));
