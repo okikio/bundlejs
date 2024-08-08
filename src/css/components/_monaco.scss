@@ -116,9 +116,11 @@
     );
   }
 
-  min-height: 80px;
-  min-width: 200px;
-  // max-width: calc(theme("screens.lg") - theme("spacing.3") - 25px - var(--spacing));
+  & {
+    min-height: 80px;
+    min-width: 200px;
+    // max-width: calc(theme("screens.lg") - theme("spacing.3") - 25px - var(--spacing));
+  }
 }
 
 .app#console {

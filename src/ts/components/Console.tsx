@@ -56,9 +56,9 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
     }>
       {({ title, message = "", type, badge }, index) => {
         let styleType = {
-          "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md",
-          "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md",
-          "info": "border-b border-gray-300/60 dark:border-gray-600/60 text-green-500/90 dark:text-green-300/90"
+          "error": "bg-red-400/20 border border-red-400/70 text-red-500/90 dark:text-red-300/90 rounded-md font-bold dark:font-medium",
+          "warning": "bg-yellow-400/20 border border-yellow-400/70 text-yellow-500/90 dark:text-yellow-300/90 rounded-md font-bold dark:font-medium",
+          "info": "border-b border-gray-300/60 dark:border-gray-600/60 text-green-700/90 dark:text-green-300/90 font-bold dark:font-medium"
         };
         
         let staticClassName = "whitespace-normal overflow-auto overscroll-x-contain "; 
