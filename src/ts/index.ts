@@ -499,7 +499,7 @@ export const build = async (app: App) => {
 
     // @ts-ignore
     const formattedCode = await thisWorker.format(model.uri.toString());
-    model.setValue(formattedCode);
+    if (formattedCode) model.setValue(formattedCode);
   };
 
   const getModelType = () => {

@@ -6,10 +6,12 @@
 
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
-import { createStreaming, Formatter } from "@dprint/formatter";
+import type { Formatter, GlobalConfiguration } from "@dprint/formatter";
+import type ts from "typescript";
+
+import { createFromBuffer, createStreaming } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
 import serialize from "../util/serialize-javascript";
-import type ts from "typescript";
 
 import { DefaultConfig } from "../configs/bundle-options";
 import { deepAssign, deepDiff } from "../util/deep-equal";
@@ -17,7 +19,7 @@ import { getRequest } from "../util/fetch-and-cache";
 import { getModuleName, parseTreeshakeExports } from "../util/parse-query";
 
 let formatter: Formatter;
-let config: Record<string, unknown> | undefined = {
+let config: GlobalConfiguration = {
     // TypeScript & JavaScript config goes here
     "lineWidth": 80,
     "indentWidth": 2,
@@ -78,18 +80,22 @@ const getFormatter = async () => {
     let formatter: Awaited<ReturnType<typeof createFromBuffer>>;
     try {
         if (formatter) return;
-        const url = new URL("/dprint-typescript-plugin.wasm", globalThis.location.toString()).toString();
-        // const url = new URL("https://plugins.dprint.dev/typescript-0.91.1.wasm").toString();
-        const response = await getRequest(url);
+        // const url = new URL("/plugin.wasm", globalThis.location.toString()).toString();
+        const url = new URL("https://plugins.dprint.dev/typescript-0.91.6.wasm").toString();
+        console.log({ dprintWasmUrl: url })
+
+        const response = getRequest(url);
         formatter = await createStreaming(response);
-        formatter.setConfig({}, config);
+        formatter.setConfig({}, config as Record<string, unknown>);
         return formatter;
     } catch (err) {
         throw err;
     }
 }
 
-getFormatter().then(result => (formatter = result));
+getFormatter()
+    .then(result => (formatter = result))
+    .catch(err => console.error(err));
 
 const SyntaxKind = {
     ImportDeclaration: 265 as ts.SyntaxKind.ImportDeclaration,
@@ -106,7 +112,12 @@ const worker = (TypeScriptWorker, fileMap) => {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
             if (!formatter) formatter = await getFormatter();
-            return await Promise.resolve(formatter.formatText(fileName, source.getFullText()));
+            return await Promise.resolve(
+                formatter?.formatText?.({
+                    filePath: fileName,
+                    fileText: source?.getFullText?.(),
+                })
+            );
         }
 
         async getShareableURL(fileName, config = {}) {

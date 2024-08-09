@@ -530,6 +530,7 @@ task("watch", async () => {
             online: true,
             reloadOnRestart: true,
             scrollThrottle: 350,
+            cors: true,
         },
         (_err, bs) => {
             bs.addMiddleware("*", (_req, res) => {
