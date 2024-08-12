@@ -170,6 +170,8 @@ export const start = async (port: MessagePort) => {
       // Catch esbuild errors 
       setFile(`/input.${config.tsx ? "tsx" : "ts"}`, `${input}`);
       console.log({ esbuildOpts })
+
+      const packageSizeMap = new Map<string, number>();
       
       try {
         // Convert CDN values to URL origins
@@ -204,7 +206,7 @@ export const start = async (port: MessagePort) => {
             ALIAS(config?.alias, origin, logger),
             EXTERNAL(esbuildOpts?.external, origin, config?.polyfill),
             HTTP(assets, origin, logger),
-            CDN(origin, config["package.json"], logger),
+            CDN(packageSizeMap, origin, config["package.json"], logger),
           ],
           outdir: "/"
         });
@@ -315,13 +317,16 @@ export const start = async (port: MessagePort) => {
       let totalCompressedSize = bytes(rawCompressedSize);
       console.log({
         rawByteLen,
-        rawCompressedSize
+        rawCompressedSize,
+        packageSizeMap
       })
 
       postMessage({
         event: "result",
         details: {
           content: output,
+          packageSizeArr: Array.from(packageSizeMap, ([key, value]) => [key, bytes(value)]),
+          totalInstallSize: bytes(Array.from(packageSizeMap).reduce((acc, [_, value]) => acc + value, 0)),
           initialSize: `${totalByteLength}`,
           size: `${totalCompressedSize} (${type})`
         }

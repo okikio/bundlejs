@@ -81,6 +81,7 @@ export const Console = ({ parentEl }: { parentEl: HTMLElement }) => {
         return message.length > 0 ? (
           <details class={getClassName()} ref={detailsEl}>
             <summary class="console-summary" tabindex="0">
+              {/* TODO: santize inner html */}
               <p class="px-4 py-3" innerHTML={title} />
               <Show when={badge}>
                 <a

@@ -71,7 +71,7 @@
         "esbuild-wasm": "^0.23.0",
         "monaco-editor": "^0.50.0",
         "parse-package-name": "^1.0.0",
-        "preact": "^10.23.1",
+        "preact": "^10.23.2",
         "resolve.exports": "^2.0.2",
         "solid-js": "^1.8.20",
         "web-animations-js": "^2.3.2",
@@ -91,13 +91,13 @@
         "@types/d3-hierarchy": "^3.1.7",
         "@types/d3-scale": "^4.0.8",
         "@types/d3-shape": "^3.1.6",
-        "@types/node": "^22.1.0",
+        "@types/node": "^22.2.0",
         "@vercel/node": "^3.2.8",
         "autoprefixer": "^10.4.20",
         "browser-sync": "^3.0.2",
         "commitizen": "^4.3.0",
         "cross-fetch": "^4.0.0",
-        "cssnano": "^7.0.4",
+        "cssnano": "^7.0.5",
         "del": "^7.1.0",
         "esbuild": "^0.23.0",
         "esbuild-plugin-solid": "^0.6.0",
@@ -138,7 +138,7 @@
         "tsx": "^4.17.0",
         "typescript": "5.5.4",
         "ultrafetch": "^0.4.0",
-        "vercel": "^35.2.3",
+        "vercel": "^35.2.4",
         "workbox-build": "^7.1.1"
     }
 }

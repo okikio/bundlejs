@@ -243,6 +243,7 @@ BundleEvents.on({
       if (typeof msg == "string" && msg.length > 0) { 
         msg = msg.replace(
           /\b(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#/%?=~_|$!:,.;]*[-A-Z0-9+&@#/%=~_|$]|((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b)|"(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^"\r\n]+"?|'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?/gi,
+          // TODO: sanitize the inner html content
           (match) => `<a href="${match}" target="_blank" rel="noopener">${match}</a>`
         );
       }
@@ -403,7 +404,14 @@ export const build = async (app: App) => {
 
     },
     result(details) {
-      let { initialSize, size, content } = details;
+      let { initialSize, size, content, packageSizeArr, totalInstallSize } = details;
+
+      console.log({
+        packageSizeArr,
+        totalInstallSize
+      })
+
+      const packageInstallSizeLogMessage = packageSizeArr.map(([key, value]) => `* ${key}: ${value}`);
 
       outputModel?.setValue?.(content);
       const bundleTime = `⌛ Bundled ${timeFormatter.format((Date.now() - start) / 1000, "seconds")}`;
@@ -415,7 +423,8 @@ export const build = async (app: App) => {
       shareUrl.pathname = "/badge";
       addLogs([
         { title: bundleTime, type: "info" },
-        { title: `Bundle size is ${initialSize} -> ${size}`, type: "info" },
+        { title: `Package publish size:<br><span style="color:initial">${packageInstallSizeLogMessage.join("<br>")}</span><br>Total publish size: <span style="color:initial">${totalInstallSize}</span>`, type: "info" },
+        { title: `Bundle size is <span style="color:initial">${initialSize}</span> -> <span style="color:initial">${size}</span>`, type: "info" },
         { title: `Badge `, type: "info", badge: shareUrl.href }
       ]);
       fileSizeEl.forEach(el => (el.textContent = `` + size));

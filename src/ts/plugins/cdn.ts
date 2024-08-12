@@ -11,6 +11,7 @@ import { parse as parsePackageName } from "parse-package-name";
 
 import { DEFAULT_CDN_HOST } from '../util/util-cdn';
 import { deepAssign } from '../util/deep-equal';
+import { getPackageOfVersion, getRegistryURL } from '../util/npm-search';
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = 'cdn-url';
@@ -83,7 +84,7 @@ export type PackageJson = {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPkg: Partial<PackageJson> = {}) => {
+export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DEFAULT_CDN_HOST, logger = console.log, rootPkg: Partial<PackageJson> = {}) => {
     return async (args: OnResolveArgs): Promise<OnResolveResult | undefined> => {
         let argPath = args.path;
         if (/^#/.test(argPath)) {
@@ -143,7 +144,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
                     const dir = isDir ? subpath : "";
 
                     const pkgVariants = [
-                        { path: `${parsed.name}@${parsed.version}/package.json` },
+                        { path: getRegistryURL(`${parsed.name}@${parsed.version}`).packageVersionURL },
                         isDir ? {
                             path: `${parsed.name}@${parsed.version}${subpath}/package.json`,
                             isDir: true
@@ -266,6 +267,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
             // the algorithm should then be able to use the correct version if a dependency is cyclic
             peerDeps[parsed.name] = version.length > 0 ? version.slice(1) : (deps?.[parsed.name] ?? "latest");
 
+            if (!packageSizeMap.get(`${parsed.name}${version}`)) {
+                const packageJson = await getPackageOfVersion(`${parsed.name}${version}`);
+                const unpackedSize = ( packageJson)?.dist?.unpackedSize as number;
+                packageSizeMap.set(`${parsed.name}${version}`, unpackedSize);
+                console.log({
+                    packageJson,
+                    unpackedSize
+                })
+            }
+
             // Just in case the peerDependency is legitimately set from the package.json ignore the 
             // cyclic deps. rules, as they just make things more complicated
             for (const depKey of peerDepsKeys) {
@@ -294,13 +305,13 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, logger = console.log, rootPk
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN = (cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
+export const CDN = (packageSizeMap: Map<string, number>, cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
             // Resolve bare imports to the CDN required using different URL schemes
-            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, logger, pkgJSON));
-            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, logger, pkgJSON));
+            build.onResolve({ filter: /.*/ }, CDN_RESOLVE(packageSizeMap, cdn, logger, pkgJSON));
+            build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(packageSizeMap, cdn, logger, pkgJSON));
         },
     };
 };

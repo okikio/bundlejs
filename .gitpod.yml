@@ -11,11 +11,13 @@ ports:
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/44_config_start_tasks/
 tasks:
   - init: >
+      nvm install &&
       npm install -g pnpm &&
       pnpm setup && 
       pnpm install -g gulp commitizen &&
       pnpm install
     command: >
+      nvm install &&
       npm install -g pnpm &&
       pnpm setup && 
       pnpm install -g gulp commitizen &&
