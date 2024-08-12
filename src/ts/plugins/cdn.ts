@@ -305,7 +305,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN = (packageSizeMap: Map<string, number>, cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
+export const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {

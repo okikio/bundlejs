@@ -203,9 +203,9 @@ export const start = async (port: MessagePort) => {
             ...define
           },
           plugins: [
-            ALIAS(config?.alias, origin, logger),
-            EXTERNAL(esbuildOpts?.external, origin, config?.polyfill),
-            HTTP(assets, origin, logger),
+            ALIAS(packageSizeMap, config?.alias, origin, logger),
+            EXTERNAL(packageSizeMap, esbuildOpts?.external, origin, config?.polyfill),
+            HTTP(packageSizeMap, assets, origin, logger),
             CDN(packageSizeMap, origin, config["package.json"], logger),
           ],
           outdir: "/"

@@ -143,7 +143,7 @@ export async function determineExtension(path: string, headersOnly: true | false
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
+export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = DEFAULT_CDN_HOST, logger = console.log) => {
     return async (args: OnResolveArgs): Promise<OnResolveResult> => {
         // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
         const argPath = args.path; //.replace(/\/$/, "/index");
@@ -171,7 +171,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
 
             // If the import is a bare import, use the CDN plugins resolution algorithm
             if (isBareImport(argPath)) {
-                return await CDN_RESOLVE(origin, logger)(args);
+                return await CDN_RESOLVE(packageSizeMap, origin, logger)(args);
             } else {
                 /** 
                  * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -220,7 +220,7 @@ export const HTTP_RESOLVE = (host = DEFAULT_CDN_HOST, logger = console.log) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const HTTP = (packageSizeMap = new Map<string, number>(), assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
     return {
         name: HTTP_NAMESPACE,
         setup(build) {
@@ -240,7 +240,7 @@ export const HTTP = (assets: OutputFile[] = [], host = DEFAULT_CDN_HOST, logger 
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, logger));
+            build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(packageSizeMap, host, logger));
 
             // When a URL is loaded, we want to actually download the content
             // from the internet. This has just enough logic to be able to

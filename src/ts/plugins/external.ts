@@ -87,7 +87,7 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyfill = false): Plugin => {
+export const EXTERNAL = (packageSizeMap = new Map<string, number>(), external: string[] = [], host = DEFAULT_CDN_HOST, polyfill = false): Plugin => {
     return {
         name: EXTERNALS_NAMESPACE,
         setup(build) {
@@ -103,7 +103,7 @@ export const EXTERNAL = (external: string[] = [], host = DEFAULT_CDN_HOST, polyf
                     if (polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
                         const pkgDetails = parsePackageName(argPath);
                         const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
-                        return CDN_RESOLVE(host)({
+                        return CDN_RESOLVE(packageSizeMap, host)({
                             ...args,
                             path: aliasPath
                         });

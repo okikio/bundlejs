@@ -35,7 +35,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log) => {
+export const ALIAS_RESOLVE = (packageSizeMap = new Map<string, number>(), aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log) => {
     return async (args: OnResolveArgs):  Promise<OnResolveResult> => {
         let path = args.path.replace(/^node\:/, "");
         let { path: argPath } = getCDNUrl(path);
@@ -43,7 +43,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = co
         if (isAlias(argPath, aliases)) {
             let pkgDetails = parsePackageName(argPath);
             let aliasPath = aliases[pkgDetails.name];
-            return HTTP_RESOLVE(host, logger)({
+            return HTTP_RESOLVE(packageSizeMap, host, logger)({
                 ...args,
                 path: aliasPath
             });
@@ -58,7 +58,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, logger = co
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
+export const ALIAS = (packageSizeMap = new Map<string, number>(), aliases = {}, host = DEFAULT_CDN_HOST, logger = console.log): Plugin => {
     return {
         name: ALIAS_NAMESPACE,
         setup(build) {
@@ -68,7 +68,7 @@ export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.lo
             // this plugin.
             build.onResolve({ filter: /^node\:.*/ }, (args) => {
                 if (isAlias(args.path, aliases)) 
-                    return ALIAS_RESOLVE(aliases, host, logger)(args);
+                    return ALIAS_RESOLVE(packageSizeMap, aliases, host, logger)(args);
 
                 return {
                     path: args.path,
@@ -82,8 +82,8 @@ export const ALIAS = (aliases = {}, host = DEFAULT_CDN_HOST, logger = console.lo
             // files will be in the "http-url" namespace. Make sure to keep
             // the newly resolved URL in the "http-url" namespace so imports
             // inside it will also be resolved as URLs recursively.
-            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, logger));
-            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, logger));
+            build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(packageSizeMap, aliases, host, logger));
+            build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(packageSizeMap, aliases, host, logger));
         },
     };
 };
