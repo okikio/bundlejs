@@ -12,7 +12,7 @@ import {
     streamList,
     parallelFn,
 } from "./util.js";
-import { createRequire } from "module";
+import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 // Origin folders (source and destination folders)
@@ -230,7 +230,8 @@ task("js", async () => {
             `${tsFolder}/*.js`,
             `!${tsFolder}/**/*.d.ts`,
             // `${tsFolder}/scripts/*`,
-            `node_modules/esbuild-wasm/esbuild.wasm`
+            `node_modules/esbuild-wasm/esbuild.wasm`,
+            `node_modules/@dprint/typescript/plugin.wasm`
         ],
         {
             opts: {
@@ -470,7 +471,7 @@ task("service-worker", async () => {
 
 // Other assets
 task("assets", () => {
-    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`, "node_modules/@dprint/typescript/plugin.wasm"], {
+    return stream([`${assetsFolder}/**/*`, `${tsFolder}/**/*.wasm`], {
         dest: destFolder,
     });
 });

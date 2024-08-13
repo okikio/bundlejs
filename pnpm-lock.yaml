@@ -18,7 +18,7 @@ importers:
         specifier: ^0.91.6
         version: 0.91.6
       '@okikio/animate':
-        specifier: beta
+        specifier: ^2.4.0
         version: 2.4.0
       '@okikio/emitter':
         specifier: ^2.1.7

@@ -80,8 +80,7 @@ const getFormatter = async () => {
     let formatter: Awaited<ReturnType<typeof createFromBuffer>>;
     try {
         if (formatter) return;
-        // const url = new URL("/plugin.wasm", globalThis.location.toString()).toString();
-        const url = new URL("https://plugins.dprint.dev/typescript-0.91.6.wasm").toString();
+        const url = new URL("/js/plugin.wasm", globalThis.location.toString()).toString();
         console.log({ dprintWasmUrl: url })
 
         const response = getRequest(url);

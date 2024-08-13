@@ -55,7 +55,7 @@
         "@amoutonbrady/lz-string": "^0.1.0",
         "@dprint/formatter": "^0.4.1",
         "@dprint/typescript": "^0.91.6",
-        "@okikio/animate": "beta",
+        "@okikio/animate": "^2.4.0",
         "@okikio/emitter": "^2.1.7",
         "@okikio/native": "^3.0.1",
         "@okikio/sharedworker": "^1.0.7",
