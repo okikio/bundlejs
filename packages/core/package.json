@@ -85,16 +85,18 @@
   "dependencies": {
     "@bundle/compress": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "esbuild": "^0.21.5",
-    "esbuild-wasm": "^0.21.5"
+    "@libs/reactive": "npm:@jsr/libs__reactive@^1.0.11",
+    "@logtape/logtape": "^0.4.2",
+    "esbuild": "^0.23.0",
+    "esbuild-wasm": "^0.23.0"
   },
   "peerDependencies": {
     "@bundle/compress": "^",
     "@bundle/utils": "^"
   },
   "devDependencies": {
-    "tsup": "^8.1.0",
-    "tsx": "^4.15.9",
-    "vitest": "^1.6.0"
+    "tsup": "^8.2.4",
+    "tsx": "^4.17.0",
+    "vitest": "^2.0.5"
   }
 }
