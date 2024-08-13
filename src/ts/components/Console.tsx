@@ -13,7 +13,8 @@ export type TypeLog = {
 
 export const [MAX_LOGS, SET_MAX_LOGS] = createSignal(250);
 export const [getLogs, setLogs] = createSignal<TypeLog[]>([]);
-export const addLogs = (logs: TypeLog[] = []) => { 
+export const addLogs = (logs: TypeLog[] = []) => {
+  logs = logs.filter(x => x);
   accLength += logs.length;
 
   let newLogs = [...getLogs(), ...logs];

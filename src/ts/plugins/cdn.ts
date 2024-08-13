@@ -268,13 +268,18 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             peerDeps[parsed.name] = version.length > 0 ? version.slice(1) : (deps?.[parsed.name] ?? "latest");
 
             if (!packageSizeMap.get(`${parsed.name}${version}`)) {
-                const packageJson = await getPackageOfVersion(`${parsed.name}${version}`);
-                const unpackedSize = ( packageJson)?.dist?.unpackedSize as number;
-                packageSizeMap.set(`${parsed.name}${version}`, unpackedSize);
-                console.log({
-                    packageJson,
-                    unpackedSize
-                })
+                try {
+                    const packageJson = await getPackageOfVersion(`${parsed.name}${version}`);
+                    const unpackedSize = ( packageJson)?.dist?.unpackedSize as number;
+                    if (typeof unpackedSize === "number") 
+                        packageSizeMap.set(`${parsed.name}${version}`, unpackedSize);
+                    console.log({
+                        packageJson,
+                        unpackedSize
+                    })
+                } catch (e) {
+                    console.warn(e);
+                }
             }
 
             // Just in case the peerDependency is legitimately set from the package.json ignore the 
