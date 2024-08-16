@@ -423,8 +423,8 @@ export const build = async (app: App) => {
       shareUrl.pathname = "/badge";
       addLogs([
         { title: bundleTime, type: "info" },
-        packageSizeArr.length ? { title: `Package publish size:<br><span style="color:initial">${packageInstallSizeLogMessage.join("<br>")}</span><br>Total publish size: <span style="color:initial">${totalInstallSize}</span>`, type: "info" } : null,
-        { title: `Bundle size is <span style="color:initial">${initialSize}</span> -> <span style="color:initial">${size}</span>`, type: "info" },
+        packageSizeArr.length ? { title: `Package publish size:<br><span class="text-black dark:text-white">${packageInstallSizeLogMessage.join("<br>")}</span><br>Total publish size: <span class="text-black dark:text-white">${totalInstallSize}</span>`, type: "info" } : null,
+        { title: `Bundle size is <span class="text-black dark:text-white">${initialSize}</span> -> <span class="text-black dark:text-white">${size}</span>`, type: "info" },
         { title: `Badge `, type: "info", badge: shareUrl.href }
       ]);
       fileSizeEl.forEach(el => (el.textContent = `` + size));

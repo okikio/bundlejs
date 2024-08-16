@@ -2,7 +2,8 @@ module.exports = {
   darkMode: 'class',
   content: [
     './src/pug/**/*.pug',
-    './src/ts/**/*.tsx'
+    './src/ts/**/*.tsx',
+    './src/ts/**/*.ts'
   ],
   mode: "jit",
   theme: {
