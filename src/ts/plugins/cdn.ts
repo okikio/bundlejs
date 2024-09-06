@@ -145,6 +145,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
 
                     const pkgVariants = [
                         { path: getRegistryURL(`${parsed.name}@${parsed.version}`).packageVersionURL },
+                        { path: `${parsed.name}@${parsed.version}/package.json` },
                         isDir ? {
                             path: `${parsed.name}@${parsed.version}${subpath}/package.json`,
                             isDir: true
@@ -157,6 +158,12 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                         const pkgMetadata = pkgVariants[i]!;
                         const { url } = getCDNUrl(pkgMetadata.path, origin);
                         const { href } = url;
+
+
+                        console.log({
+                            href
+                        })
+
 
                         try {
                             if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
