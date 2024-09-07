@@ -23,18 +23,6 @@ module.exports = __toCommonJS(typedoc_exports);
 var import_typedoc = require("typedoc");
 function load(app) {
   app.options.addDeclaration({
-    name: "umami-id",
-    help: "The id you receive from umami analytics.",
-    type: import_typedoc.ParameterType.String,
-    defaultValue: ""
-  });
-  app.options.addDeclaration({
-    name: "umami-src",
-    help: "The website source for umami analytics.",
-    type: import_typedoc.ParameterType.String,
-    defaultValue: "/media/measure.js"
-  });
-  app.options.addDeclaration({
     name: "keywords",
     type: import_typedoc.ParameterType.Array,
     help: "Website keywords",
@@ -49,8 +37,6 @@ function load(app) {
   });
   app.renderer.hooks.on("head.begin", (ctx) => {
     const keywords = ctx.options.getValue("keywords");
-    const id = ctx.options.getValue("umami-id");
-    const src = ctx.options.getValue("umami-src");
     return /* @__PURE__ */ import_typedoc.JSX.createElement(import_typedoc.JSX.Fragment, null, /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
       name: "keyword",
       content: keywords.join(", ")
@@ -91,14 +77,6 @@ function load(app) {
     }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
       rel: "pingback",
       href: "https://webmention.io/webmention?forward=https://spring-easing.okikio.dev/endpoint"
-    }), ctx.options.isSet("umami-id") && /* @__PURE__ */ import_typedoc.JSX.createElement("script", {
-      async: true,
-      defer: true,
-      type: "module",
-      "data-host-url": "https://bundlejs.com",
-      "data-domains": "spring-easing.okikio.dev,okikio.dev",
-      "data-website-id": id,
-      src
     }));
   });
 }

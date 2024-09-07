@@ -8,9 +8,7 @@ import { encodeBase64 } from "@std/encoding/base64";
 import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundle/core/src/index.ts";
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
-import styleText from "./style.ts";
-
-import { trackEvent } from "./measure.ts";
+import styleText from "./style.ts";;
 
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
   style: "narrow",
@@ -120,18 +118,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     const minifiedBadge = /minify|minified/.exec(badgeResult ?? "");
     const detailedBadge = /detail/.exec(badgeResult ?? "");
 
-    trackEvent(event_key + "badge", {
-      type: "badge-query",
-      badgeKey,
-      badgeID,
-      queries,
-      uncompressedBadge,
-      minifiedBadge,
-      detailedBadge,
-      size,
-      noCache
-    }, url.href)
-
     const urlQuery = encodeURIComponent(`https://bundlejs.com/${url.search}`);
     const detailBadgeText = sanitizeShieldsIO(
       detailedBadge ? `${size.uncompressedSize} -> ` : ""
@@ -193,12 +179,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       throw new Error("Whoops we can't quite find the file you're looking for, please create an issue on https://github.com/okikio/bundlejs.")
     }
 
-    trackEvent(event_key + "file", {
-      type: "file-query",
-      queries,
-      usingGists: false,
-      noCache
-    }, url.href)
     return new Response(fileResult, {
       status: 200,
       headers: [
@@ -213,11 +193,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
     const { analyzeMetafile } = await getEsbuild();
     const verboseAnlysis = analysisResult === "verbose";
 
-    trackEvent(event_key + "analysis", {
-      type: "analysis-query",
-      queries,
-      verboseAnlysis
-    }, url.href)
     return new Response(
       generateHTMLMessages([
         ansi(
@@ -241,12 +216,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
   }
 
   if (metafileQuery && value.metafile) {
-    trackEvent(event_key + "metafile", {
-      type: "metafile-query",
-      queries,
-      noCache
-    }, url.href)
-
     return new Response(JSON.stringify(value.metafile), {
       status: 200,
       headers: [
@@ -258,13 +227,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
   }
 
   if (warningsQuery) {
-    trackEvent(event_key + "warnings", {
-      type: "warnings-query",
-      queries,
-      noCache,
-      numOfWarnings: value.warnings?.length ?? 0
-    }, url.href)
-
     return new Response(generateHTMLMessages(value.warnings ?? ["No warnings for this bundle"]),
       {
         status: 200,
@@ -278,12 +240,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
   }
 
   if (rawQuery) {
-    trackEvent(event_key + "raw", {
-      type: "raw-query",
-      queries,
-      noCache,
-    }, url.href)
-
     return new Response(JSON.stringify(value), {
       status: 200,
       headers: [
@@ -302,15 +258,6 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       rawTime: duration
     } : null
   );
-
-  trackEvent(event_key + "only-json", {
-    type: "json-only-query",
-    queries,
-    noCache,
-    addDocs,
-    time: finalResult.time,
-    rawTime: finalResult.rawTime
-  }, url.href)
   
   return new Response(JSON.stringify(finalResult), {
     status: 200,

@@ -1,5 +1,5 @@
 {
-  "name": "@bundle/code",
+  "name": "@bundle/core",
   "exports": { 
     ".": "./src/index.ts",
     "./src/wasm.ts": "./src/wasm.ts",

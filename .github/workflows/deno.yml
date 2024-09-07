@@ -29,6 +29,6 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "bundlejs"
+          project: "66040930-9863-498e-b6f0-0657e47d6631"
           entrypoint: "packages/edge/mod.ts"
           root: "."

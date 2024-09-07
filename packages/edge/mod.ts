@@ -24,7 +24,6 @@ import { generateHTMLMessages, generateResult } from "./generate-result.ts";
 
 import { bundle, inputModelResetValue } from "./bundle.ts";
 import { deleteFile, deleteFile as deleteGist, listFiles } from "./gist.ts";
-import { trackEvent, trackView } from "./measure.ts";
 
 export const headers = Object.entries({
   "Access-Control-Allow-Origin": "*",
@@ -81,11 +80,8 @@ export default {
         })
       }
 
-      trackView(url.href, referer ?? "");
-
       const docsQuery = url.searchParams.has("docs");
       if (docsQuery) {
-        trackEvent("redirect_to_docs", { type: "docs" }, url.href)
         return Response.redirect("https://blog.okikio.dev/documenting-an-online-bundler-bundlejs#heading-configuration");
       }
 
@@ -99,14 +95,7 @@ export default {
         console.warn(e)
       }
 
-      if (redis === null || redis === undefined) {
-        trackEvent("redis-unavailable", {
-          type: "redis-unavailable"
-        }, url.href)
-      }
-
       if (url.pathname === "/clear-all-cache-123") {
-        trackEvent("clear-cache", { type: "clear-cache" }, url.href);
         const clearGists = url.searchParams.has("gist") || url.searchParams.has("gists");
 
         if (clearGists) {
@@ -325,12 +314,6 @@ export default {
         if (!redis) throw new Error("Redis not available");
 
         if (url.pathname === "/delete-cache") {
-          trackEvent("delete-cache", {
-            type: "delete-cache",
-            badgeKey,
-            jsonKey
-          }, url.href)
-
           try {
             console.log(`Deleting ${badgeKey}\n`)
             const JSONResultString = await redis.get<string>(jsonKey);
@@ -361,15 +344,6 @@ export default {
             return new Response("Deleted from cache!");
           } catch (e) {
             console.warn(e);
-            trackEvent("error-deleting-cache", {
-              type: "error-deleting-cache",
-              jsonKeyObj,
-              badgeIDObj,
-              badgeID,
-              badge: badgeQuery,
-              badgeKey,
-              jsonKey
-            }, url.href)
             return new Response("Error, deleting from cache");
           }
         }
@@ -381,13 +355,6 @@ export default {
 
           if (badgeQuery && BADGEResult && JSONResult) {
             dispatchEvent(LOGGER_INFO, { badgeResult, badgeQuery, badgeStyle, badgeRasterQuery })
-            trackEvent("use-cached-badge", {
-              type: "use-cached-badge",
-              jsonKeyObj,
-              badgeIDObj,
-              badgeID,
-              badge: badgeQuery,
-            }, url.href)
 
             console.log("Respond with Cached Badge")
             return new Response(badgeRasterQuery ? decodeBase64(BADGEResult) : BADGEResult, {
@@ -407,11 +374,6 @@ export default {
           const fileCheck = url.searchParams.has("file") || url.pathname === "/file";
           const fileQuery = fileCheck ? JSONResult?.fileId : true;
           if (JSONResult && fileQuery) {
-            trackEvent("generate-from-cache-json", {
-              type: "generate-from-cache-json",
-              jsonKeyObj
-            }, url.href)
-
             console.log("Respond with Cached JSON Response")
             return await generateResult([badgeKey, badgeID], [JSONResult, undefined], url, true, Date.now() - start, redis);
           } else if (modules.length === 1 && exportAll && !mutationQueries) {
@@ -421,12 +383,6 @@ export default {
               const PackageResult = PackageResultString ? JSON5.parse<BundleResult>(PackageResultString) : null;
               const fileQuery = fileCheck ? PackageResult?.fileId : true;
               if (PackageResult && fileQuery) {
-                trackEvent("generate-from-package-cache-json", {
-                  type: "generate-from-package-cache-json",
-                  packageResultKey: getPackageResultKey(moduleName),
-                  jsonKeyObj
-                }, url.href)
-
                 console.log("Respond with Module Response from Permanent Cache", getPackageResultKey(moduleName))
                 return await generateResult([badgeKey, badgeID], [PackageResult, undefined], url, true, Date.now() - start, redis);
               }
@@ -434,26 +390,15 @@ export default {
           }
         }
       } catch (e) {
-        trackEvent("error-using-cache", {
-          type: "error-using-cache",
-          jsonKey,
-          jsonKeyObj,
-          badgeKey,
-          badgeIDObj,
-          badgeID,
-          badge: badgeQuery,
-        }, url.href)
         console.warn('error-using-cache: ', e)
       }
 
       const start = Date.now();
       if (!WASM_MODULE) {
         WASM_MODULE = await ESBUILD_WASM();
-        trackEvent("flushed-wasm", { type: "flushed-wasm-source", }, url.href)
       }
       if (!wasmModule) {
         wasmModule = new WebAssembly.Module(WASM_MODULE);
-        trackEvent("flushed-wasm", { type: "flushed-wasm-module", }, url.href)
       }
 
       const [response, resultText] = await bundle(url, initialValue, configObj, versions, modules, query);
@@ -496,11 +441,6 @@ export default {
       console.log("Respond with New Bundle Result")
       return await generateResult([badgeKey, badgeID], [value, resultText], url, false, Date.now() - start, redis);
     } catch (e) {
-      trackEvent("full-error", {
-        type: "full-error",
-        message: e.toString()
-      })
-
       if ("msgs" in e && e.msgs) {
         try {
           return new Response(

@@ -4,10 +4,23 @@
   "tasks": {
     "dev": "deno serve -A --watch mod.ts"
   },
-  "deploy": {
-    "project": "bundlejs",
-    "exclude": ["node_modules"],
-    "include": [],
-    "entrypoint": "mod.ts"
+  "imports": {
+    "@bundle/core/": "../core/",
+    "@bundle/core": "../core/src/index.ts",
+
+    "@okikio/emitter": "npm:@okikio/emitter",
+    "esbuild-wasm/esm/browser.d.ts": "npm:esbuild-wasm/esm/browser.d.ts",
+    "esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
+    "esbuild-wasm": "npm:esbuild-wasm",
+    "esbuild": "https://deno.land/x/esbuild/wasm.js",
+    "resolve.exports": "npm:resolve.exports",
+    "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
+    "@octokit/core": "npm:@octokit/core",
+    "@octokit/rest": "npm:@octokit/rest",
+    "@octokit/plugin-throttling": "npm:@octokit/plugin-throttling",
+    "@upstash/redis": "npm:@upstash/redis",
+    "@std/path": "jsr:@std/path",
+    "@std/encoding": "jsr:@std/encoding",
+    "@std/media-types": "jsr:@std/media-types"
   }
 }

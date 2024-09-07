@@ -5,7 +5,7 @@
     "**/@types/*.d.ts"
   ],
   "entryPoints": ["../packages/core/src/index.ts"],
-  "name": "@bundlejs",
+  "name": "@bundle",
   "out": "docs",
   "media": "media",
   "theme": "default",

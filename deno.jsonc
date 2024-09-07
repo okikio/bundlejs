@@ -21,5 +21,13 @@
     "@std/path": "jsr:@std/path",
     "@std/encoding": "jsr:@std/encoding",
     "@std/media-types": "jsr:@std/media-types"
+  },
+  "deploy": {
+    "project": "66040930-9863-498e-b6f0-0657e47d6631",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "packages/edge/mod.ts"
   }
 }
