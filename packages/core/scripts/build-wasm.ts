@@ -17,7 +17,7 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
   const value = await src;
 
   if (typeof value === "string") console.log(`\n- Source file: ${value}`);
-  const res = typeof value === "string" ? await fs.readFile(value) : value;
+  const res = typeof value === "string" ? await fs.readFile(join(import.meta.dirname!, "..", value)) : value;
   const wasm = new Uint8Array(res);
   console.log(`- Read WASM (size: ${bytes(wasm.length)} bytes)`);
 
