@@ -12,9 +12,13 @@ export const DEFAULT_CDN_HOST = "https://unpkg.com";
  * - `other` - CDNs that haven't been added to the list
  */
 export const getCDNStyle = (urlStr: string) => {
+  // esm|esm\.sh|
+  // (cdn\.)?esm\.sh|
+  // skypack|
+  // cdn\.skypack\.dev|
   if (
-    /^(skypack|esm|esm\.sh|unpkg|jsdelivr|esm\.run)\:?/.test(urlStr) ||
-    /^https?:\/\/(cdn\.skypack\.dev|cdn\.esm\.sh|cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(urlStr)
+    /^(unpkg|jsdelivr|esm\.run)\:?/.test(urlStr) ||
+    /^(https?:\/\/)?(cdn\.jsdelivr\.net\/npm|unpkg\.com)/.test(urlStr)
   ) return "npm";
 
   else if (

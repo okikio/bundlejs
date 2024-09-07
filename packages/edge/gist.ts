@@ -5,7 +5,7 @@ import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 
 import { Velo } from "velo";
-import { ESBUILD } from "@bundlejs/core/src/types.ts";
+import { ESBUILD } from "@bundle/core/src/types.ts";
 
 import { encodeBase64 } from "@std/encoding/base64";
 import { extname } from "@std/path";

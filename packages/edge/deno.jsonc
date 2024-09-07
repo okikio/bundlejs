@@ -1,27 +1,8 @@
 {
-  "imports": {
-    "@bundlejs/core/": "../core/",
-    "@bundlejs/core": "../core/src/index.ts",
-
-    "esbuild-wasm/esm/browser.d.ts": "npm:esbuild-wasm/esm/browser.d.ts",
-    "esbuild-wasm": "npm:esbuild-wasm",
-    "esbuild": "https://deno.land/x/esbuild/wasm.js",
-
-    "resolve.exports": "npm:resolve.exports",
-
-    "@octokit/core": "npm:@octokit/core",
-    "@octokit/rest": "npm:@octokit/rest",
-    "@octokit/plugin-throttling": "npm:@octokit/plugin-throttling",
-
-    "velo": "https://deno.land/x/velo@1.0.0/mod.ts",
-
-    "@upstash/redis": "npm:@upstash/redis",
-    "@std/path": "jsr:@std/path",
-    "@std/encoding": "jsr:@std/encoding",
-    "@std/media-types": "jsr:@std/media-types"
-  },
+  "name": "@bundle/edge",
+  "exports": "./mod.ts",
   "tasks": {
-    "dev": "deno run -A --watch mod.ts"
+    "dev": "deno serve -A --watch mod.ts"
   },
   "deploy": {
     "project": "bundlejs",

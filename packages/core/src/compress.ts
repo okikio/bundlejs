@@ -122,7 +122,7 @@ export async function compress(inputs: Uint8Array[] | string[] = [], opts: Compr
     uncompressedSize,
     rawUncompressedSize,
     rawCompressedSize,
-    compressedSize
+    compressedSize,
   })
   
   return {

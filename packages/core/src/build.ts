@@ -16,6 +16,8 @@ import { createNotice } from "./utils/create-notice.ts";
 import { DEFAULT_CDN_HOST } from "./utils/util-cdn.ts";
 import { init } from "./init.ts";
 
+import { bytes } from "./utils/pretty-bytes.ts";
+
 import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, LOGGER_WARN, dispatchEvent } from "./configs/events.ts";
 
 /**
@@ -29,6 +31,8 @@ export type LocalState = {
    * e.g. fetching web workers using the `new URL("...", import.meta.url)`
    */
   assets?: ESBUILD.OutputFile[],
+
+  packageSizeMap?: Map<string, number>,
 
   /**
    * Versions
@@ -122,6 +126,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     filesystem: await filesystem, 
     assets: [], 
     GLOBAL: [getState, setState],
+    packageSizeMap: new Map(),
   });
   const [get] = STATE;
 
@@ -218,6 +223,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     // FileSystem.clear();
     // delete
     // console.log({ contentsLen: contents.length })
+    const packageSizeMap = get()?.packageSizeMap ?? new Map<string, number>();
 
     return {
       /** 
@@ -229,6 +235,9 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
        * The output and asset files with `.map` sourcemap files 
        */
       outputs,
+
+      packageSizeArr: Array.from(packageSizeMap, ([key, value]) => [key, bytes(value)]),
+      totalInstallSize: bytes(Array.from(packageSizeMap).reduce((acc, [_, value]) => acc + value, 0)),
 
       ...result
     };

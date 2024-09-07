@@ -151,7 +151,7 @@ export async function determineExtension(path: string, headersOnly: true | false
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) {
+export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, packageSizeMap = new Map<string, number>()) {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path; //.replace(/\/$/, "/index");
@@ -179,7 +179,7 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return await CDN_RESOLVE(origin, rootPkg)(args);
+        return await CDN_RESOLVE(origin, rootPkg, packageSizeMap)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -236,6 +236,9 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
   const [get, set] = state;
   const assets = get()["assets"] ?? [];
   const FileSystem = get().filesystem; 
+  
+  const packageSizeMap = get()?.packageSizeMap ?? new Map<string, number>();
+  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS as Set<string>;
 
   return {
     name: HTTP_NAMESPACE,
@@ -256,7 +259,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, pkgJSON));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, pkgJSON, packageSizeMap));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to
@@ -266,7 +269,7 @@ export function HTTP (state: StateArray<LocalState>, config: BuildConfig): ESBUI
         // Some typescript files don't have file extensions but you can't fetch a file without their file extension
         // so bundle tries to solve for that
         let content: Uint8Array | undefined, url: string;
-        let contentType: string | null;
+        let contentType: string | null = null;
         ({ content, contentType, url } = await determineExtension(args.path, false));
 
         // Create a virtual file system for storing node modules

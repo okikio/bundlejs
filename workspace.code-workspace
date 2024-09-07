@@ -5,11 +5,11 @@
       "path": "."
     },
     {
-      "name": "📦 @bundlejs/core",
+      "name": "📦 @bundle/core",
       "path": "packages/core"
     },
     {
-      "name": "📦 @bundlejs/edge",
+      "name": "📦 @bundle/edge",
       "path": "packages/edge"
     }
   ],

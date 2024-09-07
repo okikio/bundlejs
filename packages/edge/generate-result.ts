@@ -1,11 +1,11 @@
 // @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import type { Redis } from "@upstash/redis";
-import type { CompressionType } from "@bundlejs/core/src/compress.ts";
+import type { CompressionType } from "@bundle/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
 
 import { encodeBase64 } from "@std/encoding/base64";
 
-import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundlejs/core/src/index.ts";
+import { LOGGER_INFO, dispatchEvent, getEsbuild, ansi } from "@bundle/core/src/index.ts";
 import { getFile } from "./gist.ts";
 import { headers } from "./mod.ts";
 import styleText from "./style.ts";

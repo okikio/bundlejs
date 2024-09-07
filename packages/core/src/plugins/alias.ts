@@ -38,7 +38,7 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, FAILED_EXTENSION_CHECKS?: Set<string>) => {
+export const ALIAS_RESOLVE = (aliases: Record<PropertyKey, string> = {}, host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, packageSizeMap = new Map<string, number>(), FAILED_EXTENSION_CHECKS?: Set<string>) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult> => {
     const path = args.path.replace(/^node\:/, "");
     const { path: argPath } = getCDNUrl(path);
@@ -46,7 +46,7 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, rootPkg: Pa
     if (isAlias(argPath, aliases)) {
       const pkgDetails = parsePackageName(argPath);
       const aliasPath = aliases[pkgDetails.name];
-      return HTTP_RESOLVE(host, rootPkg)({
+      return await HTTP_RESOLVE(host, rootPkg, packageSizeMap)({
         ...args,
         path: aliasPath
       });
@@ -63,12 +63,13 @@ export const ALIAS_RESOLVE = (aliases = {}, host = DEFAULT_CDN_HOST, rootPkg: Pa
  */
 export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin => {
   // Convert CDN values to URL origins
-  const { origin: host } = !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn);
+  const { origin: host } = !/:/.test(config?.cdn!) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const pkgJSON = config["package.json"];
   const aliases = config.alias ?? {};
   const [get] = state;
 
-  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS;
+  const packageSizeMap = get()?.packageSizeMap ?? new Map<string, number>();
+  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS as Set<string>;
   return {
     name: ALIAS_NAMESPACE,
     setup(build) {
@@ -78,7 +79,7 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host, pkgJSON)(args);
+          return ALIAS_RESOLVE(aliases, host, pkgJSON, packageSizeMap)(args);
 
         if (!config.polyfill) {
           return {
@@ -94,8 +95,8 @@ export const ALIAS = (state: StateArray<LocalState>, config: BuildConfig): ESBUI
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, pkgJSON, FAILED_EXTENSION_CHECKS));
-      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, pkgJSON, FAILED_EXTENSION_CHECKS));
+      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, pkgJSON, packageSizeMap, FAILED_EXTENSION_CHECKS));
+      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, pkgJSON, packageSizeMap, FAILED_EXTENSION_CHECKS));
     },
   };
 };

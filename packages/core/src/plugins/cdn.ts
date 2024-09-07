@@ -5,14 +5,14 @@ import type { ESBUILD } from "../types.ts";
 import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
-import { resolve, legacy } from "resolve.exports";
 import { parsePackageName } from "../utils/parse-package-name.ts";
+import { resolve, legacy } from "resolve.exports";
 
-import { extname, isBareImport } from "../utils/path.ts";
+import { extname, isBareImport, join } from "../utils/path.ts";
 import { getRequest } from "../utils/fetch-and-cache.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/util-cdn.ts";
-import { deepAssign } from "../util.ts";
+import { deepAssign, getPackageOfVersion, getRegistryURL } from "../util.ts";
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = "cdn-url";
@@ -85,36 +85,55 @@ export type PackageJson = {
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) => {
+export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, packageSizeMap = new Map<string, number>()) => {
   return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
+    const { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+    const oldPkg: PackageJson = deepAssign({ ...rootPkg },
+      excludeSideEffects,
+      rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
+      rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
+      rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
+    );
+    let pkg = structuredClone(oldPkg);
+
+    // Are there any dependecies???? Well Goood.
+    const _deps = Object.assign(
+      {},
+      pkg.devDependencies,
+      pkg.peerDependencies,
+      pkg.dependencies
+    );
+    const keys = Object.keys(_deps);
+
+    let argPath = args.path;
+    if (/^#/.test(argPath)) {
+      try {
+        // Resolving imports & exports from the package.json
+        // If an import starts with "#" then it's a subpath-import, and should be treated as so
+        const modernResolve = (
+          resolve(pkg, argPath, { browser: true, conditions: ["module"] }) ||
+          resolve(pkg, argPath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+          resolve(pkg, argPath, { require: true })
+        );
+
+        if (modernResolve) {
+          const resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
+          argPath = join(pkg.name + "@" + pkg.version, resolvedPath);
+        }
+        // deno-lint-ignore no-empty
+      } catch (_) { }
+    }
+
     if (isBareImport(args.path)) {
       // Support a different default CDN + allow for custom CDN url schemes
-      const { path: argPath, origin } = getCDNUrl(args.path, cdn);
+      const { path: _argPath, origin } = getCDNUrl(argPath, cdn);
 
       // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
       const NPM_CDN = getCDNStyle(origin) === "npm";
 
       // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-      const parsed = parsePackageName(argPath);
-      let subpath = parsed.path;
-
-      let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-      let oldPkg: PackageJson = deepAssign({ ...rootPkg }, 
-        excludeSideEffects,
-        rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
-        rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
-        rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
-      );
-      let pkg = structuredClone(oldPkg);
-
-      // Are there any dependecies???? Well Goood.
-      const _deps = Object.assign(
-        {},
-        pkg.devDependencies,
-        pkg.peerDependencies,
-        pkg.dependencies
-      );
-      const keys = Object.keys(_deps);
+      const parsed = parsePackageName(_argPath);
+      const subpath = parsed.path;
 
       if (keys.includes(parsed.name)) {
         parsed.version = _deps[parsed.name];
@@ -130,22 +149,23 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
           const dir = isDir ? subpath : "";
 
           const pkgVariants = [
-            isDir ? { 
-              path: `${parsed.name}@${parsed.version}${subpath}/package.json`, 
+            { path: getRegistryURL(`${parsed.name}@${parsed.version}`).packageVersionURL },
+            { path: `${parsed.name}@${parsed.version}/package.json` },
+            isDir ? {
+              path: `${parsed.name}@${parsed.version}${subpath}/package.json`,
               isDir: true
             } : null,
-            { path: `${parsed.name}@${parsed.version}/package.json` }
           ].filter(x => x !== null);
 
           let isDirPkgJSON = false;
           const pkgVariantsLen = pkgVariants.length;
-          for (let i = 0; i < pkgVariantsLen; i ++) {
+          for (let i = 0; i < pkgVariantsLen; i++) {
             const pkgMetadata = pkgVariants[i]!;
             const { url } = getCDNUrl(pkgMetadata.path, origin);
             const { href } = url;
 
             try {
-              if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) { 
+              if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
                 continue;
               }
 
@@ -161,7 +181,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
               // If after checking all the different file extensions none of them are valid
               // Throw the first fetch error encountered, as that is generally the most accurate error
-              if (i >= pkgVariantsLen - 1) 
+              if (i >= pkgVariantsLen - 1)
                 throw e;
             }
           }
@@ -176,15 +196,18 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
           try {
             // Resolving imports & exports from the package.json
             // If an import starts with "#" then it's a subpath-import, and should be treated as so
-            modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
-              resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) || 
-              resolve(pkg, relativePath, { require: true });
+            modernResolve = (
+              resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
+              resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+              resolve(pkg, relativePath, { require: true })
+            );
 
             if (modernResolve) {
               resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
             }
-          // deno-lint-ignore no-empty
-          } catch (e) { }
+
+            // deno-lint-ignore no-empty
+          } catch (_) { }
 
           if (!modernResolve) {
             // If the subpath has a package.json, and the modern resolve didn't work for it
@@ -194,8 +217,10 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             if (isDirPkgJSON) {
               try {
                 // Resolving using main, module, etc... from package.json
-                legacyResolve = legacy(pkg, { browser: true }) ||
-                  legacy(pkg, { fields: ["unpkg", "bin"] });
+                legacyResolve = (
+                  legacy(pkg, { browser: true }) ||
+                  legacy(pkg, { fields: ["unpkg", "bin"] })
+                );
 
                 if (legacyResolve) {
                   // Some packages have `browser` fields in their package.json which have some values set to false
@@ -222,7 +247,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
                     resolvedPath = legacyResolve;
                   }
                 }
-              } catch (e) { }
+                // deno-lint-ignore no-empty
+              } catch (_) { }
             } else resolvedPath = relativePath;
           }
 
@@ -234,7 +260,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             finalSubpath = `${dir}${finalSubpath}`;
           }
         } catch (e) {
-          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
+          dispatchEvent(LOGGER_WARN, `You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${_argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`);
           dispatchEvent(LOGGER_WARN, e);
         }
       }
@@ -252,15 +278,30 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       // so we create a new field in peerDependencies and place the current package and it's version,
       // the algorithm should then be able to use the correct version if a dependency is cyclic
       peerDeps[parsed.name] = version.length > 0 ? version.slice(1) : (deps?.[parsed.name] ?? "latest");
+
+      // Just in case the peerDependency is legitimately set from the package.json ignore the 
+      // cyclic deps. rules, as they just make things more complicated
       for (const depKey of peerDepsKeys) {
         peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
       }
-      
+
+      if (!packageSizeMap.get(`${parsed.name}${version}`)) {
+        try {
+          const packageJson = await getPackageOfVersion(`${parsed.name}${version}`);
+          const unpackedSize: number = packageJson?.dist?.unpackedSize;
+          if (typeof unpackedSize === "number") {
+            packageSizeMap.set(`${parsed.name}${version}`, unpackedSize);
+          }
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
       return {
         namespace: HTTP_NAMESPACE,
         path: (await determineExtension(url.toString())).url,
         sideEffects: typeof pkg.sideEffects === "boolean" ? pkg.sideEffects : undefined,
-        pluginData: { 
+        pluginData: {
           pkg: {
             ...pkg,
             peerDependencies: peerDeps
@@ -281,14 +322,16 @@ export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD
   // Convert CDN values to URL origins
   const { origin: cdn } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
   const [get] = state;
-  const pkgJSON = config["package.json"]
+
+  const pkgJSON = config["package.json"];
+  const packageSizeMap = get()?.packageSizeMap ?? new Map<string, number>();
 
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, pkgJSON));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, pkgJSON));
+      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, pkgJSON, packageSizeMap));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, pkgJSON, packageSizeMap));
     },
   };
 }

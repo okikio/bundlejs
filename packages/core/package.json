@@ -1,5 +1,5 @@
 {
-  "name": "@bundlejs/core",
+  "name": "@bundle/core",
   "version": "0.0.0",
   "access": "public",
   "type": "module",
@@ -76,17 +76,17 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.21.5",
-    "esbuild-wasm": "^0.21.5",
+    "esbuild": "^0.23.1",
+    "esbuild-wasm": "^0.23.1",
     "resolve.exports": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^22.5.4",
     "del-cli": "^5.1.0",
-    "tsx": "^4.15.4",
-    "typescript": "5.4.5",
-    "vite": "^5.2.13",
+    "tsx": "^4.19.0",
+    "typescript": "5.5.4",
+    "vite": "^5.4.3",
     "vite-plugin-cp": "^4.0.8",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.5"
   }
 }

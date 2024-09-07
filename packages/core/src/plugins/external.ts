@@ -96,6 +96,8 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
   const pkgJSON = config["package.json"];
   const [get] = state;
 
+  const packageSizeMap = get()?.packageSizeMap ?? new Map<string, number>();
+
   return {
     name: EXTERNALS_NAMESPACE,
     setup(build) {
@@ -105,13 +107,13 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
       // this plugin.
       build.onResolve({ filter: /.*/ }, (args) => {
         const path = args.path.replace(/^node\:/, "");
-        const { path: argPath } = getCDNUrl(path);
+        const { path: argPath } = getCDNUrl(path, host);
 
         if (isExternal(argPath, external)) {
           if (config.polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
             const pkgDetails = parsePackageName(argPath);
             const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
-            return CDN_RESOLVE(host, pkgJSON)({
+            return CDN_RESOLVE(host, pkgJSON, packageSizeMap)({
               ...args,
               path: aliasPath
             });

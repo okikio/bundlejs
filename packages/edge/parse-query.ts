@@ -1,5 +1,5 @@
-import { deepAssign, lzstring, parsePackageName } from "@bundlejs/core";
-import { basename, extname } from "@bundlejs/core/src/utils/path.ts";
+import { deepAssign, lzstring, parsePackageName } from "@bundle/core/src/index.ts";
+import { basename, extname } from "@bundle/core/src/utils/path.ts";
 import JSON5 from "./vendor/json5.ts";
 
 const { decompressFromURL } = lzstring;

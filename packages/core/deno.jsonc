@@ -1,0 +1,48 @@
+{
+  "name": "@bundle/code",
+  "exports": { 
+    ".": "./src/index.ts",
+    "./src/wasm.ts": "./src/wasm.ts",
+    "./src/util.ts": "./src/util.ts",
+    "./src/types.ts": "./src/types.ts",
+    "./src/transform.ts": "./src/transform.ts",
+    "./src/init.ts": "./src/init.ts",
+    "./src/esbuild.wasm": "./src/esbuild.wasm",
+    "./src/context.ts": "./src/context.ts",
+    "./src/compress.ts": "./src/compress.ts",
+    "./src/build.ts": "./src/build.ts",
+    "./util": "./src/util.ts",
+
+    "./utils/ansi.ts": "./src/utils/ansi.ts",
+    "./utils/create-notice.ts": "./src/utils/create-notice.ts",
+    "./utils/debounce.ts": "./src/utils/debounce.ts",
+    "./utils/deep-equal.ts": "./src/utils/deep-equal.ts",
+    "./utils/encode-decode.ts": "./src/utils/encode-decode.ts",
+    "./utils/encoding.ts": "./src/utils/encoding.ts",
+    "./utils/fetch-and-cache.ts": "./src/utils/fetch-and-cache.ts",
+    "./utils/filesystem.ts": "./src/utils/filesystem.ts",
+
+    "./utils/get-esbuild.ts": "./src/utils/get-esbuild.ts",
+    "./utils/loader.ts": "./src/utils/loader.ts",
+    "./utils/lz-string.ts": "./src/utils/lz-string.ts",
+    "./utils/media-types.ts": "./src/utils/media-types.ts",
+    "./utils/npm-search.ts": "./src/utils/npm-search.ts",
+    "./utils/outdent.ts": "./src/utils/outdent.ts",
+
+    "./utils/parse-package-name.ts": "./src/utils/parse-package-name.ts",
+    "./utils/path.ts": "./src/utils/path.ts",
+    "./utils/pretty-bytes.ts": "./src/utils/pretty-bytes.ts",
+    "./utils/resolve-exports.ts": "./src/utils/resolve-exports.ts",
+    "./utils/resolve-imports.ts": "./src/utils/resolve-imports.ts",
+    "./utils/semver.ts": "./src/utils/semver.ts",
+    "./utils/util-cdn.ts": "./src/utils/util-cdn.ts",
+
+    "./deno/*": "./src/deno/*",
+    "./plugins/*": "./src/plugins/*",
+    "./configs/*": "./src/configs/*",
+    "./package.json": "./package.json"
+  },
+  "tasks": {
+    "dev": "deno run -A --watch repl.ts"
+  }
+}

@@ -5,14 +5,14 @@ globalThis.Worker = worker ?? class {
   constructor() { }
 };
 
-import type { createDefaultFileSystem, ESBUILD } from "@bundlejs/core";
+import type { createDefaultFileSystem, ESBUILD } from "@bundle/core/src/index.ts";
 import type { Config } from "./mod.ts";
 import { headers } from "./mod.ts";
 import { setFile as setGist } from "./gist.ts";
 
-import { build, setFile, useFileSystem, createConfig, compress, resolveVersion } from "@bundlejs/core/src/index.ts";
+import { build, setFile, useFileSystem, createConfig, compress, resolveVersion } from "@bundle/core/src/index.ts";
 
-import { createNotice } from "@bundlejs/core/src/utils/create-notice.ts";
+import { createNotice } from "@bundle/core/src/utils/create-notice.ts";
 
 const FileSystem = useFileSystem();
 export const timeFormatter = new Intl.RelativeTimeFormat("en", {
@@ -110,6 +110,10 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
       config: printableConfig,
       input: initialValue,
       size,
+      installSize: {
+        total: result?.totalInstallSize,
+        packages: result?.packageSizeArr,
+      },
       time: timeFormatter.format(duration / 1000, "seconds"),
       rawTime: duration
     },
