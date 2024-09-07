@@ -9,7 +9,7 @@ import { bytes } from "../src/utils/pretty-bytes.ts";
 import { compress as brotli, decompress as unbrotli } from "../src/deno/brotli/mod.ts";
 import { compress as zstd, decompress as unzstd } from "../src/deno/zstd/mod.ts";
 
-import { dirname, relative } from 'node:path';
+import { dirname, join } from 'node:path';
 import * as fs from "node:fs/promises";
 const encoder = new TextEncoder();
 
@@ -102,12 +102,21 @@ export async function build([mode = "zstd", encoding = "base64"]: Partial<["zstd
   `;
 
   console.log(`- Writing output to file (${target})`);
+
+  const targetPath = join(import.meta.dirname!, "..", target);
+  const esbuildPath = join(import.meta.dirname!, "..", "src/esbuild.wasm");
+
+  console.log({
+    targetPath,
+    esbuildPath,
+  })
+  
   await Promise.all([
-    fs.writeFile("src/esbuild.wasm", res),
-    fs.writeFile(target, encoder.encode(source)),
+    fs.writeFile(esbuildPath, res),
+    fs.writeFile(targetPath, encoder.encode(source)),
   ]);
 
-  const outputFile = await fs.stat(target);
+  const outputFile = await fs.stat(targetPath);
   console.log(
     `- Output file (${target}), final size is: ${bytes(outputFile.size)}\n`
   );

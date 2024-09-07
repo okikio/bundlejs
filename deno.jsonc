@@ -3,6 +3,9 @@
     "./packages/core",
     "./packages/edge"
   ],
+  "tasks": {
+    "build:wasm": "deno run -A ./packages/core/scripts/build-wasm.ts"
+  },
   "imports": {
     "@okikio/emitter": "npm:@okikio/emitter",
     "esbuild-wasm/esm/browser.d.ts": "npm:esbuild-wasm/esm/browser.d.ts",
