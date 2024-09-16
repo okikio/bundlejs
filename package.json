@@ -62,7 +62,7 @@
         "@std/media-types": "npm:@jsr/std__media-types@1.0.3",
         "@std/path": "npm:@jsr/std__path@1.0.6",
         "@std/streams": "npm:@jsr/std__streams@^1.0.5",
-        "@std/tar": "npm:@jsr/std__tar@^0.1.0",
+        "@std/tar": "npm:@jsr/std__tar@^0.1.1",
         "@typescript/ata": "^0.9.7",
         "d3": "^7.9.0",
         "d3-array": "^3.2.4",
