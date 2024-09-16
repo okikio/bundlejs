@@ -1,6 +1,6 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
 import type { OnLoadArgs, OnResolveArgs, OnResolveResult, OutputFile, Plugin } from 'esbuild';
-import { FileSystem, getResolvedPath, setFile } from '../util/filesystem';
+import { FileSystem, getFile, getResolvedPath, setFile } from '../util/filesystem';
 
 import { getRequest } from '../util/fetch-and-cache';
 import { decode } from '../util/encode-decode';
@@ -8,8 +8,14 @@ import { decode } from '../util/encode-decode';
 import { getCDNUrl, DEFAULT_CDN_HOST, getCDNStyle, getPureImportPath } from '../util/util-cdn';
 import { inferLoader } from '../util/loader';
 
+import { parse as parsePackageName } from "parse-package-name";
 import { urlJoin, extname, isBareImport, isAbsolute } from "../util/path";
-import { CDN_RESOLVE } from './cdn';
+import { CDN_RESOLVE, resolveImport, type PackageJson } from './cdn';
+
+import type { TarStreamEntry } from "../deno/tar/mod.ts";
+import { UntarStream } from "../deno/tar/mod.ts";
+import { dirname, normalize, join } from "../deno/path/posix.ts";
+import { VIRTUAL_FILESYSTEM_NAMESPACE } from './virtual-fs.ts';
 
 /** HTTP Plugin Namespace */
 export const HTTP_NAMESPACE = 'http-url';
@@ -143,7 +149,7 @@ export async function determineExtension(path: string, headersOnly: true | false
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = DEFAULT_CDN_HOST, logger = console.log) => {
+export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = DEFAULT_CDN_HOST, logger = console.log, rootPkg: Partial<PackageJson> = {}) => {
     return async (args: OnResolveArgs): Promise<OnResolveResult> => {
         // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
         const argPath = args.path; //.replace(/\/$/, "/index");
@@ -152,6 +158,21 @@ export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = 
         if (!argPath.startsWith(".") && !isAbsolute(argPath)) {
             // If the import is an http import load the content via the http plugins loader
             if (/^https?:\/\//.test(argPath)) {
+                let content: Uint8Array | undefined, url: string;
+                let contentType: string | null = null;
+                ({ content, contentType, url } = await determineExtension(argPath, false, logger));
+
+                console.log({
+                    content,
+                    contentType,
+                    tar: contentType === "application/tar+gzip",
+                    url
+                })
+
+                if (content && contentType === "application/tar+gzip") {
+                    return TARBALL_RESOLVE(content, contentType, packageSizeMap, logger, rootPkg)(args);
+                }
+
                 return {
                     path: argPath,
                     namespace: HTTP_NAMESPACE,
@@ -171,7 +192,7 @@ export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = 
 
             // If the import is a bare import, use the CDN plugins resolution algorithm
             if (isBareImport(argPath)) {
-                return await CDN_RESOLVE(packageSizeMap, origin, logger)(args);
+                return await CDN_RESOLVE(packageSizeMap, origin, logger, rootPkg)(args);
             } else {
                 /** 
                  * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -213,6 +234,133 @@ export const HTTP_RESOLVE = (packageSizeMap = new Map<string, number>(), host = 
     };
 };
 
+export function TARBALL_RESOLVE(content: Uint8Array | undefined, contentType: string | null, packageSizeMap = new Map<string, number>(), logger = console.log, rootPkg: Partial<PackageJson> = {}) {
+    return async function (args: OnResolveArgs) {
+        try {
+            let packageManifest: Partial<PackageJson> = {};
+            let pathLength = Infinity;
+            let packageRootDir = "";
+            let packageManifestPath = "";
+
+            try {
+                const tarballMetadata = getFile(join(args.path), "string");
+                ({ packageManifest, pathLength, packageRootDir, packageManifestPath } = JSON.parse(tarballMetadata as string));
+                console.log({
+                    tarballMetadata,
+                    packageManifest,
+                    pathLength,
+                    packageRootDir,
+                    packageManifestPath
+                });
+            } catch (e) {
+                const stream = new Blob([content], { type: contentType })
+                    .stream()
+                    .pipeThrough<Uint8Array>(new DecompressionStream("gzip"))
+                    .pipeThrough(new UntarStream());
+
+                // Create a reader from the stream
+                const reader = stream.getReader();
+                console.log({
+                    stream,
+                    reader,
+                    content,
+                })
+
+                // Get the stream as an async iterable
+                while (true) {
+                    const result = await reader.read();
+                    if (result.done) break;
+
+                    const entry = result.value;
+                    const path = normalize(entry.path);
+
+                    // Convert the stream into a Blob
+                    const blob = await new Response(entry.readable).blob();
+
+                    // Convert the Blob to an ArrayBuffer and then into a Uint8Array
+                    const arrayBuffer = await blob.arrayBuffer();
+                    const uint8arr = new Uint8Array(arrayBuffer);
+                    // console.log({
+                    //     path: join(args.path, "./", path)
+                    // })
+                    if (/package.json/.test(path)) {
+                        const splitPath = path.split("/");
+                        if (splitPath.length < pathLength) {
+                            packageRootDir = splitPath[0];
+                            pathLength = splitPath.length;
+                            packageManifest = JSON.parse(new TextDecoder().decode(uint8arr));
+                            packageManifestPath = path;
+                        }
+                    }
+
+                    setFile(join(args.path, "./", path), uint8arr);
+                }
+
+                setFile(join(args.path), JSON.stringify({
+                    packageRootDir,
+                    pathLength,
+                    packageManifest,
+                    packageManifestPath
+                }));
+            }
+
+            let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+            let oldPkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+            let pkg = Object.assign(structuredClone(oldPkg), packageManifest);
+
+            const finalPath = await resolveImport(pkg, "", false, logger);
+
+            const deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
+            const peerDeps = pkg.peerDependencies ?? {};
+            const peerDepsKeys = Object.keys(peerDeps);
+
+            const version = args.path;
+
+            // Some packages rely on cyclic dependencies, e.g. https://x.com/jsbundle/status/1792325771354149261
+            // so we create a new field in peerDependencies and place the current package and it's version,
+            // the algorithm should then be able to use the correct version if a dependency is cyclic
+            peerDeps[pkg.name] = version?.length > 0 ? version : (deps?.[pkg.name] ?? "latest");
+
+            if (!packageSizeMap.get(`${pkg.name}@${version}`)) {
+                try {
+                    packageSizeMap.set(`${pkg.name}@${version}`, content.length);
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+
+            // Just in case the peerDependency is legitimately set from the package.json ignore the 
+            // cyclic deps. rules, as they just make things more complicated
+            for (const depKey of peerDepsKeys) {
+                peerDeps[depKey] = deps[depKey] ?? peerDeps[depKey];
+            }
+
+            const fullPath = join(args.path, packageManifestPath, "../", finalPath);
+            console.log({
+                fullPath
+            })
+
+            return {
+                path: fullPath,
+                sideEffects: typeof pkg.sideEffects === "boolean" ? pkg.sideEffects : undefined,
+                pluginData: Object.assign({}, args.pluginData, {
+                    // url, 
+                    pkg: {
+                        ...pkg,
+                        peerDependencies: peerDeps,
+                    },
+                    importer: ".",
+                }),
+                namespace: VIRTUAL_FILESYSTEM_NAMESPACE
+            };
+        } catch (err) {
+            console.log({
+                err
+            })
+        }
+    } 
+}
+
 /**
  * Esbuild HTTP plugin 
  * 
@@ -228,12 +376,7 @@ export const HTTP = (packageSizeMap = new Map<string, number>(), assets: OutputF
             // esbuild doesn't attempt to map them to a file system location.
             // Tag them with the "http-url" namespace to associate them with
             // this plugin.
-            build.onResolve({ filter: /^https?:\/\// }, args => {
-                return {
-                    path: args.path,
-                    namespace: HTTP_NAMESPACE,
-                };
-            });
+            build.onResolve({ filter: /^https?:\/\// }, HTTP_RESOLVE(packageSizeMap, host, logger));
 
             // We also want to intercept all import paths inside downloaded
             // files and resolve them against the original URL. All of these

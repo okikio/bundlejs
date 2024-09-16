@@ -13,7 +13,9 @@ import { compress as brotli_compress } from "../deno/brotli/mod";
 import { compress as lz4_compress } from "../deno/lz4/mod";
 import { compress as zstd_compress } from "../deno/zstd/mod.ts";
 
+import { VIRTUAL_FS } from "../plugins/virtual-fs.ts";
 import { EXTERNAL } from "../plugins/external";
+import { ALIAS } from "../plugins/alias";
 import { HTTP } from "../plugins/http";
 import { CDN } from "../plugins/cdn";
 
@@ -23,7 +25,6 @@ import { deepAssign } from "../util/deep-equal";
 
 import { DefaultConfig } from "../configs/bundle-options";
 
-import { ALIAS } from "../plugins/alias";
 import { getCDNUrl } from "../util/util-cdn";
 import { analyze } from "../plugins/analyzer";
 
@@ -207,6 +208,7 @@ export const start = async (port: MessagePort) => {
             EXTERNAL(packageSizeMap, esbuildOpts?.external, origin, config?.polyfill),
             HTTP(packageSizeMap, assets, origin, logger),
             CDN(packageSizeMap, origin, config["package.json"], logger),
+            VIRTUAL_FS(),
           ],
           outdir: "/"
         });

@@ -1,6 +1,6 @@
 import type { OnResolveArgs, OnResolveResult, Plugin } from 'esbuild';
 
-import { determineExtension, fetchPkg, HTTP_NAMESPACE } from './http';
+import { determineExtension, fetchPkg, HTTP_NAMESPACE, HTTP_RESOLVE, TARBALL_RESOLVE } from './http';
 import { extname, isBareImport, join } from '../util/path';
 import { getRequest } from '../util/fetch-and-cache';
 
@@ -12,6 +12,8 @@ import { parse as parsePackageName } from "parse-package-name";
 import { DEFAULT_CDN_HOST } from '../util/util-cdn';
 import { deepAssign } from '../util/deep-equal';
 import { getPackageOfVersion, getRegistryURL } from '../util/npm-search';
+import { getFile, getResolvedPath } from '../util/filesystem';
+import { VIRTUAL_FS_RESOLVE } from './virtual-fs';
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = 'cdn-url';
@@ -113,10 +115,6 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
             const NPM_CDN = getCDNStyle(origin) == "npm";
 
-            // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
-            const parsed = parsePackageName(_argPath);
-            let subpath = parsed.path;
-
             let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
             let oldPkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
             let pkg = structuredClone(oldPkg);
@@ -130,8 +128,51 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             );
             const keys = Object.keys(_deps);
 
+            // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
+            const parsed = parsePackageName(_argPath);
+            let subpath = parsed.path;
+
             if (keys.includes(parsed.name)) {
-                parsed.version = _deps[parsed.name];
+                const depVersion = _deps[parsed.name]
+                parsed.version = depVersion;
+
+                if (/^http(s)?\:/.test(parsed.version)) {
+
+                    const modifiedArgs = Object.assign({}, args, {
+                        path: parsed.version,
+                        pluginData: Object.assign({}, args?.pluginData, {
+                            importer: parsed.version
+                        })
+                    });
+
+                    console.log({
+                        depVersion,
+                        args,
+                        modifiedArgs
+                    })
+                    try {
+                        const argsPath = join(modifiedArgs.path)
+                        getResolvedPath(argsPath);
+                        return TARBALL_RESOLVE(undefined, null, packageSizeMap, logger, rootPkg)(modifiedArgs);
+                    } catch (e) {
+                        console.warn("https dep is kinda wack", e)
+                        let content: Uint8Array | undefined, url: string;
+                        let contentType: string | null = null;
+                        ({ content, contentType, url } = await determineExtension(modifiedArgs.path, false, logger));
+
+                        console.log({
+                            "cdn-to-vfs": true,
+                            content,
+                            contentType,
+                            tar: contentType === "application/tar+gzip",
+                            url
+                        })
+
+                        if (content && contentType === "application/tar+gzip") {
+                            return TARBALL_RESOLVE(content, contentType, packageSizeMap, logger, rootPkg)(modifiedArgs);
+                        }
+                    }
+                }
             }
 
             let finalSubpath = subpath;
@@ -141,7 +182,6 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                 try {
                     const ext = extname(subpath);
                     const isDir = ext.length === 0;
-                    const dir = isDir ? subpath : "";
 
                     const pkgVariants = [
                         { path: getRegistryURL(`${parsed.name}@${parsed.version}`).packageVersionURL },
@@ -159,11 +199,9 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                         const { url } = getCDNUrl(pkgMetadata.path, origin);
                         const { href } = url;
 
-
                         console.log({
                             href
                         })
-
 
                         try {
                             if (FAILED_PKGJSON_URLS.has(href) && i < pkgVariantsLen - 1) {
@@ -187,73 +225,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                         }
                     }
 
-                    const relativePath = subpath.replace(/^\//, "./");
-
-                    let modernResolve: ReturnType<typeof resolve> | void;
-                    let legacyResolve: ReturnType<typeof legacy> | void;
-
-                    let resolvedPath: string | void = subpath;
-
-                    try {
-                        // Resolving imports & exports from the package.json
-                        // If an import starts with "#" then it's a subpath-import, and should be treated as so
-                        modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
-                            resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
-                            resolve(pkg, relativePath, { require: true });
-
-                        if (modernResolve) {
-                            resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
-                        }
-                        // deno-lint-ignore no-empty
-                    } catch (e) { }
-
-                    if (!modernResolve) {
-                        // If the subpath has a package.json, and the modern resolve didn't work for it
-                        // we can safely use legacy resolve, 
-                        // else, if the subpath doesn't have a package.json, then the subpath is literal, 
-                        // and we should just use the subpath as it is
-                        if (isDirPkgJSON) {
-                            try {
-                                // Resolving using main, module, etc... from package.json
-                                legacyResolve = legacy(pkg, { browser: true }) ||
-                                    legacy(pkg, { fields: ["unpkg", "bin"] });
-
-                                if (legacyResolve) {
-                                    // Some packages have `browser` fields in their package.json which have some values set to false
-                                    // e.g. typescript - > https://unpkg.com/browse/typescript@4.9.5/package.json
-                                    if (typeof legacyResolve === "object") {
-                                        const values = Object.values(legacyResolve);
-                                        const validValues = values.filter(x => x);
-                                        if (validValues.length <= 0) {
-                                            legacyResolve = legacy(pkg);
-                                        }
-                                    }
-
-                                    if (Array.isArray(legacyResolve)) {
-                                        resolvedPath = legacyResolve[0];
-                                    } else if (typeof legacyResolve === "object") {
-                                        const legacyResults = legacyResolve;
-                                        const allKeys = Object.keys(legacyResolve);
-                                        const nonCJSKeys = allKeys.filter(key => {
-                                            return !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key];
-                                        });
-                                        const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
-                                        resolvedPath = legacyResolve[keysToUse[0]] as string;
-                                    } else {
-                                        resolvedPath = legacyResolve;
-                                    }
-                                }
-                            } catch (e) { }
-                        } else resolvedPath = relativePath;
-                    }
-
-                    if (resolvedPath && typeof resolvedPath === "string") {
-                        finalSubpath = resolvedPath.replace(/^(\.\/)/, "/");
-                    }
-
-                    if (dir && isDirPkgJSON) {
-                        finalSubpath = `${dir}${finalSubpath}`;
-                    }
+                    finalSubpath = await resolveImport(pkg, subpath, isDirPkgJSON, logger);
                 } catch (e) {
                     logger([`You may want to change CDNs. The current CDN ${!/unpkg\.com/.test(origin) ? `"${origin}" doesn't` : `path "${origin}${_argPath}" may not`} support package.json files.\nThere is a chance the CDN you're using doesn't support looking through the package.json of packages. bundlejs will switch to inaccurate guesses for package versions. For package.json support you may wish to use https://unpkg.com or other CDN's that support package.json.`], "warning");
                     console.warn(e);
@@ -327,3 +299,92 @@ export const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkg
         },
     };
 };
+
+
+/**
+ * Resolves the subpath for a package using the provided package.json and a path.
+ * This version assumes the package.json is already available and passed as an argument.
+ * 
+ * @param pkg The parsed package.json object of the package.
+ * @param _argPath The path that might refer to a subpath of the package.
+ * @param origin The origin URL to be used for the CDN.
+ * @param NPM_CDN Boolean indicating whether the current CDN supports npm package.json lookups.
+ * @param FAILED_PKGJSON_URLS A Set to keep track of failed URLs for package.json fetching.
+ * @returns The resolved subpath, or the original subpath if no resolution was found.
+ */
+export async function resolveImport(
+    srcPkg: PackageJson,
+    subpath: string,
+    isDirPkgJSON: boolean,
+    logger = console.log
+): Promise<string> {
+    let finalSubpath = subpath;
+    let pkg = srcPkg;
+
+    // If CDN supports package.json lookups, perform resolution
+    try {
+        const ext = extname(subpath);
+        const isDir = ext.length === 0;
+        const dir = isDir ? subpath : "";
+
+        const relativePath = subpath.replace(/^\//, "./");
+
+        let modernResolve: ReturnType<typeof resolve> | void;
+        let legacyResolve: ReturnType<typeof legacy> | void;
+        let resolvedPath: string | void = subpath;
+
+        try {
+            // Try resolving imports & exports using modern resolve methods
+            modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
+                resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
+                resolve(pkg, relativePath, { require: true });
+
+            if (modernResolve) {
+                resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
+            }
+        } catch (e) {
+            // Ignored; proceed with legacy resolve if necessary
+        }
+
+        if (!modernResolve) {
+            // Fall back to legacy resolve if modern resolution failed
+            if (isDirPkgJSON) {
+                try {
+                    legacyResolve = legacy(pkg, { browser: true }) ||
+                        legacy(pkg, { fields: ["unpkg", "bin"] });
+
+                    if (legacyResolve) {
+                        if (Array.isArray(legacyResolve)) {
+                            resolvedPath = legacyResolve[0];
+                        } else if (typeof legacyResolve === "object") {
+                            const legacyResults = legacyResolve;
+                            const allKeys = Object.keys(legacyResolve);
+                            const nonCJSKeys = allKeys.filter(key => !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key]);
+                            const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
+                            resolvedPath = legacyResolve[keysToUse[0]] as string;
+                        } else {
+                            resolvedPath = legacyResolve;
+                        }
+                    }
+                } catch (e) {
+                    // Ignored
+                }
+            } else {
+                resolvedPath = relativePath;
+            }
+        }
+
+        if (resolvedPath && typeof resolvedPath === "string") {
+            finalSubpath = resolvedPath.replace(/^(\.\/)/, "/");
+        }
+
+        if (dir && isDirPkgJSON) {
+            finalSubpath = `${dir}${finalSubpath}`;
+        }
+    } catch (e) {
+        logger([`The current CDN may not support package.json files. Consider using https://unpkg.com for better support.`], "warning");
+        console.warn(e);
+    }
+
+    return finalSubpath;
+}
