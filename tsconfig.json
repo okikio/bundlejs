@@ -1,26 +1,22 @@
 {
     "compilerOptions": {
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "moduleResolution": "node",
-        "target": "ES2021",
-        "module": "ES2020",
-        "lib": [
-            "ES2021",
-            "DOM",
-            "DOM.Iterable",
-            "WebWorker"
-        ],
-        "sourceMap": true,
-        "outDir": "lib",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "esModuleInterop": true,
-        // Allow importing `.ts` files directly
-        "allowImportingTsExtensions": true,
-        // Emit only declaration files
-        "emitDeclarationOnly": true,
-        "declaration": true,
+      "jsx": "preserve",
+      "jsxImportSource": "solid-js",
+      "moduleResolution": "node",
+      "target": "ES2021",
+      "module": "ES2020",
+      "lib": ["ES2021", "DOM", "DOM.Iterable", "WebWorker"],
+      "sourceMap": true,
+      "outDir": "lib",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "esModuleInterop": true,
+      // Allow importing `.ts` files directly
+      "allowImportingTsExtensions": true,
+    //   "rewriteRelativeImportExtensions": true,
+      // Emit only declaration files
+      "emitDeclarationOnly": true,
+      "declaration": true
     },
     "include": [
         "src",
