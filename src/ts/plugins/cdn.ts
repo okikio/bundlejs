@@ -90,8 +90,8 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
     return async (args: OnResolveArgs): Promise<OnResolveResult | undefined> => {
         let argPath = args.path;
         if (/^#/.test(argPath)) {
-            let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-            let pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+            const { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+            const pkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
 
             try {
                 // Resolving imports & exports from the package.json
@@ -102,7 +102,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
 
                 if (modernResolve) {
                     const resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
-                    argPath = join(pkg.name + "@" + pkg.version, resolvedPath);
+                    argPath = join(`${pkg.name}@${pkg.version}`, resolvedPath);
                 }
                 // deno-lint-ignore no-empty
             } catch (e) { }
@@ -113,10 +113,10 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             const { path: _argPath, origin } = getCDNUrl(argPath, cdn);
 
             // npm standard CDNs, e.g. unpkg, skypack, esm.sh, etc...
-            const NPM_CDN = getCDNStyle(origin) == "npm";
+            const NPM_CDN = getCDNStyle(origin) === "npm";
 
-            let { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
-            let oldPkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
+            const { sideEffects: _sideEffects, ...excludeSideEffects } = args.pluginData?.pkg ?? {};
+            const oldPkg: PackageJson = excludeSideEffects ?? { ...rootPkg };
             let pkg = structuredClone(oldPkg);
 
             // Are there any dependecies???? Well Goood.
@@ -130,7 +130,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
 
             // Heavily based off of https://github.com/egoist/play-esbuild/blob/main/src/lib/esbuild.ts
             const parsed = parsePackageName(_argPath);
-            let subpath = parsed.path;
+            const subpath = parsed.path;
 
             if (keys.includes(parsed.name)) {
                 const depVersion = _deps[parsed.name]
@@ -156,7 +156,8 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                         return TARBALL_RESOLVE(undefined, null, packageSizeMap, logger, rootPkg)(modifiedArgs);
                     } catch (e) {
                         console.warn("https dep is kinda wack", e)
-                        let content: Uint8Array | undefined, url: string;
+                        let content: Uint8Array | undefined;
+                        let url: string;
                         let contentType: string | null = null;
                         ({ content, contentType, url } = await determineExtension(modifiedArgs.path, false, logger));
 
@@ -195,6 +196,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
                     let isDirPkgJSON = false;
                     const pkgVariantsLen = pkgVariants.length;
                     for (let i = 0; i < pkgVariantsLen; i++) {
+                        // biome-ignore lint/style/noNonNullAssertion: <explanation>
                         const pkgMetadata = pkgVariants[i]!;
                         const { url } = getCDNUrl(pkgMetadata.path, origin);
                         const { href } = url;
@@ -234,7 +236,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
 
             // If the CDN is npm based then it should add the parsed version to the URL
             // e.g. https://unpkg.com/spring-easing@v1.0.0/
-            const version = NPM_CDN ? "@" + (pkg.version || parsed.version) : "";
+            const version = NPM_CDN ? `@${pkg.version || parsed.version}` : "";
             const { url } = getCDNUrl(`${parsed.name}${version}${finalSubpath}`, origin);
 
             const deps = Object.assign({}, oldPkg.devDependencies, oldPkg.dependencies, oldPkg.peerDependencies);
@@ -289,7 +291,8 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
+// biome-ignore lint/style/useDefaultParameterLast: <explanation>
+export  const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
@@ -319,7 +322,7 @@ export async function resolveImport(
     logger = console.log
 ): Promise<string> {
     let finalSubpath = subpath;
-    let pkg = srcPkg;
+    const pkg = srcPkg;
 
     // If CDN supports package.json lookups, perform resolution
     try {
@@ -329,15 +332,20 @@ export async function resolveImport(
 
         const relativePath = subpath.replace(/^\//, "./");
 
-        let modernResolve: ReturnType<typeof resolve> | void;
-        let legacyResolve: ReturnType<typeof legacy> | void;
-        let resolvedPath: string | void = subpath;
+        let modernResolve: ReturnType<typeof resolve>;
+        let legacyResolve: ReturnType<typeof legacy>;
+        let resolvedPath: string = subpath;
 
         try {
             // Try resolving imports & exports using modern resolve methods
             modernResolve = resolve(pkg, relativePath, { browser: true, conditions: ["module"] }) ||
                 resolve(pkg, relativePath, { unsafe: true, conditions: ["deno", "worker", "production"] }) ||
                 resolve(pkg, relativePath, { require: true });
+
+            console.log({
+                modernResolve,
+                pkg
+            })
 
             if (modernResolve) {
                 resolvedPath = Array.isArray(modernResolve) ? modernResolve[0] : modernResolve;
@@ -348,29 +356,38 @@ export async function resolveImport(
 
         if (!modernResolve) {
             // Fall back to legacy resolve if modern resolution failed
-            if (isDirPkgJSON) {
-                try {
-                    legacyResolve = legacy(pkg, { browser: true }) ||
-                        legacy(pkg, { fields: ["unpkg", "bin"] });
+            // if (!isDirPkgJSON) {
+            //     resolvedPath = relativePath;
+            //     console.log({
+            //         useRelativePath: resolvedPath
+            //     })
+            // }
 
-                    if (legacyResolve) {
-                        if (Array.isArray(legacyResolve)) {
-                            resolvedPath = legacyResolve[0];
-                        } else if (typeof legacyResolve === "object") {
-                            const legacyResults = legacyResolve;
-                            const allKeys = Object.keys(legacyResolve);
-                            const nonCJSKeys = allKeys.filter(key => !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key]);
-                            const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
-                            resolvedPath = legacyResolve[keysToUse[0]] as string;
-                        } else {
-                            resolvedPath = legacyResolve;
-                        }
+            try {
+                legacyResolve = legacy(pkg, { browser: true }) ||
+                    legacy(pkg, { fields: ["main", "module"] }) ||
+                    legacy(pkg, { fields: ["unpkg", "bin"] });
+
+                console.log({
+                    legacyResolve,
+                    pkg
+                })
+
+                if (legacyResolve) {
+                    if (Array.isArray(legacyResolve)) {
+                        resolvedPath = legacyResolve[0];
+                    } else if (typeof legacyResolve === "object") {
+                        const legacyResults = legacyResolve;
+                        const allKeys = Object.keys(legacyResolve);
+                        const nonCJSKeys = allKeys.filter(key => !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key]);
+                        const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
+                        resolvedPath = legacyResolve[keysToUse[0]] as string;
+                    } else {
+                        resolvedPath = legacyResolve;
                     }
-                } catch (e) {
-                    // Ignored
                 }
-            } else {
-                resolvedPath = relativePath;
+            } catch (e) {
+                // Ignored
             }
         }
 
@@ -382,7 +399,7 @@ export async function resolveImport(
             finalSubpath = `${dir}${finalSubpath}`;
         }
     } catch (e) {
-        logger([`The current CDN may not support package.json files. Consider using https://unpkg.com for better support.`], "warning");
+        logger(["The current CDN may not support package.json files. Consider using https://unpkg.com for better support."], "warning");
         console.warn(e);
     }
 
