@@ -5,7 +5,7 @@ import JSON5 from "./vendor/json5.ts";
 
 // @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import { Redis } from "@upstash/redis";
-import { dirname, fromFileUrl, join, extname, basename } from "@std/path";
+import { dirname, fromFileUrl, join, extname, basename } from "@std/path/posix";
 
 import { decodeBase64 } from "@std/encoding/base64";
 
@@ -291,6 +291,9 @@ export default {
         initialValue: initialValue.trim(),
       });
       const jsonKey = `json/${JSON5.stringify(jsonKeyObj).trim()}`;
+      console.log({
+        jsonKey
+      })
 
       const badgeResult = url.searchParams.get("badge");
       const badgeStyle = url.searchParams.get("badge-style");
@@ -379,11 +382,12 @@ export default {
           } else if (modules.length === 1 && exportAll && !mutationQueries) {
             const [moduleName, mode] = modules[0];
             if (mode === "export") {
-              const PackageResultString = await redis.get<string>(getPackageResultKey(moduleName));
+              const PackageResultKey = getPackageResultKey(moduleName) + "/" + jsonKey;
+              const PackageResultString = await redis.get<string>(PackageResultKey);
               const PackageResult = PackageResultString ? JSON5.parse<BundleResult>(PackageResultString) : null;
               const fileQuery = fileCheck ? PackageResult?.fileId : true;
               if (PackageResult && fileQuery) {
-                console.log("Respond with Module Response from Permanent Cache", getPackageResultKey(moduleName))
+                console.log("Respond with Module Response from Permanent Cache", getPackageResultKey(moduleName), PackageResultKey)
                 return await generateResult([badgeKey, badgeID], [PackageResult, undefined], url, true, Date.now() - start, redis);
               }
             }
@@ -441,10 +445,10 @@ export default {
       console.log("Respond with New Bundle Result")
       return await generateResult([badgeKey, badgeID], [value, resultText], url, false, Date.now() - start, redis);
     } catch (e) {
-      if ("msgs" in e && e.msgs) {
+      if ("msgs" in (e as Error) && (e as Record<PropertyKey, unknown>).msgs) {
         try {
           return new Response(
-            generateHTMLMessages(e.msgs as string[]),
+            generateHTMLMessages((e as Record<PropertyKey, unknown>).msgs as string[]),
             {
               status: 404,
               headers: [
@@ -460,7 +464,7 @@ export default {
       console.error(e)
 
       return new Response(
-        JSON.stringify({ error: e.toString() }),
+        JSON.stringify({ error: (e as Error).toString() }),
         { status: 400, }
       )
     }
