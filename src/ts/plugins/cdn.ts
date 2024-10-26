@@ -123,7 +123,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             const _deps = Object.assign(
                 {},
                 pkg.devDependencies,
-                pkg.peerDependencies, 
+                pkg.peerDependencies,
                 pkg.dependencies
             );
             const keys = Object.keys(_deps);
@@ -251,8 +251,8 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
             if (!packageSizeMap.get(`${parsed.name}${version}`)) {
                 try {
                     const packageJson = await getPackageOfVersion(`${parsed.name}${version}`);
-                    const unpackedSize = ( packageJson)?.dist?.unpackedSize as number;
-                    if (typeof unpackedSize === "number") 
+                    const unpackedSize = (packageJson)?.dist?.unpackedSize as number;
+                    if (typeof unpackedSize === "number")
                         packageSizeMap.set(`${parsed.name}${version}`, unpackedSize);
                     console.log({
                         packageJson,
@@ -292,7 +292,7 @@ export const CDN_RESOLVE = (packageSizeMap = new Map<string, number>(), cdn = DE
  * @param logger Console log
  */
 // biome-ignore lint/style/useDefaultParameterLast: <explanation>
-export  const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
+export const CDN = (packageSizeMap = new Map<string, number>(), cdn: string, pkgJSON: Partial<PackageJson> = {}, logger = console.log): Plugin => {
     return {
         name: CDN_NAMESPACE,
         setup(build) {
@@ -356,39 +356,40 @@ export async function resolveImport(
 
         if (!modernResolve) {
             // Fall back to legacy resolve if modern resolution failed
-            // if (!isDirPkgJSON) {
-            //     resolvedPath = relativePath;
-            //     console.log({
-            //         useRelativePath: resolvedPath
-            //     })
-            // }
+            if (isDirPkgJSON || relativePath.trim().length === 0) {
+                try {
+                    legacyResolve = legacy(pkg, { browser: true }) ||
+                        legacy(pkg, { fields: ["module", "main"] }) ||
+                        legacy(pkg, { fields: ["unpkg", "bin"] });
 
-            try {
-                legacyResolve = legacy(pkg, { browser: true }) ||
-                    legacy(pkg, { fields: ["module", "main"] }) ||
-                    legacy(pkg, { fields: ["unpkg", "bin"] });
+                    console.log({
+                        legacyResolve,
+                        pkg
+                    })
 
-                console.log({
-                    legacyResolve,
-                    pkg
-                })
-
-                if (legacyResolve) {
-                    if (Array.isArray(legacyResolve)) {
-                        resolvedPath = legacyResolve[0];
-                    } else if (typeof legacyResolve === "object") {
-                        const legacyResults = legacyResolve;
-                        const allKeys = Object.keys(legacyResolve);
-                        const nonCJSKeys = allKeys.filter(key => !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key]);
-                        const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
-                        resolvedPath = legacyResolve[keysToUse[0]] as string;
-                    } else {
-                        resolvedPath = legacyResolve;
+                    if (legacyResolve) {
+                        if (Array.isArray(legacyResolve)) {
+                            resolvedPath = legacyResolve[0];
+                        } else if (typeof legacyResolve === "object") {
+                            const legacyResults = legacyResolve;
+                            const allKeys = Object.keys(legacyResolve);
+                            const nonCJSKeys = allKeys.filter(key => !/\.cjs$/.exec(key) && !/src\//.exec(key) && legacyResults[key]);
+                            const keysToUse = nonCJSKeys.length > 0 ? nonCJSKeys : allKeys;
+                            resolvedPath = legacyResolve[keysToUse[0]] as string;
+                        } else {
+                            resolvedPath = legacyResolve;
+                        }
                     }
+                } catch (e) {
+                    // Ignored
                 }
-            } catch (e) {
-                // Ignored
+            } else {
+                resolvedPath = relativePath;
+                console.log({
+                    useRelativePath: resolvedPath
+                })
             }
+
         }
 
         if (resolvedPath && typeof resolvedPath === "string") {
