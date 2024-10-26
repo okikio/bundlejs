@@ -323,10 +323,11 @@ export default {
             const JSONResult = JSONResultString ? JSON5.parse<BundleResult>(JSONResultString) : null;
 
             const [moduleName] = modules[0];
-            const PackageResultString = await redis.get<string>(getPackageResultKey(moduleName));
+            const PackageResultKey = getPackageResultKey(moduleName) + "/" + jsonKey;
+            const PackageResultString = await redis.get<string>(PackageResultKey);
             const PackageResult = PackageResultString ? JSON5.parse<BundleResult>(PackageResultString) : null;
 
-            await redis.del(jsonKey, badgeKey, getPackageResultKey(moduleName));
+            await redis.del(jsonKey, badgeKey, PackageResultKey);
             console.log(`Deleting "${getPackageResultKey(moduleName)}" and ${jsonKey}\n`)
 
             if (JSONResult && JSONResult.fileId) {
@@ -427,7 +428,8 @@ export default {
         if (modules.length === 1 && exportAll && !(shareQuery || textQuery)) {
           const [moduleName, mode] = modules[0];
           if (mode === "export") {
-            await redis.set(getPackageResultKey(moduleName), JSON5.stringify(value));
+            const PackageResultKey = getPackageResultKey(moduleName) + "/" + jsonKey;
+            await redis.set(PackageResultKey, JSON5.stringify(value));
           }
         }
 
