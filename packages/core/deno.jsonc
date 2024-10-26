@@ -44,5 +44,9 @@
   },
   "tasks": {
     "dev": "deno run -A --watch repl.ts"
+  },
+  "imports": {
+    "@std/path": "jsr:@std/path@^1.0.6",
+    "@std/tar": "jsr:@std/tar@^0.1.1"
   }
 }

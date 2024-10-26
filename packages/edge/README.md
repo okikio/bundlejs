@@ -3,7 +3,7 @@ curl -fsSL https://deno.land/x/install/install.sh | sh
 export DENO_INSTALL="/home/gitpod/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
-deno run -A --watch packages/edge/mod.ts
+deno serve -A --watch packages/edge/mod.ts
 
 deno install --global -Arf jsr:@deno/deployctl
 

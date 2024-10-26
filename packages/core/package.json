@@ -37,7 +37,7 @@
     "test": "vitest",
     "repl": "tsx repl.ts",
     "deno": "deno run --allow-net --allow-env --allow-read --allow-write --allow-run ./repl.ts",
-    "dts": "del-cli @types/ && tsc --project dts.tsconfig.json",
+    "dts": "rm -r @types/ && tsc --project dts.tsconfig.json",
     "verify": "pnpm dts; pnpm test:run",
     "pre-release": "pnpm build:all; ultra verify"
   },
@@ -76,17 +76,18 @@
   },
   "homepage": "https://bundlejs.com",
   "dependencies": {
-    "esbuild": "^0.23.1",
-    "esbuild-wasm": "^0.23.1",
+    "@std/path": "npm:@jsr/std__path@^1.0.7",
+    "@std/tar": "npm:@jsr/std__tar@^0.1.3",
+    "esbuild": "^0.24.0",
+    "esbuild-wasm": "^0.24.0",
     "resolve.exports": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.5.4",
-    "del-cli": "^5.1.0",
-    "tsx": "^4.19.0",
-    "typescript": "5.5.4",
-    "vite": "^5.4.3",
+    "@types/node": "^22.8.1",
+    "tsx": "^4.19.1",
+    "typescript": "5.6.3",
+    "vite": "^5.4.10",
     "vite-plugin-cp": "^4.0.8",
-    "vitest": "^2.0.5"
+    "vitest": "^2.1.3"
   }
 }

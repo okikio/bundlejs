@@ -188,8 +188,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
           const relativePath = subpath.replace(/^\//, "./");
 
-          let modernResolve: ReturnType<typeof resolve> | void;
-          let legacyResolve: ReturnType<typeof legacy> | void;
+          let modernResolve: ReturnType<typeof resolve> | undefined;
+          let legacyResolve: ReturnType<typeof legacy> | undefined;
 
           let resolvedPath: string | void = subpath;
 
@@ -214,11 +214,12 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             // we can safely use legacy resolve, 
             // else, if the subpath doesn't have a package.json, then the subpath is literal, 
             // and we should just use the subpath as it is
-            if (isDirPkgJSON) {
+            if (isDirPkgJSON || relativePath.trim().length === 0) {
               try {
                 // Resolving using main, module, etc... from package.json
                 legacyResolve = (
                   legacy(pkg, { browser: true }) ||
+                  legacy(pkg, { fields: ["module", "main"] }) ||
                   legacy(pkg, { fields: ["unpkg", "bin"] })
                 );
 
