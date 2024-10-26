@@ -365,7 +365,7 @@ export async function resolveImport(
 
             try {
                 legacyResolve = legacy(pkg, { browser: true }) ||
-                    legacy(pkg, { fields: ["main", "module"] }) ||
+                    legacy(pkg, { fields: ["module", "main"] }) ||
                     legacy(pkg, { fields: ["unpkg", "bin"] });
 
                 console.log({
