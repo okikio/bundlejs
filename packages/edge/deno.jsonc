@@ -7,7 +7,6 @@
   "imports": {
     "@bundle/core/": "../core/",
     "@bundle/core": "../core/src/index.ts",
-
     "@okikio/emitter": "npm:@okikio/emitter",
     "esbuild-wasm/esm/browser.d.ts": "npm:esbuild-wasm/esm/browser.d.ts",
     "esbuild-wasm/package.json": "npm:esbuild-wasm/package.json",
@@ -22,5 +21,14 @@
     "@std/path": "jsr:@std/path",
     "@std/encoding": "jsr:@std/encoding",
     "@std/media-types": "jsr:@std/media-types"
+  },
+  "deploy": {
+    "project": "66040930-9863-498e-b6f0-0657e47d6631",
+    "exclude": [
+      "node_modules",
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "mod.ts"
   }
 }
