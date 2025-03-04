@@ -8,10 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
+    "pre-release:all": "pnpm -r pre-release",
     "build:all": "pnpm -r build",
     "semantic-release": "semantic-release",
-    "prepare": "husky",
     "commitlint": "commitlint --edit"
   },
   "release": {
