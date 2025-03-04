@@ -12,7 +12,7 @@
     "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
     "build:all": "pnpm -r build",
     "semantic-release": "semantic-release",
-    "prepare": "[ \"$NODE_ENV\" = \"production\" ] || [ -n \"$CI\" ] && echo \"Skipping Husky Install...\" || husky",
+    "prepare": "husky",
     "commitlint": "commitlint --edit"
   },
   "release": {
@@ -60,19 +60,19 @@
   },
   "homepage": "https://docs.bundlejs.com",
   "devDependencies": {
-    "@commitlint/cli": "^19.3.0",
+    "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/web": "^0.0.150",
-    "husky": "^9.0.11",
+    "@types/web": "^0.0.154",
+    "husky": "^9.1.4",
     "semantic-release": "^24.0.0",
-    "tsup": "^8.1.0",
-    "typedoc": "^0.26.3",
+    "tsup": "^8.2.4",
+    "typedoc": "^0.26.5",
     "typedoc-plugin-extras": "^3.1.0",
     "typedoc-plugin-inline-sources": "^1.0.2",
-    "typedoc-plugin-mdn-links": "^3.2.1",
-    "typescript": "5.5.2"
+    "typedoc-plugin-mdn-links": "^3.2.8",
+    "typescript": "5.5.4"
   },
-  "packageManager": "pnpm@9.3.0+sha512.ee7b93e0c2bd11409c6424f92b866f31d3ea1bef5fbe47d3c7500cdc3c9668833d2e55681ad66df5b640c61fa9dc25d546efa54d76d7f8bf54b13614ac293631"
+  "packageManager": "pnpm@9.7.1+sha512.faf344af2d6ca65c4c5c8c2224ea77a81a5e8859cbc4e06b1511ddce2f0151512431dd19e6aff31f2c6a8f5f2aced9bd2273e1fed7dd4de1868984059d2c4247"
 }

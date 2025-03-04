@@ -1,27 +1,30 @@
 import type * as ESBUILD from "esbuild-wasm";
-
 import type { Platform } from "./configs/platform.ts";
+
 import { PLATFORM_AUTO } from "./configs/platform.ts";
+import { fromContext, toContext } from "./context/context.ts";
 
 import { defaultVersion, getEsbuild, getEsbuildVersion } from "./utils/get-esbuild.ts";
 import { INIT_COMPLETE, INIT_ERROR, INIT_START, dispatchEvent } from "./configs/events.ts";
-import { getState, setState } from "./configs/state.ts";
 
 /**
  * Configures how esbuild running in wasm is initialized 
  */
-export type InitOptions = ESBUILD.InitializeOptions & { platform?: Platform };
+export interface InitOptions extends ESBUILD.InitializeOptions {
+  platform?: Platform,
+  version?: string
+}
 
-export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]: Partial<[Platform, string]>, opts?: Partial<ESBUILD.InitializeOptions> | null) {
+export async function init(opts: Partial<ESBUILD.InitializeOptions> | null = {}, [platform = PLATFORM_AUTO, _version = defaultVersion]: Partial<[Platform, string]> = []) {
   opts ??= {};
   try {
-    if (!getState("initialized")) {
-      setState("initialized", true);
+    if (!fromContext("initialized")) {
+      toContext("initialized", true);
       dispatchEvent(INIT_START);
 
       const version = await getEsbuildVersion(_version);
       const esbuild = await getEsbuild(platform, version);
-      setState("esbuild", esbuild);
+      toContext("esbuild", esbuild);
       
       if (
         platform !== "node" &&
@@ -45,7 +48,7 @@ export async function init([platform = PLATFORM_AUTO, _version = defaultVersion]
       dispatchEvent(INIT_COMPLETE);
     }
 
-    return getState("esbuild");
+    return fromContext("esbuild");
   } catch (e) {
     const error = e as Error | unknown;
     dispatchEvent(INIT_ERROR, error as Error);

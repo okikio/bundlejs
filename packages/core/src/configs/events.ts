@@ -17,15 +17,15 @@ export const BUILD_ERROR = EventName("build.error");
 export const TRANSFORM_ERROR = EventName("transform.error");
 
 export interface IEVENT_MAP {
-  [INIT_START]: void,
+  [INIT_START]: never,
   [INIT_COMPLETE]: void,
   [INIT_ERROR]: Error,
-  [INIT_LOADING]: any,
+  [INIT_LOADING]: unknown,
 
-  [LOGGER_LOG]: any,
+  [LOGGER_LOG]: unknown,
   [LOGGER_ERROR]: Error,
-  [LOGGER_WARN]: any,
-  [LOGGER_INFO]: any,
+  [LOGGER_WARN]: unknown,
+  [LOGGER_INFO]: unknown,
 
   [BUILD_ERROR]: Error,
   [TRANSFORM_ERROR]: Error,
@@ -33,7 +33,7 @@ export interface IEVENT_MAP {
 
 export const EVENT_TARGET = new EventTarget();
 
-export class CustomEvent<T = any> extends Event {
+export class CustomEvent<T = unknown> extends Event {
   readonly detail: T;
   constructor(type: string, options?: CustomEventInit<T>) {
     super(type, options)
@@ -46,10 +46,10 @@ export class CustomEvent<T = any> extends Event {
  */
 export function addEventListener<K extends keyof IEVENT_MAP>(
   type: K,
-  listener: (this: Window, ev: CustomEvent<IEVENT_MAP[K]>) => any | EventListenerOrEventListenerObject,
+  listener: ((this: typeof globalThis, ev: CustomEvent<IEVENT_MAP[K]>) => unknown) | EventListenerObject,
   options?: boolean | AddEventListenerOptions,
 ) {
-  return EVENT_TARGET.addEventListener(type, listener, options)
+  return EVENT_TARGET.addEventListener(type, listener as EventListenerOrEventListenerObject, options);
 }
 
 /**
@@ -57,10 +57,10 @@ export function addEventListener<K extends keyof IEVENT_MAP>(
  */
 export function removeEventListener<K extends keyof IEVENT_MAP>(
   type: K,
-  listener: (this: Window, ev: CustomEvent<IEVENT_MAP[K]>) => any | EventListenerOrEventListenerObject,
+  listener: ((this: typeof globalThis, ev: CustomEvent<IEVENT_MAP[K]>) => any) | EventListenerObject,
   options?: boolean | AddEventListenerOptions,
 ) {
-  return EVENT_TARGET.removeEventListener(type, listener, options)
+  return EVENT_TARGET.removeEventListener(type, listener as EventListenerOrEventListenerObject, options);
 }
 
 /**
@@ -83,7 +83,7 @@ addEventListener(INIT_START, (e) => {
   console.time(INIT_COMPLETE); 
   console.log(INIT_START, e.detail);
 });
-addEventListener(INIT_COMPLETE, (e) => console.timeEnd(INIT_COMPLETE));
+addEventListener(INIT_COMPLETE, (e) => console.info(INIT_COMPLETE, e.detail));
 addEventListener(INIT_LOADING, (e) => console.log(INIT_LOADING, e.detail));
 addEventListener(INIT_ERROR, (e) => console.error(INIT_ERROR, e.detail));
 addEventListener(LOGGER_LOG, (e) => { 

@@ -8,7 +8,7 @@ import { DefaultConfig } from "../../configs/options.ts";
 import { serialize } from "../../utils/serialize-javascript.ts";
 import { configModelResetValue } from "../../utils/get-initial.ts"; 
 import { compressToURL } from "@bundle/utils/utils/lz-string.ts";
-import { deepDiff, deepMerge } from "@bundle/utils/utils/deep-equal.ts";
+import { deepDiff, deepMerge } from "@bundle/utils/utils/deep-object.ts";
 import ts from "typescript";
 
 export async function _createShareURL(

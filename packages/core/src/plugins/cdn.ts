@@ -1,22 +1,24 @@
-import type { BuildConfig, LocalState, ESBUILD, PackageJson } from "../types.ts";
-import type { StateArray } from "../configs/state.ts";
+import type { PackageJson, FullPackageVersion } from "@bundle/utils/utils/types.ts";
+import type { LocalState, ESBUILD } from "../types.ts";
+import type { Context } from "../context/context.ts";
 
-import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
+import { fromContext } from "../context/context.ts";
 
 import { resolve, legacy } from "@bundle/utils/utils/resolve-exports-imports.ts";
 import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
-import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
+import { getPackageOfVersion, getRegistryURL } from "@bundle/utils/utils/npm-search.ts";
 
 import { extname, isBareImport, join } from "@bundle/utils/utils/path.ts";
 import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-object.ts";
+
+import { determineExtension, HTTP_NAMESPACE } from "./http.ts";
+import { dispatchEvent, LOGGER_WARN } from "../configs/events.ts";
 
 import { getCDNUrl, getCDNStyle, DEFAULT_CDN_HOST } from "../utils/cdn-format.ts";
-import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
 
 /** CDN Plugin Namespace */
 export const CDN_NAMESPACE = "cdn-url";
-
-const FAILED_MANIFEST_URLS = new Set<string>();
 
 /**
  * Resolution algorithm for the esbuild CDN plugin 
@@ -24,8 +26,15 @@ const FAILED_MANIFEST_URLS = new Set<string>();
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) => {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
+export function CdnResolution<T>(StateContext: Context<LocalState<T> & { origin: string }>) {
+  const LocalConfig = fromContext("config", StateContext)!;
+  const manifest: Partial<PackageJson | FullPackageVersion> = LocalConfig["package.json"] ?? {};
+
+  const cdn = fromContext("origin", StateContext)! ?? DEFAULT_CDN_HOST;
+  const failedManifestUrls = fromContext("failedManifestUrls", StateContext) ?? new Set<string>();
+  const packageManifestsMap = fromContext("packageManifests", StateContext) ?? new Map<string, PackageJson | FullPackageVersion>();
+  
+  return async function (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> {
     let argPath = args.path;
 
     // Conceptually package.json = manifest, but for naming reasons we'll just call it manifest
@@ -33,16 +42,16 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
     // Object.assign & deepMerge essentially do the same thing for flat objects, 
     // except there are some instances where Object.assign is faster
-    let initialManifest: PackageJson = deepMerge(
-      structuredClone(rootPkg),
+    let initialManifest: PackageJson | FullPackageVersion = deepMerge(
+      structuredClone(manifest),
 
       // If we've manually set the version of the dependency in the config, 
       // then force all occurances of that dependency to use the version specified in the config
       Object.assign(
         structuredClone(_inheritedManifest),
-        rootPkg.devDependencies ? { devDependencies: rootPkg.devDependencies } : null,
-        rootPkg.peerDependencies ? { peerDependencies: rootPkg.peerDependencies } : null,
-        rootPkg.dependencies ? { dependencies: rootPkg.dependencies } : null,
+        manifest.devDependencies ? { devDependencies: manifest.devDependencies } : null,
+        manifest.peerDependencies ? { peerDependencies: manifest.peerDependencies } : null,
+        manifest.dependencies ? { dependencies: manifest.dependencies } : null,
       )
     );
 
@@ -104,7 +113,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
           // If the subpath is a directory check to see if that subpath has a `package.json`,
           // after which check if the parent directory has a `package.json`
           const manifestVariants = [
-            { path: `${parsed.name}@${assumedVersion}/package.json` },
+            { path: getRegistryURL(`${parsed.name}@${assumedVersion}`).packageVersionURL },
+            // { path: `${parsed.name}@${assumedVersion}/package.json` },
             isDirectory ? {
               path: `${parsed.name}@${assumedVersion}${parsedSubpath}/package.json`,
               isDir: true
@@ -116,8 +126,8 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
             const { path, isDir } = manifestVariants[i]!;
             const { url } = getCDNUrl(path, origin);
 
-            // If the url was fetched before and failed, skip it 
-            if (FAILED_MANIFEST_URLS.has(url.href) && i < manifestVariantsLen - 1) 
+            // If the url was fetched before and failed, skip it and try the next one
+            if (failedManifestUrls?.has?.(url.href) && i < manifestVariantsLen - 1) 
               continue;
 
             try {
@@ -127,9 +137,14 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
               manifest = await res.json();
               isSubpathDirectoryPackage = isDir ?? false;
+
+              // If the package.json is not a sub-directory package, then we should cache it as such
+              if (!isDir) {
+                packageManifestsMap.set(`${parsed.name}${manifest?.version || assumedVersion}`, manifest);
+              }
               break;
             } catch (e) {
-              FAILED_MANIFEST_URLS.add(url.href);
+              failedManifestUrls?.add?.(url.href);
 
               // If after checking all the different file extensions none of them are valid
               // Throw the last fetch error encountered, as that is generally the most accurate error
@@ -212,13 +227,25 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
 
       // If the CDN is npm based then it should add the parsed version to the URL
       // e.g. https://unpkg.com/spring-easing@v1.0.0/
-      const knownVersion = manifest.version || assumedVersion;
+      const knownVersion = manifest?.version || assumedVersion;
       const cdnVersionFormat = NPM_CDN ? "@" + knownVersion : "";
       const { url } = getCDNUrl(`${parsed.name}${cdnVersionFormat}${resultSubpath}`, origin);
 
+      // Store the package.json manifest of the dependencies fetched in the cache
+
+      if (!packageManifestsMap.get(`${parsed.name}${knownVersion}`)) {
+        try {
+          const _manifest = await getPackageOfVersion(`${parsed.name}${knownVersion}`);
+          if (_manifest) 
+            packageManifestsMap.set(`${parsed.name}${knownVersion}`, _manifest);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
       const peerDeps = Object.assign(
-        initialManifest.peerDependencies ?? {}, 
-        manifest.peerDependencies ?? {},
+        initialManifest?.peerDependencies ?? {}, 
+        manifest?.peerDependencies ?? {},
         {
           // Some packages rely on cyclic dependencies, e.g. https://x.com/jsbundle/status/1792325771354149261
           // so we create a new field in peerDependencies and place the current package and it's version,
@@ -237,7 +264,7 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
       return {
         namespace: HTTP_NAMESPACE,
         path: (await determineExtension(url.toString())).url,
-        sideEffects: typeof manifest.sideEffects === "boolean" ? manifest.sideEffects : undefined,
+        sideEffects: typeof manifest?.sideEffects === "boolean" ? manifest.sideEffects : undefined,
         pluginData: {
           manifest: deepMerge(
             structuredClone(manifest), 
@@ -255,18 +282,13 @@ export const CDN_RESOLVE = (cdn = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson
  * @param cdn The default CDN to use
  * @param logger Console log
  */
-export function CDN(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
-  // Convert CDN values to URL origins
-  const { origin: cdn } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
-  const [get] = state;
-  const pkgJSON = config["package.json"]
-
+export function CdnPlugin<T>(StateContext: Context<LocalState<T> & { origin: string }>): ESBUILD.Plugin {
   return {
     name: CDN_NAMESPACE,
     setup(build) {
       // Resolve bare imports to the CDN required using different URL schemes
-      build.onResolve({ filter: /.*/ }, CDN_RESOLVE(cdn, pkgJSON));
-      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CDN_RESOLVE(cdn, pkgJSON));
+      build.onResolve({ filter: /.*/ }, CdnResolution(StateContext));
+      build.onResolve({ filter: /.*/, namespace: CDN_NAMESPACE }, CdnResolution(StateContext));
     },
   };
 };

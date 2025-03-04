@@ -1,22 +1,23 @@
 import type { BuildConfig, ESBUILD, LocalState } from "./types.ts";
-import type { StateArray } from "./configs/state.ts";
+import type { FullPackageVersion, PackageJson } from "@bundle/utils/utils/types.ts";
 
-import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
-import { EXTERNAL } from "./plugins/external.ts";
-import { ALIAS } from "./plugins/alias.ts";
-import { HTTP } from "./plugins/http.ts";
-import { CDN } from "./plugins/cdn.ts";
+import { VirtualFileSystemPlugin } from "./plugins/virtual-fs.ts";
+import { ExternalPlugin } from "./plugins/external.ts";
+import { AliasPlugin } from "./plugins/alias.ts";
+import { HttpPlugin } from "./plugins/http.ts";
+import { CdnPlugin } from "./plugins/cdn.ts";
 
-import { createConfig } from "./configs/config.ts";
-import { PLATFORM_AUTO } from "./configs/platform.ts";
-import { createState, getState, setState } from "./configs/state.ts";
-
-import { useFileSystem, type IFileSystem } from "./utils/filesystem.ts";
-import { createNotice } from "./utils/create-notice.ts";
-import { DEFAULT_CDN_HOST } from "./utils/cdn-format.ts";
-import { init } from "./init.ts";
+import { Context, fromContext, toContext } from "./context/context.ts";
 
 import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, LOGGER_LOG, LOGGER_WARN, dispatchEvent } from "./configs/events.ts";
+import { createConfig } from "./configs/config.ts";
+import { PLATFORM_AUTO } from "./configs/platform.ts";
+
+import { DEFAULT_CDN_HOST, getCDNUrl } from "./utils/cdn-format.ts";
+import { useFileSystem, type IFileSystem } from "./utils/filesystem.ts";
+import { createNotice } from "./utils/create-notice.ts";
+
+import { init } from "./init.ts";
 
 /**
  * Default build config
@@ -50,42 +51,52 @@ export const BUILD_CONFIG: BuildConfig = {
   }
 };
 
-export type BuildResult = (ESBUILD.BuildResult) & {
+export interface BuildResult extends ESBUILD.BuildResult {
   outputs: ESBUILD.OutputFile[];
   contents: ESBUILD.OutputFile[];
 };
 
-export type BuildResultContext = (ESBUILD.BuildResult) & {
-  config: BuildConfig,
-  state: StateArray<LocalState>
+export interface BuildResultContext extends ESBUILD.BuildResult {
+  state: Context<LocalState>
 };
 
 export const TheFileSystem = useFileSystem();
 export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSystem<unknown>> = TheFileSystem): Promise<BuildResult> {
-  if (!getState("initialized"))
+  if (!fromContext("initialized"))
     dispatchEvent(INIT_LOADING);
 
-  const CONFIG = createConfig("build", opts);
-  const STATE = createState<LocalState>({
+  const StateContext = new Context<LocalState>({
     filesystem: await filesystem,
     assets: [],
-    GLOBAL: [getState, setState],
+    config: createConfig("build", opts),
+    failedExtensionChecks: new Set<string>(),
+    failedManifestUrls: new Set<string>(),
+    host: DEFAULT_CDN_HOST,
+    versions: new Map<string, string>(),
+    packageManifests: new Map<string, PackageJson | FullPackageVersion>(),
   });
 
-  const { platform, version, ...initOpts } = CONFIG.init ?? {};
-  const { build: bundle } = await init([platform, version], initOpts) ?? {};
-  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const LocalConfig = fromContext("config", StateContext)!;
+  const { origin: host } = LocalConfig?.cdn && !/:/.test(LocalConfig?.cdn) ?
+    getCDNUrl(LocalConfig?.cdn + ":") :
+    getCDNUrl(LocalConfig?.cdn ?? DEFAULT_CDN_HOST);
+
+  toContext("host", host ?? DEFAULT_CDN_HOST, StateContext);
+
+  const { platform, version, ...initOpts } = LocalConfig.init ?? {};
+  const { build: bundle } = await init(initOpts, [platform, version]) ?? {};
+  const { define = {}, ...esbuild_opts } = LocalConfig.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-  let result: ESBUILD.BuildResult;
+  let build_result: ESBUILD.BuildResult;
 
   try {
     if (!bundle) 
       throw new Error("Initialization failed, couldn't access esbuild build function");
 
     try {
-      result = await bundle({
-        entryPoints: CONFIG?.entryPoints ?? [],
+      build_result = await bundle({
+        entryPoints: LocalConfig?.entryPoints ?? [],
         loader: {
           ".png": "file",
           ".jpeg": "file",
@@ -102,13 +113,13 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
         write: false,
         outdir: "/",
         plugins: [
-          ALIAS(STATE, CONFIG),
-          EXTERNAL(STATE, CONFIG),
-          VIRTUAL_FS(STATE, CONFIG),
-          HTTP(STATE, CONFIG),
-          CDN(STATE, CONFIG),
+          AliasPlugin(StateContext),
+          ExternalPlugin(StateContext),
+          VirtualFileSystemPlugin(StateContext),
+          HttpPlugin(StateContext),
+          CdnPlugin(StateContext.with({ origin: host }) as Context<LocalState & { origin: string }>),
         ],
-        ...esbuildOpts,
+        ...esbuild_opts,
       });
     } catch (e) {
       const fail = e as ESBUILD.BuildFailure;
@@ -126,9 +137,8 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
     }
 
     return await formatBuildResult({
-      config: CONFIG,
-      state: STATE,
-      ...result
+      state: StateContext,
+      ...build_result
     });
   } catch (e) {
     const err = e as Error;
@@ -141,17 +151,17 @@ export async function build(opts: BuildConfig = {}, filesystem: Promise<IFileSys
 }
 
 export async function formatBuildResult(_ctx: BuildResultContext) {
-  const { config: CONFIG, state: STATE, ...ctx } = _ctx;
-  const [get] = STATE;
+  const { state: StateContext, ...build_result } = _ctx;
+  const LocalConfig = StateContext.target.config!;
 
   try {
-    const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+    const { define = {}, ...esbuild_opts } = LocalConfig.esbuild ?? {};
     let outputs: ESBUILD.OutputFile[] = [];
     let contents: ESBUILD.OutputFile[] = [];
 
-    if (ctx.warnings?.length > 0) {
+    if (build_result.warnings?.length > 0) {
       // Log errors with added color info. to the virtual console
-      const ansiMsgs = await createNotice(ctx.warnings, "warning", false) ?? [];
+      const ansiMsgs = await createNotice(build_result.warnings, "warning", false) ?? [];
       dispatchEvent(LOGGER_WARN, ansiMsgs.join("\n"));
 
       const message = `${ansiMsgs.length} warning(s) `;
@@ -160,8 +170,8 @@ export async function formatBuildResult(_ctx: BuildResultContext) {
 
     // Create an array of assets and actual output files, this will later be used to calculate total file size
     outputs = await Promise.all(
-      [...(get()["assets"] ?? [])]
-        .concat(ctx?.outputFiles as ESBUILD.OutputFile[])
+      Array.from(StateContext.target.assets ?? [])
+        .concat(build_result?.outputFiles as ESBUILD.OutputFile[])
     );
 
     contents = await Promise.all(
@@ -171,7 +181,7 @@ export async function formatBuildResult(_ctx: BuildResultContext) {
             return null;
 
           // For debugging reasons, if the user chooses verbose, print all the content to the Shared Worker console
-          if (esbuildOpts?.logLevel === "verbose") {
+          if (esbuild_opts?.logLevel === "verbose") {
             const ignoreFile = /\.(wasm|png|jpeg|webp)$/.test(path);
             if (ignoreFile) {
               dispatchEvent(LOGGER_LOG, "Output File: " + path);
@@ -180,7 +190,12 @@ export async function formatBuildResult(_ctx: BuildResultContext) {
             }
           }
 
-          return { path, text, contents, hash };
+          return {
+            path,
+            get text() { return text },
+            contents,
+            hash
+          };
         })
 
         // Remove null output files
@@ -193,7 +208,8 @@ export async function formatBuildResult(_ctx: BuildResultContext) {
     // console.log({ contentsLen: contents.length })
 
     return {
-      config: CONFIG,
+      state: StateContext.target,
+      config: LocalConfig,
 
       /** 
        * The output and asset files without unnecessary croft, e.g. `.map` sourcemap files 
@@ -205,10 +221,8 @@ export async function formatBuildResult(_ctx: BuildResultContext) {
        */
       outputs,
 
-
-      files: (await get().filesystem?.files()) || null,
-
-      ...ctx,
+      files: (await StateContext.target.filesystem?.files()) || null,
+      ...build_result,
     };
   } catch (e) {
     const err = e as Error;

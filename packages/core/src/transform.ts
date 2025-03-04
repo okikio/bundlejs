@@ -1,6 +1,6 @@
 import type { CommonConfigOptions, ESBUILD } from "./types.ts";
 
-import { getState } from "./configs/state.ts";
+import { fromContext } from "./context/context.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
 import { createConfig } from "./configs/config.ts";
 
@@ -8,7 +8,7 @@ import { createNotice } from "./utils/create-notice.ts";
 import { INIT_LOADING, LOGGER_ERROR, dispatchEvent } from "./configs/events.ts";
 import { init } from "./init.ts";
 
-export type TransformConfig = CommonConfigOptions & {
+export interface TransformConfig extends CommonConfigOptions {
   /* https://esbuild.github.io/api/#transform-api */
   esbuild?: ESBUILD.TransformOptions,
 };
@@ -31,23 +31,26 @@ export const TRANSFORM_CONFIG: TransformConfig = {
 };
 
 export async function transform(input: string | Uint8Array, opts: TransformConfig = {}) {
-  if (!getState("initialized"))
+  if (!fromContext("initialized"))
     dispatchEvent(INIT_LOADING);
 
-  const CONFIG = createConfig("transform", opts);
+  const LocalConfig = createConfig("transform", opts);
 
-  const { platform, version, ...initOpts } = CONFIG.init;
-  const { transform } = await init([platform, version], initOpts);
-  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const { platform, version, ...initOpts } = LocalConfig.init ?? {};
+  const { transform } = await init(initOpts, [platform, version]) ?? {};
+  const { define = {}, ...esbuildOpts } = LocalConfig.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-  let result: ESBUILD.TransformResult;
+  let transform_result: ESBUILD.TransformResult;
 
   try {
+    if (!transform)
+      throw new Error("Initialization failed, couldn't access esbuild transform function");
+
     try {
       // vite would automatically replace this, so I have to do it this way
-      const key = "p.env.NODE_ENV".replace("p.", "process.");
-      result = await transform(input, {
+      const key = "process.env.NODE_ENV";
+      transform_result = await transform(input, {
         define: {
           "__NODE__": "false",
           [key]: "\"production\"",
@@ -56,10 +59,11 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
         ...esbuildOpts,
       });
     } catch (e) {
-      if (e.errors) {
+      const fail = e as ESBUILD.TransformFailure;
+      if (fail.errors) {
         // Log errors with added color info. to the virtual console
-        const asciMsgs = [...await createNotice(e.errors, "error", false)];
-        const htmlMsgs = [...await createNotice(e.errors, "error")];
+        const asciMsgs = [...await createNotice(fail.errors, "error", false)];
+        const htmlMsgs = [...await createNotice(fail.errors, "error")];
 
         dispatchEvent(LOGGER_ERROR, new Error(JSON.stringify({ asciMsgs, htmlMsgs })));
 
@@ -69,6 +73,6 @@ export async function transform(input: string | Uint8Array, opts: TransformConfi
       } else throw e;
     }
 
-    return result;
+    return transform_result;
   } catch (e) { }
 }

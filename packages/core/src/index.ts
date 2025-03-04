@@ -6,7 +6,7 @@ export * from "./context.ts";
 
 export * from "./configs/config.ts";
 export * from "./configs/events.ts";
-export * from "./configs/state.ts";
+export * from "./context/context.ts";
 export * from "./configs/platform.ts";
 
 export * from "./utils/index.ts";

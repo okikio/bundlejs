@@ -1,5 +1,5 @@
 import type { CompressConfig, CompressionOptions } from "./types";
-import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-object.ts";
 
 /**
  * Default compress config

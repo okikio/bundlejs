@@ -1,6 +1,6 @@
 export * from "./utils/ansi.ts";
 export * from "./utils/async.ts";
-export * from "./utils/deep-equal.ts";
+export * from "./utils/deep-object.ts";
 export * from "./utils/encode-decode.ts";
 export * from "./utils/fetch-and-cache.ts";
 

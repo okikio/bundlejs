@@ -76,8 +76,8 @@
     "@bundle/utils": "^"
   },
   "devDependencies": {
-    "tsup": "^8.1.0",
-    "tsx": "^4.15.9",
-    "vitest": "^1.6.0"
+    "tsup": "^8.2.4",
+    "tsx": "^4.17.0",
+    "vitest": "^2.0.5"
   }
 }

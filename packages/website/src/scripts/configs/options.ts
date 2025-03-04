@@ -1,6 +1,6 @@
 import type { BuildConfig } from "@bundle/core/src/index.ts";
 import type { CompressConfig } from "@bundle/compress/src/index.ts";
-import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-object.ts";
 
 export type ConfigOptions = Omit<BuildConfig, "ascii" | "filesystem" | "entryPoints" | "init"> & {
   /** 

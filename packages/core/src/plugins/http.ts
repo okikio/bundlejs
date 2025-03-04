@@ -1,16 +1,22 @@
 /** Based on https://github.com/hardfist/neo-tools/blob/main/packages/bundler/src/plugins/http.ts */
-import type { ESBUILD, BuildConfig, LocalState, PackageJson } from "../types.ts";
-import type { StateArray } from "../configs/state.ts";
+import type { ESBUILD, LocalState } from "../types.ts";
+import type { Context } from "../context/context.ts";
+
+import { fromContext, toContext } from "../context/context.ts";
 
 import { getRequest } from "@bundle/utils/utils/fetch-and-cache.ts";
 import { decode } from "@bundle/utils/utils/encode-decode.ts";
 
-import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl, inferLoader, setFile, type IFileSystem } from "../utils/index.ts";
 import { LOGGER_ERROR, LOGGER_INFO, LOGGER_WARN, dispatchEvent } from "../configs/events.ts";
+
+import { DEFAULT_CDN_HOST, getCDNStyle, getCDNUrl } from "../utils/cdn-format.ts";
+import { inferLoader } from "../utils/loader.ts";
+import { setFile } from "../utils/filesystem.ts";
 
 import { isBareImport, isAbsolute } from "@bundle/utils/utils/path.ts";
 import { toURLPath, urlJoin } from "@bundle/utils/utils/url.ts";
-import { CDN_RESOLVE } from "./cdn.ts";
+
+import { CdnResolution } from "./cdn.ts";
 
 /** HTTP Plugin Namespace */
 export const HTTP_NAMESPACE = "http-url";
@@ -57,15 +63,14 @@ export async function fetchPkg(url: string, fetchOpts?: RequestInit) {
  * @param namespace esbuild plugin namespace
  * @param logger Console log
  */
-export async function fetchAssets<T>(path: string, content: Uint8Array, state: StateArray<LocalState<T>>) {
+export async function fetchAssets<T>(path: string, content: Uint8Array, StateContext: Context<LocalState<T>>) {
   // Regex for `new URL("./path.js", import.meta.url)`, 
   // I added support for comments so you can add comments and the regex
   // will ignore the comments
   const rgx = /new(?:\s|\n?)+URL\((?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*(?:(?!\`.*\$\{)['"`](.*)['"`]),(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*import\.meta\.url(?:\s*(?:\/\*(?:.*\n)*\*\/)?(?:\/\/.*\n)?)*\)/g;
   const parentURL = new URL("./", path).toString();
 
-  const [getState] = state;
-  const FileSystem = getState().filesystem;
+  const FileSystem = fromContext("filesystem", StateContext);
 
   const code = decode(content);
   const matches = Array.from(code.matchAll(rgx)) as RegExpMatchArray[];
@@ -101,17 +106,20 @@ const allEndingVariants = Array.from(new Set(fileEndings.map(ending => {
 }).flat()));
 
 const endingVariantsLength = allEndingVariants.length;
-const FAILED_EXT_URLS = new Set<string>();
 
 /**
  * Test the waters, what extension are we talking about here
  * @param path 
  * @returns 
  */
-export async function determineExtension(path: string, headersOnly: boolean = true) {
+export async function determineExtension<T>(path: string, headersOnly: boolean = true, StateContext: Context<LocalState<T>> | null = null) {
   // Some typescript files don't have file extensions but you can't fetch a file without their file extension
   // so bundle tries to solve for that
   const argPath = (suffix = "") => path + suffix;
+  const failedExtChecks = (
+    StateContext ? fromContext("failedExtensionChecks", StateContext) : null
+  ) ?? new Set<string>();
+
   let url = path;
   let content: Uint8Array | undefined;
   let contentType: string | null = null;
@@ -122,12 +130,12 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
     const testingUrl = argPath(endings);
 
     try {
-      if (FAILED_EXT_URLS.has(testingUrl)) continue;
+      if (failedExtChecks?.has?.(testingUrl)) continue;
 
       ({ url, contentType, content } = await fetchPkg(testingUrl, headersOnly ? { method: "HEAD" } : undefined));
       break;
     } catch (e) {
-      FAILED_EXT_URLS.add(testingUrl);
+      failedExtChecks?.add?.(testingUrl);
 
       if (i === 0) {
         err = e as Error;
@@ -151,8 +159,10 @@ export async function determineExtension(path: string, headersOnly: boolean = tr
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}) {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
+export function HttpResolution<T>(StateContext: Context<LocalState<T>>) {
+  const host = fromContext("host", StateContext)!;
+
+  return async function (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> {
     // Some packages use "../../" with the assumption that "/" is equal to "/index.js", this is supposed to fix that bug
     const argPath = args.path; //.replace(/\/$/, "/index");
 
@@ -163,7 +173,9 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
         return {
           path: argPath,
           namespace: HTTP_NAMESPACE,
-          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? 
+            args.pluginData?.manifest?.sideEffects : 
+            undefined,
           pluginData: { manifest: args.pluginData?.manifest },
         };
       }
@@ -179,7 +191,8 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
 
       // If the import is a bare import, use the CDN plugins resolution algorithm
       if (isBareImport(argPath)) {
-        return await CDN_RESOLVE(origin, rootPkg)(args);
+        const ctx = StateContext.with({ origin }) as Context<LocalState<T> & { origin: string }>;
+        return await CdnResolution(ctx)(args);
       } else {
         /** 
          * If the import is neither an http import or a bare import (module import), then it is an absolute import.
@@ -198,7 +211,9 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
         return {
           path: getCDNUrl(argPath, origin).url.toString(),
           namespace: HTTP_NAMESPACE,
-          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+          sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? 
+            args.pluginData?.manifest?.sideEffects : 
+            undefined,
           pluginData: { manifest: args.pluginData?.manifest },
         };
       }
@@ -215,7 +230,9 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
     return {
       path,
       namespace: HTTP_NAMESPACE,
-      sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? args.pluginData?.manifest?.sideEffects : undefined,
+      sideEffects: typeof args.pluginData?.manifest?.sideEffects === "boolean" ? 
+        args.pluginData?.manifest?.sideEffects : 
+        undefined,
       pluginData: { manifest: args.pluginData?.manifest },
     };
   };
@@ -228,14 +245,17 @@ export function HTTP_RESOLVE(host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJs
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): ESBUILD.Plugin {
+export function HttpPlugin<T>(StateContext: Context<LocalState<T>>): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
-  const pkgJSON = config["package.json"];
+  const LocalConfig = fromContext("config", StateContext)!;
+  const { origin: host } = LocalConfig?.cdn && !/:/.test(LocalConfig?.cdn) ?
+    getCDNUrl(LocalConfig?.cdn + ":") :
+    getCDNUrl(LocalConfig?.cdn ?? DEFAULT_CDN_HOST);
 
-  const [get, set] = state;
-  const assets = get()["assets"] ?? [];
-  const FileSystem = get().filesystem;
+  toContext("host", host ?? DEFAULT_CDN_HOST, StateContext);
+
+  const Assets = fromContext("assets", StateContext) ?? [];
+  const FileSystem = fromContext("filesystem", StateContext);
 
   return {
     name: HTTP_NAMESPACE,
@@ -256,7 +276,7 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HTTP_RESOLVE(host, pkgJSON));
+      build.onResolve({ filter: /.*/, namespace: HTTP_NAMESPACE }, HttpResolution(StateContext));
 
       // When a URL is loaded, we want to actually download the content
       // from the internet. This has just enough logic to be able to
@@ -267,7 +287,7 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
         // so bundle tries to solve for that
         let content: Uint8Array | undefined, url: string;
         let contentType: string | null = null;
-        ({ content, contentType, url } = await determineExtension(args.path, false));
+        ({ content, contentType, url } = await determineExtension(args.path, false, StateContext));
 
         // Create a virtual file system for storing node modules
         // This is for building a package bundle analyzer 
@@ -282,10 +302,10 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
           }
 
           const _assetResults =
-            (await fetchAssets(url, content, state))
+            (await fetchAssets(url, content, StateContext))
               .filter((result) => {
                 if (result.status === "rejected") {
-                  dispatchEvent(LOGGER_WARN, "Asset fetch failed.\n" + result?.reason?.toString())
+                  dispatchEvent(LOGGER_WARN, `Asset '${url}' fetch failed.\n` + result?.reason?.toString())
                   return false;
                 } else return true;
               })
@@ -294,7 +314,7 @@ export function HTTP<T>(state: StateArray<LocalState<T>>, config: BuildConfig): 
                   return result.value;
               }) as ESBUILD.OutputFile[];
 
-          set({ assets: assets.concat(_assetResults) });
+          toContext("assets", Assets.concat(_assetResults), StateContext);
           return {
             contents: content,
             loader: inferLoader(url, contentType),

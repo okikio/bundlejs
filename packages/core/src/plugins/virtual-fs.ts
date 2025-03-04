@@ -1,23 +1,21 @@
 // Based on https://github.com/okikio/bundle/blob/main/src/ts/plugins/virtual-fs.ts
-import type { BuildConfig, LocalState, ESBUILD } from "../types.ts";
-import type { StateArray } from "../configs/state.ts";
+import type { LocalState, ESBUILD } from "../types.ts";
+import type { IFileSystem } from "../utils/filesystem.ts";
+import type { Context } from "../context/context.ts";
 
+import { getResolvedPath, getFile, hasFile } from "../utils/filesystem.ts";
+import { fromContext } from "../context/context.ts";
 import { inferLoader } from "../utils/loader.ts";
-import { getResolvedPath, getFile, type IFileSystem, hasFile } from "../utils/index.ts";
-import { TheFileSystem } from "../build.ts";
 
 export const VIRTUAL_FILESYSTEM_NAMESPACE = "virtual-filesystem";
-export function VIRTUAL_FS<T = Uint8Array>(state: StateArray<LocalState<T>>, config: BuildConfig): ESBUILD.Plugin {
-  const [getState] = state;
-  const FileSystem = getState().filesystem!;
-  const fs = FileSystem;
-  FileSystem?.files().then(x => console.log({ files: x }))
+export function VirtualFileSystemPlugin<T = Uint8Array>(StateContext: Context<LocalState<T>>): ESBUILD.Plugin {
+  const FileSystem = fromContext("filesystem", StateContext)!;
 
   return {
     name: VIRTUAL_FILESYSTEM_NAMESPACE,
     setup(build) {
       build.onResolve({ filter: /.*/ }, async (args) => {
-        const exists = await hasFile<T, IFileSystem<T>>(fs, args.path, args?.pluginData?.importer);
+        const exists = await hasFile<T, IFileSystem<T>>(FileSystem, args.path, args?.pluginData?.importer);
 
         if (exists) {
           return {
@@ -30,7 +28,7 @@ export function VIRTUAL_FS<T = Uint8Array>(state: StateArray<LocalState<T>>, con
 
       build.onLoad({ filter: /.*/, namespace: VIRTUAL_FILESYSTEM_NAMESPACE }, async (args) => {
         const resolvedPath = getResolvedPath(args.path, args?.pluginData?.importer);
-        const content = await getFile(fs, resolvedPath, "buffer");
+        const content = await getFile(FileSystem, resolvedPath, "buffer");
 
         if (content && content?.length > 0) {
           return {

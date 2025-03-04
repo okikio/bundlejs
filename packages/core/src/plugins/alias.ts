@@ -1,12 +1,14 @@
-import type { ESBUILD, PackageJson, BuildConfig, LocalState } from "../types.ts";
-import type { StateArray } from "../configs/state.ts";
+import type { ESBUILD, LocalState } from "../types.ts";
+import type { Context } from "../context/context.ts";
+
+import { fromContext } from "../context/context.ts";
 
 import { EXTERNALS_NAMESPACE } from "./external.ts";
-import { HTTP_RESOLVE } from "./http.ts";
-import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
+import { HttpResolution } from "./http.ts";
 
-import { getCDNUrl, DEFAULT_CDN_HOST } from "../utils/cdn-format.ts";
+import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
 import { isBareImport } from "@bundle/utils/utils/path.ts";
+import { getCDNUrl } from "../utils/cdn-format.ts";
 
 /** Alias Plugin Namespace */
 export const ALIAS_NAMESPACE = "alias-globals";
@@ -17,7 +19,7 @@ export const ALIAS_NAMESPACE = "alias-globals";
  * @param id The package to find an alias for 
  * @param aliases An object with package as the key and the package alias as the value, e.g. { "fs": "memfs" }
  */
-export const isAlias = (id: string, aliases = {}) => {
+export function isAlias (id: string, aliases = {}) {
   if (!isBareImport(id)) return false;
 
   const aliasKeys = Object.keys(aliases);
@@ -36,8 +38,11 @@ export const isAlias = (id: string, aliases = {}) => {
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export const ALIAS_RESOLVE = (aliases: Record<PropertyKey, string | undefined> = {}, host = DEFAULT_CDN_HOST, rootPkg: Partial<PackageJson> = {}, FAILED_EXTENSION_CHECKS?: Set<string>) => {
-  return async (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> => {
+export function AliasResolution<T>(StateContext: Context<LocalState<T>>) {
+  const LocalConfig = fromContext("config", StateContext)!;
+  const { alias: aliases = {} } = LocalConfig;
+
+  return async function (args: ESBUILD.OnResolveArgs): Promise<ESBUILD.OnResolveResult | undefined> {
     const path = args.path.replace(/^node\:/, "");
     const { path: argPath } = getCDNUrl(path);
 
@@ -46,7 +51,7 @@ export const ALIAS_RESOLVE = (aliases: Record<PropertyKey, string | undefined> =
       const aliasPath = aliases[pkgDetails.name];
 
       if (aliasPath) {
-        return HTTP_RESOLVE(host, rootPkg)({
+        return HttpResolution(StateContext)({
           ...args,
           path: aliasPath
         });
@@ -62,15 +67,11 @@ export const ALIAS_RESOLVE = (aliases: Record<PropertyKey, string | undefined> =
  * @param host The default host origin to use if an import doesn't already have one
  * @param logger Console log
  */
-export function ALIAS<T>(state: StateArray<LocalState<T>>, config: BuildConfig): ESBUILD.Plugin {
+export function AliasPlugin<T>(StateContext: Context<LocalState<T>>): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
-  const pkgJSON = config["package.json"];
-  
-  const { polyfill = false, alias: aliases = {} } = config;
-  const [get] = state;
+  const LocalConfig = fromContext("config", StateContext)!;
+  const { polyfill = false, alias: aliases = {} } = LocalConfig; 
 
-  const FAILED_EXTENSION_CHECKS = get().FAILED_EXTENSION_CHECKS as Set<string> | undefined;
   return {
     name: ALIAS_NAMESPACE,
     setup(build) {
@@ -80,7 +81,7 @@ export function ALIAS<T>(state: StateArray<LocalState<T>>, config: BuildConfig):
       // this plugin.
       build.onResolve({ filter: /^node\:.*/ }, (args) => {
         if (isAlias(args.path, aliases))
-          return ALIAS_RESOLVE(aliases, host, pkgJSON, FAILED_EXTENSION_CHECKS)(args);
+          return AliasResolution(StateContext)(args);
 
         if (!polyfill) {
           return {
@@ -96,8 +97,8 @@ export function ALIAS<T>(state: StateArray<LocalState<T>>, config: BuildConfig):
       // files will be in the "http-url" namespace. Make sure to keep
       // the newly resolved URL in the "http-url" namespace so imports
       // inside it will also be resolved as URLs recursively.
-      build.onResolve({ filter: /.*/ }, ALIAS_RESOLVE(aliases, host, pkgJSON, FAILED_EXTENSION_CHECKS));
-      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, ALIAS_RESOLVE(aliases, host, pkgJSON, FAILED_EXTENSION_CHECKS));
+      build.onResolve({ filter: /.*/ }, AliasResolution(StateContext));
+      build.onResolve({ filter: /.*/, namespace: ALIAS_NAMESPACE }, AliasResolution(StateContext));
     },
   };
 };

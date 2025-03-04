@@ -10,6 +10,7 @@
     "@bundle/utils/deno/": "../utils/src/deno/",
     "@bundle/utils/src/": "../utils/src/",
     "@libs/reactive": "jsr:@libs/reactive",
+    "@libs/typing": "jsr:@libs/typing@^2.8.1",
     "@logtape/logtape": "jsr:@logtape/logtape",
     "esbuild": "npm:esbuild",
     "esbuild-wasm": "npm:esbuild-wasm",

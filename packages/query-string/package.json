@@ -72,10 +72,10 @@
   },
   "devDependencies": {
     "iconv-lite": "^0.6.3",
-    "qs": "^6.12.1",
-    "query-string": "^9.0.0",
-    "tsup": "^8.1.0",
-    "tsx": "^4.15.9",
-    "vitest": "^1.6.0"
+    "qs": "^6.13.0",
+    "query-string": "^9.1.0",
+    "tsup": "^8.2.4",
+    "tsx": "^4.17.0",
+    "vitest": "^2.0.5"
   }
 }

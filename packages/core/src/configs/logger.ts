@@ -1,6 +1,6 @@
 import type { Logger as LogTapeLogger } from "@logtape/logtape";
 
-import { deepMerge } from "@bundle/utils/utils/deep-equal.ts";
+import { deepMerge } from "@bundle/utils/utils/deep-object.ts";
 import { getLogger } from "@logtape/logtape";
 
 export const initLogger = getLogger(["@bundle/core", "init"]);

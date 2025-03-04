@@ -1,13 +1,15 @@
-import type { BuildConfig, LocalState } from "../types.ts";
-import type { StateArray } from "../configs/state.ts";
-import type { ESBUILD } from "../types.ts";
+import type { LocalState, ESBUILD } from "../types.ts";
+import type { Context } from "../context/context.ts";
 
-import { encode } from "@bundle/utils/utils/encode-decode.ts";
-import { DEFAULT_CDN_HOST, getCDNUrl } from "../utils/cdn-format.ts";
-import { isAlias } from "./alias.ts";
+import { fromContext } from "../context/context.ts";
 
 import { parsePackageName } from "@bundle/utils/utils/parse-package-name.ts";
-import { CDN_RESOLVE } from "./cdn.ts";
+import { encode } from "@bundle/utils/utils/encode-decode.ts";
+
+import { getCDNUrl } from "../utils/cdn-format.ts";
+import { isAlias } from "./alias.ts";
+
+import { CdnResolution } from "./cdn.ts";
 
 /** External Plugin Namespace */
 export const EXTERNALS_NAMESPACE = "external-globals";
@@ -80,8 +82,8 @@ export const DeprecatedAPIs = ["v8/tools/codemap", "v8/tools/consarray", "v8/too
 export const ExternalPackages = ["pnpapi", "v8", "node-inspect", "sys", "repl", "dns", "child_process", "module", "cluster", "chokidar", "yargs", "fsevents", "worker_threads", "async_hooks", "diagnostics_channel", "http2", "inspector", "perf_hooks", "trace_events", "wasi", ...DeprecatedAPIs, ...PolyfillKeys];
 
 /** Based on https://github.com/egoist/play-esbuild/blob/7e34470f9e6ddcd9376704cd8b988577ddcd46c9/src/lib/esbuild.ts#L51 */
-export const isExternal = (id: string, external: string[] = []) => {
-  return [...ExternalPackages, ...external].find((it: string): boolean => {
+export function isExternal(id: string, external: string[] = []) {
+  return Array.from(ExternalPackages).concat(external).find((it: string): boolean => {
     if (it === id) return true; // import 'foo' & external: ['foo']
     if (id.startsWith(`${it}/`)) return true; // import 'foo/bar.js' & external: ['foo']
     return false;
@@ -93,14 +95,13 @@ export const isExternal = (id: string, external: string[] = []) => {
  * 
  * @param external List of packages to marks as external
  */
-export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ESBUILD.Plugin {
+export function ExternalPlugin<T>(StateContext: Context<LocalState<T>>): ESBUILD.Plugin {
   // Convert CDN values to URL origins
-  const { origin: host } = config?.cdn && !/:/.test(config?.cdn) ? getCDNUrl(config?.cdn + ":") : getCDNUrl(config?.cdn ?? DEFAULT_CDN_HOST);
-  const { external = [] } = config?.esbuild ?? {};
-  const pkgJSON = config["package.json"];
+  const host = fromContext("host", StateContext)!;
+  const LocalConfig = fromContext("config", StateContext)!;
 
-  const { polyfill = false } = config;
-  const [get] = state;
+  const { polyfill = false, esbuild = {} } = LocalConfig;
+  const { external = [] } = esbuild;
 
   return {
     name: EXTERNALS_NAMESPACE,
@@ -117,7 +118,9 @@ export function EXTERNAL(state: StateArray<LocalState>, config: BuildConfig): ES
           if (polyfill && isAlias(argPath, PolyfillMap) && !external.includes(argPath)) {
             const pkgDetails = parsePackageName(argPath);
             const aliasPath = PolyfillMap[pkgDetails.name as keyof typeof PolyfillMap];
-            return CDN_RESOLVE(host, pkgJSON)({
+            
+            const ctx = StateContext.with({ origin: host }) as Context<LocalState<T> & { origin: string }>;
+            return CdnResolution(ctx)({
               ...args,
               path: aliasPath
             });

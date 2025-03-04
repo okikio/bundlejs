@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@okikio/transferables": "jsr:@okikio/transferables@^1.0.2"
+  }
+}

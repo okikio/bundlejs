@@ -1,52 +1,63 @@
+import type { FullPackageVersion, PackageJson } from "@bundle/utils/utils/types.ts";
 import type { BuildConfig, ESBUILD, LocalState } from "./types.ts";
-import type { StateArray } from "./configs/state.ts";
 import type { BuildResult } from "./build.ts";
 
-import { VIRTUAL_FS } from "./plugins/virtual-fs.ts";
-import { EXTERNAL } from "./plugins/external.ts";
-import { ALIAS } from "./plugins/alias.ts";
-import { HTTP } from "./plugins/http.ts";
-import { CDN } from "./plugins/cdn.ts";
+import { VirtualFileSystemPlugin } from "./plugins/virtual-fs.ts";
+import { ExternalPlugin } from "./plugins/external.ts";
+import { AliasPlugin } from "./plugins/alias.ts";
+import { HttpPlugin } from "./plugins/http.ts";
+import { CdnPlugin } from "./plugins/cdn.ts";
 
 import { createConfig } from "./configs/config.ts";
-import { createState, getState, setState } from "./configs/state.ts";
+import { Context, fromContext, toContext } from "./context/context.ts";
 
 import { createNotice } from "./utils/create-notice.ts";
+import { TheFileSystem, formatBuildResult } from "./build.ts";
 import { init } from "./init.ts";
 
 import { BUILD_ERROR, INIT_LOADING, LOGGER_ERROR, dispatchEvent } from "./configs/events.ts";
-import { TheFileSystem, formatBuildResult } from "./build.ts";
+import { DEFAULT_CDN_HOST, getCDNUrl } from "./utils/cdn-format.ts";
 
-export type BuildContext = (ESBUILD.BuildContext) & {
-  config: BuildConfig,
-  state: StateArray<LocalState>
+export interface BuildContext extends ESBUILD.BuildContext {
+  state: Context<LocalState>
 };
 
 export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem): Promise<BuildContext> {
-  if (!getState("initialized"))
+  if (!fromContext("initialized"))
     dispatchEvent(INIT_LOADING);
 
-  const CONFIG = createConfig("build", opts);
-  const STATE = createState<LocalState>({
+  const StateContext = new Context<LocalState>({
     filesystem: await filesystem,
     assets: [],
-    GLOBAL: [getState, setState],
+    config: createConfig("build", opts),
+    failedExtensionChecks: new Set<string>(),
+    failedManifestUrls: new Set<string>(),
+    host: DEFAULT_CDN_HOST,
+    versions: new Map<string, string>(),
+    packageManifests: new Map<string, PackageJson | FullPackageVersion>(),
   });
 
-  const { platform, version, ...initOpts } = CONFIG.init ?? {};
-  const { context } = await init([platform, version], initOpts) ?? {};
-  const { define = {}, ...esbuildOpts } = CONFIG.esbuild ?? {};
+  const LocalConfig = fromContext("config", StateContext)!;
+  const { origin: host } = LocalConfig?.cdn && !/:/.test(LocalConfig?.cdn) ?
+    getCDNUrl(LocalConfig?.cdn + ":") :
+    getCDNUrl(LocalConfig?.cdn ?? DEFAULT_CDN_HOST);
+
+  toContext("host", host ?? DEFAULT_CDN_HOST, StateContext);
+
+  const { platform, version, ...initOpts } = LocalConfig.init ?? {};
+  const { context } = await init(initOpts, [platform, version]) ?? {};
+  const { define = {}, ...esbuild_opts } = LocalConfig.esbuild ?? {};
 
   // Stores content from all external outputed files, this is for checking the gzip size when dealing with CSS and other external files
-  let ctx: ESBUILD.BuildContext;
+  let context_result: ESBUILD.BuildContext;
 
   try {
     if (!context)
       throw new Error("Initialization failed, couldn't access esbuild context function");
 
     try {
-      ctx = await context({
-        entryPoints: CONFIG?.entryPoints ?? [],
+      context_result = await context({
+        entryPoints: LocalConfig?.entryPoints ?? [],
         loader: {
           ".png": "file",
           ".jpeg": "file",
@@ -63,13 +74,13 @@ export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem
         write: false,
         outdir: "/",
         plugins: [
-          ALIAS(STATE, CONFIG),
-          EXTERNAL(STATE, CONFIG),
-          VIRTUAL_FS(STATE, CONFIG),
-          HTTP(STATE, CONFIG),
-          CDN(STATE, CONFIG),
+          AliasPlugin(StateContext),
+          ExternalPlugin(StateContext),
+          VirtualFileSystemPlugin(StateContext),
+          HttpPlugin(StateContext),
+          CdnPlugin(StateContext.with({ origin: host }) as Context<LocalState & { origin: string }>),
         ],
-        ...esbuildOpts,
+        ...esbuild_opts,
       });
     } catch (e) {
       const fail = e as ESBUILD.BuildFailure;
@@ -87,9 +98,8 @@ export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem
     }
 
     return {
-      state: STATE,
-      config: CONFIG,
-      ...ctx
+      state: StateContext,
+      ...context_result
     }
   } catch (e) {
     const err = e as Error;
@@ -102,12 +112,18 @@ export async function context(opts: BuildConfig = {}, filesystem = TheFileSystem
 }
 
 export async function rebuild(ctx: BuildContext): Promise<BuildResult> {
-  const { config: CONFIG, state: STATE } = ctx;
-  let result: ESBUILD.BuildResult;
+  const { state: StateContext } = ctx;
+  let build_result: ESBUILD.BuildResult;
 
   try {
     try {
-      result = await ctx.rebuild();
+      // Clear the assets, failedExtensionChecks, and failedManifestUrls
+      StateContext.target.assets.length = 0;
+      StateContext.target.failedExtensionChecks.clear();
+      StateContext.target.failedManifestUrls.clear();
+      // StateContext.target.packageManifests.clear();
+
+      build_result = await ctx.rebuild();
     } catch (e) {
       const fail = e as ESBUILD.BuildFailure;
       if (fail.errors) {
@@ -124,9 +140,8 @@ export async function rebuild(ctx: BuildContext): Promise<BuildResult> {
     }
 
     return await formatBuildResult({
-      config: CONFIG,
-      state: STATE,
-      ...result
+      state: StateContext,
+      ...build_result
     });
   } catch (e) {
     const err = e as Error;
@@ -138,10 +153,10 @@ export async function rebuild(ctx: BuildContext): Promise<BuildResult> {
   }
 }
 
-export async function cancel(ctx: BuildContext): Promise<void> {
+export async function cancel(build_ctx: BuildContext): Promise<void> {
   try {
     try {
-      await ctx.cancel();
+      await build_ctx.cancel();
     } catch (e) {
       const fail = e as ESBUILD.BuildFailure;
       if (fail.errors) {
@@ -166,10 +181,10 @@ export async function cancel(ctx: BuildContext): Promise<void> {
   }
 }
 
-export async function dispose(ctx: BuildContext): Promise<void> {
+export async function dispose(build_ctx: BuildContext): Promise<void> {
   try {
     try {
-      await ctx.dispose();
+      await build_ctx.dispose();
     } catch (e) {
       const fail = e as ESBUILD.BuildFailure;
       if (fail.errors) {
