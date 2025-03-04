@@ -54,14 +54,14 @@
   "dependencies": {
     "@bundle/core": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "esbuild-wasm": "^0.23.0"
+    "esbuild-wasm": "^0.25.0"
   },
   "peerDependencies": {
     "@bundle/compress": "workspace:^",
     "@bundle/utils": "workspace:^"
   },
   "devDependencies": {
-    "tsup": "^8.2.4",
-    "tsx": "^4.17.0"
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3"
   }
 }

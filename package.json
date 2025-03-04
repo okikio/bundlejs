@@ -8,7 +8,6 @@
     "packages/*"
   ],
   "scripts": {
-    "typedoc": "esbuild ./.typedoc/typedoc.tsx --format=cjs --outfile=./.typedoc/typedoc.cjs && typedoc --options ./.typedoc/typedoc.jsonc",
     "pre-release:all": "pnpm -r pre-release && pnpm typedoc",
     "build:all": "pnpm -r build",
     "semantic-release": "semantic-release",
@@ -60,19 +59,14 @@
   },
   "homepage": "https://docs.bundlejs.com",
   "devDependencies": {
-    "@commitlint/cli": "^19.4.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/web": "^0.0.154",
-    "husky": "^9.1.4",
-    "semantic-release": "^24.0.0",
-    "tsup": "^8.2.4",
-    "typedoc": "^0.26.5",
-    "typedoc-plugin-extras": "^3.1.0",
-    "typedoc-plugin-inline-sources": "^1.0.2",
-    "typedoc-plugin-mdn-links": "^3.2.8",
-    "typescript": "5.5.4"
+    "@types/web": "^0.0.208",
+    "semantic-release": "^24.2.3",
+    "tsup": "^8.4.0",
+    "typescript": "5.8.2"
   },
   "packageManager": "pnpm@9.7.1+sha512.faf344af2d6ca65c4c5c8c2224ea77a81a5e8859cbc4e06b1511ddce2f0151512431dd19e6aff31f2c6a8f5f2aced9bd2273e1fed7dd4de1868984059d2c4247"
 }

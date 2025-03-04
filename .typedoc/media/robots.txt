@@ -1,3 +1,0 @@
-Sitemap: https://spring-easing.okikio.dev/sitemap.xml
-User-agent: *
-Allow: /

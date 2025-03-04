@@ -66,18 +66,18 @@
   "homepage": "https://bundlejs.com",
   "dependencies": {
     "@opentf/obj-diff": "npm:@jsr/opentf__obj-diff@^0.11.0",
-    "@std/assert": "npm:@jsr/std__assert@1.0.2",
-    "@std/async": "npm:@jsr/std__async@1.0.3",
-    "@std/collections": "npm:@jsr/std__collections@1.0.5",
-    "@std/encoding": "npm:@jsr/std__encoding@1.0.1",
-    "@std/fmt": "npm:@jsr/std__fmt@1.0.0-rc.1",
-    "@std/html": "npm:@jsr/std__html@1.0.1",
-    "@std/media-types": "npm:@jsr/std__media-types@1.0.2",
-    "@std/path": "npm:@jsr/std__path@1.0.2",
-    "@std/semver": "npm:@jsr/std__semver@^1.0.1",
+    "@std/assert": "npm:@jsr/std__assert@1.0.11",
+    "@std/async": "npm:@jsr/std__async@1.0.10",
+    "@std/collections": "npm:@jsr/std__collections@1.0.10",
+    "@std/encoding": "npm:@jsr/std__encoding@1.0.7",
+    "@std/fmt": "npm:@jsr/std__fmt@1.0.5",
+    "@std/html": "npm:@jsr/std__html@1.0.3",
+    "@std/media-types": "npm:@jsr/std__media-types@1.1.0",
+    "@std/path": "npm:@jsr/std__path@1.0.8",
+    "@std/semver": "npm:@jsr/std__semver@^1.0.4",
     "@std/url": "npm:@jsr/std__url@1.0.0-rc.3",
     "json5": "^2.2.3",
-    "resolve.exports": "^2.0.2"
+    "resolve.exports": "^2.0.3"
   },
   "peerDependencies": {
     "@opentf/obj-diff": "npm:@jsr/opentf__obj-diff@^0",
@@ -95,9 +95,9 @@
     "resolve.exports": "^2"
   },
   "devDependencies": {
-    "@types/web": "^0.0.154",
-    "tsup": "^8.2.4",
-    "tsx": "^4.17.0",
-    "vitest": "^2.0.5"
+    "@types/web": "^0.0.208",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "vitest": "^3.0.7"
   }
 }

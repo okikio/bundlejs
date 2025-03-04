@@ -85,19 +85,19 @@
   "dependencies": {
     "@bundle/compress": "workspace:^",
     "@bundle/utils": "workspace:^",
-    "@libs/reactive": "npm:@jsr/libs__reactive@^1.0.11",
-    "@libs/typing": "npm:@jsr/libs__typing@^2.8.1",
-    "@logtape/logtape": "^0.4.2",
-    "esbuild": "^0.23.0",
-    "esbuild-wasm": "^0.23.0"
+    "@libs/reactive": "npm:@jsr/libs__reactive@^5.0.2",
+    "@libs/typing": "npm:@jsr/libs__typing@^3.1.2",
+    "@logtape/logtape": "^0.9.0",
+    "esbuild": "^0.25.0",
+    "esbuild-wasm": "^0.25.0"
   },
   "peerDependencies": {
     "@bundle/compress": "^",
     "@bundle/utils": "^"
   },
   "devDependencies": {
-    "tsup": "^8.2.4",
-    "tsx": "^4.17.0",
-    "vitest": "^2.0.5"
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "vitest": "^3.0.7"
   }
 }
