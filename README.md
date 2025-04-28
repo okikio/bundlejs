@@ -75,6 +75,156 @@ Another options is to use the API, e.g.
 
 You can use the [URL Queries & Shareable Links](#url-queries--shareable-links) above, to create unique bundles, when users clicks on the badge.
 
+## How does Bundlejs work?
+
+**Docs:** https://deepwiki.com/okikio/bundlejs/
+
+### Overview****
+This document provides a comprehensive introduction to bundlejs, an online tool for checking npm package bundle sizes. bundlejs runs entirely in the browser, performing bundling, minification, and compression locally to accurately determine package sizes without server-side processing.
+
+For specific components of the system architecture, see [System Architecture](https://deepwiki.com/okikio/bundlejs/2-system-architecture). For details on how bundling works, see [Core Bundling Process](https://deepwiki.com/okikio/bundlejs/5-core-bundling-process).
+
+
+### What is bundlejs?****
+
+bundlejs is a browser-based tool that allows developers to:
+
+- Check the bundled, minified, and compressed size of npm packages
+- Bundle multiple packages together (both CommonJS and ESM formats)
+- Visualize bundle composition with treemap, sunburst, and network views
+- Tree-shake packages to see optimized sizes
+- Share bundle configurations via URLs and embed size badges in documentation
+
+The tool uses [`esbuild-wasm`](https://github.com/okikio/bundlejs/blob/aba9dead/esbuild-wasm) for bundling and provides accurate size measurements using Gzip, Brotli, and LZ4 compression algorithms.
+
+Sources: [`README.md16-22`](https://github.com/okikio/bundlejs/blob/aba9dead/README.md#L16-L22) [`package.json2-4`](https://github.com/okikio/bundlejs/blob/aba9dead/package.json#L2-L4) [`src/pug/about.pug14-20`](https://github.com/okikio/bundlejs/blob/aba9dead/src/pug/about.pug#L14-L20)
+
+
+### Core Features****
+
+bundlejs provides several key features that differentiate it from similar tools:
+
+| Feature                  | Description                                                        |
+| ------------------------ | ------------------------------------------------------------------ |
+| Local Processing         | All bundling and analysis happens in the browser using WebAssembly |
+| Multiple Package Support | Bundle and analyze multiple packages together                      |
+| Tree Shaking             | Analyze only the specific exports you need from a package          |
+| TypeScript Support       | Built-in support for TypeScript and JSX                            |
+| Compression Options      | View sizes with Gzip, Brotli, and LZ4 compression                  |
+| Bundle Visualization     | Analyze bundle composition with interactive visualizations         |
+| Shareable URLs           | Create and share bundle configurations via URL parameters          |
+| Size Badges              | Generate badges to display package sizes in documentation          |
+| Monaco Editor            | Full-featured code editor with syntax highlighting and formatting  |
+
+Sources: [`README.md17-24`](https://github.com/okikio/bundlejs/blob/aba9dead/README.md#L17-L24) [`src/pug/faq.pug23-63`](https://github.com/okikio/bundlejs/blob/aba9dead/src/pug/faq.pug#L23-L63)
+
+### Core Components****
+
+#### BundleEvents System
+
+The event system serves as the central communication hub for bundlejs. It coordinates actions between the UI, web workers, and other components. The main event emitter is `BundleEvents`, defined in [`src/ts/index.ts39`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L39-L39)
+
+Key events include:
+
+- `bundle`: Triggers the bundling process
+- `result`: Returns bundling results
+- `chart`: Returns visualization data
+- `log/info/warning/error`: Handles various message types
+
+Sources: [`src/ts/index.ts153-271`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L153-L271) [`src/ts/index.ts353-452`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L353-L452)
+
+
+#### Web Workers
+
+bundlejs employs multiple web workers to handle different tasks without blocking the main thread:
+
+| Worker            | Purpose                                           | Source                                                                                                            |
+| ----------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Bundle Worker     | Performs bundling using esbuild-wasm              | [`src/ts/index.ts56-58`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L56-L58)                |
+| Sandbox Worker    | Processes configuration safely                    | [`src/ts/index.ts61-62`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L61-L62)                |
+| TypeScript Worker | Handles code formatting and TypeScript operations | [`src/ts/modules/monaco.ts41`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/modules/monaco.ts#L41-L41) |
+
+Sources: [`src/ts/index.ts60-73`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L60-L73) [`src/ts/index.ts81-91`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L81-L91)
+
+
+#### Monaco Editor Integration
+
+bundlejs integrates the Monaco editor to provide a full-featured code editing experience. The editor is configured with TypeScript support, syntax highlighting, and code formatting capabilities.
+
+Key editor features:
+
+- TypeScript language support
+- Multiple editor models (input, output, settings)
+- Code formatting
+- Custom hover providers for package information
+- Shareable URL generation
+
+Sources: [`src/ts/modules/monaco.ts78-283`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/modules/monaco.ts#L78-L283) [`src/ts/index.ts456-512`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L456-L512)
+
+#### Compression Algorithms
+
+bundlejs uses multiple compression algorithms to provide accurate size measurements:
+
+1. Gzip - Standard web compression used by most servers
+2. Brotli - More efficient compression algorithm with better compression ratios
+3. LZ4 - Fast compression algorithm with lower compression ratios but quicker decompression
+
+The compression is performed in the Bundle Worker and the results are sent back to the UI for display.
+
+Sources: [`README.md18`](https://github.com/okikio/bundlejs/blob/aba9dead/README.md#L18-L18) [`src/pug/about.pug30-35`](https://github.com/okikio/bundlejs/blob/aba9dead/src/pug/about.pug#L30-L35)
+
+
+### Build System****
+
+bundlejs uses Gulp for its build system, with tasks for processing HTML, CSS, JavaScript, and other assets. The build process is responsible for:
+
+1. Processing Pug templates into HTML
+2. Compiling SCSS with Tailwind CSS
+3. Bundling JavaScript with esbuild
+4. Optimizing assets
+5. Generating service worker for offline capabilities
+
+Sources: [`gulpfile.js1-589`](https://github.com/okikio/bundlejs/blob/aba9dead/gulpfile.js#L1-L589)
+
+
+### URL Parameters and Sharing****
+
+bundlejs supports various URL parameters for configuring bundles and sharing:
+
+| Parameter               | Description                  | Example                             |
+| ----------------------- | ---------------------------- | ----------------------------------- |
+| `q` or `query`          | Specify package(s) to bundle | `?q=react,react-dom`                |
+| `treeshake`             | Specify exports to include   | `?treeshake=[{useState,useEffect}]` |
+| `share`                 | Encoded editor content       | `?share=PTAEGEBs...`                |
+| `bundle`                | Auto-build when loaded       | `?bundle`                           |
+| `config`                | Bundle configuration         | `?config={"minify":true}`           |
+| `analysis` or `analyze` | Enable bundle analysis       | `?analysis`                         |
+| `minify`                | Enable/disable minification  | `?minify=true`                      |
+| `sourcemap`             | Control sourcemap generation | `?sourcemap=true`                   |
+
+Additionally, bundlejs provides an API for generating size badges that can be embedded in documentation:
+
+    https://deno.bundlejs.com/?q=packageName&badge=detailed
+
+Sources: [`README.md34-57`](https://github.com/okikio/bundlejs/blob/aba9dead/README.md#L34-L57) [`README.md69-76`](https://github.com/okikio/bundlejs/blob/aba9dead/README.md#L69-L76) [`src/ts/index.ts174-225`](https://github.com/okikio/bundlejs/blob/aba9dead/src/ts/index.ts#L174-L225)
+
+
+### Key Dependencies****
+
+bundlejs relies on several key dependencies:
+
+| Dependency                                   | Purpose                                                   |
+| -------------------------------------------- | --------------------------------------------------------- |
+| `esbuild-wasm`                               | WebAssembly version of esbuild for browser-based bundling |
+| `monaco-editor`                              | Code editor with syntax highlighting and language support |
+| `@okikio/emitter`                            | Event emitter for system communication                    |
+| `@dprint/formatter` and `@dprint/typescript` | Code formatting capabilities                              |
+| `d3` and related packages                    | Visualization libraries for bundle analysis               |
+| `solid-js`                                   | UI component framework                                    |
+| `workbox-window`                             | Progressive Web App capabilities                          |
+
+Sources: [`package.json54-81`](https://github.com/okikio/bundlejs/blob/aba9dead/package.json#L54-L81) [`src/pug/about.pug25-40`](https://github.com/okikio/bundlejs/blob/aba9dead/src/pug/about.pug#L25-L40)
+
 
 ## Backers & Sponsors
 
