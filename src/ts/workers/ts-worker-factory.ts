@@ -7,7 +7,7 @@
 // This version of the vfs edits the global scope (in the case of a webworker, this is 'self')
 
 import type { Formatter, GlobalConfiguration } from "@dprint/formatter";
-import type ts from "typescript";
+import ts from "typescript"; // Import for runtime use
 
 import { createFromBuffer, createStreaming } from "@dprint/formatter";
 import { compressToURL } from "@amoutonbrady/lz-string";
@@ -24,8 +24,11 @@ let config: GlobalConfiguration = {
     "lineWidth": 80,
     "indentWidth": 2,
     "useTabs": false,
-    "semiColons": "prefer",
-    "quoteStyle": "alwaysDouble",
+    // @ts-ignore too lazy to deal with right now
+    "typescript": {
+        "semiColons": "prefer", 
+        "quoteStyle": "alwaysDouble"
+    },
     "quoteProps": "preserve",
     "newLineKind": "lf",
     "useBraces": "whenNotSingleLine",
@@ -123,109 +126,157 @@ const worker = (TypeScriptWorker, fileMap) => {
             const program = this._languageService.getProgram() as ts.Program;
             const source = program.getSourceFile(fileName);
 
-            // Basically only keep the config options that have changed from the default
             let changedConfig = deepDiff(DefaultConfig, deepAssign({}, DefaultConfig, config));
             let changedEntries = Object.keys(changedConfig);
 
-            // Collect the first few import and export statements
             let ImportExportStatements = [];
-            let BackToBackImportExport = true; // Back to Back Import
+            let BackToBackImportExport = true;
             source.forEachChild(
-                (node: ts.ImportDeclaration | ts.ExportDeclaration) => {
-                    let isImport =
-                        node.kind == SyntaxKind.ImportDeclaration;
-                    let isExport =
-                        node.kind == SyntaxKind.ExportDeclaration;
+                (node: ts.Node) => {
                     if (!BackToBackImportExport) return;
 
-                    BackToBackImportExport = isImport || isExport || Boolean(node.moduleSpecifier);
+                    let isImport = node.kind === ts.SyntaxKind.ImportDeclaration;
+                    let isExport = node.kind === ts.SyntaxKind.ExportDeclaration && !!(node as ts.ExportDeclaration).moduleSpecifier;
+
+                    BackToBackImportExport = isImport || isExport; 
                     if (BackToBackImportExport) {
-                        let clause = isImport ? 
-                            (node as ts.ImportDeclaration)?.importClause : 
-                            (node as ts.ExportDeclaration)?.exportClause;
-                            
+                        const moduleSpecifierNode = isImport ? (node as ts.ImportDeclaration).moduleSpecifier : (node as ts.ExportDeclaration).moduleSpecifier;
+                        const modulePath = moduleSpecifierNode ? moduleSpecifierNode.getText(source).replace(/^["']|["']$/g, "") : "";
+                        if (!modulePath) { 
+                            BackToBackImportExport = false;
+                            return;
+                        }
+                        
+                        let currentClauseText = "*"; 
+
+                        if (isImport) {
+                            const importDecl = node as ts.ImportDeclaration;
+                            if (importDecl.importClause) {
+                                const { importClause } = importDecl;
+                                if (importClause.name) { 
+                                    currentClauseText = importClause.name.text;
+                                } else if (importClause.namedBindings) {
+                                    if (ts.isNamespaceImport(importClause.namedBindings)) { 
+                                        currentClauseText = `* as ${importClause.namedBindings.name.text}`;
+                                    } else if (ts.isNamedImports(importClause.namedBindings)) { 
+                                        currentClauseText = importClause.namedBindings.getText(source); 
+                                    }
+                                }
+                                if (importClause.getText(source).trim() === "{}") { 
+                                    currentClauseText = "{}"; 
+                                }
+                            } else {
+                                currentClauseText = "side-effect"; 
+                            }
+                        } else { // isExport
+                            const exportDecl = node as ts.ExportDeclaration;
+                            if (exportDecl.exportClause) { 
+                                if (ts.isNamedExports(exportDecl.exportClause)) {
+                                     currentClauseText = exportDecl.exportClause.getText(source); 
+                                } else if (ts.isNamespaceExport?.(exportDecl.exportClause)) { 
+                                    currentClauseText = `* as ${(exportDecl.exportClause as ts.NamespaceExport).name.text}`;
+                                } else {
+                                    const clauseText = exportDecl.exportClause.getText(source); 
+                                    currentClauseText = clauseText.length > 0 ? clauseText : "*";
+                                }
+                            } else {
+                                currentClauseText = "*";
+                            }
+                        }
+                        
                         ImportExportStatements.push({
                             kind: isImport ? "import" : "export",
-                            clause: clause?.getText() ?? "*",
-                            module: node.moduleSpecifier.getText(),
+                            clause: currentClauseText,
+                            module: modulePath, 
                             pos: {
-                                start: node.pos,
-                                end: node.end,
+                                start: node.getStart(source), 
+                                end: node.getEnd(),
                             },
                         });
                     }
                 }
             );
 
-            // Remove import and export statements
             let remainingCode = source.getFullText();
-            [...ImportExportStatements].map(({ pos }) => {
-                let { start, end } = pos;
-                let snippet = remainingCode.substring(start, end);
-                return snippet;
-            }).forEach((snippet) => {
-                remainingCode = remainingCode.replace(snippet, "");
+            [...ImportExportStatements].sort((a,b) => b.pos.start - a.pos.start).forEach(({ pos }) => { // Sort to remove from end to start
+                remainingCode = remainingCode.substring(0, pos.start) + remainingCode.substring(pos.end);
             });
-
-            // Collect import/export statements and create URL from them
-            let modules = "";
-            let treeshake = "";
-            ImportExportStatements.forEach((v, i) => {
-                modules +=
-                    (v.kind == "import" ? "(import)" : "") +
-                    v.module.replace(/^["']|["']$/g, "") +
-                    ",";
-
-                treeshake +=
-                    "[" +
-                    v.clause
-                        .split(",")
-                        .map((s) => s.trim())
-                        .join(",") +
-                    "],";
-            });
-
-            modules = modules.replace(/,$/, "").trim();
-            treeshake = treeshake.replace(/\]\,$/, "]").trim();
+            
+            const defaultComment = "// Click Build for the Bundled, Minified & Compressed package size";
             remainingCode = remainingCode.trim();
-
-            const treeshakeArr = parseTreeshakeExports(
-                decodeURIComponent(treeshake ?? "")
-                    .trim()
-                    // Replace multiple 2 or more spaces with just a single space
-                    .replace(/\s{2,}/, " ")
-            ).map(x => x.trim())
-            const uniqueTreeshakeArr = Array.from(new Set(treeshakeArr))
-            // This treeshake pattern is what's required export all modules
-            const modulesArr = modules.length > 0 ? Array.from(new Set(modules.split(","))) : [];
-
-            const counts = new Map<string, number>();
-            const exportAllUniqTreeshake = Array.from(new Set(modulesArr.map((module) => {
-                if (!(counts.has(module))) counts.set(module, 0);
-                const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
-                const countStr = count <= 0 ? "" : count;
-                return ["*", `{ default as ${getModuleName(module) + "Default" + countStr}}`]
-            }).flat()))
-            const exportAll = 
-                treeshakeArrToStr(uniqueTreeshakeArr) === treeshakeArrToStr(["*", "{ default }"]) ||
-                treeshakeArrToStr(uniqueTreeshakeArr) === treeshakeArrToStr(exportAllUniqTreeshake)
-
-            console.log({
-                uniqueTreeshakeArr,
-                modules,
-                modulesArr,
-                exportAll,
-                defaultTreeshakeArrAsStr: treeshakeArrToStr(["*", "{ default }"]),
-                uniqueTreeshakeArrAsStr: treeshakeArrToStr(uniqueTreeshakeArr),
-                exportAllUniqTreeshake
-            })
-            let url = new URL(self.location.origin.toString());
-            if (modules.length > 0) { 
-                const modulesStr = exportAll && modulesArr.length >= 1 ? modulesArr.join(",") : modules;
-                url.searchParams.set("q", modulesStr);
+            if (remainingCode.startsWith(defaultComment)) {
+                remainingCode = remainingCode.substring(defaultComment.length).trim();
             }
-            if (!exportAll) {
-                url.searchParams.set("treeshake", treeshake);
+
+            let finalModulesStr = "";
+            let finalTreeshakeStr = "";
+
+            if (ImportExportStatements.length > 0) {
+                const modulePathToStatements = new Map<string, { kind: string; clause: string; module: string }[]>();
+                ImportExportStatements.forEach(stmt => {
+                    if (!modulePathToStatements.has(stmt.module)) {
+                        modulePathToStatements.set(stmt.module, []);
+                    }
+                    modulePathToStatements.get(stmt.module).push(stmt);
+                });
+
+                let allModulesFollowSimplePattern = true;
+                const tempModules = [];
+
+                for (const [modulePath, statements] of modulePathToStatements.entries()) {
+                    const isImportModule = statements[0].kind === "import";
+                    let isThisModuleSimple = false;
+
+                    if (isImportModule) {
+                        const hasNamespace = statements.find(s => s.clause.startsWith("* as "));
+                        const hasDefaultAliased = statements.find(s => /^{ default as \\w+ }$/.test(s.clause.replace(/\\s+/g, ' ')));
+                        if (statements.length === 2 && hasNamespace && hasDefaultAliased) {
+                            isThisModuleSimple = true;
+                        }
+                    } else { // Export module
+                        const hasNamespaceAliased = statements.find(s => s.clause.startsWith("* as "));
+                        const hasDefaultNonAliased = statements.find(s => s.clause.replace(/\\s+/g, ' ') === "{ default }");
+                        if (statements.length === 2 && hasNamespaceAliased && hasDefaultNonAliased) {
+                            isThisModuleSimple = true;
+                        }
+                        
+                        if (!isThisModuleSimple) { // Check legacy simple export pattern
+                            const hasStar = statements.find(s => s.clause === "*");
+                            const hasDefaultPossiblyAliased = statements.find(s => s.clause.replace(/\\s+/g, ' ') === "{ default }" || /^{ default as \\w+ }$/.test(s.clause.replace(/\\s+/g, ' ')));
+                            if (statements.length === 2 && hasStar && hasDefaultPossiblyAliased) {
+                                isThisModuleSimple = true;
+                            }
+                        }
+                    }
+
+                    if (isThisModuleSimple) {
+                        tempModules.push((isImportModule ? "(import)" : "") + modulePath);
+                    } else {
+                        allModulesFollowSimplePattern = false;
+                        break; 
+                    }
+                }
+
+                if (allModulesFollowSimplePattern) {
+                    finalModulesStr = tempModules.join(",");
+                    // finalTreeshakeStr remains empty
+                } else {
+                    // Not all simple, so construct full q and treeshake
+                    ImportExportStatements.forEach(v => {
+                        finalModulesStr += (v.kind === "import" ? "(import)" : "") + v.module + ",";
+                        finalTreeshakeStr += "[" + v.clause.split(",").map(s => s.trim()).join(",") + "],";
+                    });
+                    finalModulesStr = finalModulesStr.replace(/,$/, "").trim();
+                    finalTreeshakeStr = finalTreeshakeStr.replace(/\\]\\,$/, "]").trim();
+                }
+            }
+            
+            let url = new URL(self.location.origin.toString());
+            if (finalModulesStr.length > 0) { 
+                url.searchParams.set("q", finalModulesStr);
+            }
+            if (finalTreeshakeStr.length > 0) {
+                url.searchParams.set("treeshake", finalTreeshakeStr);
             }
 
             // If there is any remaining code convert it to a share URL

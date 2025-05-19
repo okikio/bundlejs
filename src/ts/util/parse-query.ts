@@ -51,25 +51,33 @@ export const fromBasename = (path: string) =>
  * e.g. "@okikio/animate" -> okikioAnimate
  */
 export const getModuleName = (str: string) => {
-    let name = str; 
+    let name = str;
     let path = null;
+    let version = null;
     try {
-        ({ name, path } = parsePackageName(str));
-    } catch (e) {}
+        const parsed = parsePackageName(str);
+        name = parsed.name;
+        path = parsed.path;
+        version = parsed.version;
+    } catch (e) { }
 
-    let _str = str;
-    if (/^https?\:\/\//.test(str)) {
-        _str = fromBasename(str);
-    } else if (name.length > 0) {
-        _str = name + (path ? fromBasename(path) : "");
+    let baseName = name; // Use the package name as the base for the alias
+    if (/^https?:\/\//.test(str)) { // If it's a URL, derive basename differently
+        baseName = fromBasename(str);
+    } else if (path) { // If there's a path within the package, append it to the name
+        baseName += fromBasename(path).replace(/[^a-zA-Z0-9_]/g, '_'); // Sanitize and append path part
     }
     
-    let result = _str.split(/(?:-|_|\/)/g)
-        .map((x: string | any[], i: number) => i > 0 && x.length > 0 ? (x[0].toUpperCase() + x.slice(1)) : x)
+    let result = baseName.split(/(?:-|_|\/)/g)
+        .map((x: string | any[], i: number) => i > 0 && x.length > 0 && typeof x === 'string' ? (x[0].toUpperCase() + x.slice(1)) : x)
         .join("")
         .replace(/[^\w\s]/gi, "");
 
-    // Prefixes the module with a underscore if it starts with a digit
+    if (version) {
+        const sanitizedVersion = version.replace(/[^a-zA-Z0-9_]/g, '_');
+        result += "_" + sanitizedVersion;
+    }
+
     if (/^\d/.test(result)) {
         result = "_" + result;
     }
@@ -100,49 +108,108 @@ export const getModuleName = (str: string) => {
 */
 export const parseSearchQuery = (shareURL: URL) => {
     try {
-        const counts = new Map<string, number>();
         const searchParams = shareURL.searchParams;
         let result = "";
         let query = searchParams.get("query") || searchParams.get("q");
-        let treeshake = searchParams.get("treeshake");
+        let treeshakeParam = searchParams.get("treeshake"); // null if not present
+        
         if (query) {
-            let queryArr = query.trim().split(",");
-            let treeshakeArr = parseTreeshakeExports((treeshake ?? "").trim());
-            const queryArrLen = queryArr.length;
-            result += (
-                "// Click Build for the Bundled, Minified & Compressed package size\n" +
-                queryArr
-                    .map((q, i) => {
-                        const treeshakeExports =
-                            treeshakeArr[i] && treeshakeArr[i].trim() !== "*"
-                                ? treeshakeArr[i].trim().split(",").join(", ")
-                                : "*";
-                        const [, ,
-                            declaration = "export",
-                            module
-                        ] = /^(\((.*)\))?(.*)/.exec(q)!;
-                        console.log({
-                            declaration,
-                            treeshakeExports,
-                            module,
-                            treeshakeArr,
-                            queryArrLen,
-                            i
-                        })
+            let rawQueryArr = query.trim().split(",");
+            let queryArr: string[];
+            const moduleCounts = new Map<string, number>(); 
 
-                        if (!(counts.has(module))) counts.set(module, 0);
-                        const count = (counts.set(module, counts.get(module)! + 1).get(module)! - 1);
-                        const countStr = count <= 0 ? "" : count;
+            if (treeshakeParam == null) {
+                const uniqueModuleQueries = new Set<string>();
+                queryArr = rawQueryArr.filter(item => {
+                    const moduleName = item.startsWith("(import)") ? item.substring("(import)".length) : item;
+                    if (uniqueModuleQueries.has(moduleName)) {
+                        moduleCounts.set(moduleName, (moduleCounts.get(moduleName) || 1) + 1);
+                        return false;
+                    }
+                    uniqueModuleQueries.add(moduleName);
+                    moduleCounts.set(moduleName, 1);
+                    return true;
+                });
+            } else {
+                queryArr = rawQueryArr;
+            }
 
-                        return `${declaration} ${treeshakeExports} from ${JSON.stringify(
-                            module
-                        )};${(treeshake ?? "").trim().length <= 0 ?
-                                `\n${declaration} { default ${declaration === "import" || queryArrLen > 1 ? `as ${getModuleName(module) + "Default" + countStr} ` : ""
-                                }} from ${JSON.stringify(module)};` : ``
-                            }`;
-                    })
-                    .join("\n")
-            );
+            let treeshakeArr = parseTreeshakeExports((treeshakeParam ?? "").trim());
+
+            const generatedLines = queryArr
+                .map((q_item, i) => {
+                    const moduleQuery = q_item.trim();
+                    const isImport = moduleQuery.startsWith("(import)");
+                    const moduleName = (isImport ? moduleQuery.substring("(import)".length) : moduleQuery)?.trim();
+
+                    if (!moduleName) return ""; 
+
+                    let currentModuleLines: string[] = [];
+                    const specificTreeshakeForModule = treeshakeArr[i]?.trim();
+
+                    if (isImport) {
+                        const importName = getModuleName(moduleName);
+                        const importClause = specificTreeshakeForModule || `* as ${importName}`;
+
+                        if (importClause === "*") { 
+                            currentModuleLines.push(`import "${moduleName}";`);
+                        } else if (importClause.startsWith("* as")) { 
+                            currentModuleLines.push(`import ${importClause} from "${moduleName}";`);
+                        } else if (importClause.startsWith("{") && importClause.endsWith("}")) { 
+                            currentModuleLines.push(`import ${importClause} from "${moduleName}";`);
+                        } else { 
+                            currentModuleLines.push(`import ${importClause} from "${moduleName}";`);
+                        }
+                    } else { // Export
+                        const moduleAlias = getModuleName(moduleName);
+
+                        if (queryArr.length === 1 && (specificTreeshakeForModule == null || specificTreeshakeForModule === "")) {
+                            currentModuleLines.push(`export * from "${moduleName}";`);
+                            currentModuleLines.push(`export { default } from "${moduleName}";`);
+                        } else {
+                            if (specificTreeshakeForModule != null && specificTreeshakeForModule !== "") {
+                                let individualExportParts = specificTreeshakeForModule.split(',');
+                                for (const part of individualExportParts) {
+                                    let clause = part.trim();
+                                    if (clause === "") continue;
+
+                                    if (clause === "*") {
+                                        if (queryArr.length > 1 || individualExportParts.length > 1) {
+                                            currentModuleLines.push(`export * as ${moduleAlias} from "${moduleName}";`);
+                                        } else {
+                                            currentModuleLines.push(`export * from "${moduleName}";`);
+                                        }
+                                    } else if (clause.startsWith("* as")) {
+                                        currentModuleLines.push(`export ${clause} from "${moduleName}";`);
+                                    } else if (clause.startsWith("{") && clause.endsWith("}")) {
+                                        if (clause === "{default}") {
+                                            if (queryArr.length > 1 || individualExportParts.length > 1) {
+                                                currentModuleLines.push(`export { default as ${moduleAlias}Default } from "${moduleName}";`);
+                                            } else {
+                                                currentModuleLines.push(`export { default } from "${moduleName}";`);
+                                            }
+                                        } else {
+                                            currentModuleLines.push(`export ${clause} from "${moduleName}";`);
+                                        }
+                                    } else { 
+                                        currentModuleLines.push(`export { ${clause} } from "${moduleName}";`);
+                                    }
+                                }
+                            } else {
+                                // Default aliasing for multiple modules/versions when no specific treeshake
+                                currentModuleLines.push(`export * as ${moduleAlias} from "${moduleName}";`);
+                                currentModuleLines.push(`export { default as ${moduleAlias}Default } from "${moduleName}";`);
+                            }
+                        }
+                    }
+                    return currentModuleLines.join("\n");
+                })
+                .filter(s => s.length > 0);
+
+            if (generatedLines.length > 0) {
+                result += "// Click Build for the Bundled, Minified & Compressed package size\n";
+                result += generatedLines.join("\n");
+            }
         }
 
         let share = searchParams.get("share");

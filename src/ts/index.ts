@@ -223,6 +223,9 @@ BundleEvents.on({
         isInitial = false;
       }
     }
+
+    let BuildBtn = Array.from(document.querySelectorAll(".build-btn")) as HTMLButtonElement[];
+    BuildBtn.forEach(b => (b.disabled = false));
   },
   log(details) {
     let { type, message } = details;
@@ -851,7 +854,7 @@ export const build = async (app: App) => {
         }
         inputModel?.setValue(parseSearchQuery(url))
       } catch (e) {
-        value = isInitial ? "// Click Build for the bundled, minified and compressed package size" : `` + inputModel?.getValue();
+        value = isInitial ? "// Click Build for the Bundled, Minified & Compressed package size" : `` + inputModel?.getValue();
         inputModel?.setValue((value + "\n" + `export * from "${_package}";`).trim());
       }
     });
@@ -859,12 +862,16 @@ export const build = async (app: App) => {
 
   // Build buttons
   (() => {
-    let BuildBtn = Array.from(document.querySelectorAll(".build-btn")) as HTMLElement[];
+    let BuildBtn = Array.from(document.querySelectorAll(".build-btn")) as HTMLButtonElement[];
+    let isBuilding = false;
 
     // There are 2 build buttons, 1 for desktop, 1 for mobile
     // This allows both buttons to build the code
     BuildBtn.forEach(btn => {
       btn?.addEventListener("click", () => {
+        if (isBuilding) return;
+        isBuilding = true;
+        BuildBtn.forEach(b => (b.disabled = true));
         (async () => {
           if (!initialized)
             fileSizeEl.forEach(el => (el.textContent = `Wait!`));
@@ -872,6 +879,18 @@ export const build = async (app: App) => {
           BundleEvents.emit("bundle", configModel?.getValue(), new URL(globalThis.location.href).searchParams.has("analysis"));
           outputModel.setValue(outputModelResetValue);
           pushState(await getShareableURL(inputModel), historyManager);
+          // Wait for build to finish before re-enabling
+          // Listen for result event
+          const onResult = () => {
+            console.log({
+              result: "result",
+              isBuilding,
+            })
+            isBuilding = false;
+            BuildBtn.forEach(b => (b.disabled = false));
+            BundleEvents.off("result", onResult);
+          };
+          BundleEvents.on("result", onResult);
         })();
       });
     });
