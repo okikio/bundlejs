@@ -69,9 +69,9 @@ export const getModuleName = (str: string) => {
         .join("")
         .replace(/[^\w\s]/gi, "");
 
-    //Prefixes the module with a letter if it starts with a digit
+    // Prefixes the module with a underscore if it starts with a digit
     if (/^\d/.test(result)) {
-        result = "a" + result;
+        result = "_" + result;
     }
     return result;
 }
