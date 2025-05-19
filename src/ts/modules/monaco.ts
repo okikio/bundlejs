@@ -65,7 +65,7 @@ const ListFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunct
 
 export const outputModelResetValue = "// Output";
 export const inputModelResetValue = [
-    '// Click Build for the bundled, minified and compressed package size',
+    '// Click Build for the Bundled, Minified & Compressed package size',
     'export * from "spring-easing";',
     'export { default } from "spring-easing";'
 ].join("\n");
