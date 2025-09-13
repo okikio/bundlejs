@@ -97,7 +97,8 @@ export function normalize(path: string): string {
  */
 export function isAbsolute(path: string): boolean {
   assertPath(path);
-  return path.length > 0 && path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+  if (path.length == 0) return false;
+  return path.charCodeAt(0) === CHAR_FORWARD_SLASH || path.startsWith("data:");
 }
 
 /**
