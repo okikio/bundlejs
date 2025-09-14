@@ -78,10 +78,7 @@ export const getCDNOrigin = (importStr: string, cdn = DEFAULT_CDN_HOST) => {
     else if (/^(github)\:/.test(importStr)) 
         cdn = `https://raw.githubusercontent.com`;
 
-    if (!cdn.endsWith("/"))
-        cdn += "/";
-
-    return cdn;
+    return !/\/$/.test(cdn) ? `${cdn}/` : cdn;
 }
 
 /**
