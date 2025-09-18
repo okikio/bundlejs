@@ -1,15 +1,15 @@
+@use "./components/_variables";
+@use "./components/_navbar";
+@use "./components/_monaco";
+@use "./components/_search";
+@use "./components/_highlightjs";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
 
-@import "./components/_variables";
-@import "./components/_navbar";
-@import "./components/_monaco";
-@import "./components/_search";
-@import "./components/_highlightjs";
-
-// $icon-font: variables.$icon-font;
+$icon-font: variables.$icon-font;
 
 html,
 body {
@@ -352,6 +352,13 @@ footer.footer {
 
   &:hover {
     @apply bg-opacity-60;
+  }
+
+  &:disabled,
+  &[disabled] {
+    @apply bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400;
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
