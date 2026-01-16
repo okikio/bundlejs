@@ -17,6 +17,9 @@ importers:
       '@semantic-release/git':
         specifier: ^10.0.1
         version: 10.0.1(semantic-release@25.0.2(typescript@5.9.3))
+      '@std/async':
+        specifier: npm:@jsr/std__async@^1.0.16
+        version: '@jsr/std__async@1.0.16'
       semantic-release:
         specifier: ^25.0.2
         version: 25.0.2(typescript@5.9.3)
@@ -93,6 +96,10 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
+    devDependencies:
+      '@std/async':
+        specifier: npm:@jsr/std__async@^1.0.16
+        version: '@jsr/std__async@1.0.16'
 
 packages:
 
@@ -290,6 +297,9 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@jsr/std__async@1.0.16':
+    resolution: {integrity: sha512-WoYmNEPSh+Bs09HvVceERknVX813wQjSb2D9Z0KdxGTMYl5Pm13e5xqa3mYu9QBRlxIxpTivGhIQYaslEezrhw==, tarball: https://npm.jsr.io/~/11/@jsr/std__async/1.0.16.tgz}
 
   '@jsr/std__bytes@1.0.6':
     resolution: {integrity: sha512-St6yKggjFGhxS52IFLJWvkchRFbAKg2Xh8UxA4S1EGz7GJ2Ui+ssDDldj/w2c8vCxvl6qgR0HaYbKeFJNqujmA==, tarball: https://npm.jsr.io/~/11/@jsr/std__bytes/1.0.6.tgz}
@@ -2261,6 +2271,8 @@ snapshots:
   '@fastify/busboy@2.1.1': {}
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@jsr/std__async@1.0.16': {}
 
   '@jsr/std__bytes@1.0.6': {}
 

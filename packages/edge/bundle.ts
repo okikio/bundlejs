@@ -55,7 +55,7 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   } else if (typeof entryPoints === "string") {
     setFile(fs, entryPoints as string, initialValue);
   } else {
-    setFile(fs, entryPoints.out, initialValue);
+    setFile(fs, entryPoints.in, initialValue);
   }
 
   const metafileQuery = url.searchParams.has("metafile");
@@ -72,9 +72,12 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
 
   let resultValue: string = result.contents[0].text;
+  const entryPointInputFile = Array.isArray(entryPoints) ? entryPoints[0] 
+    :  "in" in entryPoints ? entryPoints.in 
+    : entryPoints
   const { content: _content, ...size } = await compress(
     result.contents.map((x: { contents: Uint8Array; path: string; text: string }) => { 
-      if (x.path === "/index.js") resultValue = x.text;
+      if (x.path === entryPointInputFile) resultValue = x.text;
       return x.contents
     }),
     configObj.compression

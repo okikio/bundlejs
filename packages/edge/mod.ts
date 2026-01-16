@@ -204,6 +204,7 @@ export default {
       const formatQuery = url.searchParams.has("format");
       const format = initialConfig?.esbuild?.format || url.searchParams.get("format");
       
+      const inputFileHash = crypto.randomUUID();
       const configObj: Config = deepAssign(
         {},
         BUILD_CONFIG,
@@ -213,7 +214,7 @@ export default {
         } as Config,
         initialConfig,
         {
-          entryPoints: [`/index${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
+          entryPoints: [`/index.${inputFileHash}${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
           esbuild: deepAssign(
             {},
             enableMetafile ? { metafile: enableMetafile } : {},
