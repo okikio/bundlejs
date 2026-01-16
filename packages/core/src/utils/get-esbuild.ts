@@ -1,4 +1,4 @@
-// import type * as ESBUILD from "https://esm.sh/esbuild-wasm@0.17.11";
+import type * as ESBUILD from "esbuild";
 
 import type { Platform } from "../configs/platform.ts";
 import { PLATFORM_AUTO } from "../configs/platform.ts";
@@ -27,7 +27,7 @@ globalThis.Worker = worker ?? class {
 import * as DenoEsbuild from "esbuild";
 export async function getEsbuild(platform: Platform = PLATFORM_AUTO) {
   try {
-    return DenoEsbuild;
+    return DenoEsbuild as typeof ESBUILD;
     // switch (platform) {
     //   case "deno":
     //     return await import(

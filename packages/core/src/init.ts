@@ -1,4 +1,4 @@
-import type * as ESBUILD from "esbuild-wasm";
+import type * as ESBUILD from "esbuild";
 
 import type { Platform } from "./configs/platform.ts";
 import { PLATFORM_AUTO } from "./configs/platform.ts";
@@ -31,7 +31,7 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
         } else {
           const { default: ESBUILD_WASM } = await import("./wasm.ts");
           await esbuild.initialize({
-            wasmModule: new WebAssembly.Module(await ESBUILD_WASM()),
+            wasmModule: new WebAssembly.Module(await ESBUILD_WASM() as BufferSource),
             ...opts
           });
         }
@@ -42,7 +42,7 @@ export async function init(platform = PLATFORM_AUTO, opts: ESBUILD.InitializeOpt
 
     return getState("esbuild");
   } catch (error) {
-    dispatchEvent(INIT_ERROR, error);
+    dispatchEvent(INIT_ERROR, error as Error);
     console.error(error);
   }
 }

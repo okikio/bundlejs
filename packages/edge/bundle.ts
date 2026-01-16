@@ -90,14 +90,14 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
     null, // setGist(url.href, result.outputs),
     createNotice(result.warnings, "warning", false),
   ])).map(res => {
-    if (res.status === "fulfilled") {
-      return res.value;
+    if (res?.status === "fulfilled") {
+      return res?.value;
     }
 
     return null;
   });
 
-  const { fileId, fileUrl, fileHTMLUrl } = gistDetails ?? {};
+  // const { fileId, fileUrl, fileHTMLUrl } = gistDetails ?? {};
 
   const searchQueries = url.search || `?q=${query}`;
   const finalResult: BundleResult = Object.assign({
@@ -117,9 +117,9 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
       time: timeFormatter.format(duration / 1000, "seconds"),
       rawTime: duration
     },
-    (fileId ? { fileId } : null),
-    (fileUrl ? { fileUrl } : null), 
-    (fileHTMLUrl ? { fileHTMLUrl } : null),
+    // (gistDetails && fileId ? { fileId } : null),
+    // (gistDetails && fileUrl ? { fileUrl } : null), 
+    // (gistDetails && fileHTMLUrl ? { fileHTMLUrl } : null),
     (result?.warnings?.length > 0 ? { warnings } : null),
     (enableMetafile && result?.metafile ? { metafile: result?.metafile } : null)
   );

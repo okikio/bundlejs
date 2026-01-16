@@ -113,6 +113,9 @@ export const BUILD_CONFIG: BuildConfig = {
 export type BuildResult = (ESBUILD.BuildResult) & {
   outputs: ESBUILD.OutputFile[];
   contents: ESBUILD.OutputFile[];
+
+  packageSizeArr: string[][];
+  totalInstallSize: string;
 };
 
 export const TheFileSystem = useFileSystem();
@@ -198,7 +201,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
 
     contents = await Promise.all(
       outputs
-        .map(({ path, text, contents }): ESBUILD.OutputFile | null => {
+        .map(({ path, text, contents, hash }): ESBUILD.OutputFile | null => {
           if (/\.map$/.test(path))
             return null;
 
@@ -212,7 +215,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
             }
           }
 
-          return { path, text, contents };
+          return { path, text, contents, hash };
         })
 
         // Remove null output files
@@ -243,7 +246,7 @@ export async function build(opts: BuildConfig = {}, filesystem = TheFileSystem):
     };
   } catch (e) { 
     if (!("msgs" in e)) {
-      dispatchEvent(BUILD_ERROR, e);
+      dispatchEvent(BUILD_ERROR, e as Error);
     }
     
     throw e;

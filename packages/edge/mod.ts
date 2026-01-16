@@ -3,7 +3,6 @@ import type { BundleResult } from "./bundle.ts";
 
 import JSON5 from "./vendor/json5.ts";
 
-// @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import { Redis } from "@upstash/redis";
 import { dirname, fromFileUrl, join, extname, basename } from "@std/path/posix";
 
@@ -288,6 +287,7 @@ export default {
       const { wasmModule: _wasmModule, ..._init } = init || {};
       const jsonKeyObj = Object.assign({ init: _init }, _configObj, {
         versions,
+        modules,
         initialValue: initialValue.trim(),
       });
       const jsonKey = `json/${JSON5.stringify(jsonKeyObj).trim()}`;
@@ -403,7 +403,7 @@ export default {
         WASM_MODULE = await ESBUILD_WASM();
       }
       if (!wasmModule) {
-        wasmModule = new WebAssembly.Module(WASM_MODULE);
+        wasmModule = new WebAssembly.Module(WASM_MODULE as BufferSource);
       }
 
       const [response, resultText] = await bundle(url, initialValue, configObj, versions, modules, query);

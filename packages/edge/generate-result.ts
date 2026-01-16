@@ -1,4 +1,3 @@
-// @deno-types="https://deno.land/x/upstash_redis/pkg/redis.ts"
 import type { Redis } from "@upstash/redis";
 import type { CompressionType } from "@bundle/core/src/compress.ts";
 import type { BundleResult } from "./bundle.ts";
@@ -123,7 +122,7 @@ export async function generateResult([badgeKey, badgeID]: string[], [value, resu
       detailedBadge ? `${size.uncompressedSize} -> ` : ""
     );
     const detailBadgeName = sanitizeShieldsIO(
-      `bundlejs${detailedBadge ? ` (${value.version ? value.version : value.versions?.join(", ") ?? query})` : ""}`
+      `bundlejs${detailedBadge ? ` (${value.modules?.map(([p]) => p)?.join(", ") ?? query})` : ""}`
     );
     
     let badgeType: CompressionType | "minified" | "uncompressed" | undefined = size.type;
