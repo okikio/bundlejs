@@ -46,6 +46,17 @@ function convertQueryValue(str?: string | null) {
   return str;
 }
 
+async function hashString(str: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+
 const __dirname = dirname(fromFileUrl(import.meta.url))
 
 // Define the directory where the .well-known files are stored
@@ -161,6 +172,7 @@ export default {
           // Replace multiple 2 or more spaces with just a single space
           .replace(/\s{2,}/, " ")
       ).map(x => x.trim())
+
       const uniqueTreeshakeArr = Array.from(new Set(treeshakeArr))
       // This treeshake pattern is what's required export all modules
       const exportAll = !treeshakeQuery || uniqueTreeshakeArr.every(x => /\*|{\s?default\s?}/.test(x))
@@ -204,8 +216,7 @@ export default {
       const formatQuery = url.searchParams.has("format");
       const format = initialConfig?.esbuild?.format || url.searchParams.get("format");
       
-      const inputFileHash = crypto.randomUUID();
-      const configObj: Config = deepAssign(
+      const earlyConfigObj: Config = deepAssign(
         {},
         BUILD_CONFIG,
         {
@@ -214,7 +225,7 @@ export default {
         } as Config,
         initialConfig,
         {
-          entryPoints: [`/index.${inputFileHash}${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
+          entryPoints: [`/index${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
           esbuild: deepAssign(
             {},
             enableMetafile ? { metafile: enableMetafile } : {},
@@ -229,7 +240,7 @@ export default {
           },
         } as Config
       );
-      console.log({ configObj })
+      console.log({ earlyConfigObj })
 
       const hasQuery = (
         url.searchParams.has("q") ||
@@ -247,7 +258,7 @@ export default {
       const mutationQueries =
         shareQuery || textQuery || minifyQuery || prettyQuery || polyfill || tsxQuery ||
         formatQuery || configQuery || badgeQuery || sourcemapQuery || analysisQuery || metafileQuery;
-      const rootPkg = configObj["package.json"] ?? {} as PackageJson;
+      const rootPkg = earlyConfigObj["package.json"] ?? {} as PackageJson;
       const dependecies = Object.assign({}, rootPkg.devDependencies, rootPkg.peerDependencies, rootPkg.dependencies)
       
       const versionsList = await Promise.allSettled(
@@ -284,7 +295,7 @@ export default {
         textQuery
       })
 
-      const { init, ..._configObj } = configObj;
+      const { init, ..._configObj } = earlyConfigObj;
       const { wasmModule: _wasmModule, ..._init } = init || {};
       const jsonKeyObj = Object.assign({ init: _init }, _configObj, {
         versions,
@@ -294,6 +305,11 @@ export default {
       const jsonKey = `json/${JSON5.stringify(jsonKeyObj).trim()}`;
       console.log({
         jsonKey
+      })
+
+      const inputFileHash = hashString(jsonKey)
+      const configObj = deepAssign({}, jsonKeyObj, {
+        entryPoints: [`/index.${inputFileHash}${tsxQuery || initialConfig.tsx ? ".tsx" : ".ts"}`],
       })
 
       const badgeResult = url.searchParams.get("badge");
