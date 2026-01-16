@@ -1,7 +1,7 @@
 // Generate CLS less font fallback https://deploy-preview-15--upbeat-shirley-608546.netlify.app/perfect-ish-font-fallback/?font=Manrope 
 @use "./components/fonts/manrope";
 @use "./components/fonts/material-icons";
-@import "./components/_variables";
+@use "components/_variables";
 
 @font-face {
   font-family: "Manrope-fallback";
@@ -24,7 +24,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-family: $icon-font;
+  font-family: variables.$icon-font;
   vertical-align: middle;
   letter-spacing: normal;
   display: inline-block;

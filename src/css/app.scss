@@ -1,13 +1,15 @@
+@use "sass:meta";
+@use "components/_variables";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
 
-@import "./components/_variables";
-@import "./components/_navbar";
-@import "./components/_monaco";
-@import "./components/_search";
-@import "./components/_highlightjs";
+@include meta.load-css("components/_navbar");
+@include meta.load-css("components/_monaco");
+@include meta.load-css("components/_search");
+@include meta.load-css("components/_highlightjs");
 
 // $icon-font: variables.$icon-font;
 
@@ -463,7 +465,7 @@ details:not(.accordian) {
     }
 
     &:before {
-      font-family: $icon-font;
+      font-family: variables.$icon-font;
       font-size: 24px;
       font-weight: normal;
       font-style: normal;
@@ -560,7 +562,7 @@ details.accordian {
     }
 
     &:after {
-      font-family: $icon-font;
+      font-family: variables.$icon-font;
       font-size: 24px;
       font-weight: normal;
       font-style: normal;
