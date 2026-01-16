@@ -71,7 +71,7 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const result = await build(configObj, FileSystem);
   const end = performance.now();
 
-  debounce(async () => (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).clear(), 1000 * 30);
+  debounce(async () => (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).clear(), 1000 * 60, true);
 
   let resultValue: string = result.contents[0].text;
   const entryPointInputFile = Array.isArray(entryPoints) ? entryPoints[0] 
