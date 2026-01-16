@@ -5,6 +5,8 @@ globalThis.Worker = worker ?? class {
   constructor() { }
 };
 
+import { debounce } from "@bundle/core/src/util.ts";
+
 import type { createDefaultFileSystem, ESBUILD } from "@bundle/core/src/index.ts";
 import type { Config } from "./mod.ts";
 import { headers } from "./mod.ts";
@@ -69,7 +71,7 @@ export async function bundle(url: URL, initialValue: string, configObj: Config, 
   const result = await build(configObj, FileSystem);
   const end = performance.now();
 
-  (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).reset();
+  debounce(async () => (await (fs as ReturnType<typeof createDefaultFileSystem>).files()).clear(), 1000 * 30);
 
   let resultValue: string = result.contents[0].text;
   const entryPointInputFile = Array.isArray(entryPoints) ? entryPoints[0] 

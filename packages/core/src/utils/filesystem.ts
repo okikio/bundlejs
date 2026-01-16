@@ -124,13 +124,7 @@ export async function deleteFile<T, F extends IFileSystem<T>>(fs: F, path: strin
 };
 
 /** Virtual Filesystem Storage */
-export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = Velo
-  .builder<string, Content | undefined | null>()
-  .capacity(100)
-  .lru()
-  .ttl(30_000)
-  .build() 
-) {
+export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = new Map<string, Content | null | undefined>()) {
   const fs: IFileSystem<typeof FileSystem, Content> = {
     files: async () => FileSystem,
     get: async (path: string) => FileSystem.get(resolve(path)),
@@ -153,7 +147,7 @@ export function createDefaultFileSystem<Content = Uint8Array>(FileSystem = Velo
       FileSystem.set(resolvedPath, content);
     },
     async delete(path: string) {
-      return FileSystem.remove(resolve(path))
+      return FileSystem.delete(resolve(path))
     }
   };
 
