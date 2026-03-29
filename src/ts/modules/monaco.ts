@@ -1,22 +1,24 @@
-import "../../../node_modules/monaco-editor/esm/vs/language/typescript/monaco.contribution.js";
-import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution.js";
+// import "../../../node_modules/monaco-editor/esm/vs/language/typescript/monaco.contribution.js";
+// import "../../../node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution.js";
 
-import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js";
+// import "../../../node_modules/monaco-editor/esm/vs/language/json/monaco.contribution.js";
 // import "../../../node_modules/monaco-editor/esm/vs/basic-languages/json/json.contribution.js";
 
 
 // import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js";
 // import "../../../node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
 
-import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
+// import "../../../node_modules/monaco-editor/esm/vs/editor/editor.all.js";
 // import "./editor.all.ts";
 
 import {
     editor as Editor,
+    typescript,
     languages,
-    Uri
-} from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api.js";
-import type { Environment } from "../../../node_modules/monaco-editor/esm/vs/editor/editor.api";
+    Uri,
+    createWebWorker,
+    type Environment
+} from "monaco-editor";
 
 import GithubLight from "../util/github-light";
 import GithubDark from "../util/github-dark";
@@ -45,7 +47,7 @@ const ListFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunct
 // Since packaging is done by you, you need
 // to instruct the editor how you named the
 // bundles that contain the web workers.
-(window as any).MonacoEnvironment = {
+window.MonacoEnvironment = {
     getWorker: function (_, label) {
         if (label === "typescript" || label === "javascript") {
             return TS_WORKER; 
@@ -75,7 +77,7 @@ export const configModelResetValue = [
     `export default (async function(): BundleConfigOptions {\n return ${JSON.stringify(EasyDefaultConfig, null, "\t")};\n})()`
 ].join("\n"); // Indented with tab
 
-export { languages, Editor, Uri };
+export { typescript, Editor, Uri };
 export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.ITextModel, Editor.ITextModel, Editor.ITextModel] => {
     const initialValue =
         parseSearchQuery(oldShareURL) || inputModelResetValue;
@@ -131,7 +133,7 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
             useShadows: false,
             vertical: "auto",
         },
-        lightbulb: { enabled: true },
+        lightbulb: { enabled: Editor.ShowLightbulbIconMode.On },
         wordWrap: "on",
         roundedSelection: true,
         scrollBeyondLastLine: true,
@@ -153,12 +155,12 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         Editor.setTheme(theme == "system" ? mediaTheme() : theme);
     });
 
-    languages.typescript.typescriptDefaults.setWorkerOptions({
+    typescript.typescriptDefaults.setWorkerOptions({
         customWorkerPath: new URL(TS_WORKER_FACTORY_URL, document.location.origin).toString()
     });
     
-    languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-        ...languages.typescript.typescriptDefaults.getDiagnosticsOptions(),
+    typescript.typescriptDefaults.setDiagnosticsOptions({
+        ...typescript.typescriptDefaults.getDiagnosticsOptions(),
         // noSemanticValidation: false,
         
         noSemanticValidation: true,
@@ -170,10 +172,10 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
     });
     
     // Compiler options
-    languages.typescript.typescriptDefaults.setCompilerOptions({
-        moduleResolution: languages.typescript.ModuleResolutionKind.NodeJs,
-        target: languages.typescript.ScriptTarget.Latest,
-        module: languages.typescript.ModuleKind.ES2015,
+    typescript.typescriptDefaults.setCompilerOptions({
+        moduleResolution: typescript.ModuleResolutionKind.NodeJs,
+        target: typescript.ScriptTarget.Latest,
+        module: typescript.ModuleKind.ES2015,
         noEmit: true,
         lib: ["es2021", "dom", "dom.iterable", "webworker", "esnext", "node"],
         exclude: ["node_modules"],
@@ -187,21 +189,21 @@ export const build = (oldShareURL: URL): [Editor.IStandaloneCodeEditor, Editor.I
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
     
-        jsx: languages.typescript.JsxEmit.ReactJSX,
+        jsx: typescript.JsxEmit.ReactJSX,
     });
     
     // @ts-ignore
-    languages.typescript?.typescriptDefaults.setInlayHintsOptions({
+    typescript?.typescriptDefaults.setInlayHintsOptions({
         includeInlayParameterNameHints: "literals",
         includeInlayParameterNameHintsWhenArgumentMatchesName: true
     });
     
-    languages.typescript?.typescriptDefaults?.setEagerModelSync(true);
-    languages.typescript?.typescriptDefaults?.addExtraLib(
+    typescript?.typescriptDefaults?.setEagerModelSync(true);
+    typescript?.typescriptDefaults?.addExtraLib(
         "declare module 'https://*' {\n\texport * from \"https://unpkg.com/*\";\n}",
         `file://node_modules/@types/http/https.d.ts`
     );
-    languages.typescript?.typescriptDefaults?.addExtraLib(
+    typescript?.typescriptDefaults?.addExtraLib(
         `declare module '@bundlejs/core/config' {\n\t${CONFIG_DTS}\n}`,
         `file://node_modules/@types/config/config.d.ts`
     );
@@ -268,7 +270,7 @@ ${readme ? "~~~\n\n" + "## Documentation\n\n" + readme as string : ""}`,
     });
 
     // Configure the JSON language support with schemas and schema associations
-    // languages.json.jsonDefaults.setDiagnosticsOptions({
+    // json.jsonDefaults.setDiagnosticsOptions({
     //     validate: true,
     //     schemas: [
     //         {

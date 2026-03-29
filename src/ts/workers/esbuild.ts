@@ -293,7 +293,7 @@ export const start = async (port: MessagePort) => {
       let totalByteLength = bytes(rawByteLen);
 
       let rawCompressedSize = (await Promise.all(
-          content.map(async (code: Uint8Array) => {
+          content.map(async (code: Uint8Array<ArrayBuffer>) => {
             switch (type) {
               case "lz4":
                 return lz4_compress(code);
@@ -350,7 +350,7 @@ export const start = async (port: MessagePort) => {
           for (let [path, contents] of FileSystem.entries()) {
             // This minifies & compresses input files for a accurate view of what is eating up the most size
             // It uses the esbuild options to determine how it should minify input code
-            let text = decode(contents);
+            let text = decode(contents as Uint8Array<ArrayBuffer>);
             let code = text;
 
             /*  WIP  */

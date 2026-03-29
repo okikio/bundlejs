@@ -452,10 +452,10 @@ export const build = async (app: App) => {
   });
 
   const Monaco = await import("./modules/monaco");
-  const { languages, inputModelResetValue, outputModelResetValue, configModelResetValue, Uri, Editor } = Monaco;
+  const { typescript, inputModelResetValue, outputModelResetValue, configModelResetValue, Uri, Editor } = Monaco;
   const getShareableURL = async (model: typeof inputModel) => {
     try {
-      const worker = await languages.typescript.getTypeScriptWorker();
+      const worker = await typescript.getTypeScriptWorker();
       const thisWorker = await worker(model.uri);
 
       const url = new URL(globalThis.location.href);
@@ -503,7 +503,7 @@ export const build = async (app: App) => {
   };
 
   const formatDocument = async (model: typeof inputModel) => {
-    const worker = await languages.typescript.getTypeScriptWorker();
+    const worker = await typescript.getTypeScriptWorker();
     const thisWorker = await worker(model.uri);
 
     // @ts-ignore
@@ -544,7 +544,7 @@ export const build = async (app: App) => {
       target: loadingContainerEl,
       opacity: [1, 0],
       easing: "ease-in",
-      duration: 50,
+      duration: 5,
       autoplay: false,
       fillMode: "both",
     });
