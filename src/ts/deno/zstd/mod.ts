@@ -45,7 +45,7 @@ const compressBound = (size: number): number => {
   return bound(size);
 };
 
-export const compress = async (buf: ArrayBuffer, level?: number) => {
+export const compress = async (buf: BufferSource, level?: number) => {
   await init();
 
   const bound = compressBound(buf.byteLength);
