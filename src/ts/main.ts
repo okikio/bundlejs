@@ -104,21 +104,15 @@ try {
         .add(new PJAX()); 
     
     app.emitter.once("index", async () => {
+        console.log("Running index page");
         indexRun(app);
     });
 
-    if (/^\/(\#.*)?(index)?(\.html)?$/.test(oldShareURL.toString()))
+
+    const HOMEPAGE_PATH_RE = /^\/(?:index(?:\.html)?)?$/;
+    if (HOMEPAGE_PATH_RE.test(oldShareURL.pathname))
         app.emitter.emit("index");
         
-    let router = app.get("Router") as Router;
-    router
-        .add({
-            path: /^\/(\#.*)?(index)?(\.html)?$/,
-            method() {
-                app.emitter.emit("index");
-            }
-        });
-
     app.boot();
 
     // Fix for the HistoryManager force replacing the original shared URL
