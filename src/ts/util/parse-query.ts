@@ -86,26 +86,18 @@ export const getModuleName = (str: string) => {
 
 // Inspired by https://github.com/solidjs/solid-playground
 /**
-* Converts URL's into code. It allows for specifing multiple exports per package, through this syntax
-* ```ts
-* "/?q=(import)@okikio/emitter,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,(import)@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate,@okikio/animate&treeshake=[T],[{+animate+}],[{+animate+as+B+}],[*+as+TR],[{+type+animate+}],[*],[{+animate+as+A+}],[*+as+PR],[{+animate+}]&share=MYewdgziA2CmB00QHMAUAiAwiG6CUQA" 
-* // to
-* // Click Build for the Bundled, Minified & Gzipped package size
-* import T from "@okikio/emitter";
-* import { animate } from "@okikio/animate";
-* import { animate as B } from "@okikio/animate";
-* import * as TR from "@okikio/animate";
-* import { type animate } from "@okikio/animate";
-* export * from "@okikio/animate";
-* export { animate as A } from "@okikio/animate";
-* export * as PR from "@okikio/animate";
-* export { animate } from "@okikio/animate";
-* console.log("Cool")
-* ```
-* - `q` represents the module, e.g. react, vue, etc... You can add `(import)` in-front of a specific module to make it an import instead of an export
-* - `treeshake` represents the exports to treeshake. Read more about this here, {@link parseTreeshakeExports}
-* - `share` represents all other code that isn't export/import
-*/
+ * Build editor source from URL parameters.
+ *
+ * Read `query` before its alias `q`. Module entries produce import/export
+ * statements; a leading `(import)` selects imports. `treeshake` supplies one
+ * bracketed clause per entry, as described by {@link parseTreeshakeExports}.
+ * Without `treeshake`, repeated module entries are deduplicated.
+ *
+ * Append decompressed `share` content, then `text` content, after those
+ * statements. Return an empty string when no source parameters are present.
+ * A parsing exception is caught and returns `undefined`; callers must choose
+ * their fallback editor content.
+ */
 export const parseSearchQuery = (shareURL: URL) => {
     try {
         const searchParams = shareURL.searchParams;
@@ -244,9 +236,9 @@ export const parseSearchQuery = (shareURL: URL) => {
 };
 
 /**
-* Converts URL's into config. 
-* - `config` represents the JSON config
-*/
+ * Merge the URL's JSON `config` into a fresh copy of `EasyDefaultConfig`.
+ * Return `undefined` if JSON parsing or merging throws.
+ */
 export const parseConfig = (shareURL: URL) => {
     try {
         const searchParams = shareURL.searchParams;
